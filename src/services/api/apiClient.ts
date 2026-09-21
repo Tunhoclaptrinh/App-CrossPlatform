@@ -18,9 +18,9 @@ async function request<T = any>(
   endpoint: string,
   options: RequestOptions = {}
 ): Promise<ApiResponse<T>> {
-  const { timeout = AppConfig.TIMEOUT_MS, headers = {}, params, ...rest } = options;
+  const { timeout = AppConfig.API.TIMEOUT_MS, headers = {}, params, ...rest } = options;
 
-  let url = endpoint.startsWith('http') ? endpoint : `${AppConfig.API_BASE_URL}${endpoint}`;
+  let url = endpoint.startsWith('http') ? endpoint : `${AppConfig.API.BASE_URL}${endpoint}`;
 
   if (params) {
     const query = new URLSearchParams(
