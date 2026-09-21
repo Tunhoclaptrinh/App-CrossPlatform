@@ -4,16 +4,36 @@ try {
 } catch (e) {}
 
 // Mock async-storage
-jest.mock('@react-native-async-storage/async-storage', () => ({
-  setItem: jest.fn(() => Promise.resolve()),
-  getItem: jest.fn(() => Promise.resolve(null)),
-  removeItem: jest.fn(() => Promise.resolve()),
-  clear: jest.fn(() => Promise.resolve()),
-  getAllKeys: jest.fn(() => Promise.resolve([])),
-  multiGet: jest.fn(() => Promise.resolve([])),
-  multiSet: jest.fn(() => Promise.resolve()),
-  multiRemove: jest.fn(() => Promise.resolve()),
-}));
+jest.mock('@react-native-async-storage/async-storage', () => {
+  const asyncStore = new Map();
+  return {
+    setItem: jest.fn((key, value) => {
+      asyncStore.set(key, value);
+      return Promise.resolve();
+    }),
+    getItem: jest.fn((key) => Promise.resolve(asyncStore.has(key) ? asyncStore.get(key) : null)),
+    removeItem: jest.fn((key) => {
+      asyncStore.delete(key);
+      return Promise.resolve();
+    }),
+    clear: jest.fn(() => {
+      asyncStore.clear();
+      return Promise.resolve();
+    }),
+    getAllKeys: jest.fn(() => Promise.resolve(Array.from(asyncStore.keys()))),
+    multiGet: jest.fn((keys) =>
+      Promise.resolve(keys.map((k) => [k, asyncStore.has(k) ? asyncStore.get(k) : null]))
+    ),
+    multiSet: jest.fn((keyValuePairs) => {
+      keyValuePairs.forEach(([k, v]) => asyncStore.set(k, v));
+      return Promise.resolve();
+    }),
+    multiRemove: jest.fn((keys) => {
+      keys.forEach((k) => asyncStore.delete(k));
+      return Promise.resolve();
+    }),
+  };
+});
 
 // Mock op-sqlite
 jest.mock('@op-engineering/op-sqlite', () => {

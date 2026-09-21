@@ -34,12 +34,17 @@ This skill documents the conventions, directory structure, state protocols, and 
     - `EmptyState/`: `EmptyState.tsx`, `styles.ts`, `types.ts`, `index.ts`.
     - `LoadingOverlay/`: `LoadingOverlay.tsx`, `styles.ts`, `types.ts`, `index.ts`.
     - `ErrorBoundary/`: `ErrorBoundary.tsx`, `styles.ts`, `types.ts`, `index.ts`.
+    - `WidgetCard/`: `WidgetCard.tsx`, `styles.ts`, `types.ts`, `index.ts`.
+    - `GestureCard/`: `GestureCard.tsx`, `styles.ts`, `types.ts`, `index.ts`.
+    - `AppWebView/`: `AppWebView.tsx`, `styles.ts`, `types.ts`, `index.ts`.
   - `toast/`: In-app spring notification system (`ToastProvider`, `useToast`).
 - `src/services/`:
   - `api/`: `apiClient.ts` for universal REST APIs & AI endpoints, with strict types defined in `types.ts`.
-  - `storage/`: `appStorage.ts` for type-safe AsyncStorage persistence.
+  - `storage/`: `appStorage.ts` for AsyncStorage persistence, and `secureStorage.ts` for encrypted storage.
   - `database/`: `sqlite.ts` for ultra-fast C++ JSI relational database via `@op-engineering/op-sqlite`.
   - `file/`: `fileService.ts` for local document management (read, write, list, delete, JSON storage, and export via Native Share Sheet).
+  - `biometrics/`: `biometricService.ts` for Fingerprint / Face ID authentication with interactive fallback.
+  - `widget/`: `widgetBridgeService.ts` for exporting snapshot data to home screen widgets.
   - `update/`: `appUpdate.ts` for version tracking and update prompting.
 - `src/types/`:
   - `api.ts`: Re-export API request & response types (`ApiResponse`, `ApiError`, `PaginatedResponse`, `AiChatRequest`, etc.).
@@ -51,6 +56,9 @@ This skill documents the conventions, directory structure, state protocols, and 
     - Language (`language`, `setLanguage` -> auto syncs with `i18n`)
     - User session (`user`, `setUser`, `logout`)
     - Metrics (`counter`, `increment`, `reset`)
+  - Gestures & Interaction:
+    - `useSwipeGesture`: PanResponder 4-direction swipe detection.
+    - `useDoubleTap`: Multi-tap gesture detection with threshold.
   - Utilities & Performance:
     - `useNetworkStatus`: Internet connectivity detection with auto-recheck.
     - `useDebounce`: Delays state updates until typing/input stops.
@@ -69,14 +77,20 @@ This skill documents the conventions, directory structure, state protocols, and 
   - In-App Toast:
     - `useToast`: Trigger in-app toast alerts from any component.
 - `src/utils/`:
+  - `id.ts`: `generateId` (UUID v4), `generateNanoId`, `generateShortCode`, `generateTimestampId`.
+  - `crypto.ts`: `hashString` (SHA-256), `encryptString`, `decryptString` (symmetric cipher).
+  - `image.ts`: `formatDataUri`, `validateImageSize`, `getImageExtension`, `generatePlaceholder`.
+  - `file.ts`: `getMimeType`, `isImageFile`, `isDocumentFile`, `checkFileConstraints`.
+  - `clipboard.ts`: `clipboardHelper.setString`, `clipboardHelper.getString`.
+  - `browser.ts`: `browserHelper.openUrl`.
   - `haptics.ts`: Hardware tactile vibration feedback (`light`, `medium`, `heavy`, `success`, `error`, `cancel`).
   - `share.ts`: Native OS Share Sheet helper (`shareText`, `shareUrl`).
-  - `permissions.ts`: Mobile runtime permissions helper (Camera, Photos, Notifications).
+  - `permissions.ts`: Mobile runtime permissions helper (Camera, Photos, Notifications, Microphone, Location).
   - `helpers.ts`: Currency, date formatters.
   - `formatters.ts`: `removeVietnameseTones` (accent stripper for search), `timeAgo` (Vietnamese relative time), `truncate`, `formatFileSize`.
   - `validators.ts`: Regex-based fast validation (email, VN phone, password, url, numbers).
   - `schemas.ts`: Bilingual Zod schemas (`loginSchema`, `registerSchema`, `searchSchema`) and `validateWithZod(schema, data, t?)` UI error helper.
-- `src/i18n/`: Multilingual system (vi, en) via `i18next` with structured namespaces (`common`, `validation`, `network`, `home`, `details`, `dialogs`, `splash`).
+- `src/i18n/`: Multilingual system (vi, en) via `i18next` with structured namespaces (`common`, `validation`, `network`, `home`, `details`, `dialogs`, `splash`, `crypto`, `gestures`, `biometrics`, `widget`).
 - `src/navigation/`: React Navigation v7 Native Stack (`AppNavigator`, `routes.ts`, `types.ts`, `linking.ts`).
 - `src/screens/`: Feature screens (`Splash/`, `Home/`, `Details/`). Each screen has `Screen.tsx`, `styles.ts`, `index.ts`.
 
@@ -187,4 +201,64 @@ const config = await fileService.readJson<{ theme: string }>('config.json');
 // Export or share file externally via OS Share Sheet
 await fileService.exportFile('report.txt');
 ```
+
+### 3.7. ID Generation & Data Encryption
+```typescript
+import { generateId, generateNanoId, cryptoHelper } from '@/utils';
+import { secureStorage } from '@/services/storage';
+
+// Generate UUID v4
+const newId = generateId('order'); // order_3b241101-...
+
+// Encrypt & Decrypt strings
+const encrypted = cryptoHelper.encrypt('Secret_API_Key', 'my_key');
+const decrypted = cryptoHelper.decrypt(encrypted, 'my_key');
+
+// Transparent Encrypted Storage
+await secureStorage.setItem('api_token', { token: 'xyz' });
+const data = await secureStorage.getItem('api_token');
+```
+
+### 3.8. Smart Gestures (Swipe & Double Tap)
+```typescript
+import { useSwipeGesture, useDoubleTap } from '@/hooks';
+
+// 4-direction swipe responder
+const swipeHandlers = useSwipeGesture({
+  onSwipeLeft: () => console.log('Swiped left'),
+  onSwipeRight: () => console.log('Swiped right'),
+});
+
+// Double tap gesture
+const handleDoubleTap = useDoubleTap(() => {
+  console.log('Double tapped!');
+});
+```
+
+### 3.9. Biometric Authentication
+```typescript
+import { biometricService } from '@/services/biometrics';
+
+const handleAuth = async () => {
+  const result = await biometricService.authenticate({
+    promptMessage: 'Xác thực vân tay hoặc Face ID',
+  });
+  if (result.success) {
+    // Navigate to protected screen
+  }
+};
+```
+
+### 3.10. Widget Bridge Data Synchronization
+```typescript
+import { widgetBridgeService } from '@/services/widget';
+
+// Synchronize app state snapshot for external home screen widget
+await widgetBridgeService.syncWidgetData({
+  activeCount: 15,
+  headline: 'Universal Base App',
+  status: 'online',
+});
+```
+
 

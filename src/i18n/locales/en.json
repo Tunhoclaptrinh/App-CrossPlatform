@@ -95,5 +95,35 @@
   "splash": {
     "subtitle": "Universal Production Template",
     "initializing": "Initializing application..."
+  },
+  "crypto": {
+    "title": "Security, Crypto & ID Generation",
+    "generateUuid": "Generate UUID v4",
+    "encryptTest": "Encrypt String",
+    "decryptTest": "Decrypt String",
+    "copyId": "Copy ID",
+    "encryptedSuccess": "Encrypted symmetric payload successfully!",
+    "decryptedSuccess": "Decrypted payload successfully!"
+  },
+  "gestures": {
+    "title": "Smart Touch Gestures",
+    "cardDesc": "Try swiping left/right or double-tapping directly on this card.",
+    "swipedLeft": "👈 Swiped LEFT!",
+    "swipedRight": "👉 Swiped RIGHT!",
+    "doubleTapped": "⚡ DOUBLE TAPPED!"
+  },
+  "biometrics": {
+    "title": "Biometrics (Fingerprint / Face ID)",
+    "prompt": "Scan your fingerprint or face to authenticate",
+    "authBtn": "Authenticate Biometrics",
+    "authSuccess": "Biometric authentication succeeded!",
+    "authFailed": "Authentication cancelled or failed"
+  },
+  "widget": {
+    "title": "In-App Widget Dashboard",
+    "subtitle": "Bridge to sync data to external Home Screen Widget",
+    "badge": "Snapshot",
+    "syncBtn": "Sync Widget Snapshot",
+    "syncedSuccess": "Widget snapshot synced successfully!"
   }
 }

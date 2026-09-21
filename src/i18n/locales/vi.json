@@ -95,5 +95,35 @@
   "splash": {
     "subtitle": "Bộ khung hoàn chỉnh chuẩn Production",
     "initializing": "Đang khởi tạo ứng dụng..."
+  },
+  "crypto": {
+    "title": "Bảo Mật & Định Danh (Security & Crypto)",
+    "generateUuid": "Tạo UUID v4",
+    "encryptTest": "Mã Hóa Chuỗi",
+    "decryptTest": "Giải Mã Chuỗi",
+    "copyId": "Sao Chép ID",
+    "encryptedSuccess": "Đã mã hóa dữ liệu đối xứng!",
+    "decryptedSuccess": "Đã giải mã dữ liệu thành công!"
+  },
+  "gestures": {
+    "title": "Cử Chỉ Màn Hình Thông Minh (Smart Gestures)",
+    "cardDesc": "Thử vuốt sang trái/phải hoặc chạm đúp trực tiếp vào thẻ này.",
+    "swipedLeft": "👈 Đã vuốt sang TRÁI!",
+    "swipedRight": "👉 Đã vuốt sang PHẢI!",
+    "doubleTapped": "⚡ Đã chạm đúp (Double Tap)!"
+  },
+  "biometrics": {
+    "title": "Sinh Trắc Học (Vân Tay / Face ID)",
+    "prompt": "Quét vân tay hoặc khuôn mặt để mở khóa",
+    "authBtn": "Xác Thực Sinh Trắc Học",
+    "authSuccess": "Xác thực sinh trắc học thành công!",
+    "authFailed": "Xác thực không thành công hoặc bị hủy"
+  },
+  "widget": {
+    "title": "In-App Widget Dashboard",
+    "subtitle": "Cầu nối đồng bộ dữ liệu ra Widget màn hình ngoài",
+    "badge": "Snapshot",
+    "syncBtn": "Đồng Bộ Dữ Liệu Widget",
+    "syncedSuccess": "Đã đồng bộ dữ liệu Widget thành công!"
   }
 }

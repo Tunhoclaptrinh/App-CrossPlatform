@@ -20,3 +20,6 @@ export * from './useAsync';
 
 // In-App Toast Feedback
 export { useToast } from '@/components/toast';
+
+// Smart Gestures
+export * from './useGestures';

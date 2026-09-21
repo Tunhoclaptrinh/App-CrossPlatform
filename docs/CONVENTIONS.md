@@ -135,12 +135,54 @@ Toàn bộ phản hồi từ server hoặc AI model phải được định ki�
 
 ## 12. Quyền Thiết Bị & Deep Linking
 
-* **`permissions` (`src/utils/permissions.ts`)**: Trợ thủ xin cấp quyền máy ảnh (`requestCamera`), thư viện ảnh (`requestPhotoLibrary`), và thông báo (`requestNotifications`) thân thiện, an toàn theo từng phiên bản Android/iOS.
+* **`permissions` (`src/utils/permissions.ts`)**: Trợ thủ xin cấp quyền máy ảnh (`requestCamera`), thư viện ảnh (`requestPhotoLibrary`), thông báo (`requestNotifications`), microphone (`requestMicrophone`), và vị trí (`requestLocation`).
 * **`linking` (`src/navigation/linking.ts`)**: Cấu hình mở màn hình từ URL scheme và universal link (`reactnative://` hoặc `https://...`).
 
 ---
 
-## 13. Nguyên Tắc Thiết Kế Giao Diện (Zero Inline Styles)
+## 13. Định Danh & Bảo Mật Dữ Liệu (ID Generation & Cryptography)
+
+* **Tạo Khóa Định Danh (`src/utils/id.ts`)**:
+  * `generateId(prefix?)`: Chuẩn RFC4122 UUID v4 cho unique keys và database primary keys.
+  * `generateNanoId(size?)`: Chuỗi định danh ngắn gọn an toàn trên URL.
+  * `generateShortCode(length?)`: Mã 6 ký tự viết hoa/số dành cho OTP, mã tra cứu.
+  * `generateTimestampId(prefix?)`: Khóa định danh sắp xếp theo thứ tự thời gian.
+* **Mã Hóa Đối Xứng & Băm Dữ Liệu (`src/utils/crypto.ts`)**:
+  * `hashString(text)`: Tạo mã băm SHA-256 thuần TypeScript/JS.
+  * `encryptString(text, key)` & `decryptString(cipher, key)`: Mã hóa bảo mật chuỗi nhạy cảm.
+  * `secureStorage` (`src/services/storage/secureStorage.ts`): Tự động mã hóa trước khi ghi vào AsyncStorage và tự giải mã khi đọc ra.
+
+---
+
+## 14. Xác Thực Sinh Trắc Học (Biometric Authentication)
+
+* **`biometricService` (`src/services/biometrics/`)**:
+  * `isSensorAvailable()`: Tự động kiểm tra phần cứng cảm biến (Face ID / Fingerprint / Touch ID).
+  * `authenticate(options)`: Mở hộp thoại quét sinh trắc học kèm phản hồi rung Haptic, hỗ trợ chuyển đổi mượt mà giữa môi trường giả lập (fallback confirmation) và thiết bị thật có native module.
+
+---
+
+## 15. Cử Chỉ Màn Hình Thông Minh (Smart Gestures)
+
+* **`useSwipeGesture` (`src/hooks/useGestures.ts`)**:
+  * Xây dựng trên nền `PanResponder` chuẩn New Architecture, nhận diện vuốt 4 hướng (Trái, Phải, Lên, Xuống) có ngưỡng cản `threshold` và phản hồi rung.
+* **`useDoubleTap` (`src/hooks/useGestures.ts`)**:
+  * Nhận diện chạm 2 lần liên tiếp (dưới 300ms) để thích nhanh hoặc phóng to thu nhỏ.
+* **`GestureCard` (`src/components/common/GestureCard/`)**:
+  * Component khung chứa cử chỉ trực quan chuẩn UI Mobile.
+
+---
+
+## 16. Cầu Nối Widget & In-App Webview (Widget Bridge & Webview)
+
+* **`widgetBridgeService` (`src/services/widget/`)**:
+  * `syncWidgetData()`: Đóng gói trạng thái ứng dụng (active count, status, headline) và xuất file `widget_snapshot.json` để Android `AppWidgetProvider` hoặc iOS `WidgetKit` đọc dữ liệu.
+* **`AppWebView` (`src/components/common/AppWebView/`)**:
+  * Khung sườn hiển thị web tích hợp sẵn thanh địa chỉ bảo mật, nút mở trình duyệt ngoài (`browserHelper.openUrl`) và sẵn sàng đón nhận `react-native-webview` khi kích hoạt native.
+
+---
+
+## 17. Nguyên Tắc Thiết Kế Giao Diện (Zero Inline Styles)
 
 * **CẤM tuyệt đối viết Inline Styles** trong file JSX/TSX. Lỗi này bị kiểm soát nghiêm ngặt bởi ESLint rule `react-native/no-inline-styles`.
 * Mỗi màn hình và mỗi component phải có file `styles.ts` riêng biệt và tạo qua `StyleSheet.create()`.
@@ -153,14 +195,15 @@ Toàn bộ phản hồi từ server hoặc AI model phải được định ki�
 
 ---
 
-## 14. Nguyên Tắc Đặt Tên (Naming Conventions)
+## 18. Nguyên Tắc Đặt Tên (Naming Conventions)
 
 | Đối tượng | Quy tắc | Ví dụ |
 | :--- | :--- | :--- |
-| **Thư mục Component** | PascalCase | `AppHeader/`, `OptimizedList/`, `ConfirmDialog/` |
-| **Component Files** | PascalCase | `AppHeader.tsx`, `OptimizedList.tsx`, `ConfirmDialog.tsx` |
-| **Hook Files** | camelCase, tiền tố `use` | `useAppStore.ts`, `useNetworkStatus.ts`, `useDebounce.ts` |
-| **Service / Util Files** | camelCase | `apiClient.ts`, `permissions.ts`, `validators.ts` |
+| **Thư mục Component** | PascalCase | `AppHeader/`, `OptimizedList/`, `WidgetCard/` |
+| **Component Files** | PascalCase | `AppHeader.tsx`, `OptimizedList.tsx`, `WidgetCard.tsx` |
+| **Hook Files** | camelCase, tiền tố `use` | `useAppStore.ts`, `useSwipeGesture.ts`, `useDebounce.ts` |
+| **Service / Util Files** | camelCase | `apiClient.ts`, `biometricService.ts`, `crypto.ts` |
 | **Styles / Types Files** | camelCase | `styles.ts`, `types.ts`, `constants.ts` |
-| **TypeScript Types/Interfaces** | PascalCase | `User`, `ConfirmDialogProps`, `ApiResponse` |
+| **TypeScript Types/Interfaces** | PascalCase | `User`, `WidgetDataSnapshot`, `BiometricType` |
 | **Constants / Enums** | UPPER_SNAKE_CASE hoặc PascalCase | `STORAGE_KEYS.AUTH_TOKEN`, `Spacing.md`, `Colors.light` |
+

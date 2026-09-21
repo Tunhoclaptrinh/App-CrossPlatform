@@ -13,13 +13,18 @@ import {
   ConfirmDialog,
   AppCheckbox,
   AppSwitch,
+  WidgetCard,
+  GestureCard,
+  AppWebView,
 } from '@/components';
 import { Colors } from '@/constants/colors';
 import { useAppStore, useToast } from '@/hooks';
 import { appStorage, STORAGE_KEYS } from '@/services/storage';
 import { appUpdateService } from '@/services/update';
 import { fileService } from '@/services/file';
-import { permissions, haptics } from '@/utils';
+import { biometricService } from '@/services/biometrics';
+import { widgetBridgeService } from '@/services/widget';
+import { permissions, haptics, generateId, cryptoHelper, clipboardHelper } from '@/utils';
 import type { DetailsScreenProps } from '@/navigation/types';
 import { createDetailsStyles } from './styles';
 
@@ -43,6 +48,14 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
 
   // State cho Demo Đọc Ghi File
   const [fileContent, setFileContent] = useState('Universal React Native Base File Content');
+
+  // States cho Demo Cử Chỉ, Bảo Mật, Sinh Trắc Học & Widget
+  const [uuidValue, setUuidValue] = useState(generateId());
+  const [cipherText, setCipherText] = useState('');
+  const [decryptedText, setDecryptedText] = useState('');
+  const [gestureFeedback, setGestureFeedback] = useState('Chạm đúp hoặc vuốt để thử nghiệm');
+  const [widgetSyncStatus, setWidgetSyncStatus] = useState<string | null>(null);
+  const [isSyncingWidget, setIsSyncingWidget] = useState(false);
 
   useEffect(() => {
     appStorage.getItem<string>(STORAGE_KEYS.AI_API_KEY).then((key) => {
@@ -110,6 +123,62 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
     haptics.light();
     await fileService.exportFile('demo_note.txt');
   };
+
+  const handleGenerateUuid = () => {
+    const nextId = generateId();
+    setUuidValue(nextId);
+    haptics.light();
+    toast.show('info', `${t('crypto.generateUuid')}: ${nextId}`, t('common.info'));
+  };
+
+  const handleCopyUuid = async () => {
+    await clipboardHelper.setString(uuidValue);
+    toast.show('success', `${t('crypto.copyId')}: ${uuidValue}`, t('common.success'));
+  };
+
+  const handleEncryptTest = () => {
+    const secret = apiKeyInput.trim() || 'Demo Sensitive Secret Key';
+    const encrypted = cryptoHelper.encrypt(secret);
+    setCipherText(encrypted);
+    setDecryptedText('');
+    haptics.success();
+    toast.show('success', t('crypto.encryptedSuccess'), t('common.success'));
+  };
+
+  const handleDecryptTest = () => {
+    if (!cipherText) return;
+    const decrypted = cryptoHelper.decrypt(cipherText);
+    setDecryptedText(decrypted || 'Lỗi giải mã');
+    haptics.success();
+    toast.show('info', t('crypto.decryptedSuccess'), t('common.info'));
+  };
+
+  const handleBiometricAuth = async () => {
+    haptics.light();
+    const result = await biometricService.authenticate({
+      promptMessage: t('biometrics.prompt'),
+    });
+    if (result.success) {
+      toast.show('success', t('biometrics.authSuccess'), t('common.success'));
+    } else {
+      toast.show('error', t('biometrics.authFailed'), t('common.error'));
+    }
+  };
+
+  const handleSyncWidget = async () => {
+    setIsSyncingWidget(true);
+    haptics.light();
+    const snapshot = await widgetBridgeService.syncWidgetData({
+      activeCount: counter,
+      headline: 'Universal RN Base App',
+      status: 'online',
+    });
+    setIsSyncingWidget(false);
+    haptics.success();
+    setWidgetSyncStatus(new Date(snapshot.lastUpdated).toLocaleTimeString());
+    toast.show('success', t('widget.syncedSuccess'), t('common.success'));
+  };
+
 
   return (
     <ScreenWrapper scrollable contentContainerStyle={styles.content}>
@@ -341,6 +410,122 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
           actionText={t('common.retry', 'Tải lại')}
           onActionPress={() => Alert.alert(t('common.info', 'Thông báo'), t('details.refreshed', 'Đã làm mới dữ liệu!'))}
         />
+      </View>
+
+      {/* Demo Cử Chỉ Thông Minh (Smart Gestures) */}
+      <View style={styles.skeletonSection}>
+        <AppText variant="title" style={styles.sectionHeading}>
+          {t('gestures.title', 'Cử Chỉ Màn Hình Thông Minh (Smart Gestures)')}
+        </AppText>
+        <GestureCard
+          title="Thẻ Cảm Ứng Tương Tác"
+          description={gestureFeedback}
+          onSwipeLeft={() => setGestureFeedback(t('gestures.swipedLeft', '👈 Đã vuốt sang TRÁI!'))}
+          onSwipeRight={() => setGestureFeedback(t('gestures.swipedRight', '👉 Đã vuốt sang PHẢI!'))}
+          onDoubleTap={() => setGestureFeedback(t('gestures.doubleTapped', '⚡ Đã chạm đúp (Double Tap)!'))}
+        />
+      </View>
+
+      {/* Demo Bảo Mật, UUID & Mã Hóa Đối Xứng */}
+      <View style={styles.skeletonSection}>
+        <AppText variant="title" style={styles.sectionHeading}>
+          {t('crypto.title', 'Bảo Mật & Định Danh (Security & Crypto)')}
+        </AppText>
+        <View style={styles.cryptoBox}>
+          <AppText variant="caption" color={themeColors.textSecondary}>
+            UUID v4 (RFC4122 Standard):
+          </AppText>
+          <View style={styles.codeSnippet}>
+            <AppText variant="caption" color={themeColors.primary}>{uuidValue}</AppText>
+          </View>
+          <View style={styles.cryptoActionRow}>
+            <View style={styles.hapticBtn}>
+              <Button mode="contained-tonal" icon="refresh" onPress={handleGenerateUuid}>
+                {t('crypto.generateUuid', 'Tạo UUID v4')}
+              </Button>
+            </View>
+            <View style={styles.hapticBtn}>
+              <Button mode="outlined" icon="content-copy" onPress={handleCopyUuid}>
+                {t('crypto.copyId', 'Sao Chép ID')}
+              </Button>
+            </View>
+          </View>
+
+          {cipherText ? (
+            <View style={styles.codeSnippet}>
+              <AppText variant="caption" color="#10B981" numberOfLines={2}>
+                {cipherText}
+              </AppText>
+            </View>
+          ) : null}
+
+          {decryptedText ? (
+            <AppText variant="caption" color={themeColors.primary} style={styles.savedKeyText}>
+              ✓ Giải mã: {decryptedText}
+            </AppText>
+          ) : null}
+
+          <View style={styles.cryptoActionRow}>
+            <View style={styles.hapticBtn}>
+              <Button mode="contained-tonal" icon="lock" onPress={handleEncryptTest}>
+                {t('crypto.encryptTest', 'Mã Hóa Chuỗi')}
+              </Button>
+            </View>
+            <View style={styles.hapticBtn}>
+              <Button mode="outlined" icon="lock-open" disabled={!cipherText} onPress={handleDecryptTest}>
+                {t('crypto.decryptTest', 'Giải Mã Chuỗi')}
+              </Button>
+            </View>
+          </View>
+        </View>
+      </View>
+
+      {/* Demo Sinh Trắc Học (Biometrics) */}
+      <View style={styles.skeletonSection}>
+        <AppText variant="title" style={styles.sectionHeading}>
+          {t('biometrics.title', 'Sinh Trắc Học (Vân Tay / Face ID)')}
+        </AppText>
+        <Button
+          mode="contained"
+          buttonColor="#10B981"
+          icon="fingerprint"
+          onPress={handleBiometricAuth}
+        >
+          {t('biometrics.authBtn', 'Xác Thực Sinh Trắc Học')}
+        </Button>
+      </View>
+
+      {/* Demo In-App Widget Dashboard */}
+      <View style={styles.skeletonSection}>
+        <AppText variant="title" style={styles.sectionHeading}>
+          {t('widget.title', 'In-App Widget Dashboard')}
+        </AppText>
+        <WidgetCard
+          title="Active State Snapshot"
+          subtitle={widgetSyncStatus ? `Cập nhật: ${widgetSyncStatus}` : t('widget.subtitle', 'Cầu nối đồng bộ dữ liệu ra màn hình ngoài')}
+          badge={t('widget.badge', 'Snapshot')}
+          icon={<Zap size={20} color={themeColors.primary} />}
+          onRefresh={handleSyncWidget}
+          isRefreshing={isSyncingWidget}
+        >
+          <View style={styles.widgetContent}>
+            <View style={styles.widgetStatusRow}>
+              <AppText variant="body">Zustand Global Counter:</AppText>
+              <AppText variant="title" color={themeColors.primary}>{counter}</AppText>
+            </View>
+            <Button mode="contained-tonal" icon="sync" onPress={handleSyncWidget}>
+              {t('widget.syncBtn', 'Đồng Bộ Dữ Liệu Widget')}
+            </Button>
+          </View>
+        </WidgetCard>
+      </View>
+
+      {/* Demo In-App Webview Container */}
+      <View style={styles.skeletonSection}>
+        <AppText variant="title" style={styles.sectionHeading}>
+          In-App Webview Container
+        </AppText>
+        <AppWebView url="https://reactnative.dev" title="React Native Documentation" />
       </View>
 
       {/* ConfirmDialog Component */}

@@ -39,12 +39,28 @@
   * `validators`: Kiểm tra nhanh Email, Số điện thoại Việt Nam (03, 05, 07, 08, 09, +84), Độ mạnh mật khẩu, URL.
 * **Cảm Biến Phản Hồi Rung (Haptics Vibration Feedback):**
   * `haptics`: Mô phỏng xúc giác chuẩn mực (`light`, `medium`, `heavy`, `success`, `error`, `cancel`) cho các tương tác bấm nút, gạt switch, chọn checkbox, mở dialog hoặc báo lỗi thao tác.
+* **Xác Thực Sinh Trắc Học (Biometrics):**
+  * `biometricService`: Nhận diện vân tay / Face ID an toàn, tương thích New Architecture kèm fallback xác thực trực quan.
+* **Bảo Mật & Định Danh (Security & Crypto):**
+  * `id`: Sinh UUID v4 (RFC4122), NanoID ngắn gọn, mã ShortCode OTP và Timestamp ID.
+  * `cryptoHelper`: Băm SHA-256 và mã hóa/giải mã đối xứng an toàn cho thông tin nhạy cảm.
+  * `secureStorage`: Lớp lưu trữ mã hóa tự động trên nền AsyncStorage.
+* **Cử Chỉ Màn Hình Thông Minh (Smart Gestures):**
+  * `useSwipeGesture`: Nhận diện vuốt 4 hướng (Trái, Phải, Lên, Xuống) qua PanResponder.
+  * `useDoubleTap`: Nhận diện chạm đúp dưới 300ms.
+  * `GestureCard`: Thẻ tương tác phản hồi cử chỉ trực quan.
+* **Cầu Nối Widget & In-App Webview:**
+  * `widgetBridgeService`: Xuất snapshot dữ liệu app đồng bộ ra Android AppWidget / iOS WidgetKit.
+  * `WidgetCard`: Component widget bảng điều khiển trong app.
+  * `AppWebView`: Khung sườn trình duyệt web an toàn tích hợp.
 * **Quản Lý & Xuất Nhập File Cục Bộ (Local File I/O & Native Sharing):**
   * `fileService`: Quản lý lưu trữ tệp văn bản và JSON chuẩn hóa bằng SQLite JSI, hỗ trợ đọc, ghi, liệt kê, xóa và chia sẻ/xuất file ra ngoài ứng dụng qua **Native OS Share Sheet** (`shareHelper`).
 * **Quyền Thiết Bị (Device Permissions):**
-  * `permissions`: Trợ thủ xin quyền thiết bị an toàn trên Android & iOS (Camera, Thư viện ảnh, Thông báo).
+  * `permissions`: Trợ thủ xin quyền thiết bị an toàn trên Android & iOS (Camera, Thư viện ảnh, Thông báo, Microphone, Vị trí).
 * **Deep Linking Tích Hợp:**
   * `linking`: Cấu hình mở app từ liên kết URL (`reactnative://` hoặc `https://reactnativebase.app`).
+* **Lộ Trình Mở Rộng Native (Expansion Roadmap):**
+  * Hướng dẫn chi tiết cách gắn camera picker native, webview native, Android/iOS home screen widget tại `docs/EXPANSION_ROADMAP.md`.
 * **Tối Ưu Hiệu Năng & Chống Spam Sự Kiện:**
   * `useNetworkStatus`: Giám sát trạng thái kết nối Internet và tự động kiểm tra lại khi mở app.
   * `useDebounce`: Hoãn cập nhật state cho đến khi dừng gõ.
@@ -56,7 +72,7 @@
 * **Thông Báo Toàn Cục (In-App Toast):** `useToast()` trượt từ đỉnh màn hình bằng Spring Animation mượt mà.
 * **Cơ Sở Dữ Liệu SQLite Siêu Tốc:** `@op-engineering/op-sqlite` chạy JSI C++ trực tiếp trên New Architecture.
 * **Lưu Trữ Bền Vững:** `appStorage` trên nền `@react-native-async-storage/async-storage`.
-* **Chuẩn Hóa Đa Ngôn Ngữ Song Ngữ (i18n):** `i18next` + `react-i18next` hỗ trợ chuyển đổi Tiếng Việt & Tiếng Anh tức thì, phân chia theo các namespaces rõ ràng (`common`, `validation`, `network`, `home`, `details`, `dialogs`, `splash`).
+* **Chuẩn Hóa Đa Ngôn Ngữ Song Ngữ (i18n):** `i18next` + `react-i18next` hỗ trợ chuyển đổi Tiếng Việt & Tiếng Anh tức thì, phân chia theo các namespaces rõ ràng (`common`, `validation`, `network`, `home`, `details`, `dialogs`, `splash`, `crypto`, `gestures`, `biometrics`, `widget`).
 * **Quản Trị Phiên Bản & Cập Nhật:** `appUpdateService` so sánh phiên bản và nhắc nhở người dùng cập nhật qua Store.
 
 ---
@@ -107,14 +123,17 @@ src/
 │   │   ├── OfflineBanner/
 │   │   ├── OptimizedList/
 │   │   ├── ScreenWrapper/
-│   │   └── Skeleton/
+│   │   ├── Skeleton/
+│   │   ├── WidgetCard/
+│   │   ├── GestureCard/
+│   │   └── AppWebView/
 │   └── toast/          # In-App spring toast provider & hook
 ├── constants/          # Colors, Spacing, Typography, Shadows, AppConfig
-├── hooks/              # useAppStore, useNetworkStatus, useDebounce, useThrottle...
+├── hooks/              # useAppStore, useSwipeGesture, useDoubleTap, useNetworkStatus, useDebounce...
 ├── i18n/               # vi.json, en.json, cấu hình i18next
 ├── navigation/         # React Navigation v7 Native Stack & deep linking
 ├── screens/            # Splash, Home, Details (mỗi screen có styles.ts riêng)
-├── services/           # ApiClient (REST/AI), SQLite (JSI), fileService (File I/O), Storage, AppUpdate
+├── services/           # ApiClient, SQLite, fileService, biometricService, widgetBridgeService, storage
 ├── types/              # Định nghĩa types toàn cục (api.ts, models.ts, index.ts)
-└── utils/              # haptics, share, permissions, schemas (Zod), formatters, validators, helpers
+└── utils/              # id, crypto, image, file, clipboard, browser, haptics, share, permissions, schemas
 ```

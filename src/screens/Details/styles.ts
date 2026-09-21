@@ -97,4 +97,39 @@ export const createDetailsStyles = (colors: {
       color: colors.text,
       marginBottom: Spacing.sm,
     },
+    cryptoBox: {
+      backgroundColor: colors.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: BorderRadius.md,
+      padding: Spacing.md,
+      marginVertical: Spacing.sm,
+    },
+    cryptoActionRow: {
+      flexDirection: 'row',
+      gap: Spacing.sm,
+      marginVertical: Spacing.xs,
+    },
+    codeSnippet: {
+      backgroundColor: colors.background,
+      padding: Spacing.sm,
+      borderRadius: BorderRadius.sm,
+      marginVertical: Spacing.xs,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    gestureResult: {
+      textAlign: 'center',
+      marginTop: Spacing.xs,
+      fontWeight: '600',
+    },
+    widgetContent: {
+      paddingVertical: Spacing.xs,
+    },
+    widgetStatusRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginVertical: Spacing.xs,
+    },
   });

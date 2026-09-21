@@ -9,8 +9,19 @@ import {
   registerSchema,
   permissions,
   haptics,
+  generateId,
+  generateNanoId,
+  generateShortCode,
+  generateTimestampId,
+  cryptoHelper,
+  imageHelper,
+  fileUtils,
+  clipboardHelper,
 } from '@/utils';
 import { fileService } from '@/services/file';
+import { biometricService } from '@/services/biometrics';
+import { widgetBridgeService } from '@/services/widget';
+import { secureStorage } from '@/services/storage';
 
 describe('Utils: Formatters', () => {
   it('should remove Vietnamese tones accurately for search indexing', () => {
@@ -145,3 +156,131 @@ describe('Services: Local File Management (fileService)', () => {
     await fileService.deleteFile('config.json');
   });
 });
+
+describe('Utils: ID Generation', () => {
+  it('should generate valid RFC4122 UUID v4 format', () => {
+    const uuid = generateId();
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    expect(uuidRegex.test(uuid)).toBe(true);
+
+    const prefixed = generateId('user');
+    expect(prefixed.startsWith('user_')).toBe(true);
+  });
+
+  it('should generate NanoId with specified length', () => {
+    const nano = generateNanoId(16);
+    expect(nano.length).toBe(16);
+  });
+
+  it('should generate ShortCode uppercase/digits', () => {
+    const code = generateShortCode(6);
+    expect(code.length).toBe(6);
+    expect(/^[A-Z0-9]+$/.test(code)).toBe(true);
+  });
+
+  it('should generate timestamp-based sortable ID', () => {
+    const tid = generateTimestampId('trx');
+    expect(tid.startsWith('trx_')).toBe(true);
+  });
+});
+
+describe('Utils: Cryptographic & Security (cryptoHelper & secureStorage)', () => {
+  it('should compute deterministic SHA-256 hash', () => {
+    const hash1 = cryptoHelper.hash('hello-world');
+    const hash2 = cryptoHelper.hash('hello-world');
+    const hashOther = cryptoHelper.hash('different');
+
+    expect(hash1).toBe(hash2);
+    expect(hash1.length).toBe(64);
+    expect(hash1).not.toBe(hashOther);
+  });
+
+  it('should symmetrically encrypt and decrypt strings correctly', () => {
+    const secretMessage = 'Secret_API_Key_12345';
+    const key = 'custom_secret_key';
+
+    const encrypted = cryptoHelper.encrypt(secretMessage, key);
+    expect(encrypted.startsWith('ENC:')).toBe(true);
+
+    const decrypted = cryptoHelper.decrypt(encrypted, key);
+    expect(decrypted).toBe(secretMessage);
+
+    // Fail decryption with wrong key
+    const wrongKeyDecrypted = cryptoHelper.decrypt(encrypted, 'wrong_key');
+    expect(wrongKeyDecrypted).toBeNull();
+  });
+
+  it('should save and retrieve encrypted data via secureStorage', async () => {
+    const tokenPayload = { token: 'jwt_abc_xyz', expires: 3600 };
+    await secureStorage.setItem('auth_token', tokenPayload);
+
+    const retrieved = await secureStorage.getItem<{ token: string; expires: number }>('auth_token');
+    expect(retrieved).toEqual(tokenPayload);
+
+    await secureStorage.removeItem('auth_token');
+  });
+});
+
+describe('Utils: Image & File Processing (imageHelper & fileUtils)', () => {
+  it('should format data URI and check base64 validity', () => {
+    const rawBase64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';
+    const uri = imageHelper.formatDataUri(rawBase64, 'image/png');
+    expect(uri.startsWith('data:image/png;base64,')).toBe(true);
+    expect(imageHelper.isBase64Image(uri)).toBe(true);
+    expect(imageHelper.isBase64Image('plain-text')).toBe(false);
+  });
+
+  it('should validate image size constraints', () => {
+    expect(imageHelper.validateImageSize(1024 * 1024 * 2, 5)).toBe(true);
+    expect(imageHelper.validateImageSize(1024 * 1024 * 6, 5)).toBe(false);
+    expect(imageHelper.getImageExtension('avatar.WEBP')).toBe('webp');
+  });
+
+  it('should correctly lookup MIME types and classify files', () => {
+    expect(fileUtils.getMimeType('document.pdf')).toBe('application/pdf');
+    expect(fileUtils.getMimeType('photo.jpg')).toBe('image/jpeg');
+    expect(fileUtils.isImageFile('pic.png')).toBe(true);
+    expect(fileUtils.isDocumentFile('report.docx')).toBe(true);
+
+    const validCheck = fileUtils.checkFileConstraints('test.png', 1024, {
+      maxSizeInMb: 1,
+      allowedExtensions: ['png', 'jpg'],
+    });
+    expect(validCheck.valid).toBe(true);
+
+    const invalidCheck = fileUtils.checkFileConstraints('test.exe', 1024, {
+      allowedExtensions: ['png', 'jpg'],
+    });
+    expect(invalidCheck.valid).toBe(false);
+  });
+});
+
+describe('Utils: In-App Clipboard', () => {
+  it('should set and get clipboard strings', async () => {
+    await clipboardHelper.setString('Copied Text Content');
+    const read = await clipboardHelper.getString();
+    expect(read).toBe('Copied Text Content');
+  });
+});
+
+describe('Services: Biometrics & Widget Bridge', () => {
+  it('should report biometric sensor availability', async () => {
+    const status = await biometricService.isSensorAvailable();
+    expect(typeof status.available).toBe('boolean');
+    expect(typeof status.biometryType).toBe('string');
+  });
+
+  it('should sync and retrieve widget data snapshots', async () => {
+    const synced = await widgetBridgeService.syncWidgetData({
+      activeCount: 42,
+      headline: 'Test Snapshot',
+      status: 'online',
+    });
+    expect(synced.activeCount).toBe(42);
+
+    const retrieved = await widgetBridgeService.getWidgetData();
+    expect(retrieved.activeCount).toBe(42);
+    expect(retrieved.headline).toBe('Test Snapshot');
+  });
+});
+

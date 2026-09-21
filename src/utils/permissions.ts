@@ -75,4 +75,51 @@ export const permissions = {
       return false;
     }
   },
+
+  /**
+   * Xin quyen ghi am / Microphone
+   */
+  async requestMicrophone(): Promise<boolean> {
+    if (Platform.OS !== 'android') return true;
+
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+        {
+          title: 'Quyền Sử Dụng Microphone',
+          message: 'Ứng dụng cần quyền Microphone để thu âm giọng nói hoặc gọi thoại.',
+          buttonPositive: 'Đồng ý',
+          buttonNegative: 'Từ chối',
+        }
+      );
+      return granted === PermissionsAndroid.RESULTS.GRANTED;
+    } catch (err) {
+      console.warn('[permissions] Microphone request error:', err);
+      return false;
+    }
+  },
+
+  /**
+   * Xin quyen vi tri / Location
+   */
+  async requestLocation(): Promise<boolean> {
+    if (Platform.OS !== 'android') return true;
+
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+          title: 'Quyền Truy Cập Vị Trí',
+          message: 'Ứng dụng cần vị trí chính xác để định vị bản đồ và giao hàng.',
+          buttonPositive: 'Đồng ý',
+          buttonNegative: 'Từ chối',
+        }
+      );
+      return granted === PermissionsAndroid.RESULTS.GRANTED;
+    } catch (err) {
+      console.warn('[permissions] Location request error:', err);
+      return false;
+    }
+  },
 };
+
