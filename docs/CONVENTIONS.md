@@ -283,8 +283,15 @@ Toàn bộ phản hồi từ server hoặc AI model phải được định ki�
   * Lưu trữ bền vững vị trí được chọn (`selectedCity`), danh sách thành phố yêu thích (`savedCities`), bộ nhớ đệm dự báo (`weatherData`), và đơn vị nhiệt độ (`tempUnit: 'celsius' | 'fahrenheit'`) qua middleware `persist` của Zustand và `AsyncStorage`.
   * Hỗ trợ tìm kiếm địa điểm toàn cầu với cơ chế Debounce chống spam mạng và danh sách chọn nhanh các thành phố lớn (Hà Nội, TP. Hồ Chí Minh, Đà Nẵng, Đà Lạt, Tokyo, New York...).
 * **Nguyên Tắc Zero Inline Styles Tuyệt Đối Trên Giao Diện Thời Tiết**:
-  * Toàn bộ các thẻ (`CurrentWeatherCard`, `HourlyForecast`, `DailyForecast`, `CitySearchModal`) phải tạo style trong `src/screens/Weather/styles.ts`.
-  * Các kiểu dáng động (màu badge theo trạng thái thời tiết, thanh tỉ lệ nhiệt độ Min/Max theo ngày, màu nền icon) phải được định nghĩa bằng các hàm generator (`getStatusBadgeStyle`, `getMetricIconBoxStyle`, `getDailyTempBarFillStyle`) đặt trong file `styles.ts`.
-
-
-
+  * Toàn bộ các thành phần (`CurrentWeatherCard`, `WeatherMetricsGrid`, `HourlyForecast`, `DailyForecast`, `CitySearchModal`, `WeatherAtmosphereBackground`) phải tạo style trong `src/screens/Weather/styles.ts`.
+  * Các kiểu dáng động (màu badge theo trạng thái thời tiết, thanh tỉ lệ nhiệt độ Min/Max theo ngày, màu nền icon, Animated View fade style) phải được định nghĩa bằng các hàm generator (`getStatusBadgeStyle`, `getStatusBadgeTextStyle`, `getMetricIconBoxStyle`, `getDailyTempBarFillStyle`, `getFadeAnimStyle`) đặt trong file `styles.ts`.
+* **Kiến Trúc Hero Lơ Lửng (Cardless Floating Hero) & Nền Khí Quyển Động (Dynamic SVG Atmosphere)**:
+  * **Loại bỏ hộp card đóng khung thô cứng (No Rigid Card Box)**: Khu vực nhiệt độ hiện tại (`CurrentWeatherCard`) được thiết kế dạng typography lơ lửng với kích thước 80pt (`floatingBigTempText`), đổ bóng chữ mềm (`textShadowColor`) để tối ưu độ tương phản trên mọi sắc thái bầu trời.
+  * **Nền Khí Quyển Động Vector SVG (`WeatherAtmosphereBackground`)**:
+    * Sử dụng SVG nguyên bản phủ toàn màn hình (`StyleSheet.absoluteFillObject`, `pointerEvents="none"`).
+    * Tự động điều chỉnh gradient bầu trời và các chi tiết hoạt họa phù hợp: Nắng rực rỡ với vầng hào quang mặt trời, đêm sao huyền ảo với trăng khuyết và chòm sao đa kích thước, mây tầng mềm mại, dải tia mưa rơi nghiêng tự nhiên, tia chớp sấm sét và tinh thể hoa tuyết.
+    * Đảm bảo `<ScreenWrapper backgroundColor="transparent">` để lớp nền vector hiển thị tràn cạnh không bị che khuất.
+  * **Lưới 4 Chỉ Số Khí Quyển Trong Suốt (2x2 Translucent Frosted Glass Metrics)**:
+    * `WeatherMetricsGrid` hiển thị 4 ô kính mờ bán trong suốt thanh lịch (Độ ẩm, Tốc độ gió, Khả năng mưa, Áp suất khí quyển) thay vì các hàng văn bản đơn điệu.
+  * **Hiệu Ứng Chuyển Cảnh Mượt Mà (Smooth Transitions)**:
+    * Kết hợp `Animated.timing` với `fadeAnim` và `LayoutAnimation.configureNext` khi chuyển đổi địa điểm, đơn vị nhiệt độ (°C/°F) hoặc đổi giao diện Sáng/Tối.

@@ -1,36 +1,37 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   ScrollView,
   TouchableOpacity,
   RefreshControl,
   ActivityIndicator,
+  Animated,
+  LayoutAnimation,
 } from 'react-native';
-import { useTranslation } from 'react-i18next';
 import {
   MapPin,
   Search,
   Sun,
   Moon,
-  Layers,
   Sparkles,
 } from 'lucide-react-native';
 
-import { ScreenWrapper, AppText, AppButton, EmptyState } from '@/components';
+import { ScreenWrapper, AppText, EmptyState } from '@/components';
 import { useThemeMode, useAppStore, useDoubleBackExit } from '@/hooks';
 import { useWeatherStore } from '@/hooks/useWeatherStore';
 import { haptics } from '@/utils';
 import type { WeatherScreenProps } from './types';
-import { createWeatherStyles } from './styles';
+import { createWeatherStyles, getFadeAnimStyle } from './styles';
 import {
+  WeatherAtmosphereBackground,
   CurrentWeatherCard,
   HourlyForecast,
   DailyForecast,
+  WeatherMetricsGrid,
   CitySearchModal,
 } from './components';
 
-export const WeatherScreen: React.FC<WeatherScreenProps> = ({ navigation }) => {
-  const { t } = useTranslation();
+export const WeatherScreen: React.FC<WeatherScreenProps> = () => {
   const { theme: themeColors, isDark, toggleTheme } = useThemeMode();
   const { themeStyle, toggleThemeStyle } = useAppStore();
   const styles = createWeatherStyles(themeColors, isDark);
@@ -52,6 +53,18 @@ export const WeatherScreen: React.FC<WeatherScreenProps> = ({ navigation }) => {
   } = useWeatherStore();
 
   const [searchModalVisible, setSearchModalVisible] = useState(false);
+  const fadeAnim = useRef(new Animated.Value(1)).current;
+
+  // Kích hoạt hiệu ứng xuất hiện mượt mà khi đổi thành phố hoặc nạp dữ liệu
+  useEffect(() => {
+    if (weatherData) {
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 350,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [selectedCity, weatherData, fadeAnim]);
 
   // Tự động tải thời tiết lần đầu khi mở app
   useEffect(() => {
@@ -60,26 +73,39 @@ export const WeatherScreen: React.FC<WeatherScreenProps> = ({ navigation }) => {
 
   const handleToggleTempUnit = () => {
     haptics.light();
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     toggleTempUnit();
   };
 
   const handleToggleTheme = () => {
     haptics.light();
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     toggleTheme();
   };
 
   const handleToggleThemeStyle = () => {
     haptics.light();
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     toggleThemeStyle();
   };
 
-  const handleNavigateToDeveloperShowcase = () => {
+  const handleSelectCity = (city: typeof selectedCity) => {
     haptics.light();
-    navigation.navigate('Home');
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setSelectedCity(city);
   };
 
+  const animatedContentStyle = [styles.animatedContainer, getFadeAnimStyle(fadeAnim)];
+
   return (
-    <ScreenWrapper>
+    <ScreenWrapper backgroundColor="transparent">
+      {/* 0. Hình Nền Đồ Họa Khí Quyển Động Vector SVG */}
+      <WeatherAtmosphereBackground
+        weatherCode={weatherData ? weatherData.current.weatherCode : 0}
+        isDay={weatherData ? weatherData.current.isDay : true}
+        isDarkTheme={isDark}
+      />
+
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.scrollContent}
@@ -93,7 +119,7 @@ export const WeatherScreen: React.FC<WeatherScreenProps> = ({ navigation }) => {
           />
         }
       >
-        {/* 1. Thanh Tiêu Đề Trên Cùng (Top Control Bar) */}
+        {/* 1. Thanh Tiêu Đề Trên Cùng Mờ Kính (Translucent Glass Top Bar) */}
         <View style={styles.topBar}>
           {/* Nút bấm vị trí hiện tại -> Mở Modal Tìm Kiếm */}
           <TouchableOpacity
@@ -102,16 +128,18 @@ export const WeatherScreen: React.FC<WeatherScreenProps> = ({ navigation }) => {
             activeOpacity={0.7}
           >
             <View style={styles.locationPinIconWrap}>
-              <MapPin size={20} color={themeColors.primary} />
+              <MapPin size={16} color={isDark ? '#38BDF8' : themeColors.primary} />
             </View>
             <View style={styles.locationTextCol}>
               <View style={styles.locationCityRow}>
                 <AppText style={styles.locationCityName}>{selectedCity.name}</AppText>
-                <Search size={14} color={themeColors.textSecondary} />
               </View>
               <AppText style={styles.locationCountryName}>
                 {[selectedCity.admin1, selectedCity.country].filter(Boolean).join(', ')}
               </AppText>
+            </View>
+            <View style={styles.locationSearchBadge}>
+              <Search size={13} color="#FFFFFF" />
             </View>
           </TouchableOpacity>
 
@@ -152,55 +180,19 @@ export const WeatherScreen: React.FC<WeatherScreenProps> = ({ navigation }) => {
                 <Sun size={18} color="#F59E0B" />
               )}
             </TouchableOpacity>
-
-            {/* Mở màn hình Base Developer Showcase */}
-            <TouchableOpacity
-              style={styles.actionIconBtn}
-              onPress={handleNavigateToDeveloperShowcase}
-              activeOpacity={0.7}
-            >
-              <Layers size={18} color={themeColors.text} />
-            </TouchableOpacity>
           </View>
         </View>
 
-        {/* 2. Dãy Nút Chọn Nhanh Thành Phố Phổ Biến (Quick City Pills) */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.quickCityScroll}
-          contentContainerStyle={styles.quickCityContent}
-        >
-          {savedCities.map((city) => {
-            const isActive = city.id === selectedCity.id;
-            const pillStyle = [styles.cityPill, isActive && styles.cityPillActive];
-            const pillTextStyle = [styles.cityPillText, isActive && styles.cityPillTextActive];
-
-            return (
-              <TouchableOpacity
-                key={`quick-${city.id}`}
-                style={pillStyle}
-                onPress={() => {
-                  haptics.light();
-                  setSelectedCity(city);
-                }}
-              >
-                <AppText style={pillTextStyle}>{city.name}</AppText>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
-
-        {/* 3. Trạng thái Loading ban đầu khi chưa có cache */}
+        {/* 2. Trạng thái Loading ban đầu khi chưa có cache */}
         {isLoading && !weatherData && (
           <View style={styles.stateContainer}>
             <ActivityIndicator size="large" color={themeColors.primary} />
-            <AppText style={styles.stateTitle}>Đang kết nối vệ tinh thời tiết...</AppText>
+            <AppText style={styles.stateTitle}>Đang nạp dữ liệu khí quyển...</AppText>
             <AppText style={styles.stateSubtitle}>Dữ liệu từ Open-Meteo Public API</AppText>
           </View>
         )}
 
-        {/* 4. Trạng thái Lỗi khi không tải được dữ liệu */}
+        {/* 3. Trạng thái Lỗi khi không tải được dữ liệu */}
         {!isLoading && error && !weatherData && (
           <View style={styles.stateContainer}>
             <EmptyState
@@ -209,31 +201,24 @@ export const WeatherScreen: React.FC<WeatherScreenProps> = ({ navigation }) => {
               actionText="Thử Lại Ngay"
               onActionPress={() => fetchWeather(false)}
             />
-
           </View>
         )}
 
-        {/* 5. Khối Hiển Thị Dữ Liệu Thời Tiết Chính (Khi đã có data) */}
+        {/* 4. Khối Hiển Thị Dữ Liệu Thời Tiết Mờ Kính & Chuyển Động Mượt Mà */}
         {weatherData && (
-          <>
-            {/* Thẻ Thời Tiết Hiện Tại (Current Weather Hero Card) */}
+          <Animated.View style={animatedContentStyle}>
+            {/* 4.1. Hero Thời Tiết Hiện Tại Không Khung Viền (Cardless Floating Hero) */}
             <CurrentWeatherCard weather={weatherData} tempUnit={tempUnit} />
 
-            {/* Dự Báo Theo Giờ (Hourly Forecast 24h) */}
+            {/* 4.2. Lưới 4 Chỉ Số Khí Quyển Kính Mờ 2x2 Đưa Lên Trên (Weather Metrics Grid) */}
+            <WeatherMetricsGrid current={weatherData.current} daily={weatherData.daily} />
+
+            {/* 4.3. Dự Báo Theo Giờ 24h Viên Nang Kính Mờ (Frosted Glass Capsule) */}
             <HourlyForecast hourly={weatherData.hourly} tempUnit={tempUnit} />
 
-            {/* Dự Báo 7 Ngày Tới (Daily Forecast 7-Day) */}
+            {/* 4.4. Dự Báo 7 Ngày Tới Phiến Kính Mờ (Frosted Glass Panel) */}
             <DailyForecast daily={weatherData.daily} tempUnit={tempUnit} />
-
-            {/* Nút điều hướng khám phá đồ án / module nền tảng */}
-            <AppButton
-              title={t('weather.developerShowcase')}
-              variant="tonal"
-              size="md"
-              leftIcon={<Layers size={18} color={themeColors.text} />}
-              onPress={handleNavigateToDeveloperShowcase}
-            />
-          </>
+          </Animated.View>
         )}
       </ScrollView>
 
@@ -243,7 +228,7 @@ export const WeatherScreen: React.FC<WeatherScreenProps> = ({ navigation }) => {
         onClose={() => setSearchModalVisible(false)}
         savedCities={savedCities}
         onSelectCity={(city) => {
-          setSelectedCity(city);
+          handleSelectCity(city);
         }}
       />
     </ScreenWrapper>

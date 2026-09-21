@@ -22,7 +22,7 @@ export const DailyForecast: React.FC<DailyForecastProps> = ({ daily, tempUnit })
     <View style={styles.sectionCard}>
       {/* Tiêu đề mục */}
       <View style={styles.sectionHeaderRow}>
-        <Calendar size={18} color={themeColors.textSecondary} />
+        <Calendar size={15} color="rgba(255, 255, 255, 0.85)" />
         <AppText style={styles.sectionTitle}>{t('weather.dailyForecast')}</AppText>
       </View>
 

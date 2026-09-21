@@ -17,7 +17,7 @@ export const AppNavigator: React.FC = () => {
 
   return (
     <Stack.Navigator
-      initialRouteName="Splash"
+      initialRouteName="Weather"
       screenOptions={{
         headerStyle: {
           backgroundColor: themeColors.card,

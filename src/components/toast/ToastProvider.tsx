@@ -25,7 +25,12 @@ interface ToastContextType {
   hide: () => void;
 }
 
-const ToastContext = createContext<ToastContextType | undefined>(undefined);
+const defaultToastContext: ToastContextType = {
+  show: () => {},
+  hide: () => {},
+};
+
+const ToastContext = createContext<ToastContextType>(defaultToastContext);
 
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { theme: themeColors } = useThemeMode();
@@ -143,10 +148,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
 export const useToast = (): ToastContextType => {
   const context = useContext(ToastContext);
-  if (!context) {
-    throw new Error('useToast must be used within a ToastProvider');
-  }
-  return context;
+  return context || defaultToastContext;
 };
 
 const styles = StyleSheet.create({

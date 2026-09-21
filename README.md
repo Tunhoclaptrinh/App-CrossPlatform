@@ -92,12 +92,12 @@
   * Tương thích 100% với Node.js, Python, Java Spring Boot và Go. Hướng dẫn kèm mã nguồn backend hoàn chỉnh tại `docs/SERVER_ENCRYPTION_GUIDE.md`.
 * **Quản Trị Phiên Bản & Cập Nhật:** `appUpdateService` so sánh phiên bản và nhắc nhở người dùng cập nhật qua Store.
 * **Ứng Dụng Di Động Dự Báo Thời Tiết Hoàn Chỉnh (Open-Meteo Weather Forecast App):**
-  * **Thời tiết & Địa điểm hiện tại:** Hiển thị nhiệt độ tức thì, tình trạng bầu trời (WMO codes), nhiệt độ cảm nhận (Feels like), biên độ nhiệt độ ngày (Min/Max) cùng 4 chỉ số chi tiết (Độ ẩm, Tốc độ gió, Lượng mưa, Áp suất khí quyển).
-  * **Dự báo theo giờ (24h Hourly Forecast):** Thanh trượt ngang hiển thị thời gian, icon SVG thời tiết động, xác suất mưa (%) và nhiệt độ chi tiết từng giờ.
-  * **Dự báo theo ngày (7-Day Daily Forecast):** Danh sách 7 ngày tới với ngày trong tuần, icon thời tiết, xác suất mưa và thanh hiển thị dải nhiệt độ Apple-style Min-Max.
-  * **Tìm kiếm & Caching địa điểm:** Tích hợp Open-Meteo Geocoding API tìm kiếm thành phố toàn cầu với cơ chế Debounce, hỗ trợ các thành phố lớn (Hà Nội, TP.HCM, Đà Lạt, Đà Nẵng...) và ghi nhớ vị trí chọn qua AsyncStorage.
+  * **Cardless Floating Hero & Nền Vector Động SVG (`WeatherAtmosphereBackground`):** Đồ họa vector toàn màn hình phản chiếu sắc thái bầu trời thực tế (nắng, trăng sao đêm, mây tầng, tia mưa rơi, bão sét) cùng typography nhiệt độ khổng lồ 80pt lơ lửng, không bị đóng hộp cứng nhắc.
+  * **Chỉ Số Khí Quyển Đưa Lên Đầu (`WeatherMetricsGrid`):** Lưới 2x2 kính mờ bán trong suốt thanh thoát (Độ ẩm, Tốc độ gió, Khả năng mưa, Áp suất khí quyển) bố trí ngay dưới Hero giúp theo dõi tức thì.
+  * **Dự Báo Giờ & Ngày Kính Mờ Siêu Thoát (`HourlyForecast` & `DailyForecast`):** Dải trượt 24h không khung hộp con (loại bỏ hoàn toàn card-in-a-card) và bảng dự báo 7 ngày thanh mảnh kèm thanh dải nhiệt độ Apple-style.
+  * **Nút Vị Trí Mờ Kính & Tìm Kiếm Toàn Cầu (`CitySearchModal`):** Thanh tiêu đề gọn gàng với nút vị trí tích hợp kính lúp, mở Bottom Sheet tìm kiếm thành phố thế giới qua Open-Meteo Geocoding và danh sách chọn nhanh các đô thị lớn (Hà Nội, TP.HCM, Đà Lạt, Đà Nẵng, Tokyo, New York...).
   * **Đơn vị nhiệt độ linh hoạt:** Chuyển đổi mượt mà giữa độ C (°C) và độ F (°F).
-  * **Chuẩn Agency UI/UX:** Hỗ trợ đầy đủ Light/Dark Mode, Apple Liquid Glass UI, Pull-to-refresh cập nhật dữ liệu, và 100% tuân thủ quy chuẩn Zero Inline Styles.
+  * **Chuẩn Agency UI/UX:** Đồng bộ 4 nút thao tác tròn 36px trên top bar, hỗ trợ Light/Dark Mode, Apple Liquid Glass UI, Pull-to-refresh, và 100% Zero Inline Styles.
 
 ---
 

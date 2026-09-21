@@ -22,7 +22,7 @@ export const HourlyForecast: React.FC<HourlyForecastProps> = ({ hourly, tempUnit
     <View style={styles.sectionCard}>
       {/* Tiêu đề mục */}
       <View style={styles.sectionHeaderRow}>
-        <Clock size={18} color={themeColors.textSecondary} />
+        <Clock size={15} color="rgba(255, 255, 255, 0.85)" />
         <AppText style={styles.sectionTitle}>{t('weather.hourlyForecast')}</AppText>
       </View>
 
@@ -37,8 +37,11 @@ export const HourlyForecast: React.FC<HourlyForecastProps> = ({ hourly, tempUnit
           const tempStr = weatherService.formatTemperature(item.temperature, tempUnit);
           const showRain = item.precipitationProbability > 0;
 
+          const isCurrentHour = index === 0;
+          const hourlyItemStyle = [styles.hourlyItem, isCurrentHour && styles.hourlyItemActive];
+
           return (
-            <View key={`hourly-${item.time}-${index}`} style={styles.hourlyItem}>
+            <View key={`hourly-${item.time}-${index}`} style={hourlyItemStyle}>
               <AppText style={styles.hourlyTimeText}>{item.hourLabel}</AppText>
 
               <View style={styles.hourlyIconBox}>

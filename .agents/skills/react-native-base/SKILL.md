@@ -104,7 +104,7 @@ This skill documents the conventions, directory structure, state protocols, and 
 - `src/i18n/`: Multilingual system (vi, en) via `i18next` with structured namespaces (`common`, `validation`, `network`, `home`, `details`, `dialogs`, `splash`, `crypto`, `gestures`, `biometrics`, `widget`).
 - `src/navigation/`: React Navigation v7 Native Stack (`AppNavigator`, `routes.ts`, `types.ts`, `linking.ts`).
 - `src/screens/`: Feature screens (`Splash/`, `Weather/`, `Home/`, `Details/`).
-  - `Weather/`: Complete Open-Meteo forecast app (`WeatherScreen.tsx`, `styles.ts`, `components/WeatherIcon.tsx`, `components/CurrentWeatherCard.tsx`, `components/HourlyForecast.tsx`, `components/DailyForecast.tsx`, `components/CitySearchModal.tsx`). Each screen strictly conforms to zero inline styles.
+  - `Weather/`: Complete Open-Meteo forecast app (`WeatherScreen.tsx`, `styles.ts`, `components/WeatherAtmosphereBackground.tsx`, `components/WeatherIcon.tsx`, `components/CurrentWeatherCard.tsx`, `components/WeatherMetricsGrid.tsx`, `components/HourlyForecast.tsx`, `components/DailyForecast.tsx`, `components/CitySearchModal.tsx`). Features dynamic vector atmospheric sky, cardless floating hero, translucent frosted glass metrics grid, and strict zero inline styles.
 
 ## 2. Mandatory Maintenance & Refactoring Rules
 
@@ -374,6 +374,30 @@ const wmoInfo = weatherService.getWmoWeatherInfo(weatherData.current.weatherCode
 console.log(wmoInfo.label, wmoInfo.accentColor); // "Trời Nắng", "#F59E0B"
 ```
 
+### 3.17. Cardless Floating Hero & Dynamic Atmospheric SVG Weather Architecture
+```typescript
+import { WeatherAtmosphereBackground } from '@/screens/Weather/components/WeatherAtmosphereBackground';
+import { CurrentWeatherCard } from '@/screens/Weather/components/CurrentWeatherCard';
+import { WeatherMetricsGrid } from '@/screens/Weather/components/WeatherMetricsGrid';
 
+// 1. Dynamic atmospheric sky vector background based on day/night and WMO weather codes
+<WeatherAtmosphereBackground
+  weatherCode={weatherData.current.weatherCode}
+  isDay={weatherData.current.isDay}
+/>
 
+// 2. Cardless floating hero: no rigid box borders, 80pt floating temperature, soft text shadow
+<CurrentWeatherCard
+  current={weatherData.current}
+  tempUnit={tempUnit}
+  todayMax={weatherData.daily.temperatureMax[0]}
+  todayMin={weatherData.daily.temperatureMin[0]}
+/>
 
+// 3. 2x2 Translucent frosted glass indicators grid (Humidity, Wind, Rain probability, Pressure)
+<WeatherMetricsGrid
+  current={weatherData.current}
+  tempUnit={tempUnit}
+  rainProbability={weatherData.daily.precipitationProbabilityMax[0]}
+/>
+```
