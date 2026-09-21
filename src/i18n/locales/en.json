@@ -1,16 +1,99 @@
 {
   "common": {
-    "welcome": "Welcome to Base App",
+    "welcome": "Welcome to Universal Base App",
     "save": "Save",
     "cancel": "Cancel",
+    "confirm": "Confirm",
     "delete": "Delete",
+    "reset": "Reset",
+    "retry": "Retry",
+    "close": "Close",
+    "back": "Back",
     "success": "Success",
     "error": "Error",
-    "language": "Language"
+    "warning": "Warning",
+    "info": "Info",
+    "loading": "Loading data...",
+    "empty": "No data available",
+    "search": "Search...",
+    "language": "Language",
+    "theme": "Theme",
+    "dark": "Dark",
+    "light": "Light"
+  },
+  "validation": {
+    "required": "This field is required",
+    "emailRequired": "Email is required",
+    "emailInvalid": "Invalid email format",
+    "passwordMin": "Password must have at least {{min}} characters",
+    "passwordRequired": "Password is required",
+    "phoneInvalid": "Invalid phone number",
+    "confirmPasswordMismatch": "Passwords do not match",
+    "confirmPasswordRequired": "Please confirm your password",
+    "nameMin": "Name must have at least {{min}} characters"
+  },
+  "network": {
+    "offline": "No Internet connection. Running in offline mode.",
+    "retry": "Retry"
   },
   "home": {
+    "badge": "UNIVERSAL BASE APP",
     "title": "React Native Starter",
-    "subtitle": "Universal production-ready template",
-    "modulesTitle": "Ready-to-use Core Modules"
+    "subtitle": "Complete foundation for any application (Local, AI, Server)",
+    "counterLabel": "Global State Counter",
+    "incrementBtn": "Increment Global State (+1)",
+    "searchPlaceholder": "Search modules, utilities...",
+    "modulesTitle": "Ready-To-Use Platform Modules",
+    "noResultsTitle": "No results found",
+    "noResultsDesc": "No modules match your keyword",
+    "clearSearch": "Clear search"
+  },
+  "details": {
+    "screenTitle": "Module Details",
+    "playgroundBadge": "MODULE PLAYGROUND",
+    "screenWrapperInfo": "ScreenWrapper: Automatic SafeArea & Keyboard handling",
+    "storageInfo": "AsyncStorage & SQLite: Persistent local data storage",
+    "storageDemo": "Local Storage Playground (e.g. API Key / Notes):",
+    "storagePlaceholder": "Enter any string to test...",
+    "saveToStorage": "Save to Local Storage",
+    "savedInDevice": "Stored in device",
+    "saveSuccess": "Saved to AsyncStorage successfully!",
+    "saveWarning": "Please enter a value before saving!",
+    "testToast": "Trigger Toast Alert",
+    "toastMessage": "This is a mobile-standard global Toast alert!",
+    "testCamera": "Check Camera Permission",
+    "cameraGranted": "Camera permission granted!",
+    "cameraDenied": "Camera permission denied!",
+    "openConfirmDialog": "Open Confirmation Dialog",
+    "checkUpdate": "Check for App Updates",
+    "resetCounter": "Reset counter",
+    "backHome": "Back to Home",
+    "rememberLogin": "Remember login session (AppCheckbox)",
+    "pushNotification": "Receive system push notifications (AppSwitch)",
+    "pushNotificationSub": "Send important account updates",
+    "hapticsTitle": "Haptic & Vibration Sensors",
+    "hapticsLight": "Light Haptic",
+    "hapticsSuccess": "Success Haptic",
+    "hapticsError": "Error Haptic",
+    "fileTitle": "Local File Storage & Export (File I/O)",
+    "fileLabel": "File content (demo_note.txt):",
+    "filePlaceholder": "Enter text content to save as file...",
+    "saveFile": "Save Local File",
+    "shareFile": "Share / Export File",
+    "fileSaved": "File saved successfully!",
+    "fileEmpty": "Please enter file content before saving!",
+    "skeletonDemo": "Skeleton Shimmer Loading Demo",
+    "emptyStateDemo": "EmptyState Component Demo",
+    "emptyDescription": "Your notification inbox is currently empty.",
+    "refreshed": "Data refreshed successfully!"
+  },
+  "dialogs": {
+    "confirmResetTitle": "Reset counter confirmation?",
+    "confirmResetMessage": "This action will reset the Zustand global counter to 0. Are you sure you want to proceed?",
+    "reset": "Reset"
+  },
+  "splash": {
+    "subtitle": "Universal Production Template",
+    "initializing": "Initializing application..."
   }
 }

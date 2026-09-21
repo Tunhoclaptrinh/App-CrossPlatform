@@ -69,6 +69,20 @@ export const createDetailsStyles = (colors: {
       marginVertical: Spacing.md,
       gap: Spacing.sm,
     },
+    hapticRow: {
+      flexDirection: 'row',
+      gap: Spacing.sm,
+      marginTop: Spacing.xs,
+      marginBottom: Spacing.md,
+    },
+    hapticBtn: {
+      flex: 1,
+    },
+    fileBtnRow: {
+      flexDirection: 'row',
+      gap: Spacing.sm,
+      marginTop: Spacing.xs,
+    },
     savedKeyText: {
       marginBottom: Spacing.sm,
     },

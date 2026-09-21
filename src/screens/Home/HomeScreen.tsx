@@ -42,35 +42,35 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     {
       id: 'paper',
       title: 'React Native Paper',
-      desc: 'UI Kit Material Design 3 chuẩn Accessibility & Store',
+      desc: 'Material Design 3 UI Kit, Accessibility & Theme',
       icon: Palette,
       color: '#2563EB',
     },
     {
       id: 'nav',
       title: 'React Navigation v7',
-      desc: 'Native Stack Navigator 60-120fps mượt mà',
+      desc: 'Native Stack Navigator, 60-120fps & Deep Linking',
       icon: Compass,
       color: '#10B981',
     },
     {
       id: 'sqlite',
       title: 'SQLite Database',
-      desc: '@op-engineering/op-sqlite: Cực nhanh qua JSI New Architecture',
+      desc: '@op-engineering/op-sqlite: C++ JSI New Architecture',
       icon: Server,
       color: '#0284C7',
     },
     {
       id: 'i18n',
-      title: 'Đa Ngôn Ngữ (i18n)',
-      desc: 'i18next: Chuyển đổi linh hoạt Tiếng Việt / Tiếng Anh',
+      title: t('home.modulesTitle', 'Đa Ngôn Ngữ (i18n)'),
+      desc: 'i18next: Tiếng Việt & English dynamic runtime switching',
       icon: Languages,
       color: '#D97706',
     },
     {
       id: 'store',
       title: 'Zustand & AsyncStorage',
-      desc: 'Quản lý state toàn cục & lưu trữ bền vững',
+      desc: 'Unified state management & persistent rehydration',
       icon: Database,
       color: '#8B5CF6',
     },
@@ -102,7 +102,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           <View style={styles.badge}>
             <ShieldCheck size={16} color={themeColors.primary} />
             <AppText variant="caption" style={styles.badgeText}>
-              UNIVERSAL BASE APP
+              {t('home.badge', 'UNIVERSAL BASE APP')}
             </AppText>
           </View>
 
@@ -113,7 +113,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
               onPress={toggleTheme}
               style={styles.langChip}
             >
-              {isDark ? 'Tối' : 'Sáng'}
+              {isDark ? t('common.dark', 'Tối') : t('common.light', 'Sáng')}
             </Chip>
 
             <Chip
@@ -128,20 +128,20 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         </View>
 
         <AppText variant="header" style={styles.title}>
-          {t('title', 'React Native Starter')}
+          {t('home.title', 'React Native Starter')}
         </AppText>
 
         <AppText variant="body" style={styles.subtitle}>
-          {t('subtitle', 'Bộ khung hoàn chỉnh cho mọi loại ứng dụng (Local, AI, Server)')}
+          {t('home.subtitle', 'Bộ khung hoàn chỉnh cho mọi loại ứng dụng (Local, AI, Server)')}
         </AppText>
       </View>
 
       <View style={styles.storeBox}>
         <AppText variant="subtitle">
-          Global State Counter: <AppText variant="title" color={themeColors.primary}>{counter}</AppText>
+          {t('home.counterLabel', 'Global State Counter')}: <AppText variant="title" color={themeColors.primary}>{counter}</AppText>
         </AppText>
         <Button mode="contained-tonal" onPress={increment}>
-          Tăng biến toàn cục (+1)
+          {t('home.incrementBtn', 'Tăng biến toàn cục (+1)')}
         </Button>
       </View>
 
@@ -149,20 +149,20 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         <AppSearchBar
           value={searchQuery}
           onChangeText={setSearchQuery}
-          placeholder="Tìm kiếm module, tiện ích..."
+          placeholder={t('home.searchPlaceholder', 'Tìm kiếm module, tiện ích...')}
           onClear={() => setSearchQuery('')}
         />
       </View>
 
       <AppText variant="title" style={styles.sectionTitle}>
-        {t('modulesTitle', 'Các Module Nền Tảng Đã Sẵn Sàng')} ({filteredModules.length})
+        {t('home.modulesTitle', 'Các Module Nền Tảng Đã Sẵn Sàng')} ({filteredModules.length})
       </AppText>
 
       {filteredModules.length === 0 ? (
         <EmptyState
-          title="Không tìm thấy kết quả"
-          description={`Không có module nào khớp với từ khóa "${searchQuery}"`}
-          actionText="Xóa tìm kiếm"
+          title={t('home.noResultsTitle', 'Không tìm thấy kết quả')}
+          description={`${t('home.noResultsDesc', 'Không có module nào khớp với từ khóa')} "${searchQuery}"`}
+          actionText={t('home.clearSearch', 'Xóa tìm kiếm')}
           onActionPress={() => setSearchQuery('')}
         />
       ) : (

@@ -39,6 +39,7 @@ This skill documents the conventions, directory structure, state protocols, and 
   - `api/`: `apiClient.ts` for universal REST APIs & AI endpoints, with strict types defined in `types.ts`.
   - `storage/`: `appStorage.ts` for type-safe AsyncStorage persistence.
   - `database/`: `sqlite.ts` for ultra-fast C++ JSI relational database via `@op-engineering/op-sqlite`.
+  - `file/`: `fileService.ts` for local document management (read, write, list, delete, JSON storage, and export via Native Share Sheet).
   - `update/`: `appUpdate.ts` for version tracking and update prompting.
 - `src/types/`:
   - `api.ts`: Re-export API request & response types (`ApiResponse`, `ApiError`, `PaginatedResponse`, `AiChatRequest`, etc.).
@@ -68,12 +69,14 @@ This skill documents the conventions, directory structure, state protocols, and 
   - In-App Toast:
     - `useToast`: Trigger in-app toast alerts from any component.
 - `src/utils/`:
+  - `haptics.ts`: Hardware tactile vibration feedback (`light`, `medium`, `heavy`, `success`, `error`, `cancel`).
+  - `share.ts`: Native OS Share Sheet helper (`shareText`, `shareUrl`).
   - `permissions.ts`: Mobile runtime permissions helper (Camera, Photos, Notifications).
   - `helpers.ts`: Currency, date formatters.
   - `formatters.ts`: `removeVietnameseTones` (accent stripper for search), `timeAgo` (Vietnamese relative time), `truncate`, `formatFileSize`.
   - `validators.ts`: Regex-based fast validation (email, VN phone, password, url, numbers).
-  - `schemas.ts`: Zod schemas (`loginSchema`, `registerSchema`, `searchSchema`) and `validateWithZod` UI error helper.
-- `src/i18n/`: Multilingual system (vi, en) via `i18next`.
+  - `schemas.ts`: Bilingual Zod schemas (`loginSchema`, `registerSchema`, `searchSchema`) and `validateWithZod(schema, data, t?)` UI error helper.
+- `src/i18n/`: Multilingual system (vi, en) via `i18next` with structured namespaces (`common`, `validation`, `network`, `home`, `details`, `dialogs`, `splash`).
 - `src/navigation/`: React Navigation v7 Native Stack (`AppNavigator`, `routes.ts`, `types.ts`, `linking.ts`).
 - `src/screens/`: Feature screens (`Splash/`, `Home/`, `Details/`). Each screen has `Screen.tsx`, `styles.ts`, `index.ts`.
 
@@ -101,12 +104,16 @@ This skill documents the conventions, directory structure, state protocols, and 
 
 ## 3. How to Use Common Features
 
-### 3.1. Form Validation with Zod
+### 3.1. Form Validation with Zod & Bilingual i18n
 ```typescript
 import { validateWithZod, loginSchema } from '@/utils';
+import { useTranslation } from 'react-i18next';
+
+const { t } = useTranslation();
 
 const handleLogin = () => {
-  const result = validateWithZod(loginSchema, { email, password });
+  // Pass t translator to automatically translate error messages based on active language
+  const result = validateWithZod(loginSchema, { email, password }, t);
   if (!result.success) {
     setFieldErrors(result.errors);
     return;
@@ -154,3 +161,30 @@ import { OptimizedList } from '@/components';
   onRefresh={fetchLatestData}
 />
 ```
+
+### 3.5. Device Vibration & Haptic Feedback
+```typescript
+import { haptics } from '@/utils';
+
+// Trigger on button clicks, form toggles, or action completions
+haptics.light();   // subtle tap
+haptics.success(); // double light buzz for success
+haptics.error();   // heavy buzz for validation failure
+```
+
+### 3.6. Local File I/O & Native Sharing
+```typescript
+import { fileService } from '@/services/file';
+
+// Save and read files in SQLite JSI storage
+await fileService.saveFile('report.txt', 'Content...');
+const content = await fileService.readFile('report.txt');
+
+// Save and read typed JSON
+await fileService.saveJson('config.json', { theme: 'dark', version: 1 });
+const config = await fileService.readJson<{ theme: string }>('config.json');
+
+// Export or share file externally via OS Share Sheet
+await fileService.exportFile('report.txt');
+```
+

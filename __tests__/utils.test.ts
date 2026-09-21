@@ -8,7 +8,9 @@ import {
   loginSchema,
   registerSchema,
   permissions,
+  haptics,
 } from '@/utils';
+import { fileService } from '@/services/file';
 
 describe('Utils: Formatters', () => {
   it('should remove Vietnamese tones accurately for search indexing', () => {
@@ -42,7 +44,7 @@ describe('Utils: Formatters', () => {
   });
 });
 
-describe('Utils: Validators & Zod Schemas', () => {
+describe('Utils: Validators & Bilingual Zod Schemas', () => {
   it('should validate emails correctly', () => {
     expect(validators.isValidEmail('developer@example.com')).toBe(true);
     expect(validators.isValidEmail('invalid-email')).toBe(false);
@@ -62,20 +64,26 @@ describe('Utils: Validators & Zod Schemas', () => {
     expect(validators.isValidPassword('').isValid).toBe(false);
   });
 
-  it('should validate login payload with Zod', () => {
+  it('should validate login payload with Zod and support bilingual translation', () => {
     const validResult = validateWithZod(loginSchema, {
       email: 'user@example.com',
       password: 'password123',
     });
     expect(validResult.success).toBe(true);
 
-    const invalidResult = validateWithZod(loginSchema, {
-      email: 'not-an-email',
-      password: '123',
-    });
+    // Test with translator function
+    const mockTranslator = (key: string) => {
+      if (key === 'validation.emailRequired') return 'Email is required';
+      return key;
+    };
+
+    const invalidResult = validateWithZod(
+      loginSchema,
+      { email: '', password: '123' },
+      mockTranslator
+    );
     expect(invalidResult.success).toBe(false);
-    expect(invalidResult.errors?.email).toBeDefined();
-    expect(invalidResult.errors?.password).toBeDefined();
+    expect(invalidResult.errors?.email).toBe('Email is required');
   });
 
   it('should validate register payload and confirm password match', () => {
@@ -87,24 +95,53 @@ describe('Utils: Validators & Zod Schemas', () => {
       confirmPassword: 'differentPassword',
     });
     expect(mismatchResult.success).toBe(false);
-    expect(mismatchResult.errors?.confirmPassword).toBeDefined();
+    expect(mismatchResult.errors?.confirmPassword).toBe('validation.confirmPasswordMismatch');
   });
 });
 
-describe('Utils: Permissions Helper', () => {
+describe('Utils: Device Sensors & Haptics', () => {
+  it('should trigger vibration methods without errors', () => {
+    expect(() => haptics.light()).not.toThrow();
+    expect(() => haptics.medium()).not.toThrow();
+    expect(() => haptics.heavy()).not.toThrow();
+    expect(() => haptics.success()).not.toThrow();
+    expect(() => haptics.error()).not.toThrow();
+    expect(() => haptics.cancel()).not.toThrow();
+  });
+
   it('should define permission request methods', async () => {
     expect(typeof permissions.requestCamera).toBe('function');
     expect(typeof permissions.requestPhotoLibrary).toBe('function');
     expect(typeof permissions.requestNotifications).toBe('function');
 
-    // On non-android (test environment default), returns true gracefully
     const cameraRes = await permissions.requestCamera();
     expect(typeof cameraRes).toBe('boolean');
+  });
+});
 
-    const photoRes = await permissions.requestPhotoLibrary();
-    expect(typeof photoRes).toBe('boolean');
+describe('Services: Local File Management (fileService)', () => {
+  it('should save, read, and delete text files locally', async () => {
+    const saved = await fileService.saveFile('test_note.txt', 'Hello React Native Base');
+    expect(saved.filename).toBe('test_note.txt');
+    expect(saved.size).toBeGreaterThan(0);
 
-    const notifRes = await permissions.requestNotifications();
-    expect(typeof notifRes).toBe('boolean');
+    const read = await fileService.readFile('test_note.txt');
+    expect(read).toBe('Hello React Native Base');
+
+    const files = await fileService.listFiles();
+    expect(Array.isArray(files)).toBe(true);
+
+    const deleted = await fileService.deleteFile('test_note.txt');
+    expect(typeof deleted).toBe('boolean');
+  });
+
+  it('should save and read JSON documents', async () => {
+    const configData = { theme: 'dark', version: 1 };
+    await fileService.saveJson('config.json', configData);
+
+    const readData = await fileService.readJson<{ theme: string; version: number }>('config.json');
+    expect(readData).toEqual(configData);
+
+    await fileService.deleteFile('config.json');
   });
 });

@@ -1,16 +1,99 @@
 {
   "common": {
-    "welcome": "Chào mừng đến với Base App",
+    "welcome": "Chào mừng đến với Universal Base App",
     "save": "Lưu",
     "cancel": "Hủy",
+    "confirm": "Xác nhận",
     "delete": "Xóa",
+    "reset": "Đặt lại",
+    "retry": "Thử lại",
+    "close": "Đóng",
+    "back": "Quay lại",
     "success": "Thành công",
     "error": "Lỗi",
-    "language": "Ngôn ngữ"
+    "warning": "Cảnh báo",
+    "info": "Thông báo",
+    "loading": "Đang tải dữ liệu...",
+    "empty": "Chưa có dữ liệu",
+    "search": "Tìm kiếm...",
+    "language": "Ngôn ngữ",
+    "theme": "Giao diện",
+    "dark": "Tối",
+    "light": "Sáng"
+  },
+  "validation": {
+    "required": "Trường này không được để trống",
+    "emailRequired": "Email không được để trống",
+    "emailInvalid": "Email không đúng định dạng",
+    "passwordMin": "Mật khẩu phải có tối thiểu {{min}} ký tự",
+    "passwordRequired": "Mật khẩu không được để trống",
+    "phoneInvalid": "Số điện thoại Việt Nam không hợp lệ",
+    "confirmPasswordMismatch": "Mật khẩu xác nhận không khớp",
+    "confirmPasswordRequired": "Vui lòng xác nhận mật khẩu",
+    "nameMin": "Họ và tên phải có tối thiểu {{min}} ký tự"
+  },
+  "network": {
+    "offline": "Không có kết nối Internet. Đang ở chế độ ngoại tuyến.",
+    "retry": "Thử lại"
   },
   "home": {
+    "badge": "UNIVERSAL BASE APP",
     "title": "React Native Starter",
-    "subtitle": "Bộ khung hoàn chỉnh cho mọi loại ứng dụng",
-    "modulesTitle": "Các Module Nền Tảng Đã Sẵn Sàng"
+    "subtitle": "Bộ khung hoàn chỉnh cho mọi loại ứng dụng (Local, AI, Server)",
+    "counterLabel": "Global State Counter",
+    "incrementBtn": "Tăng biến toàn cục (+1)",
+    "searchPlaceholder": "Tìm kiếm module, tiện ích...",
+    "modulesTitle": "Các Module Nền Tảng Đã Sẵn Sàng",
+    "noResultsTitle": "Không tìm thấy kết quả",
+    "noResultsDesc": "Không có module nào khớp với từ khóa",
+    "clearSearch": "Xóa tìm kiếm"
+  },
+  "details": {
+    "screenTitle": "Chi Tiết Thư Viện",
+    "playgroundBadge": "MODULE PLAYGROUND",
+    "screenWrapperInfo": "ScreenWrapper: Tự động xử lý SafeArea & Bàn phím",
+    "storageInfo": "AsyncStorage & SQLite: Lưu trữ dữ liệu bền vững",
+    "storageDemo": "Thử nghiệm lưu Local Storage (ví dụ: API Key / Ghi chú):",
+    "storagePlaceholder": "Nhập chuỗi bất kỳ để test...",
+    "saveToStorage": "Lưu vào Local Storage",
+    "savedInDevice": "Đang lưu trong máy",
+    "saveSuccess": "Đã lưu giá trị vào AsyncStorage bền vững!",
+    "saveWarning": "Vui lòng nhập giá trị trước khi lưu!",
+    "testToast": "Bật thử thông báo Toast",
+    "toastMessage": "Đây là thông báo Toast toàn cục chuẩn Mobile!",
+    "testCamera": "Kiểm tra quyền Camera (Permissions)",
+    "cameraGranted": "Đã được cấp quyền Camera!",
+    "cameraDenied": "Quyền Camera bị từ chối!",
+    "openConfirmDialog": "Mở Hộp Thoại Xác Nhận (ConfirmDialog)",
+    "checkUpdate": "Kiểm tra cập nhật App",
+    "resetCounter": "Reset đếm",
+    "backHome": "Quay lại Trang Chủ",
+    "rememberLogin": "Ghi nhớ phiên đăng nhập (AppCheckbox)",
+    "pushNotification": "Nhận thông báo đẩy từ hệ thống (AppSwitch)",
+    "pushNotificationSub": "Gửi cập nhật quan trọng về tài khoản",
+    "hapticsTitle": "Cảm Biến Rung & Phản Hồi (Haptics)",
+    "hapticsLight": "Rung Nhẹ",
+    "hapticsSuccess": "Rung Thành Công",
+    "hapticsError": "Rung Cảnh Báo",
+    "fileTitle": "Lưu Trữ & Xuất File (File I/O)",
+    "fileLabel": "Nội dung tập tin (demo_note.txt):",
+    "filePlaceholder": "Nhập nội dung văn bản để lưu file...",
+    "saveFile": "Lưu File Cục Bộ",
+    "shareFile": "Chia Sẻ / Xuất File",
+    "fileSaved": "Đã lưu file thành công!",
+    "fileEmpty": "Vui lòng nhập nội dung file trước khi lưu!",
+    "skeletonDemo": "Minh Họa Skeleton Shimmer Loading",
+    "emptyStateDemo": "Minh Họa EmptyState Component",
+    "emptyDescription": "Hộp thư thông báo của bạn hiện đang trống.",
+    "refreshed": "Đã làm mới dữ liệu!"
+  },
+  "dialogs": {
+    "confirmResetTitle": "Xác nhận đặt lại biến đếm?",
+    "confirmResetMessage": "Hành động này sẽ đưa biến đếm toàn cục Zustand về 0. Bạn có chắc chắn muốn thực hiện?",
+    "reset": "Đặt lại"
+  },
+  "splash": {
+    "subtitle": "Bộ khung hoàn chỉnh chuẩn Production",
+    "initializing": "Đang khởi tạo ứng dụng..."
   }
 }

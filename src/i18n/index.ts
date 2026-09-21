@@ -4,8 +4,28 @@ import vi from './locales/vi.json';
 import en from './locales/en.json';
 
 export const resources = {
-  vi: { translation: { ...vi.common, ...vi.home } },
-  en: { translation: { ...en.common, ...en.home } },
+  vi: {
+    translation: {
+      ...vi,
+      ...vi.common,
+      ...vi.home,
+      ...vi.details,
+      ...vi.validation,
+      ...vi.network,
+      ...vi.dialogs,
+    },
+  },
+  en: {
+    translation: {
+      ...en,
+      ...en.common,
+      ...en.home,
+      ...en.details,
+      ...en.validation,
+      ...en.network,
+      ...en.dialogs,
+    },
+  },
 } as const;
 
 i18n.use(initReactI18next).init({

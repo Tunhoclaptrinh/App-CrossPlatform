@@ -2,28 +2,29 @@ import { z } from 'zod';
 
 /**
  * Standard Zod validation schemas for forms and data verification
+ * Ho tro ca thong bao truc tiep va i18n translation keys
  */
 
 export const loginSchema = z.object({
-  email: z.string().min(1, 'Email không được để trống').email('Email không đúng định dạng'),
-  password: z.string().min(6, 'Mật khẩu phải có tối thiểu 6 ký tự'),
+  email: z.string().min(1, 'validation.emailRequired').email('validation.emailInvalid'),
+  password: z.string().min(6, 'validation.passwordMin'),
 });
 
 export const registerSchema = z
   .object({
-    name: z.string().min(2, 'Họ và tên phải có tối thiểu 2 ký tự'),
-    email: z.string().min(1, 'Email không được để trống').email('Email không đúng định dạng'),
+    name: z.string().min(2, 'validation.nameMin'),
+    email: z.string().min(1, 'validation.emailRequired').email('validation.emailInvalid'),
     phone: z
       .string()
       .transform((val) => val.trim().replace(/[\s+-]/g, ''))
       .refine((val) => /^(?:84|0)(?:3|5|7|8|9)\d{8}$/.test(val), {
-        message: 'Số điện thoại Việt Nam không hợp lệ',
+        message: 'validation.phoneInvalid',
       }),
-    password: z.string().min(6, 'Mật khẩu phải có tối thiểu 6 ký tự'),
-    confirmPassword: z.string().min(1, 'Vui lòng xác nhận mật khẩu'),
+    password: z.string().min(6, 'validation.passwordMin'),
+    confirmPassword: z.string().min(1, 'validation.confirmPasswordRequired'),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: 'Mật khẩu xác nhận không khớp',
+    message: 'validation.confirmPasswordMismatch',
     path: ['confirmPassword'],
   });
 
@@ -38,12 +39,13 @@ export type RegisterFormData = z.infer<typeof registerSchema>;
 export type SearchParams = z.infer<typeof searchSchema>;
 
 /**
- * Helper validate dữ liệu với Zod Schema
- * Trả về danh sách lỗi dạng Map { fieldName: "Error message" } rất tiện cho UI
+ * Helper validate du lieu voi Zod Schema
+ * Ho tro truyen ham translator (vi du: t tu useTranslation()) de song ngu hoa thong bao loi
  */
 export function validateWithZod<T>(
   schema: z.ZodSchema<T>,
-  data: unknown
+  data: unknown,
+  translator?: (key: string, options?: any) => string
 ): {
   success: boolean;
   data?: T;
@@ -58,7 +60,7 @@ export function validateWithZod<T>(
   result.error.issues.forEach((issue) => {
     const path = issue.path.join('.') || 'root';
     if (!errors[path]) {
-      errors[path] = issue.message;
+      errors[path] = translator ? translator(issue.message) : issue.message;
     }
   });
 

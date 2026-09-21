@@ -73,15 +73,52 @@ Toàn bộ phản hồi từ server hoặc AI model phải được định ki�
 
 ---
 
-## 7. Xác Thực Dữ Liệu Với Zod & Regex (Validation Protocol)
+## 7. Xác Thực Dữ Liệu Với Zod & Song Ngữ (Validation Protocol)
 
-* **Zod Schemas (`src/utils/schemas.ts`)**: Định nghĩa schema chặt chẽ cho toàn bộ biểu mẫu và API payload (`loginSchema`, `registerSchema`, `searchSchema`).
-* **`validateWithZod()` Helper**: Parse dữ liệu và chuyển lỗi Zod thành dạng `Record<string, string>` ({ email: "Lỗi...", password: "..." }), giúp UI gắn lỗi vào `AppInput` cực kỳ dễ dàng.
+* **Bilingual Zod Schemas (`src/utils/schemas.ts`)**: Định nghĩa schema chặt chẽ cho toàn bộ biểu mẫu và API payload (`loginSchema`, `registerSchema`, `searchSchema`). Các thông điệp lỗi được liên kết trực tiếp với key đa ngôn ngữ (`validation.emailRequired`, `validation.passwordMin`...).
+* **`validateWithZod(schema, data, t?)` Helper**: Parse dữ liệu và chuyển lỗi Zod thành dạng `Record<string, string>` ({ email: "Lỗi...", password: "..." }). Khi truyền hàm `t` từ `useTranslation()`, thông báo lỗi sẽ tự động dịch sang ngôn ngữ người dùng đang chọn (VI/EN).
 * **Fast Regex Validators (`src/utils/validators.ts`)**: Cung cấp hàm kiểm tra nhanh không đồng bộ: `isValidEmail`, `isValidVietnamesePhone` (đầu 03, 05, 07, 08, 09 hoặc +84), `isValidPassword`, `isValidUrl`, `isNumberOnly`.
 
 ---
 
-## 8. Tối Ưu Hiệu Năng & Tránh Spam Sự Kiện (Performance & UX)
+## 8. Chuẩn Hóa Đa Ngôn Ngữ Song Ngữ (Bilingual i18n Standardization)
+
+* **Cấu trúc namespace chặt chẽ trong `src/i18n/locales/` (`vi.json` & `en.json`)**:
+  * `common`: Các từ khóa thông dụng (`welcome`, `save`, `cancel`, `confirm`, `delete`, `retry`, `loading`, `empty`, `search`, `language`, `theme`, `dark`, `light`...).
+  * `validation`: Toàn bộ thông báo kiểm tra dữ liệu đầu vào.
+  * `network`: Trạng thái mất kết nối và thử lại.
+  * `home`, `details`, `splash`: Nội dung hiển thị riêng theo từng màn hình.
+  * `dialogs`: Tiêu đề và nội dung các hộp thoại xác nhận.
+* **Quy tắc bất di bất dịch**: Tuyệt đối không hardcode văn bản hiển thị cho người dùng. Luôn gọi qua `t('namespace.key')`.
+
+---
+
+## 9. Cảm Biến Thiết Bị & Phản Hồi Rung (Haptics Vibration Feedback)
+
+* **`haptics` (`src/utils/haptics.ts`)**: Tích hợp xúc giác rung phản hồi tự nhiên qua React Native `Vibration` API:
+  * `haptics.light()`: Rung nhẹ khi chạm nút, bật/tắt checkbox, switch.
+  * `haptics.medium()`: Rung vừa khi mở hộp thoại xác nhận, mở menu.
+  * `haptics.heavy()`: Rung mạnh cho hành động quan trọng hoặc cảnh báo.
+  * `haptics.success()`: Chuỗi xung nhịp đôi báo thành công.
+  * `haptics.error()`: Chuỗi xung nhịp báo thao tác thất bại hoặc lỗi validate.
+  * `haptics.cancel()`: Dừng rung ngay lập tức.
+
+---
+
+## 10. Quản Lý & Xuất Nhập File Cục Bộ (Local File I/O & Native Share)
+
+* **`fileService` (`src/services/file/fileService.ts`)**: Quản lý lưu trữ tập tin cục bộ dựa trên C++ JSI SQLite (`app_files` table):
+  * `saveFile(filename, content, mimeType)`: Lưu trữ văn bản, dữ liệu chuỗi hoặc base64.
+  * `readFile(filename)`: Đọc nội dung file dạng string (trả về null nếu không tồn tại).
+  * `saveJson<T>(filename, data)`: Lưu trữ Object dưới dạng file JSON chuẩn hóa.
+  * `readJson<T>(filename)`: Đọc và tự động parse JSON thành Type an toàn.
+  * `deleteFile(filename)`: Xóa file khỏi hệ thống lưu trữ.
+  * `listFiles()`: Lấy danh sách toàn bộ file trong máy kèm kích thước và thời gian cập nhật.
+  * `exportFile(filename)`: Xuất và chia sẻ file ra bên ngoài ứng dụng thông qua **Native OS Share Sheet** (`shareHelper.shareText`).
+
+---
+
+## 11. Tối Ưu Hiệu Năng & Tránh Spam Sự Kiện (Performance & UX)
 
 * **`OptimizedList` (`src/components/common/OptimizedList/`)**:
   * FlatList bọc sẵn các cờ tối ưu: `removeClippedSubviews={true}`, `maxToRenderPerBatch={10}`, `windowSize={7}`, `initialNumToRender={10}`.
@@ -96,14 +133,14 @@ Toàn bộ phản hồi từ server hoặc AI model phải được định ki�
 
 ---
 
-## 9. Quyền Thiết Bị & Deep Linking
+## 12. Quyền Thiết Bị & Deep Linking
 
 * **`permissions` (`src/utils/permissions.ts`)**: Trợ thủ xin cấp quyền máy ảnh (`requestCamera`), thư viện ảnh (`requestPhotoLibrary`), và thông báo (`requestNotifications`) thân thiện, an toàn theo từng phiên bản Android/iOS.
 * **`linking` (`src/navigation/linking.ts`)**: Cấu hình mở màn hình từ URL scheme và universal link (`reactnative://` hoặc `https://...`).
 
 ---
 
-## 10. Nguyên Tắc Thiết Kế Giao Diện (Zero Inline Styles)
+## 13. Nguyên Tắc Thiết Kế Giao Diện (Zero Inline Styles)
 
 * **CẤM tuyệt đối viết Inline Styles** trong file JSX/TSX. Lỗi này bị kiểm soát nghiêm ngặt bởi ESLint rule `react-native/no-inline-styles`.
 * Mỗi màn hình và mỗi component phải có file `styles.ts` riêng biệt và tạo qua `StyleSheet.create()`.
@@ -116,7 +153,7 @@ Toàn bộ phản hồi từ server hoặc AI model phải được định ki�
 
 ---
 
-## 11. Nguyên Tắc Đặt Tên (Naming Conventions)
+## 14. Nguyên Tắc Đặt Tên (Naming Conventions)
 
 | Đối tượng | Quy tắc | Ví dụ |
 | :--- | :--- | :--- |

@@ -35,8 +35,12 @@
   * `apiClient`: Universal HTTP client hỗ trợ REST API và AI endpoints.
   * `ApiResponse<T>`, `ApiError`, `PaginatedResponse<T>`, `PaginationParams`, `RequestOptions`, `AiChatRequest`, `AiChatResponse`.
 * **Thư Viện Validate & Schemas Chặt Chẽ:**
-  * `zod`: Tích hợp schema xác thực form (`loginSchema`, `registerSchema`, `searchSchema`) kèm hàm `validateWithZod()` xuất lỗi dạng Map cho UI.
+  * `zod`: Tích hợp schema xác thực form (`loginSchema`, `registerSchema`, `searchSchema`) đa ngôn ngữ kèm hàm `validateWithZod(schema, data, t?)` dịch thông báo lỗi trực tiếp theo ngôn ngữ đang chọn.
   * `validators`: Kiểm tra nhanh Email, Số điện thoại Việt Nam (03, 05, 07, 08, 09, +84), Độ mạnh mật khẩu, URL.
+* **Cảm Biến Phản Hồi Rung (Haptics Vibration Feedback):**
+  * `haptics`: Mô phỏng xúc giác chuẩn mực (`light`, `medium`, `heavy`, `success`, `error`, `cancel`) cho các tương tác bấm nút, gạt switch, chọn checkbox, mở dialog hoặc báo lỗi thao tác.
+* **Quản Lý & Xuất Nhập File Cục Bộ (Local File I/O & Native Sharing):**
+  * `fileService`: Quản lý lưu trữ tệp văn bản và JSON chuẩn hóa bằng SQLite JSI, hỗ trợ đọc, ghi, liệt kê, xóa và chia sẻ/xuất file ra ngoài ứng dụng qua **Native OS Share Sheet** (`shareHelper`).
 * **Quyền Thiết Bị (Device Permissions):**
   * `permissions`: Trợ thủ xin quyền thiết bị an toàn trên Android & iOS (Camera, Thư viện ảnh, Thông báo).
 * **Deep Linking Tích Hợp:**
@@ -52,7 +56,7 @@
 * **Thông Báo Toàn Cục (In-App Toast):** `useToast()` trượt từ đỉnh màn hình bằng Spring Animation mượt mà.
 * **Cơ Sở Dữ Liệu SQLite Siêu Tốc:** `@op-engineering/op-sqlite` chạy JSI C++ trực tiếp trên New Architecture.
 * **Lưu Trữ Bền Vững:** `appStorage` trên nền `@react-native-async-storage/async-storage`.
-* **Đa Ngôn Ngữ (i18n):** `i18next` + `react-i18next` hỗ trợ chuyển đổi Tiếng Việt & Tiếng Anh tức thì.
+* **Chuẩn Hóa Đa Ngôn Ngữ Song Ngữ (i18n):** `i18next` + `react-i18next` hỗ trợ chuyển đổi Tiếng Việt & Tiếng Anh tức thì, phân chia theo các namespaces rõ ràng (`common`, `validation`, `network`, `home`, `details`, `dialogs`, `splash`).
 * **Quản Trị Phiên Bản & Cập Nhật:** `appUpdateService` so sánh phiên bản và nhắc nhở người dùng cập nhật qua Store.
 
 ---
@@ -110,7 +114,7 @@ src/
 ├── i18n/               # vi.json, en.json, cấu hình i18next
 ├── navigation/         # React Navigation v7 Native Stack & deep linking
 ├── screens/            # Splash, Home, Details (mỗi screen có styles.ts riêng)
-├── services/           # ApiClient (Universal REST/AI + types.ts), SQLite, Storage, AppUpdate
+├── services/           # ApiClient (REST/AI), SQLite (JSI), fileService (File I/O), Storage, AppUpdate
 ├── types/              # Định nghĩa types toàn cục (api.ts, models.ts, index.ts)
-└── utils/              # formatters, validators, schemas (Zod), permissions, helpers
+└── utils/              # haptics, share, permissions, schemas (Zod), formatters, validators, helpers
 ```

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, View, useColorScheme, ActivityIndicator } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { AppText, AppLogo } from '@/components';
 import { Colors } from '@/constants/colors';
 import { database } from '@/services/database';
@@ -8,6 +9,7 @@ import type { SplashScreenProps } from '@/navigation/types';
 import { createSplashStyles } from './styles';
 
 export const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
+  const { t } = useTranslation();
   const isDarkMode = useColorScheme() === 'dark';
   const themeColors = isDarkMode ? Colors.dark : Colors.light;
   const styles = createSplashStyles(themeColors);
@@ -51,14 +53,14 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
         </AppText>
 
         <AppText variant="body" style={styles.subtitle}>
-          Universal Production Template
+          {t('splash.subtitle')}
         </AppText>
       </Animated.View>
 
       <View style={styles.footer}>
         <ActivityIndicator size="small" color={themeColors.primary} />
         <AppText variant="caption" style={styles.footerText}>
-          Đang khởi tạo ứng dụng...
+          {t('splash.initializing')}
         </AppText>
       </View>
     </View>
