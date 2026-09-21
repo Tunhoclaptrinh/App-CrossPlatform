@@ -2,11 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { View, useColorScheme, Alert } from 'react-native';
 import { CheckCircle2, ShieldCheck, Zap, KeyRound } from 'lucide-react-native';
 import { Button, Chip } from 'react-native-paper';
-import { AppText, AppButton, AppInput, ScreenWrapper, SkeletonCard, EmptyState } from '@/components';
+import {
+  AppText,
+  AppButton,
+  AppInput,
+  ScreenWrapper,
+  SkeletonCard,
+  EmptyState,
+  ConfirmDialog,
+  AppCheckbox,
+  AppSwitch,
+} from '@/components';
 import { Colors } from '@/constants/colors';
 import { useAppStore, useToast } from '@/hooks';
 import { appStorage, STORAGE_KEYS } from '@/services/storage';
 import { appUpdateService } from '@/services/update';
+import { permissions } from '@/utils';
 import type { DetailsScreenProps } from '@/navigation/types';
 import { createDetailsStyles } from './styles';
 
@@ -21,6 +32,11 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
 
   const [apiKeyInput, setApiKeyInput] = useState('');
   const [savedKey, setSavedKey] = useState<string | null>(null);
+
+  // States cho Demo ConfirmDialog, AppCheckbox, AppSwitch
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [rememberLogin, setRememberLogin] = useState(true);
+  const [pushNotification, setPushNotification] = useState(false);
 
   useEffect(() => {
     appStorage.getItem<string>(STORAGE_KEYS.AI_API_KEY).then((key) => {
@@ -48,6 +64,21 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
   const handleCheckUpdate = async () => {
     const update = await appUpdateService.checkForUpdates();
     appUpdateService.promptUpdateIfAvailable(update);
+  };
+
+  const handleRequestCamera = async () => {
+    const granted = await permissions.requestCamera();
+    if (granted) {
+      toast.show('success', 'Đã được cấp quyền Camera!', 'Quyền thiết bị');
+    } else {
+      toast.show('error', 'Quyền Camera bị từ chối!', 'Quyền thiết bị');
+    }
+  };
+
+  const handleConfirmAction = () => {
+    setIsDialogOpen(false);
+    reset();
+    toast.show('success', 'Đã đặt lại biến đếm toàn cục về 0!', 'Đã xác nhận');
   };
 
   return (
@@ -93,6 +124,22 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
           <Chip icon="database" mode="outlined">Persistent Storage</Chip>
         </View>
 
+        {/* Demo Form Controls: Checkbox & Switch */}
+        <View style={styles.formControlsBox}>
+          <AppCheckbox
+            checked={rememberLogin}
+            onChange={setRememberLogin}
+            label="Ghi nhớ phiên đăng nhập (AppCheckbox)"
+          />
+
+          <AppSwitch
+            value={pushNotification}
+            onValueChange={setPushNotification}
+            label="Nhận thông báo đẩy từ hệ thống (AppSwitch)"
+            sublabel="Gửi cập nhật quan trọng về tài khoản"
+          />
+        </View>
+
         <View style={styles.demoBox}>
           <AppInput
             label="Thử nghiệm lưu Local Storage (ví dụ: API Key / Ghi chú):"
@@ -135,19 +182,28 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
 
           <Button
             mode="outlined"
+            icon="camera"
+            onPress={handleRequestCamera}
+          >
+            Kiểm tra quyền Camera (Permissions)
+          </Button>
+
+          <Button
+            mode="outlined"
+            icon="alert-octagon"
+            textColor={themeColors.error}
+            onPress={() => setIsDialogOpen(true)}
+          >
+            Mở Hộp Thoại Xác Nhận (ConfirmDialog)
+          </Button>
+
+          <Button
+            mode="outlined"
             icon="update"
             textColor={themeColors.textSecondary}
             onPress={handleCheckUpdate}
           >
             Kiểm tra cập nhật App
-          </Button>
-
-          <Button
-            mode="text"
-            textColor={themeColors.textSecondary}
-            onPress={reset}
-          >
-            Reset đếm
           </Button>
 
           <AppButton
@@ -176,6 +232,18 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
           onActionPress={() => Alert.alert('Thông báo', 'Đã làm mới!')}
         />
       </View>
+
+      {/* ConfirmDialog Component */}
+      <ConfirmDialog
+        visible={isDialogOpen}
+        title="Xác nhận đặt lại biến đếm?"
+        message="Hành động này sẽ đưa biến đếm toàn cục Zustand về 0. Bạn có chắc chắn muốn thực hiện?"
+        confirmText="Đặt lại"
+        cancelText="Hủy"
+        destructive={true}
+        onConfirm={handleConfirmAction}
+        onCancel={() => setIsDialogOpen(false)}
+      />
     </ScreenWrapper>
   );
 };

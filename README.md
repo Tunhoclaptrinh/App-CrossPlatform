@@ -15,7 +15,11 @@
   * `index.ts`: Re-export sạch sẽ, hỗ trợ import tiện lợi.
 * **Crash Resilience & Error Boundary:** Tích hợp sẵn `ErrorBoundary` chống văng app khi gặp lỗi JavaScript runtime và `useDoubleBackExit` chống thoát nhầm trên Android.
 * **Design System Toàn Cầu:** Bảng màu Semantic Palette (50–950), Thang Bo góc (`none` đến `pill`), Khoảng cách (`Spacing`), Kiểu chữ (`Typography`) và Đổ bóng Cross-platform (`Shadows`).
-* **UI Components Chuẩn Hóa:**
+* **Bộ UI Components Chuẩn Hóa:**
+  * `ConfirmDialog`: Hộp thoại xác nhận hành động theo Theme (Xác nhận xóa, Đăng xuất, Hủy thao tác).
+  * `AppCheckbox`: Hộp tích chọn tùy chỉnh có hiệu ứng và nhãn.
+  * `AppSwitch`: Nút gạt bật/tắt thiết lập (Ghi nhớ đăng nhập, Nhận thông báo).
+  * `OfflineBanner`: Thanh thông báo ngoại tuyến tự động xuất hiện khi mất mạng kèm nút chạm để thử lại.
   * `AppSearchBar`: Thanh tìm kiếm thời gian thực, tích hợp sẵn debounce, nút xóa nhanh và nút bộ lọc.
   * `OptimizedList`: Danh sách hiệu năng cao tối ưu số node render, tích hợp sẵn EmptyState, Loading và Pull-to-refresh.
   * `ScreenWrapper`: Tự xử lý SafeArea chống tai thỏ, Dark Mode & ẩn bàn phím tự động.
@@ -33,7 +37,12 @@
 * **Thư Viện Validate & Schemas Chặt Chẽ:**
   * `zod`: Tích hợp schema xác thực form (`loginSchema`, `registerSchema`, `searchSchema`) kèm hàm `validateWithZod()` xuất lỗi dạng Map cho UI.
   * `validators`: Kiểm tra nhanh Email, Số điện thoại Việt Nam (03, 05, 07, 08, 09, +84), Độ mạnh mật khẩu, URL.
+* **Quyền Thiết Bị (Device Permissions):**
+  * `permissions`: Trợ thủ xin quyền thiết bị an toàn trên Android & iOS (Camera, Thư viện ảnh, Thông báo).
+* **Deep Linking Tích Hợp:**
+  * `linking`: Cấu hình mở app từ liên kết URL (`reactnative://` hoặc `https://reactnativebase.app`).
 * **Tối Ưu Hiệu Năng & Chống Spam Sự Kiện:**
+  * `useNetworkStatus`: Giám sát trạng thái kết nối Internet và tự động kiểm tra lại khi mở app.
   * `useDebounce`: Hoãn cập nhật state cho đến khi dừng gõ.
   * `useThrottle`: Giới hạn tần suất xử lý giá trị (scroll offset).
   * `useThrottleCallback`: Chống người dùng spam click nhiều lần vào nút Thanh toán / Gửi đơn / Gọi API.
@@ -45,7 +54,6 @@
 * **Lưu Trữ Bền Vững:** `appStorage` trên nền `@react-native-async-storage/async-storage`.
 * **Đa Ngôn Ngữ (i18n):** `i18next` + `react-i18next` hỗ trợ chuyển đổi Tiếng Việt & Tiếng Anh tức thì.
 * **Quản Trị Phiên Bản & Cập Nhật:** `appUpdateService` so sánh phiên bản và nhắc nhở người dùng cập nhật qua Store.
-* **Agent Skill & Quy Chuẩn Bảo Trì:** Tích hợp sẵn skill trong `.agents/skills/react-native-base/` và quy tắc nghiêm ngặt trong `docs/CONVENTIONS.md`.
 
 ---
 
@@ -81,24 +89,28 @@ src/
 │   │   ├── AppBadge/
 │   │   ├── AppButton/
 │   │   ├── AppCard/
+│   │   ├── AppCheckbox/
 │   │   ├── AppHeader/
 │   │   ├── AppInput/
 │   │   ├── AppLogo/
 │   │   ├── AppSearchBar/
+│   │   ├── AppSwitch/
 │   │   ├── AppText/
+│   │   ├── ConfirmDialog/
 │   │   ├── EmptyState/
 │   │   ├── ErrorBoundary/
 │   │   ├── LoadingOverlay/
+│   │   ├── OfflineBanner/
 │   │   ├── OptimizedList/
 │   │   ├── ScreenWrapper/
 │   │   └── Skeleton/
 │   └── toast/          # In-App spring toast provider & hook
 ├── constants/          # Colors, Spacing, Typography, Shadows, AppConfig
-├── hooks/              # useAppStore, useDebounce, useThrottle, useDoubleBackExit...
+├── hooks/              # useAppStore, useNetworkStatus, useDebounce, useThrottle...
 ├── i18n/               # vi.json, en.json, cấu hình i18next
-├── navigation/         # React Navigation v7 Native Stack
+├── navigation/         # React Navigation v7 Native Stack & deep linking
 ├── screens/            # Splash, Home, Details (mỗi screen có styles.ts riêng)
 ├── services/           # ApiClient (Universal REST/AI + types.ts), SQLite, Storage, AppUpdate
 ├── types/              # Định nghĩa types toàn cục (api.ts, models.ts, index.ts)
-└── utils/              # formatters, validators, schemas (Zod), helpers
+└── utils/              # formatters, validators, schemas (Zod), permissions, helpers
 ```

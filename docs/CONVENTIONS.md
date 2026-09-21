@@ -57,14 +57,23 @@ Toàn bộ phản hồi từ server hoặc AI model phải được định ki�
 
 ---
 
-## 5. Khả Năng Chống Sập Ứng Dụng (Crash Resilience)
+## 5. Khả Năng Chống Sập & Ngoại Tuyến (Crash & Offline Resilience)
 
 * **`ErrorBoundary` (`src/components/common/ErrorBoundary/`)**: Bọc ngoài cùng toàn bộ cây component trong `App.tsx`. Khi có lỗi crash JavaScript runtime, thay vì sập app ra màn hình chính, hệ thống sẽ hiện giao diện thông báo lỗi lịch sự kèm nút "Thử Lại".
 * **`useDoubleBackExit` (`src/hooks/useDoubleBackExit.ts`)**: Gắn tại `HomeScreen` để chặn người dùng vô tình bấm phím Back thoát app đột ngột (yêu cầu bấm 2 lần trong 2 giây).
+* **`OfflineBanner` & `useNetworkStatus`**: Tự động phát hiện khi mất kết nối mạng và hiển thị cảnh báo mỏng, hỗ trợ chạm để thử kết nối lại.
 
 ---
 
-## 6. Xác Thực Dữ Liệu Với Zod & Regex (Validation Protocol)
+## 6. Hộp Thoại & Điều Khiển Biểu Mẫu (Dialogs & Form Controls)
+
+* **`ConfirmDialog` (`src/components/common/ConfirmDialog/`)**: Thay thế cho `Alert.alert` mặc định của hệ điều hành, hỗ trợ hành động phá hủy (nút đỏ), trạng thái chờ (loading spinner) và thiết kế hài hòa theo Theme.
+* **`AppCheckbox` (`src/components/common/AppCheckbox/`)**: Hộp kiểm chọn tùy biến cho điều khoản sử dụng hoặc danh sách việc cần làm.
+* **`AppSwitch` (`src/components/common/AppSwitch/`)**: Nút gạt bật/tắt thiết lập kèm nhãn và mô tả phụ.
+
+---
+
+## 7. Xác Thực Dữ Liệu Với Zod & Regex (Validation Protocol)
 
 * **Zod Schemas (`src/utils/schemas.ts`)**: Định nghĩa schema chặt chẽ cho toàn bộ biểu mẫu và API payload (`loginSchema`, `registerSchema`, `searchSchema`).
 * **`validateWithZod()` Helper**: Parse dữ liệu và chuyển lỗi Zod thành dạng `Record<string, string>` ({ email: "Lỗi...", password: "..." }), giúp UI gắn lỗi vào `AppInput` cực kỳ dễ dàng.
@@ -72,7 +81,7 @@ Toàn bộ phản hồi từ server hoặc AI model phải được định ki�
 
 ---
 
-## 7. Tối Ưu Hiệu Năng & Tránh Spam Sự Kiện (Performance & UX)
+## 8. Tối Ưu Hiệu Năng & Tránh Spam Sự Kiện (Performance & UX)
 
 * **`OptimizedList` (`src/components/common/OptimizedList/`)**:
   * FlatList bọc sẵn các cờ tối ưu: `removeClippedSubviews={true}`, `maxToRenderPerBatch={10}`, `windowSize={7}`, `initialNumToRender={10}`.
@@ -87,7 +96,14 @@ Toàn bộ phản hồi từ server hoặc AI model phải được định ki�
 
 ---
 
-## 8. Nguyên Tắc Thiết Kế Giao Diện (Zero Inline Styles)
+## 9. Quyền Thiết Bị & Deep Linking
+
+* **`permissions` (`src/utils/permissions.ts`)**: Trợ thủ xin cấp quyền máy ảnh (`requestCamera`), thư viện ảnh (`requestPhotoLibrary`), và thông báo (`requestNotifications`) thân thiện, an toàn theo từng phiên bản Android/iOS.
+* **`linking` (`src/navigation/linking.ts`)**: Cấu hình mở màn hình từ URL scheme và universal link (`reactnative://` hoặc `https://...`).
+
+---
+
+## 10. Nguyên Tắc Thiết Kế Giao Diện (Zero Inline Styles)
 
 * **CẤM tuyệt đối viết Inline Styles** trong file JSX/TSX. Lỗi này bị kiểm soát nghiêm ngặt bởi ESLint rule `react-native/no-inline-styles`.
 * Mỗi màn hình và mỗi component phải có file `styles.ts` riêng biệt và tạo qua `StyleSheet.create()`.
@@ -100,14 +116,14 @@ Toàn bộ phản hồi từ server hoặc AI model phải được định ki�
 
 ---
 
-## 9. Nguyên Tắc Đặt Tên (Naming Conventions)
+## 11. Nguyên Tắc Đặt Tên (Naming Conventions)
 
 | Đối tượng | Quy tắc | Ví dụ |
 | :--- | :--- | :--- |
-| **Thư mục Component** | PascalCase | `AppHeader/`, `OptimizedList/`, `AppSearchBar/` |
-| **Component Files** | PascalCase | `AppHeader.tsx`, `OptimizedList.tsx`, `AppSearchBar.tsx` |
-| **Hook Files** | camelCase, tiền tố `use` | `useAppStore.ts`, `useDebounce.ts`, `useThrottle.ts` |
-| **Service / Util Files** | camelCase | `apiClient.ts`, `validators.ts`, `formatters.ts` |
+| **Thư mục Component** | PascalCase | `AppHeader/`, `OptimizedList/`, `ConfirmDialog/` |
+| **Component Files** | PascalCase | `AppHeader.tsx`, `OptimizedList.tsx`, `ConfirmDialog.tsx` |
+| **Hook Files** | camelCase, tiền tố `use` | `useAppStore.ts`, `useNetworkStatus.ts`, `useDebounce.ts` |
+| **Service / Util Files** | camelCase | `apiClient.ts`, `permissions.ts`, `validators.ts` |
 | **Styles / Types Files** | camelCase | `styles.ts`, `types.ts`, `constants.ts` |
-| **TypeScript Types/Interfaces** | PascalCase | `User`, `OptimizedListProps`, `ApiResponse` |
+| **TypeScript Types/Interfaces** | PascalCase | `User`, `ConfirmDialogProps`, `ApiResponse` |
 | **Constants / Enums** | UPPER_SNAKE_CASE hoặc PascalCase | `STORAGE_KEYS.AUTH_TOKEN`, `Spacing.md`, `Colors.light` |

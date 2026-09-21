@@ -24,6 +24,10 @@ This skill documents the conventions, directory structure, state protocols, and 
     - `AppLogo/`: `AppLogo.tsx`, `styles.ts`, `types.ts`, `index.ts`.
     - `AppHeader/`: `AppHeader.tsx`, `styles.ts`, `types.ts`, `index.ts`.
     - `AppSearchBar/`: `AppSearchBar.tsx`, `styles.ts`, `types.ts`, `constants.ts`, `index.ts`.
+    - `AppCheckbox/`: `AppCheckbox.tsx`, `styles.ts`, `types.ts`, `index.ts`.
+    - `AppSwitch/`: `AppSwitch.tsx`, `styles.ts`, `types.ts`, `index.ts`.
+    - `ConfirmDialog/`: `ConfirmDialog.tsx`, `styles.ts`, `types.ts`, `index.ts`.
+    - `OfflineBanner/`: `OfflineBanner.tsx`, `styles.ts`, `types.ts`, `index.ts`.
     - `OptimizedList/`: `OptimizedList.tsx`, `styles.ts`, `types.ts`, `constants.ts`, `index.ts`.
     - `ScreenWrapper/`: `ScreenWrapper.tsx`, `styles.ts`, `types.ts`, `index.ts`.
     - `Skeleton/`: `Skeleton.tsx`, `styles.ts`, `types.ts`, `index.ts`.
@@ -47,6 +51,7 @@ This skill documents the conventions, directory structure, state protocols, and 
     - User session (`user`, `setUser`, `logout`)
     - Metrics (`counter`, `increment`, `reset`)
   - Utilities & Performance:
+    - `useNetworkStatus`: Internet connectivity detection with auto-recheck.
     - `useDebounce`: Delays state updates until typing/input stops.
     - `useThrottle`: Throttles high-frequency numeric/state updates.
     - `useThrottleCallback`: Throttles button actions to prevent duplicate spam clicks.
@@ -63,12 +68,13 @@ This skill documents the conventions, directory structure, state protocols, and 
   - In-App Toast:
     - `useToast`: Trigger in-app toast alerts from any component.
 - `src/utils/`:
+  - `permissions.ts`: Mobile runtime permissions helper (Camera, Photos, Notifications).
   - `helpers.ts`: Currency, date formatters.
   - `formatters.ts`: `removeVietnameseTones` (accent stripper for search), `timeAgo` (Vietnamese relative time), `truncate`, `formatFileSize`.
   - `validators.ts`: Regex-based fast validation (email, VN phone, password, url, numbers).
   - `schemas.ts`: Zod schemas (`loginSchema`, `registerSchema`, `searchSchema`) and `validateWithZod` UI error helper.
 - `src/i18n/`: Multilingual system (vi, en) via `i18next`.
-- `src/navigation/`: React Navigation v7 Native Stack (`AppNavigator`, `routes.ts`, `types.ts`).
+- `src/navigation/`: React Navigation v7 Native Stack (`AppNavigator`, `routes.ts`, `types.ts`, `linking.ts`).
 - `src/screens/`: Feature screens (`Splash/`, `Home/`, `Details/`). Each screen has `Screen.tsx`, `styles.ts`, `index.ts`.
 
 ## 2. Mandatory Maintenance & Refactoring Rules
@@ -102,32 +108,40 @@ import { validateWithZod, loginSchema } from '@/utils';
 const handleLogin = () => {
   const result = validateWithZod(loginSchema, { email, password });
   if (!result.success) {
-    // result.errors contains { email: "...", password: "..." }
     setFieldErrors(result.errors);
     return;
   }
-  // Proceed with validated result.data
 };
 ```
 
-### 3.2. Search Bar with Live Debounce & Accent Stripping
+### 3.2. ConfirmDialog Modal
 ```typescript
-import { AppSearchBar } from '@/components';
-import { removeVietnameseTones } from '@/utils';
+import { ConfirmDialog } from '@/components';
 
-const [query, setQuery] = useState('');
-const filtered = items.filter(item => 
-  removeVietnameseTones(item.name).includes(removeVietnameseTones(query))
-);
-
-<AppSearchBar
-  value={query}
-  onChangeText={setQuery}
-  placeholder="Tìm kiếm sản phẩm..."
+<ConfirmDialog
+  visible={isOpen}
+  title="Xóa bản ghi?"
+  message="Hành động này không thể hoàn tác."
+  destructive={true}
+  confirmText="Xóa"
+  onConfirm={handleDelete}
+  onCancel={() => setIsOpen(false)}
 />
 ```
 
-### 3.3. High-Performance List
+### 3.3. Requesting Device Permissions
+```typescript
+import { permissions } from '@/utils';
+
+const handleScanQr = async () => {
+  const hasPermission = await permissions.requestCamera();
+  if (hasPermission) {
+    // Open scanner
+  }
+};
+```
+
+### 3.4. High-Performance List
 ```typescript
 import { OptimizedList } from '@/components';
 
@@ -138,18 +152,5 @@ import { OptimizedList } from '@/components';
   loading={isLoading}
   refreshing={isRefreshing}
   onRefresh={fetchLatestData}
-  emptyProps={{
-    title: 'Chưa có dữ liệu',
-    description: 'Kéo xuống để tải lại',
-  }}
 />
-```
-
-### 3.4. Preventing Spam / Double Clicks with useThrottleCallback
-```typescript
-import { useThrottleCallback } from '@/hooks';
-
-const handleBuyPress = useThrottleCallback(() => {
-  apiClient.post('/orders', orderData);
-}, 1500); // Only fires once per 1.5s
 ```

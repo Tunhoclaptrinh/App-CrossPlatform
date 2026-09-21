@@ -7,25 +7,26 @@ import {
   validateWithZod,
   loginSchema,
   registerSchema,
+  permissions,
 } from '@/utils';
 
 describe('Utils: Formatters', () => {
   it('should remove Vietnamese tones accurately for search indexing', () => {
-    expect(removeVietnameseTones('B\u00e1nh M\u00ec H\u00e0 N\u1ed9i')).toBe('banh mi ha noi');
-    expect(removeVietnameseTones('Ph\u1edf B\u00f2 Nam \u0110\u1ecbnh')).toBe('pho bo nam dinh');
-    expect(removeVietnameseTones('\u0110\u01b0\u1eddng L\u00ea L\u1ee3i')).toBe('duong le loi');
+    expect(removeVietnameseTones('Bánh Mì Hà Nội')).toBe('banh mi ha noi');
+    expect(removeVietnameseTones('Phở Bò Nam Định')).toBe('pho bo nam dinh');
+    expect(removeVietnameseTones('Đường Lê Lợi')).toBe('duong le loi');
     expect(removeVietnameseTones('')).toBe('');
   });
 
   it('should format relative time correctly', () => {
     const now = new Date();
-    expect(timeAgo(now)).toBe('V\u1eeba xong');
+    expect(timeAgo(now)).toBe('Vừa xong');
 
     const tenSecondsAgo = new Date(Date.now() - 10 * 1000);
-    expect(timeAgo(tenSecondsAgo)).toBe('V\u1eeba xong');
+    expect(timeAgo(tenSecondsAgo)).toBe('Vừa xong');
 
     const yesterday = new Date(Date.now() - 25 * 3600 * 1000);
-    expect(timeAgo(yesterday)).toBe('H\u00f4m qua');
+    expect(timeAgo(yesterday)).toBe('Hôm qua');
   });
 
   it('should truncate strings properly', () => {
@@ -87,5 +88,23 @@ describe('Utils: Validators & Zod Schemas', () => {
     });
     expect(mismatchResult.success).toBe(false);
     expect(mismatchResult.errors?.confirmPassword).toBeDefined();
+  });
+});
+
+describe('Utils: Permissions Helper', () => {
+  it('should define permission request methods', async () => {
+    expect(typeof permissions.requestCamera).toBe('function');
+    expect(typeof permissions.requestPhotoLibrary).toBe('function');
+    expect(typeof permissions.requestNotifications).toBe('function');
+
+    // On non-android (test environment default), returns true gracefully
+    const cameraRes = await permissions.requestCamera();
+    expect(typeof cameraRes).toBe('boolean');
+
+    const photoRes = await permissions.requestPhotoLibrary();
+    expect(typeof photoRes).toBe('boolean');
+
+    const notifRes = await permissions.requestNotifications();
+    expect(typeof notifRes).toBe('boolean');
   });
 });

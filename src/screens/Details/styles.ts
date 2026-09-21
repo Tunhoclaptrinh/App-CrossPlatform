@@ -65,6 +65,10 @@ export const createDetailsStyles = (colors: {
     demoBox: {
       marginVertical: Spacing.md,
     },
+    formControlsBox: {
+      marginVertical: Spacing.md,
+      gap: Spacing.sm,
+    },
     savedKeyText: {
       marginBottom: Spacing.sm,
     },
