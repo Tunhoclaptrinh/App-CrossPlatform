@@ -1,9 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, View, useColorScheme, ActivityIndicator } from 'react-native';
-import { Smartphone } from 'lucide-react-native';
-import { AppText } from '@/components';
+import { AppText, AppLogo } from '@/components';
 import { Colors } from '@/constants/colors';
 import { database } from '@/services/database';
+import { AppConfig } from '@/constants/config';
 import type { SplashScreenProps } from '@/navigation/types';
 import { createSplashStyles } from './styles';
 
@@ -12,7 +12,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
   const themeColors = isDarkMode ? Colors.dark : Colors.light;
   const styles = createSplashStyles(themeColors);
 
-  const scale = useRef(new Animated.Value(0.8)).current;
+  const scale = useRef(new Animated.Value(0.85)).current;
   const opacity = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -20,7 +20,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
     Animated.parallel([
       Animated.spring(scale, {
         toValue: 1,
-        friction: 5,
+        friction: 6,
         useNativeDriver: true,
       }),
       Animated.timing(opacity, {
@@ -33,7 +33,6 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
     // 2. Khởi tạo tài nguyên ngầm (SQLite tables, cache...)
     const initApp = async () => {
       await database.initTables();
-      // Chờ 1.5s để logo hiển thị mượt mà trước khi chuyển màn hình
       setTimeout(() => {
         navigation.replace('Home');
       }, 1500);
@@ -45,12 +44,10 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Animated.View style={[styles.content, { transform: [{ scale }], opacity }]}>
-        <View style={styles.iconWrapper}>
-          <Smartphone size={48} color={themeColors.primary} />
-        </View>
+        <AppLogo size="xl" orientation="vertical" />
 
         <AppText variant="header" style={styles.title}>
-          React Native App
+          {AppConfig.APP_DISPLAY_NAME}
         </AppText>
 
         <AppText variant="body" style={styles.subtitle}>

@@ -1,26 +1,15 @@
 import React, { useState } from 'react';
 import {
-  StyleSheet,
   TextInput,
-  TextInputProps,
   TouchableOpacity,
   View,
-  ViewStyle,
   useColorScheme,
 } from 'react-native';
 import { Eye, EyeOff } from 'lucide-react-native';
 import { Colors } from '@/constants/colors';
-import { Spacing, BorderRadius, Typography } from '@/constants/theme';
-import { AppText } from './AppText';
-
-export interface AppInputProps extends TextInputProps {
-  label?: string;
-  error?: string;
-  leftIcon?: React.ReactNode;
-  rightIcon?: React.ReactNode;
-  containerStyle?: ViewStyle;
-  isPassword?: boolean;
-}
+import { AppText } from '../AppText';
+import type { AppInputProps } from './types';
+import { styles } from './styles';
 
 export const AppInput: React.FC<AppInputProps> = ({
   label,
@@ -101,36 +90,3 @@ export const AppInput: React.FC<AppInputProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  wrapper: {
-    marginBottom: Spacing.md,
-  },
-  label: {
-    marginBottom: Spacing.xs,
-    fontWeight: '500',
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1.5,
-    borderRadius: BorderRadius.md,
-    paddingHorizontal: Spacing.md,
-    height: 48,
-  },
-  input: {
-    flex: 1,
-    ...Typography.body,
-    paddingVertical: 0,
-  },
-  leftIconContainer: {
-    marginRight: Spacing.sm,
-  },
-  rightIconContainer: {
-    marginLeft: Spacing.sm,
-  },
-  errorText: {
-    marginTop: 4,
-    fontSize: 11,
-  },
-});

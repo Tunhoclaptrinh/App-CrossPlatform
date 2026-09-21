@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { View, useColorScheme, Alert } from 'react-native';
 import { CheckCircle2, ShieldCheck, Zap, KeyRound } from 'lucide-react-native';
 import { Button, Chip } from 'react-native-paper';
-import { AppText, AppButton, AppInput, ScreenWrapper, SkeletonCard } from '@/components';
+import { AppText, AppButton, AppInput, ScreenWrapper, SkeletonCard, EmptyState } from '@/components';
 import { Colors } from '@/constants/colors';
-import { useAppStore } from '@/hooks';
+import { useAppStore, useToast } from '@/hooks';
 import { appStorage, STORAGE_KEYS } from '@/services/storage';
+import { appUpdateService } from '@/services/update';
 import type { DetailsScreenProps } from '@/navigation/types';
 import { createDetailsStyles } from './styles';
 
@@ -16,6 +17,8 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
   const styles = createDetailsStyles(themeColors);
 
   const { counter, increment, reset } = useAppStore();
+  const toast = useToast();
+
   const [apiKeyInput, setApiKeyInput] = useState('');
   const [savedKey, setSavedKey] = useState<string | null>(null);
 
@@ -30,12 +33,21 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
 
   const handleSaveKey = async () => {
     if (!apiKeyInput.trim()) {
-      Alert.alert('Lỗi', 'Vui lòng nhập giá trị trước khi lưu!');
+      toast.show('warning', 'Vui lòng nhập giá trị trước khi lưu!', 'Cảnh báo');
       return;
     }
     await appStorage.setItem(STORAGE_KEYS.AI_API_KEY, apiKeyInput.trim());
     setSavedKey(apiKeyInput.trim());
-    Alert.alert('Thành công', 'Đã lưu giá trị vào AsyncStorage bền vững!');
+    toast.show('success', 'Đã lưu giá trị vào AsyncStorage bền vững!', 'Lưu thành công');
+  };
+
+  const handleTestToast = () => {
+    toast.show('info', 'Đây là thông báo Toast toàn cục chuẩn Mobile!', 'Thông báo');
+  };
+
+  const handleCheckUpdate = async () => {
+    const update = await appUpdateService.checkForUpdates();
+    appUpdateService.promptUpdateIfAvailable(update);
   };
 
   return (
@@ -92,7 +104,7 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
           />
           {savedKey && (
             <AppText variant="caption" color="#10B981" style={styles.savedKeyText}>
-              ✓ Đang lưu trong máy: {savedKey.slice(0, 4)}••••{savedKey.slice(-3)}
+              ✓ Đang lưu trong máy: {savedKey.slice(0, 4)}*****{savedKey.slice(-3)}
             </AppText>
           )}
           <Button
@@ -115,6 +127,23 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
 
           <Button
             mode="outlined"
+            icon="bell-outline"
+            onPress={handleTestToast}
+          >
+            Bật thử thông báo Toast
+          </Button>
+
+          <Button
+            mode="outlined"
+            icon="update"
+            textColor={themeColors.textSecondary}
+            onPress={handleCheckUpdate}
+          >
+            Kiểm tra cập nhật App
+          </Button>
+
+          <Button
+            mode="text"
             textColor={themeColors.textSecondary}
             onPress={reset}
           >
@@ -134,6 +163,18 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
           Demo Skeleton Shimmer Loading
         </AppText>
         <SkeletonCard />
+      </View>
+
+      <View style={styles.skeletonSection}>
+        <AppText variant="title" style={styles.sectionHeading}>
+          Demo EmptyState Component
+        </AppText>
+        <EmptyState
+          title="Chưa có thông báo mới"
+          description="Hộp thư thông báo của bạn hiện đang trống."
+          actionText="Tải lại"
+          onActionPress={() => Alert.alert('Thông báo', 'Đã làm mới!')}
+        />
       </View>
     </ScreenWrapper>
   );

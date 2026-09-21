@@ -1,97 +1,104 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# React Native Universal Base App (Starter Template)
 
-# Getting Started
+> Bộ khung ứng dụng di động đa nền tảng (React Native 0.87+ New Architecture & TypeScript) chuẩn công nghiệp, sẵn sàng cho mọi thể loại đồ án và dự án thực tế: **App Local Offline**, **App Kết nối Server REST API**, hoặc **App Trợ lý AI**.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+---
 
-## Step 1: Start Metro
+## 🚀 Điểm Nổi Bật (Key Features)
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+* **Architecture:** Cấu trúc phân lớp chuẩn công nghiệp (`src/`), hỗ trợ Path Aliases (`@/*`).
+* **Modular Component Architecture:** Mọi component đều được chuẩn hóa theo cấu trúc tách biệt rõ ràng:
+  * `[Component].tsx`: Logic render giao diện thuần túy.
+  * `styles.ts`: Định nghĩa kiểu dáng qua `StyleSheet.create()`, tuyệt đối không dùng inline styles.
+  * `types.ts`: Toàn bộ TypeScript interfaces & props tách biệt.
+  * `constants.ts`: Các hằng số, giá trị mặc định của component (nếu có).
+  * `index.ts`: Re-export sạch sẽ, hỗ trợ import tiện lợi.
+* **Crash Resilience & Error Boundary:** Tích hợp sẵn `ErrorBoundary` chống văng app khi gặp lỗi JavaScript runtime và `useDoubleBackExit` chống thoát nhầm trên Android.
+* **Design System Toàn Cầu:** Bảng màu Semantic Palette (50–950), Thang Bo góc (`none` đến `pill`), Khoảng cách (`Spacing`), Kiểu chữ (`Typography`) và Đổ bóng Cross-platform (`Shadows`).
+* **UI Components Chuẩn Hóa:**
+  * `AppSearchBar`: Thanh tìm kiếm thời gian thực, tích hợp sẵn debounce, nút xóa nhanh và nút bộ lọc.
+  * `OptimizedList`: Danh sách hiệu năng cao tối ưu số node render, tích hợp sẵn EmptyState, Loading và Pull-to-refresh.
+  * `ScreenWrapper`: Tự xử lý SafeArea chống tai thỏ, Dark Mode & ẩn bàn phím tự động.
+  * `AppHeader`: Thanh tiêu đề tùy biến (Title, Subtitle, Back, Action buttons).
+  * `AppLogo`: Logo vector đa sắc thái Gradient.
+  * `AppInput`: Ô nhập chuẩn kèm Icon, ẩn/hiện mật khẩu, báo lỗi đỏ.
+  * `AppCard`: Thẻ đa biến thể (`elevated`, `outlined`, `flat`) hỗ trợ chạm và bo góc tùy biến.
+  * `AppBadge`: Huy hiệu trạng thái (`success`, `warning`, `error`, `info`, `neutral`).
+  * `Skeleton` & `SkeletonCard`: Khung xương tải dữ liệu nhấp nháy 60 FPS Native Driver.
+  * `EmptyState`: Màn hình thông báo danh sách trống thân thiện kèm nút hành động.
+  * `LoadingOverlay`: Lớp phủ mờ xoay vòng khi đang xử lý giao dịch.
+* **Hệ Thống API & Type Response Đầy Đủ:**
+  * `apiClient`: Universal HTTP client hỗ trợ REST API và AI endpoints.
+  * `ApiResponse<T>`, `ApiError`, `PaginatedResponse<T>`, `PaginationParams`, `RequestOptions`, `AiChatRequest`, `AiChatResponse`.
+* **Thư Viện Validate & Schemas Chặt Chẽ:**
+  * `zod`: Tích hợp schema xác thực form (`loginSchema`, `registerSchema`, `searchSchema`) kèm hàm `validateWithZod()` xuất lỗi dạng Map cho UI.
+  * `validators`: Kiểm tra nhanh Email, Số điện thoại Việt Nam (03, 05, 07, 08, 09, +84), Độ mạnh mật khẩu, URL.
+* **Tối Ưu Hiệu Năng & Chống Spam Sự Kiện:**
+  * `useDebounce`: Hoãn cập nhật state cho đến khi dừng gõ.
+  * `useThrottle`: Giới hạn tần suất xử lý giá trị (scroll offset).
+  * `useThrottleCallback`: Chống người dùng spam click nhiều lần vào nút Thanh toán / Gửi đơn / Gọi API.
+  * `removeVietnameseTones`: Chuẩn hóa tiếng Việt có dấu thành không dấu để tìm kiếm gõ không dấu vẫn ra chính xác.
+  * `timeAgo`: Định dạng thời gian tương đối bằng tiếng Việt ("Vừa xong", "5 phút trước", "Hôm qua").
+  * `formatFileSize`: Định dạng dung lượng tệp (B, KB, MB, GB).
+* **Thông Báo Toàn Cục (In-App Toast):** `useToast()` trượt từ đỉnh màn hình bằng Spring Animation mượt mà.
+* **Cơ Sở Dữ Liệu SQLite Siêu Tốc:** `@op-engineering/op-sqlite` chạy JSI C++ trực tiếp trên New Architecture.
+* **Lưu Trữ Bền Vững:** `appStorage` trên nền `@react-native-async-storage/async-storage`.
+* **Đa Ngôn Ngữ (i18n):** `i18next` + `react-i18next` hỗ trợ chuyển đổi Tiếng Việt & Tiếng Anh tức thì.
+* **Quản Trị Phiên Bản & Cập Nhật:** `appUpdateService` so sánh phiên bản và nhắc nhở người dùng cập nhật qua Store.
+* **Agent Skill & Quy Chuẩn Bảo Trì:** Tích hợp sẵn skill trong `.agents/skills/react-native-base/` và quy tắc nghiêm ngặt trong `docs/CONVENTIONS.md`.
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+---
 
-```sh
-# Using npm
-npm start
+## 🛠 Hướng Dẫn Cài Đặt & Chạy Dự Án
 
-# OR using Yarn
-yarn start
+### 1. Cài đặt thư viện:
+```bash
+npm install
 ```
 
-## Step 2: Build and run your app
-
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
-
-```sh
-# Using npm
+### 2. Chạy máy ảo Android:
+```bash
+# Bật máy ảo trong Android Studio trước, sau đó chạy:
 npm run android
-
-# OR using Yarn
-yarn android
 ```
 
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
+### 3. Kiểm định chất lượng code (Pre-flight Quality Check):
+```bash
+npm run lint       # Kiểm tra ESLint (0 errors, 0 warnings)
+npx tsc --noEmit   # Kiểm tra kiểu dữ liệu TypeScript (0 errors)
+npm test           # Chạy toàn bộ Unit Tests Jest (100% pass)
 ```
 
-Then, and every time you update your native dependencies, run:
+---
 
-```sh
-bundle exec pod install
+## 📁 Cấu Trúc Thư Mục Chuẩn
+
+```text
+src/
+├── assets/             # Hình ảnh, icons, fonts
+├── components/         # Reusable atomic UI & Toast
+│   ├── common/         # Mỗi component là 1 thư mục gồm: .tsx, styles.ts, types.ts, index.ts
+│   │   ├── AppBadge/
+│   │   ├── AppButton/
+│   │   ├── AppCard/
+│   │   ├── AppHeader/
+│   │   ├── AppInput/
+│   │   ├── AppLogo/
+│   │   ├── AppSearchBar/
+│   │   ├── AppText/
+│   │   ├── EmptyState/
+│   │   ├── ErrorBoundary/
+│   │   ├── LoadingOverlay/
+│   │   ├── OptimizedList/
+│   │   ├── ScreenWrapper/
+│   │   └── Skeleton/
+│   └── toast/          # In-App spring toast provider & hook
+├── constants/          # Colors, Spacing, Typography, Shadows, AppConfig
+├── hooks/              # useAppStore, useDebounce, useThrottle, useDoubleBackExit...
+├── i18n/               # vi.json, en.json, cấu hình i18next
+├── navigation/         # React Navigation v7 Native Stack
+├── screens/            # Splash, Home, Details (mỗi screen có styles.ts riêng)
+├── services/           # ApiClient (Universal REST/AI + types.ts), SQLite, Storage, AppUpdate
+├── types/              # Định nghĩa types toàn cục (api.ts, models.ts, index.ts)
+└── utils/              # formatters, validators, schemas (Zod), helpers
 ```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
-```
-
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
-
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.

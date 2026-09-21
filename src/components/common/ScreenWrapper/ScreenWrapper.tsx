@@ -4,22 +4,14 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  StyleSheet,
   TouchableWithoutFeedback,
   View,
-  ViewStyle,
   useColorScheme,
 } from 'react-native';
-import { SafeAreaView, SafeAreaViewProps } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '@/constants/colors';
-
-export interface ScreenWrapperProps extends SafeAreaViewProps {
-  children: React.ReactNode;
-  scrollable?: boolean;
-  contentContainerStyle?: ViewStyle;
-  disableKeyboardDismiss?: boolean;
-  backgroundColor?: string;
-}
+import type { ScreenWrapperProps } from './types';
+import { styles } from './styles';
 
 export const ScreenWrapper: React.FC<ScreenWrapperProps> = ({
   children,
@@ -70,18 +62,3 @@ export const ScreenWrapper: React.FC<ScreenWrapperProps> = ({
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  keyboardAvoid: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
-  staticContent: {
-    flex: 1,
-  },
-});

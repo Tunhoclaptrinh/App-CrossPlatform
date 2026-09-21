@@ -1,15 +1,8 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, StyleSheet, View, ViewStyle, useColorScheme } from 'react-native';
+import { Animated, View, ViewStyle, useColorScheme } from 'react-native';
 import { Colors } from '@/constants/colors';
-import { BorderRadius } from '@/constants/theme';
-
-export interface SkeletonProps {
-  width?: number | string;
-  height?: number | string;
-  borderRadius?: number;
-  variant?: 'rectangular' | 'circular' | 'text';
-  style?: ViewStyle;
-}
+import type { SkeletonProps, SkeletonCardProps } from './types';
+import { styles, getSkeletonRadius } from './styles';
 
 export const Skeleton: React.FC<SkeletonProps> = ({
   width = '100%',
@@ -44,24 +37,17 @@ export const Skeleton: React.FC<SkeletonProps> = ({
     return () => pulseAnimation.stop();
   }, [opacity]);
 
-  const getBorderRadius = () => {
-    if (borderRadius !== undefined) return borderRadius;
-    if (variant === 'circular') return BorderRadius.full;
-    if (variant === 'text') return BorderRadius.sm;
-    return BorderRadius.md;
-  };
-
   const baseStyle: ViewStyle = {
     width: width as any,
     height: height as any,
-    borderRadius: getBorderRadius(),
+    borderRadius: getSkeletonRadius(variant, borderRadius),
     backgroundColor: themeColors.border,
   };
 
   return <Animated.View style={[baseStyle, { opacity }, style]} />;
 };
 
-export const SkeletonCard: React.FC<{ style?: ViewStyle }> = ({ style }) => {
+export const SkeletonCard: React.FC<SkeletonCardProps> = ({ style }) => {
   const isDarkMode = useColorScheme() === 'dark';
   const themeColors = isDarkMode ? Colors.dark : Colors.light;
 
@@ -86,24 +72,3 @@ export const SkeletonCard: React.FC<{ style?: ViewStyle }> = ({ style }) => {
     </Animated.View>
   );
 };
-
-const styles = StyleSheet.create({
-  cardContainer: {
-    padding: 16,
-    borderRadius: BorderRadius.lg,
-    borderWidth: 1,
-    marginBottom: 16,
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  cardHeaderTexts: {
-    marginLeft: 12,
-    flex: 1,
-  },
-  mbSm: {
-    marginBottom: 8,
-  },
-});

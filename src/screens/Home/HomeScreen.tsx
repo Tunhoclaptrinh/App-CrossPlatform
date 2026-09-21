@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, useColorScheme, TouchableOpacity } from 'react-native';
 import {
   Compass,
@@ -9,27 +9,33 @@ import {
   Layers,
   Languages,
   Server,
+  Sparkles,
 } from 'lucide-react-native';
 import { Button, Chip } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
-import { AppText, ScreenWrapper } from '@/components';
+import { AppText, ScreenWrapper, AppSearchBar, EmptyState } from '@/components';
 import { Colors } from '@/constants/colors';
-import { useAppStore } from '@/hooks';
-import { changeLanguage } from '@/i18n';
+import { useAppStore, useThemeMode, useDoubleBackExit } from '@/hooks';
+import { removeVietnameseTones } from '@/utils';
 import type { HomeScreenProps } from '@/navigation/types';
 import { createHomeStyles } from './styles';
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
-  const isDarkMode = useColorScheme() === 'dark';
-  const themeColors = isDarkMode ? Colors.dark : Colors.light;
+  const deviceColorScheme = useColorScheme();
+  const themeColors = deviceColorScheme === 'dark' ? Colors.dark : Colors.light;
   const styles = createHomeStyles(themeColors);
 
-  const { t, i18n } = useTranslation();
-  const { counter, increment } = useAppStore();
+  // Bảo vệ không bị vô tình thoát app khi nhấn Back ở màn hình chính
+  useDoubleBackExit();
+
+  const { t } = useTranslation();
+  const { counter, increment, language, setLanguage } = useAppStore();
+  const { isDark, toggleTheme } = useThemeMode();
+  const [searchQuery, setSearchQuery] = useState('');
 
   const toggleLanguage = () => {
-    const nextLang = i18n.language === 'vi' ? 'en' : 'vi';
-    changeLanguage(nextLang);
+    const nextLang = language === 'vi' ? 'en' : 'vi';
+    setLanguage(nextLang);
   };
 
   const modules = [
@@ -69,13 +75,25 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       color: '#8B5CF6',
     },
     {
-      id: 'core',
-      title: 'Universal Base Architecture',
-      desc: 'ScreenWrapper, AppInput, ApiClient, Skeleton, useDebounce',
-      icon: Layers,
+      id: 'utils',
+      title: 'Validation & Performance',
+      desc: 'Zod schemas, useDebounce, useThrottle, OptimizedList, Formatters',
+      icon: Sparkles,
       color: '#EC4899',
     },
+    {
+      id: 'core',
+      title: 'Universal Base Architecture',
+      desc: 'ScreenWrapper, AppInput, ApiClient, Skeleton, Toast, ErrorBoundary',
+      icon: Layers,
+      color: '#6366F1',
+    },
   ];
+
+  const normalizedQuery = removeVietnameseTones(searchQuery);
+  const filteredModules = modules.filter((item) =>
+    removeVietnameseTones(item.title + ' ' + item.desc).includes(normalizedQuery)
+  );
 
   return (
     <ScreenWrapper scrollable contentContainerStyle={styles.content}>
@@ -88,14 +106,25 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             </AppText>
           </View>
 
-          <Chip
-            icon="web"
-            mode="outlined"
-            onPress={toggleLanguage}
-            style={styles.langChip}
-          >
-            {i18n.language === 'vi' ? '🇻🇳 Tiếng Việt' : '🇬🇧 English'}
-          </Chip>
+          <View style={styles.headerControls}>
+            <Chip
+              icon={isDark ? 'weather-night' : 'weather-sunny'}
+              mode="outlined"
+              onPress={toggleTheme}
+              style={styles.langChip}
+            >
+              {isDark ? 'Tối' : 'Sáng'}
+            </Chip>
+
+            <Chip
+              icon="web"
+              mode="outlined"
+              onPress={toggleLanguage}
+              style={styles.langChip}
+            >
+              {language === 'vi' ? '🇻🇳 VI' : '🇺🇸 EN'}
+            </Chip>
+          </View>
         </View>
 
         <AppText variant="header" style={styles.title}>
@@ -116,44 +145,62 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         </Button>
       </View>
 
+      <View style={styles.searchContainer}>
+        <AppSearchBar
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder="Tìm kiếm module, tiện ích..."
+          onClear={() => setSearchQuery('')}
+        />
+      </View>
+
       <AppText variant="title" style={styles.sectionTitle}>
-        {t('modulesTitle', 'Các Module Nền Tảng Đã Sẵn Sàng')}
+        {t('modulesTitle', 'Các Module Nền Tảng Đã Sẵn Sàng')} ({filteredModules.length})
       </AppText>
 
-      <View style={styles.grid}>
-        {modules.map((item) => {
-          const IconComponent = item.icon;
-          return (
-            <TouchableOpacity
-              key={item.id}
-              activeOpacity={0.7}
-              style={styles.itemCard}
-              onPress={() =>
-                navigation.navigate('Details', {
-                  itemId: item.id,
-                  title: item.title,
-                  description: item.desc,
-                })
-              }
-            >
-              <View style={styles.itemLeft}>
-                <View style={[styles.iconWrapper, { backgroundColor: item.color + '20' }]}>
-                  <IconComponent size={22} color={item.color} />
+      {filteredModules.length === 0 ? (
+        <EmptyState
+          title="Không tìm thấy kết quả"
+          description={`Không có module nào khớp với từ khóa "${searchQuery}"`}
+          actionText="Xóa tìm kiếm"
+          onActionPress={() => setSearchQuery('')}
+        />
+      ) : (
+        <View style={styles.grid}>
+          {filteredModules.map((item) => {
+            const IconComponent = item.icon;
+            return (
+              <TouchableOpacity
+                key={item.id}
+                activeOpacity={0.7}
+                style={styles.itemCard}
+                onPress={() =>
+                  navigation.navigate('Details', {
+                    itemId: item.id,
+                    title: item.title,
+                    description: item.desc,
+                  })
+                }
+              >
+                <View style={styles.itemLeft}>
+                  <View style={[styles.iconWrapper, { backgroundColor: item.color + '20' }]}>
+                    <IconComponent size={22} color={item.color} />
+                  </View>
+                  <View style={styles.itemTexts}>
+                    <AppText variant="subtitle" style={styles.itemTitle}>
+                      {item.title}
+                    </AppText>
+                    <AppText variant="caption" style={styles.itemDesc} numberOfLines={2}>
+                      {item.desc}
+                    </AppText>
+                  </View>
                 </View>
-                <View style={styles.itemTexts}>
-                  <AppText variant="subtitle" style={styles.itemTitle}>
-                    {item.title}
-                  </AppText>
-                  <AppText variant="caption" style={styles.itemDesc} numberOfLines={2}>
-                    {item.desc}
-                  </AppText>
-                </View>
-              </View>
-              <ChevronRight size={20} color={themeColors.textSecondary} />
-            </TouchableOpacity>
-          );
-        })}
-      </View>
+                <ChevronRight size={20} color={themeColors.textSecondary} />
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      )}
     </ScreenWrapper>
   );
 };

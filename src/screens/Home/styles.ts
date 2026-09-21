@@ -34,6 +34,11 @@ export const createHomeStyles = (colors: {
       width: '100%',
       alignItems: 'center',
     },
+    headerControls: {
+      flexDirection: 'row',
+      gap: Spacing.sm,
+      alignItems: 'center',
+    },
     langChip: {
       marginBottom: 12,
     },
@@ -103,6 +108,9 @@ export const createHomeStyles = (colors: {
     },
     itemDesc: {
       color: colors.textSecondary,
+    },
+    searchContainer: {
+      marginBottom: Spacing.md,
     },
     storeBox: {
       backgroundColor: colors.card,

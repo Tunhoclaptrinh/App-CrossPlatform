@@ -1,3 +1,4 @@
 export * from './storage';
 export * from './api';
 export * from './database';
+export * from './update';

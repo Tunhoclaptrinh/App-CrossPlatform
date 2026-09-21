@@ -1,18 +1,8 @@
 import { AppConfig } from '@/constants/config';
 import { appStorage, STORAGE_KEYS } from '@/services/storage/appStorage';
+import type { ApiResponse, RequestOptions } from './types';
 
-export interface ApiResponse<T = any> {
-  data: T | null;
-  error: string | null;
-  status: number;
-  ok: boolean;
-}
-
-export interface RequestOptions extends RequestInit {
-  timeout?: number;
-  headers?: Record<string, string>;
-  params?: Record<string, string | number | boolean>;
-}
+export * from './types';
 
 async function request<T = any>(
   endpoint: string,
