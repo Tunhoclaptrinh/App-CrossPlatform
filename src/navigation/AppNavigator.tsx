@@ -1,19 +1,17 @@
 import React from 'react';
-import { useColorScheme } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import { SplashScreen } from '@/screens/Splash';
 import { HomeScreen } from '@/screens/Home';
 import { DetailsScreen } from '@/screens/Details';
+import { useThemeMode } from '@/hooks';
 import { RootStackParamList } from './types';
-import { Colors } from '@/constants/colors';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const AppNavigator: React.FC = () => {
   const { t } = useTranslation();
-  const isDarkMode = useColorScheme() === 'dark';
-  const themeColors = isDarkMode ? Colors.dark : Colors.light;
+  const { theme: themeColors } = useThemeMode();
 
   return (
     <Stack.Navigator

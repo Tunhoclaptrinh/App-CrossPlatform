@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, useColorScheme, Alert } from 'react-native';
-import { CheckCircle2, ShieldCheck, Zap, KeyRound, FileText, Sparkles, Radio, Smartphone } from 'lucide-react-native';
+import { View, Alert } from 'react-native';
+import {
+  CheckCircle2,
+  ShieldCheck,
+  Zap,
+  KeyRound,
+  FileText,
+  Sparkles,
+  Radio,
+  Smartphone,
+} from 'lucide-react-native';
 import { Button, Chip } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import {
@@ -18,9 +27,8 @@ import {
   AppWebView,
   GlassCard,
 } from '@/components';
-import { Colors } from '@/constants/colors';
 import { AppleColors } from '@/constants/appleTheme';
-import { useAppStore, useToast, useShakeDetection } from '@/hooks';
+import { useAppStore, useToast, useShakeDetection, useThemeMode } from '@/hooks';
 import { appStorage, STORAGE_KEYS } from '@/services/storage';
 import { appUpdateService } from '@/services/update';
 import { fileService } from '@/services/file';
@@ -33,8 +41,7 @@ import { createDetailsStyles } from './styles';
 
 export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation }) => {
   const { title, description } = route.params;
-  const isDarkMode = useColorScheme() === 'dark';
-  const themeColors = isDarkMode ? Colors.dark : Colors.light;
+  const { theme: themeColors } = useThemeMode();
   const styles = createDetailsStyles(themeColors);
 
   const { t } = useTranslation();
@@ -302,8 +309,8 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
         </View>
 
         <View style={styles.chipRow}>
-          <Chip icon="check" mode="outlined">Production Ready</Chip>
-          <Chip icon="database" mode="outlined">Persistent Storage</Chip>
+          <Chip mode="outlined">✓ Production Ready</Chip>
+          <Chip mode="outlined">💾 Persistent Storage</Chip>
         </View>
 
         {/* Demo Form Controls: Checkbox & Switch */}
@@ -667,8 +674,8 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
               <AppText variant="caption" color={themeColors.textSecondary}>
                 {t('appleGlass.activeTheme')}:
               </AppText>
-              <Chip mode="outlined" icon={themeStyle === 'apple-glass' ? 'apple' : 'shape'}>
-                {themeStyle === 'apple-glass' ? t('appleGlass.appleTheme') : t('appleGlass.defaultTheme')}
+              <Chip mode="outlined">
+                {themeStyle === 'apple-glass' ? '✨ ' + t('appleGlass.appleTheme') : '📱 ' + t('appleGlass.defaultTheme')}
               </Chip>
             </View>
 

@@ -98,7 +98,8 @@ Toàn bộ phản hồi từ server hoặc AI model phải được định ki�
 ## 9. Cảm Biến Thiết Bị & Phản Hồi Rung (Haptics Vibration Feedback)
 
 * **`haptics` (`src/utils/haptics.ts`)**: Tích hợp xúc giác rung phản hồi tự nhiên qua React Native `Vibration` API:
-  * `haptics.light()`: Rung nhẹ khi chạm nút, bật/tắt checkbox, switch.
+  * Cơ chế an toàn chủ động (Fault-tolerant): Tự động kiểm tra quyền `android.permission.VIBRATE` trên Android qua `PermissionsAndroid.check` trước khi gọi để ngăn ngừa crash `SecurityException` từ native Android Binder IPC.
+  * `haptics.light()`: Rung nhẹ khi chạm nút, bật/tắt checkbox, switch, chuyển theme.
   * `haptics.medium()`: Rung vừa khi mở hộp thoại xác nhận, mở menu.
   * `haptics.heavy()`: Rung mạnh cho hành động quan trọng hoặc cảnh báo.
   * `haptics.success()`: Chuỗi xung nhịp đôi báo thành công.

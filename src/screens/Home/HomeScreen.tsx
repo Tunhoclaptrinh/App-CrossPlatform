@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, useColorScheme, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import {
   Compass,
   Palette,
@@ -16,15 +16,13 @@ import {
 import { Button, Chip } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { AppText, ScreenWrapper, AppSearchBar, EmptyState } from '@/components';
-import { Colors } from '@/constants/colors';
 import { useAppStore, useThemeMode, useDoubleBackExit } from '@/hooks';
 import { removeVietnameseTones, haptics } from '@/utils';
 import type { HomeScreenProps } from '@/navigation/types';
 import { createHomeStyles, getIconWrapperStyle } from './styles';
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
-  const deviceColorScheme = useColorScheme();
-  const themeColors = deviceColorScheme === 'dark' ? Colors.dark : Colors.light;
+  const { theme: themeColors, isDark, toggleTheme } = useThemeMode();
   const styles = createHomeStyles(themeColors);
 
   // Bảo vệ không bị vô tình thoát app khi nhấn Back ở màn hình chính
@@ -32,7 +30,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
   const { t } = useTranslation();
   const { counter, increment, language, setLanguage, themeStyle, toggleThemeStyle } = useAppStore();
-  const { isDark, toggleTheme } = useThemeMode();
   const [searchQuery, setSearchQuery] = useState('');
 
   const toggleLanguage = () => {
@@ -144,16 +141,14 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
           <View style={styles.headerControls}>
             <Chip
-              icon={themeStyle === 'apple-glass' ? 'apple' : 'shape'}
               mode="outlined"
               onPress={handleToggleThemeStyle}
               style={styles.langChip}
             >
-              {themeStyle === 'apple-glass' ? 'Apple Glass' : 'Flat UI'}
+              {themeStyle === 'apple-glass' ? '✨ Apple Glass' : '📱 Flat UI'}
             </Chip>
 
             <Chip
-              icon={isDark ? 'weather-night' : 'weather-sunny'}
               mode="outlined"
               onPress={() => {
                 haptics.light();
@@ -161,11 +156,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
               }}
               style={styles.langChip}
             >
-              {isDark ? t('common.dark', 'Tối') : t('common.light', 'Sáng')}
+              {isDark ? '🌙 ' + t('common.dark', 'Tối') : '☀️ ' + t('common.light', 'Sáng')}
             </Chip>
 
             <Chip
-              icon="web"
               mode="outlined"
               onPress={toggleLanguage}
               style={styles.langChip}

@@ -49,6 +49,7 @@
   * `useSwipeGesture`: Nhận diện vuốt 4 hướng (Trái, Phải, Lên, Xuống) qua PanResponder.
   * `useDoubleTap`: Nhận diện chạm đúp dưới 300ms.
   * `useShakeDetection`: Nhận diện chuyển động lắc điện thoại qua cảm biến gia tốc, phản hồi rung mạnh (`haptics.heavy()`), cơ chế cooldown chống lặp và hàm `simulateShake()` cho máy ảo / test.
+  * `haptics`: Phản hồi xúc giác rung chống crash an toàn tuyệt đối trên Android (bọc kiểm tra `android.permission.VIBRATE` qua `PermissionsAndroid.check`).
   * `GestureCard`: Thẻ tương tác phản hồi cử chỉ trực quan.
 * **Cầu Nối Widget & In-App Webview:**
   * `widgetBridgeService`: Xuất snapshot dữ liệu app đồng bộ ra Android AppWidget / iOS WidgetKit.

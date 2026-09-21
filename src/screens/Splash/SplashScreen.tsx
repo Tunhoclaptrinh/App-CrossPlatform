@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, View, useColorScheme, ActivityIndicator } from 'react-native';
+import { Animated, View, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { AppText, AppLogo } from '@/components';
-import { Colors } from '@/constants/colors';
+import { useThemeMode } from '@/hooks';
 import { database } from '@/services/database';
 import { AppConfig } from '@/constants/config';
 import type { SplashScreenProps } from '@/navigation/types';
@@ -10,8 +10,7 @@ import { createSplashStyles } from './styles';
 
 export const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
   const { t } = useTranslation();
-  const isDarkMode = useColorScheme() === 'dark';
-  const themeColors = isDarkMode ? Colors.dark : Colors.light;
+  const { theme: themeColors } = useThemeMode();
   const styles = createSplashStyles(themeColors);
 
   const scale = useRef(new Animated.Value(0.85)).current;
@@ -27,7 +26,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
       }),
       Animated.timing(opacity, {
         toValue: 1,
-        duration: 800,
+        duration: 400,
         useNativeDriver: true,
       }),
     ]).start();
@@ -37,7 +36,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
       await database.initTables();
       setTimeout(() => {
         navigation.replace('Home');
-      }, 1500);
+      }, 500);
     };
 
     initApp();

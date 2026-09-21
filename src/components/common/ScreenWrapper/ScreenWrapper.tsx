@@ -6,10 +6,9 @@ import {
   ScrollView,
   TouchableWithoutFeedback,
   View,
-  useColorScheme,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors } from '@/constants/colors';
+import { useThemeMode } from '@/hooks/useThemeMode';
 import type { ScreenWrapperProps } from './types';
 import { styles } from './styles';
 
@@ -23,8 +22,7 @@ export const ScreenWrapper: React.FC<ScreenWrapperProps> = ({
   edges = ['top', 'bottom', 'left', 'right'],
   ...props
 }) => {
-  const isDarkMode = useColorScheme() === 'dark';
-  const themeColors = isDarkMode ? Colors.dark : Colors.light;
+  const { theme: themeColors } = useThemeMode();
   const bgColor = backgroundColor || themeColors.background;
 
   const content = scrollable ? (

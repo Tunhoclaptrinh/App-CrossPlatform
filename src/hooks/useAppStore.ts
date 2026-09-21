@@ -35,7 +35,7 @@ export interface AppStoreState {
 export const useAppStore = create<AppStoreState>()(
   persist(
     (set, get) => ({
-      themeMode: 'system',
+      themeMode: 'light',
       setThemeMode: (mode: ThemeMode) => set({ themeMode: mode }),
       toggleTheme: () => {
         const current = get().themeMode;

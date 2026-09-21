@@ -88,7 +88,7 @@ This skill documents the conventions, directory structure, state protocols, and 
   - `file.ts`: `getMimeType`, `isImageFile`, `isDocumentFile`, `checkFileConstraints`.
   - `clipboard.ts`: `clipboardHelper.setString`, `clipboardHelper.getString`.
   - `browser.ts`: `browserHelper.openUrl`.
-  - `haptics.ts`: Hardware tactile vibration feedback (`light`, `medium`, `heavy`, `success`, `error`, `cancel`).
+  - `haptics.ts`: Hardware tactile vibration feedback (`light`, `medium`, `heavy`, `success`, `error`, `cancel`) with Android runtime/manifest permission check guard (`android.permission.VIBRATE`) to avoid native Binder `SecurityException`.
   - `share.ts`: Native OS Share Sheet helper (`shareText`, `shareUrl`).
   - `permissions.ts`: Mobile runtime permissions helper (Camera, Photos, Notifications, Microphone, Location).
   - `helpers.ts`: Currency, date formatters.
