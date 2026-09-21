@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, useColorScheme, TouchableOpacity } from 'react-native';
 import {
-  Sparkles,
   Compass,
   Palette,
   ShieldCheck,
@@ -72,7 +71,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     {
       id: 'core',
       title: 'Universal Base Architecture',
-      desc: 'ScreenWrapper, AppInput, ApiClient, useDebounce tích hợp sẵn',
+      desc: 'ScreenWrapper, AppInput, ApiClient, Skeleton, useDebounce',
       icon: Layers,
       color: '#EC4899',
     },
@@ -81,7 +80,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   return (
     <ScreenWrapper scrollable contentContainerStyle={styles.content}>
       <View style={styles.headerCard}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+        <View style={styles.headerTopRow}>
           <View style={styles.badge}>
             <ShieldCheck size={16} color={themeColors.primary} />
             <AppText variant="caption" style={styles.badgeText}>
@@ -93,7 +92,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             icon="web"
             mode="outlined"
             onPress={toggleLanguage}
-            style={{ marginBottom: 12 }}
+            style={styles.langChip}
           >
             {i18n.language === 'vi' ? '🇻🇳 Tiếng Việt' : '🇬🇧 English'}
           </Chip>

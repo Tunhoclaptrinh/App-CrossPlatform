@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, useColorScheme, Alert } from 'react-native';
-import { CheckCircle2, ShieldCheck, Zap, KeyRound, Save } from 'lucide-react-native';
+import { CheckCircle2, ShieldCheck, Zap, KeyRound } from 'lucide-react-native';
 import { Button, Chip } from 'react-native-paper';
-import { AppText, AppButton, AppInput, ScreenWrapper } from '@/components';
+import { AppText, AppButton, AppInput, ScreenWrapper, SkeletonCard } from '@/components';
 import { Colors } from '@/constants/colors';
 import { useAppStore } from '@/hooks';
 import { appStorage, STORAGE_KEYS } from '@/services/storage';
@@ -20,7 +20,6 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
   const [savedKey, setSavedKey] = useState<string | null>(null);
 
   useEffect(() => {
-    // Load persisted data on mount
     appStorage.getItem<string>(STORAGE_KEYS.AI_API_KEY).then((key) => {
       if (key) {
         setSavedKey(key);
@@ -66,7 +65,7 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
         <View style={styles.infoRow}>
           <ShieldCheck color="#10B981" size={20} />
           <AppText variant="body" style={styles.infoText}>
-            AsyncStorage: Lưu trữ Offline & Cài đặt bền vững
+            AsyncStorage & SQLite: Lưu trữ dữ liệu bền vững
           </AppText>
         </View>
 
@@ -77,13 +76,12 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
           </AppText>
         </View>
 
-        <View style={{ flexDirection: 'row', gap: 8, marginVertical: 12 }}>
+        <View style={styles.chipRow}>
           <Chip icon="check" mode="outlined">Production Ready</Chip>
           <Chip icon="database" mode="outlined">Persistent Storage</Chip>
         </View>
 
-        {/* Demo Input & Storage */}
-        <View style={{ marginVertical: 12 }}>
+        <View style={styles.demoBox}>
           <AppInput
             label="Thử nghiệm lưu Local Storage (ví dụ: API Key / Ghi chú):"
             placeholder="Nhập chuỗi bất kỳ để test..."
@@ -93,13 +91,13 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
             leftIcon={<KeyRound size={18} color={themeColors.textSecondary} />}
           />
           {savedKey && (
-            <AppText variant="caption" color="#10B981" style={{ marginBottom: 8 }}>
+            <AppText variant="caption" color="#10B981" style={styles.savedKeyText}>
               ✓ Đang lưu trong máy: {savedKey.slice(0, 4)}••••{savedKey.slice(-3)}
             </AppText>
           )}
           <Button
             mode="contained-tonal"
-            icon={() => <Save size={16} color={themeColors.primary} />}
+            icon="content-save"
             onPress={handleSaveKey}
           >
             Lưu vào Local Storage
@@ -129,6 +127,13 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
             onPress={() => navigation.goBack()}
           />
         </View>
+      </View>
+
+      <View style={styles.skeletonSection}>
+        <AppText variant="title" style={styles.sectionHeading}>
+          Demo Skeleton Shimmer Loading
+        </AppText>
+        <SkeletonCard />
       </View>
     </ScreenWrapper>
   );

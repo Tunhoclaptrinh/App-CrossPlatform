@@ -28,6 +28,15 @@ export const createHomeStyles = (colors: {
       marginBottom: Spacing.lg,
       alignItems: 'center',
     },
+    headerTopRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      width: '100%',
+      alignItems: 'center',
+    },
+    langChip: {
+      marginBottom: 12,
+    },
     badge: {
       flexDirection: 'row',
       alignItems: 'center',

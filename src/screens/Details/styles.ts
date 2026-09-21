@@ -57,8 +57,26 @@ export const createDetailsStyles = (colors: {
       color: colors.text,
       fontWeight: '500',
     },
+    chipRow: {
+      flexDirection: 'row',
+      gap: Spacing.sm,
+      marginVertical: Spacing.md,
+    },
+    demoBox: {
+      marginVertical: Spacing.md,
+    },
+    savedKeyText: {
+      marginBottom: Spacing.sm,
+    },
     actions: {
       gap: Spacing.md,
       marginTop: Spacing.md,
+    },
+    skeletonSection: {
+      marginTop: Spacing.lg,
+    },
+    sectionHeading: {
+      color: colors.text,
+      marginBottom: Spacing.sm,
     },
   });

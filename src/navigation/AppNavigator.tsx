@@ -1,6 +1,7 @@
 import React from 'react';
 import { useColorScheme } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { SplashScreen } from '@/screens/Splash';
 import { HomeScreen } from '@/screens/Home';
 import { DetailsScreen } from '@/screens/Details';
 import { RootStackParamList } from './types';
@@ -14,7 +15,7 @@ export const AppNavigator: React.FC = () => {
 
   return (
     <Stack.Navigator
-      initialRouteName="Home"
+      initialRouteName="Splash"
       screenOptions={{
         headerStyle: {
           backgroundColor: themeColors.card,
@@ -28,6 +29,13 @@ export const AppNavigator: React.FC = () => {
         },
       }}
     >
+      <Stack.Screen
+        name="Splash"
+        component={SplashScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
       <Stack.Screen
         name="Home"
         component={HomeScreen}
