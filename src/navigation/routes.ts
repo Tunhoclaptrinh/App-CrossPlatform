@@ -1,4 +1,4 @@
-﻿export const Routes = {
+export const Routes = {
   HOME: 'Home',
   DETAILS: 'Details',
   LOGIN: 'Login',

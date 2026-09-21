@@ -1,4 +1,4 @@
-﻿import { StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { Spacing, BorderRadius } from '@/constants/theme';
 
 export const createHomeStyles = (colors: {
@@ -17,6 +17,7 @@ export const createHomeStyles = (colors: {
     },
     content: {
       padding: Spacing.lg,
+      paddingBottom: Spacing.xxl,
     },
     headerCard: {
       backgroundColor: colors.card,
@@ -28,6 +29,9 @@ export const createHomeStyles = (colors: {
       alignItems: 'center',
     },
     badge: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: Spacing.xs,
       backgroundColor: colors.primaryLight,
       paddingHorizontal: Spacing.md,
       paddingVertical: Spacing.xs,
@@ -46,27 +50,59 @@ export const createHomeStyles = (colors: {
     subtitle: {
       color: colors.textSecondary,
       textAlign: 'center',
-      marginBottom: Spacing.lg,
+      marginBottom: Spacing.md,
     },
-    counterButton: {
-      minWidth: 190,
+    sectionTitle: {
+      color: colors.text,
+      marginBottom: Spacing.md,
+      marginTop: Spacing.sm,
     },
     grid: {
       gap: Spacing.md,
-      marginBottom: Spacing.xl,
+      marginBottom: Spacing.lg,
     },
-    card: {
+    itemCard: {
+      backgroundColor: colors.card,
+      borderRadius: BorderRadius.md,
+      borderWidth: 1,
+      borderColor: colors.border,
+      padding: Spacing.md,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    itemLeft: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: Spacing.md,
+      flex: 1,
+    },
+    iconWrapper: {
+      width: 44,
+      height: 44,
+      borderRadius: BorderRadius.sm,
+      backgroundColor: colors.primaryLight,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    itemTexts: {
+      flex: 1,
+    },
+    itemTitle: {
+      color: colors.text,
+      marginBottom: 2,
+    },
+    itemDesc: {
+      color: colors.textSecondary,
+    },
+    storeBox: {
       backgroundColor: colors.card,
       padding: Spacing.md,
       borderRadius: BorderRadius.md,
       borderWidth: 1,
       borderColor: colors.border,
-    },
-    cardTitle: {
-      color: colors.text,
-      marginBottom: Spacing.xs,
-    },
-    cardDesc: {
-      color: colors.textSecondary,
+      marginBottom: Spacing.lg,
+      alignItems: 'center',
+      gap: Spacing.sm,
     },
   });

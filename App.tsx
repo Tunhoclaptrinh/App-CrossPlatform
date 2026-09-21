@@ -1,27 +1,24 @@
-﻿import React from 'react';
-import { StatusBar, StyleSheet, useColorScheme } from 'react-native';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { HomeScreen } from '@/screens';
-import { Colors } from '@/constants';
+import React from 'react';
+import { StatusBar, useColorScheme } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { NavigationContainer } from '@react-navigation/native';
+import { PaperProvider, MD3DarkTheme, MD3LightTheme } from 'react-native-paper';
+import { AppNavigator } from '@/navigation';
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
-  const themeColors = isDarkMode ? Colors.dark : Colors.light;
+  const paperTheme = isDarkMode ? MD3DarkTheme : MD3LightTheme;
 
   return (
     <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background }]}>
-        <HomeScreen />
-      </SafeAreaView>
+      <PaperProvider theme={paperTheme}>
+        <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+        <NavigationContainer>
+          <AppNavigator />
+        </NavigationContainer>
+      </PaperProvider>
     </SafeAreaProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
 
 export default App;

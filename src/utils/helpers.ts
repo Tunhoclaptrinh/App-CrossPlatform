@@ -1,4 +1,4 @@
-﻿export const formatCurrency = (
+export const formatCurrency = (
   amount: number,
   locale: string = 'vi-VN',
   currency: string = 'VND',

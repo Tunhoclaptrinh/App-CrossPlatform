@@ -1,4 +1,4 @@
-﻿export const Colors = {
+export const Colors = {
   light: {
     primary: '#2563EB',
     primaryLight: '#DBEAFE',

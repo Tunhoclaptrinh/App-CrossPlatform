@@ -1,2 +1,2 @@
-﻿export * from './AppText';
+export * from './AppText';
 export * from './AppButton';

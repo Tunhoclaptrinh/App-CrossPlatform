@@ -1,2 +1,2 @@
-﻿// Export API client and local storage helpers here
+// Export API client and local storage helpers here
 export {};
