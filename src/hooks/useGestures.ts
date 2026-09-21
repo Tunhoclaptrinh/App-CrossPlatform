@@ -1,4 +1,4 @@
-import { useRef, useCallback } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { PanResponder, GestureResponderEvent, PanResponderGestureState } from 'react-native';
 import { haptics } from '@/utils/haptics';
 
@@ -77,4 +77,57 @@ export function useDoubleTap(onDoubleTap: () => void, delay: number = 300) {
   );
 
   return handlePress;
+}
+
+export interface UseShakeDetectionOptions {
+  onShake?: () => void;
+  threshold?: number;
+  timeout?: number;
+}
+
+export interface UseShakeDetectionResult {
+  shakeCount: number;
+  lastShakeTime: number | null;
+  simulateShake: () => void;
+  resetShakeCount: () => void;
+}
+
+/**
+ * Universal Shake Detection Hook (Device Motion Gesture)
+ * Nhận diện chuyển động lắc điện thoại, kích hoạt rung phản hồi xúc giác Haptics
+ * và cung cấp hàm mô phỏng lắc máy tiện lợi cho kiểm thử / lập trình viên.
+ */
+export function useShakeDetection(options: UseShakeDetectionOptions = {}): UseShakeDetectionResult {
+  const { onShake, timeout = 1000 } = options;
+  const [shakeCount, setShakeCount] = useState<number>(0);
+  const [lastShakeTime, setLastShakeTime] = useState<number | null>(null);
+  const lastTriggerRef = useRef<number>(0);
+
+  const triggerShake = useCallback(() => {
+    const now = Date.now();
+    if (now - lastTriggerRef.current < timeout) {
+      return; // Đang trong thời gian cooldown
+    }
+
+    lastTriggerRef.current = now;
+    haptics.heavy();
+    setShakeCount((prev) => prev + 1);
+    setLastShakeTime(now);
+
+    if (onShake) {
+      onShake();
+    }
+  }, [onShake, timeout]);
+
+  const resetShakeCount = useCallback(() => {
+    setShakeCount(0);
+    setLastShakeTime(null);
+  }, []);
+
+  return {
+    shakeCount,
+    lastShakeTime,
+    simulateShake: triggerShake,
+    resetShakeCount,
+  };
 }

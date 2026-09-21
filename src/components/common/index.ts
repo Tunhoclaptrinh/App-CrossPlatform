@@ -19,3 +19,4 @@ export * from './ErrorBoundary';
 export * from './WidgetCard';
 export * from './GestureCard';
 export * from './AppWebView';
+export * from './GlassCard';

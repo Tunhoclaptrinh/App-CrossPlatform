@@ -162,12 +162,12 @@ Toàn bộ phản hồi từ server hoặc AI model phải được định ki�
 
 ---
 
-## 15. Cử Chỉ Màn Hình Thông Minh (Smart Gestures)
+## 15. Cử Chỉ Màn Hình & Chuyển Động Thông Minh (Smart Touch & Motion Gestures)
 
-* **`useSwipeGesture` (`src/hooks/useGestures.ts`)**:
-  * Xây dựng trên nền `PanResponder` chuẩn New Architecture, nhận diện vuốt 4 hướng (Trái, Phải, Lên, Xuống) có ngưỡng cản `threshold` và phản hồi rung.
-* **`useDoubleTap` (`src/hooks/useGestures.ts`)**:
-  * Nhận diện chạm 2 lần liên tiếp (dưới 300ms) để thích nhanh hoặc phóng to thu nhỏ.
+* Toàn bộ logic cử chỉ được gom gọn tập trung trong module `src/hooks/useGestures.ts`:
+  * **`useSwipeGesture`**: Xây dựng trên nền `PanResponder` chuẩn New Architecture, nhận diện vuốt 4 hướng (Trái, Phải, Lên, Xuống) có ngưỡng cản `threshold` và phản hồi rung.
+  * **`useDoubleTap`**: Nhận diện chạm 2 lần liên tiếp (dưới 300ms) để tương tác nhanh.
+  * **`useShakeDetection`**: Lắng nghe cảm biến gia tốc lắc điện thoại, kích hoạt phản hồi xúc giác rung mạnh (`haptics.heavy()`), cơ chế Cooldown (mặc định 1000ms) chống lặp và hàm `simulateShake()` cho máy ảo / lập trình viên kiểm thử.
 * **`GestureCard` (`src/components/common/GestureCard/`)**:
   * Component khung chứa cử chỉ trực quan chuẩn UI Mobile.
 
@@ -182,12 +182,49 @@ Toàn bộ phản hồi từ server hoặc AI model phải được định ki�
 
 ---
 
-## 17. Nguyên Tắc Thiết Kế Giao Diện (Zero Inline Styles)
+## 17. Phong Cách Thiết Kế Apple iOS 18 Cupertino & Liquid Glass (Apple Glass Theme)
+
+* **Thiết kế mô-đun, có thể bật/tắt (Toggleable Theme Style)**:
+  * Không làm phá vỡ cấu trúc CSS phẳng mặc định của ứng dụng.
+  * Được điều khiển tập trung qua `useAppStore`: `themeStyle: 'default' | 'apple-glass'`, `toggleThemeStyle()`.
+* **Design Tokens Chuẩn Apple (`src/constants/appleTheme.ts`)**:
+  * `AppleColors`: Bảng màu hệ thống Apple (systemBlue, systemPurple, systemTeal, systemMint, systemOrange, glassLight, glassDark...).
+  * `AppleGlassTokens`: Độ mờ Frosted Glass (`blurIntensity: 25`), viền phản xạ ánh sáng (Specular Highlight Border `glassBorderLight/Dark`), và độ cong liên tục (`borderRadius: 22` Apple Squircles).
+* **Component `GlassCard` (`src/components/common/GlassCard/`)**:
+  * Thẻ kính mờ chất lượng cao với viền phản quang và hiệu ứng hào quang góc (Subtle Corner Glow Accent).
+
+---
+
+## 18. Kiến Trúc Kết Nối Thời Gian Thực Đa Nền Tảng (Universal Real-Time)
+
+* **Universal WebSocket Engine (`src/services/realtime/socketService.ts`)**:
+  * **Tự động kết nối lại (Auto-reconnect with Exponential Backoff)**: Tự thử lại tối đa 5 lần với thời gian chờ lũy thừa (1s, 2s, 4s, 8s, 10s) khi mất mạng.
+  * **Hàng đợi ngoại tuyến (Offline Message Queue)**: Tự động lưu tin nhắn khi mất kết nối và tự động gửi (flush) ngay khi kết nối lại thành công.
+  * **Giám sát nhịp tim (Heartbeat Ping/Pong)**: Gửi gói tin ping định kỳ mỗi 30s để duy trì kết nối qua NAT / Firewall của nhà mạng.
+  * **Bộ lắng nghe sự kiện có định kiểu (Typed Event Pub/Sub)**: `socketService.on(event, listener)`, `off(event, listener)`, `emit(event, data)`.
+  * **Theo dõi trạng thái kết nối**: `socketService.onStateChange((state) => ...)`.
+* **Tài liệu tham khảo chuyên sâu**: Chi tiết so sánh WebSocket vs. Server-Sent Events (SSE) vs. WebRTC nằm tại `docs/REALTIME_GUIDE.md`.
+
+---
+
+## 19. Chuẩn Mã Hóa Tương Thích Server Backend (Server Crypto Standard)
+
+* **Định Dạng Payload Chuẩn `AESP256:iv:salt:ciphertext:tag` (`src/utils/crypto.ts`)**:
+  * `cryptoHelper.encryptForServer(plainText, secretKey)`: Tạo payload chuẩn gồm IV 16 bytes, Salt 8 bytes ngẫu nhiên, Ciphertext Base64 và Auth Tag 16 ký tự băm kiểm tra tính toàn vẹn.
+  * `cryptoHelper.decryptFromServer(payload, secretKey)`: Tự động xác thực Auth Tag trước khi giải mã. Nếu key sai hoặc dữ liệu bị sửa đổi, hàm trả về `null`.
+* **Tương thích 100% với Backend**:
+  * Sẵn sàng tích hợp ngay với Node.js, Python, Java Spring Boot và Go.
+  * Chi tiết mã nguồn mẫu trên các ngôn ngữ backend nằm tại `docs/SERVER_ENCRYPTION_GUIDE.md`.
+
+---
+
+## 20. Nguyên Tắc Thiết Kế Giao Diện (Zero Inline Styles)
 
 * **CẤM tuyệt đối viết Inline Styles** trong file JSX/TSX. Lỗi này bị kiểm soát nghiêm ngặt bởi ESLint rule `react-native/no-inline-styles`.
 * Mỗi màn hình và mỗi component phải có file `styles.ts` riêng biệt và tạo qua `StyleSheet.create()`.
 * Luôn sử dụng Design Tokens từ `@/constants`:
   * `Colors.light` / `Colors.dark`
+  * `AppleColors` / `AppleGlassTokens`
   * `Spacing` (xxs: 2, xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 48, huge: 64)
   * `BorderRadius` (none: 0, sm: 4, md: 8, lg: 12, xl: 16, xxl: 24, full: 999, pill: 9999)
   * `Typography` (header, title, subtitle, body, caption, overline)
@@ -195,15 +232,15 @@ Toàn bộ phản hồi từ server hoặc AI model phải được định ki�
 
 ---
 
-## 18. Nguyên Tắc Đặt Tên (Naming Conventions)
+## 21. Nguyên Tắc Đặt Tên (Naming Conventions)
 
 | Đối tượng | Quy tắc | Ví dụ |
 | :--- | :--- | :--- |
-| **Thư mục Component** | PascalCase | `AppHeader/`, `OptimizedList/`, `WidgetCard/` |
-| **Component Files** | PascalCase | `AppHeader.tsx`, `OptimizedList.tsx`, `WidgetCard.tsx` |
-| **Hook Files** | camelCase, tiền tố `use` | `useAppStore.ts`, `useSwipeGesture.ts`, `useDebounce.ts` |
-| **Service / Util Files** | camelCase | `apiClient.ts`, `biometricService.ts`, `crypto.ts` |
+| **Thư mục Component** | PascalCase | `AppHeader/`, `OptimizedList/`, `GlassCard/` |
+| **Component Files** | PascalCase | `AppHeader.tsx`, `OptimizedList.tsx`, `GlassCard.tsx` |
+| **Hook Files** | camelCase, tiền tố `use` | `useAppStore.ts`, `useGestures.ts`, `useDebounce.ts` |
+| **Service / Util Files** | camelCase | `apiClient.ts`, `socketService.ts`, `crypto.ts` |
 | **Styles / Types Files** | camelCase | `styles.ts`, `types.ts`, `constants.ts` |
-| **TypeScript Types/Interfaces** | PascalCase | `User`, `WidgetDataSnapshot`, `BiometricType` |
-| **Constants / Enums** | UPPER_SNAKE_CASE hoặc PascalCase | `STORAGE_KEYS.AUTH_TOKEN`, `Spacing.md`, `Colors.light` |
+| **TypeScript Types/Interfaces** | PascalCase | `User`, `ServerEncryptedPayload`, `SocketMessage` |
+| **Constants / Enums** | UPPER_SNAKE_CASE hoặc PascalCase | `AppleColors.systemBlue`, `STORAGE_KEYS.AUTH_TOKEN` |
 

@@ -13,6 +13,7 @@ This skill documents the conventions, directory structure, state protocols, and 
 - `src/constants/`:
   - `colors.ts`: Semantic color system (Light & Dark mode) and Palette (50–950).
   - `theme.ts`: Spacing (0–64), BorderRadius (none to pill), Typography, Shadows (cross-platform), Layout.
+  - `appleTheme.ts`: Apple iOS 18 Cupertino System Colors (`AppleColors`) & Liquid Glass Tokens (`AppleGlassTokens`).
   - `config.ts`: AppConfig (version, build, API base URL, timeout, feature flags).
 - `src/components/`:
   - `common/`: Reusable atomic UI. Each component is an isolated folder:
@@ -37,9 +38,11 @@ This skill documents the conventions, directory structure, state protocols, and 
     - `WidgetCard/`: `WidgetCard.tsx`, `styles.ts`, `types.ts`, `index.ts`.
     - `GestureCard/`: `GestureCard.tsx`, `styles.ts`, `types.ts`, `index.ts`.
     - `AppWebView/`: `AppWebView.tsx`, `styles.ts`, `types.ts`, `index.ts`.
+    - `GlassCard/`: `GlassCard.tsx`, `styles.ts`, `types.ts`, `index.ts` (Apple Cupertino Liquid Glass UI).
   - `toast/`: In-app spring notification system (`ToastProvider`, `useToast`).
 - `src/services/`:
   - `api/`: `apiClient.ts` for universal REST APIs & AI endpoints, with strict types defined in `types.ts`.
+  - `realtime/`: `socketService.ts` for universal WebSocket connection, auto-reconnect, offline queue, and pub/sub.
   - `storage/`: `appStorage.ts` for AsyncStorage persistence, and `secureStorage.ts` for encrypted storage.
   - `database/`: `sqlite.ts` for ultra-fast C++ JSI relational database via `@op-engineering/op-sqlite`.
   - `file/`: `fileService.ts` for local document management (read, write, list, delete, JSON storage, and export via Native Share Sheet).
@@ -52,13 +55,15 @@ This skill documents the conventions, directory structure, state protocols, and 
   - `index.ts`: Re-export all type declarations.
 - `src/hooks/`:
   - `useAppStore.ts`: **Unified Global Store (Zustand + AsyncStorage persistence)**:
-    - Theme (`themeMode`, `setThemeMode`, `toggleTheme`)
+    - Theme Mode (`themeMode`: `'system' | 'light' | 'dark'`, `setThemeMode`, `toggleTheme`)
+    - Theme Style (`themeStyle`: `'default' | 'apple-glass'`, `setThemeStyle`, `toggleThemeStyle`)
     - Language (`language`, `setLanguage` -> auto syncs with `i18n`)
     - User session (`user`, `setUser`, `logout`)
     - Metrics (`counter`, `increment`, `reset`)
   - Gestures & Interaction:
     - `useSwipeGesture`: PanResponder 4-direction swipe detection.
     - `useDoubleTap`: Multi-tap gesture detection with threshold.
+    - `useShakeDetection`: Hardware accelerometer shake detection with Haptic buzz & simulation.
   - Utilities & Performance:
     - `useNetworkStatus`: Internet connectivity detection with auto-recheck.
     - `useDebounce`: Delays state updates until typing/input stops.
@@ -219,19 +224,25 @@ await secureStorage.setItem('api_token', { token: 'xyz' });
 const data = await secureStorage.getItem('api_token');
 ```
 
-### 3.8. Smart Gestures (Swipe & Double Tap)
+### 3.8. Smart Gestures (Touch & Device Motion Gestures: Swipe, Double Tap, Shake)
 ```typescript
-import { useSwipeGesture, useDoubleTap } from '@/hooks';
+import { useSwipeGesture, useDoubleTap, useShakeDetection } from '@/hooks';
 
-// 4-direction swipe responder
+// 1. 4-direction swipe responder (PanResponder)
 const swipeHandlers = useSwipeGesture({
   onSwipeLeft: () => console.log('Swiped left'),
   onSwipeRight: () => console.log('Swiped right'),
 });
 
-// Double tap gesture
+// 2. Double tap gesture (<300ms)
 const handleDoubleTap = useDoubleTap(() => {
   console.log('Double tapped!');
+});
+
+// 3. Device motion shake detection (with Cooldown & Haptic feedback)
+const { shakeCount, lastShakeTime, simulateShake, resetShakeCount } = useShakeDetection({
+  timeout: 1000,
+  onShake: () => console.log('Phone shaken!'),
 });
 ```
 
@@ -259,6 +270,55 @@ await widgetBridgeService.syncWidgetData({
   headline: 'Universal Base App',
   status: 'online',
 });
+```
+
+### 3.11. Apple Liquid Glass Cupertino Styling & Theme Toggle
+```typescript
+import { GlassCard } from '@/components';
+import { AppleColors } from '@/constants/appleTheme';
+import { useAppStore } from '@/hooks';
+
+// Toggle between default Flat UI and Apple Liquid Glass UI
+const { themeStyle, toggleThemeStyle } = useAppStore();
+
+// Liquid Glass Card with specular highlight border and subtle glow
+<GlassCard accentColor={AppleColors.systemBlue} glowEffect={true}>
+  <AppText variant="subtitle">Frosted Glass Content</AppText>
+</GlassCard>
+```
+
+### 3.12. Universal Real-Time WebSocket Communication
+```typescript
+import { socketService } from '@/services/realtime';
+
+// Connect to WebSocket server with auto-reconnect & offline queue
+socketService.connect('wss://echo.websocket.org');
+
+// Subscribe to typed events
+socketService.on('chat_message', (payload) => {
+  console.log('Received message:', payload);
+});
+
+// Emit event (automatically queued if offline)
+socketService.emit('send_chat', { text: 'Hello!' });
+
+// Listen to connection state
+const unsubscribe = socketService.onStateChange((state) => {
+  console.log('Socket State:', state); // 'connected' | 'connecting' | 'disconnected'
+});
+```
+
+### 3.13. Server-Compatible AES-256 Symmetric Encryption
+```typescript
+import { cryptoHelper } from '@/utils';
+
+// Encrypt payload for backend (Node.js, Python, Java, Go)
+const payload = cryptoHelper.encryptForServer('SensitiveData', 'SharedSecretKey');
+console.log(payload.combined); // AESP256:iv:salt:ciphertext:tag
+
+// Decrypt payload returned from backend
+const decrypted = cryptoHelper.decryptFromServer(payload.combined, 'SharedSecretKey');
+console.log(decrypted); // SensitiveData
 ```
 
 

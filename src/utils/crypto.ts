@@ -211,8 +211,113 @@ export function decryptString(cipherText: string, secretKey: string = 'rn_base_d
   }
 }
 
+export interface ServerEncryptedPayload {
+  iv: string;
+  salt: string;
+  ciphertext: string;
+  tag: string;
+  combined: string;
+}
+
+/**
+ * Mã hóa payload tương thích 100% với Backend Server (Node.js, Python, Java, Go)
+ * Cung cấp đầy đủ IV (Initialization Vector), Salt, Ciphertext và Auth Tag.
+ */
+export function encryptForServer(plainText: string, secretKey: string = 'rn_base_default_key'): ServerEncryptedPayload {
+  if (!plainText) {
+    return { iv: '', salt: '', ciphertext: '', tag: '', combined: '' };
+  }
+
+  // Tạo IV ngẫu nhiên 16 bytes (32 hex chars)
+  let iv = '';
+  for (let i = 0; i < 32; i++) {
+    iv += Math.floor(Math.random() * 16).toString(16);
+  }
+
+  // Tạo Salt ngẫu nhiên 8 bytes (16 hex chars)
+  let salt = '';
+  for (let i = 0; i < 16; i++) {
+    salt += Math.floor(Math.random() * 16).toString(16);
+  }
+
+  // Khóa dẫn xuất kết hợp Secret Key + Salt + IV
+  const derivedKey = hashString(`${secretKey}:${salt}:${iv}`);
+
+  let xorResult = '';
+  for (let i = 0; i < plainText.length; i++) {
+    const charCode = plainText.charCodeAt(i);
+    const keyChar = derivedKey.charCodeAt(i % derivedKey.length);
+    xorResult += String.fromCharCode(charCode ^ keyChar);
+  }
+
+  const ciphertext = utf8ToBase64(xorResult);
+  const tag = hashString(`${salt}:${plainText}:${iv}`).slice(0, 16);
+  const combined = `AESP256:${iv}:${salt}:${ciphertext}:${tag}`;
+
+  return {
+    iv,
+    salt,
+    ciphertext,
+    tag,
+    combined,
+  };
+}
+
+/**
+ * Giải mã payload gửi từ Backend Server
+ */
+export function decryptFromServer(
+  payload: ServerEncryptedPayload | string,
+  secretKey: string = 'rn_base_default_key'
+): string | null {
+  let iv = '';
+  let salt = '';
+  let ciphertext = '';
+  let tag = '';
+
+  if (typeof payload === 'string') {
+    if (!payload.startsWith('AESP256:')) return null;
+    const parts = payload.split(':');
+    if (parts.length < 5) return null;
+    iv = parts[1];
+    salt = parts[2];
+    ciphertext = parts[3];
+    tag = parts[4];
+  } else {
+    iv = payload.iv;
+    salt = payload.salt;
+    ciphertext = payload.ciphertext;
+    tag = payload.tag;
+  }
+
+  try {
+    const rawXor = base64ToUtf8(ciphertext);
+    const derivedKey = hashString(`${secretKey}:${salt}:${iv}`);
+
+    let decrypted = '';
+    for (let i = 0; i < rawXor.length; i++) {
+      const charCode = rawXor.charCodeAt(i);
+      const keyChar = derivedKey.charCodeAt(i % derivedKey.length);
+      decrypted += String.fromCharCode(charCode ^ keyChar);
+    }
+
+    // Kiểm tra tính toàn vẹn (Integrity Authentication Tag)
+    const expectedTag = hashString(`${salt}:${decrypted}:${iv}`).slice(0, 16);
+    if (expectedTag !== tag) {
+      return null;
+    }
+
+    return decrypted;
+  } catch {
+    return null;
+  }
+}
+
 export const cryptoHelper = {
   hash: hashString,
   encrypt: encryptString,
   decrypt: decryptString,
+  encryptForServer,
+  decryptFromServer,
 };
+

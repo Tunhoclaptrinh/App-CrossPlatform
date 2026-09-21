@@ -5,6 +5,7 @@ import { changeLanguage } from '@/i18n';
 import type { User } from '@/types';
 
 export type ThemeMode = 'system' | 'light' | 'dark';
+export type ThemeStyle = 'default' | 'apple-glass';
 export type Language = 'vi' | 'en';
 
 export interface AppStoreState {
@@ -12,6 +13,9 @@ export interface AppStoreState {
   themeMode: ThemeMode;
   setThemeMode: (mode: ThemeMode) => void;
   toggleTheme: () => void;
+  themeStyle: ThemeStyle;
+  setThemeStyle: (style: ThemeStyle) => void;
+  toggleThemeStyle: () => void;
 
   // Localization & Language
   language: Language;
@@ -39,6 +43,13 @@ export const useAppStore = create<AppStoreState>()(
         set({ themeMode: next });
       },
 
+      themeStyle: 'apple-glass',
+      setThemeStyle: (style: ThemeStyle) => set({ themeStyle: style }),
+      toggleThemeStyle: () => {
+        const current = get().themeStyle;
+        set({ themeStyle: current === 'apple-glass' ? 'default' : 'apple-glass' });
+      },
+
       language: 'vi',
       setLanguage: (lang: Language) => {
         changeLanguage(lang);
@@ -58,6 +69,7 @@ export const useAppStore = create<AppStoreState>()(
       storage: createJSONStorage(() => AsyncStorage),
       partialize: (state) => ({
         themeMode: state.themeMode,
+        themeStyle: state.themeStyle,
         language: state.language,
         user: state.user,
         counter: state.counter,

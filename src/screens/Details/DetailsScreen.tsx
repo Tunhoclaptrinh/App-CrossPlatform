@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, useColorScheme, Alert } from 'react-native';
-import { CheckCircle2, ShieldCheck, Zap, KeyRound, FileText } from 'lucide-react-native';
+import { CheckCircle2, ShieldCheck, Zap, KeyRound, FileText, Sparkles, Radio, Smartphone } from 'lucide-react-native';
 import { Button, Chip } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import {
@@ -16,14 +16,17 @@ import {
   WidgetCard,
   GestureCard,
   AppWebView,
+  GlassCard,
 } from '@/components';
 import { Colors } from '@/constants/colors';
-import { useAppStore, useToast } from '@/hooks';
+import { AppleColors } from '@/constants/appleTheme';
+import { useAppStore, useToast, useShakeDetection } from '@/hooks';
 import { appStorage, STORAGE_KEYS } from '@/services/storage';
 import { appUpdateService } from '@/services/update';
 import { fileService } from '@/services/file';
 import { biometricService } from '@/services/biometrics';
 import { widgetBridgeService } from '@/services/widget';
+import { socketService } from '@/services/realtime';
 import { permissions, haptics, generateId, cryptoHelper, clipboardHelper } from '@/utils';
 import type { DetailsScreenProps } from '@/navigation/types';
 import { createDetailsStyles } from './styles';
@@ -35,7 +38,7 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
   const styles = createDetailsStyles(themeColors);
 
   const { t } = useTranslation();
-  const { counter, increment, reset } = useAppStore();
+  const { counter, increment, reset, themeStyle, toggleThemeStyle } = useAppStore();
   const toast = useToast();
 
   const [apiKeyInput, setApiKeyInput] = useState('');
@@ -56,6 +59,86 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
   const [gestureFeedback, setGestureFeedback] = useState('Chạm đúp hoặc vuốt để thử nghiệm');
   const [widgetSyncStatus, setWidgetSyncStatus] = useState<string | null>(null);
   const [isSyncingWidget, setIsSyncingWidget] = useState(false);
+
+  // Apple Liquid Glass Theme Handler
+  const handleToggleThemeStyle = () => {
+    haptics.light();
+    toggleThemeStyle();
+    toast.show('info', t('appleGlass.switchedToast', 'Đã chuyển đổi phong cách giao diện!'), t('appleGlass.title'));
+  };
+
+  // Realtime WebSocket State & Handlers
+  const [socketStatus, setSocketStatus] = useState(socketService.getState());
+  const [lastSocketMessage, setLastSocketMessage] = useState<string>('');
+
+  useEffect(() => {
+    const unsub = socketService.onStateChange((nextState) => {
+      setSocketStatus(nextState);
+    });
+    const onMsg = (data: any) => {
+      const text = typeof data === 'string' ? data : JSON.stringify(data);
+      setLastSocketMessage(text);
+    };
+    socketService.on('message', onMsg);
+    socketService.on('echo', onMsg);
+
+    return () => {
+      unsub();
+      socketService.off('message', onMsg);
+      socketService.off('echo', onMsg);
+    };
+  }, []);
+
+  const handleConnectSocket = () => {
+    haptics.light();
+    socketService.connect();
+  };
+
+  const handleDisconnectSocket = () => {
+    haptics.light();
+    socketService.disconnect();
+  };
+
+  const handleSendSocketMessage = () => {
+    haptics.light();
+    const sent = socketService.emit('echo', {
+      greeting: 'Hello from Universal RN Base App!',
+      timestamp: Date.now(),
+    });
+    if (sent) {
+      toast.show('success', t('realtime.sentMessage', 'Đã gửi dữ liệu qua WebSocket!'), t('realtime.title'));
+    } else {
+      toast.show('warning', t('realtime.offlineQueued', 'Mất mạng: Đã đưa tin nhắn vào hàng đợi offline!'), t('realtime.title'));
+    }
+  };
+
+  // Shake Detection Hook
+  const { shakeCount, lastShakeTime, simulateShake, resetShakeCount } = useShakeDetection({
+    onShake: () => {
+      toast.show('info', t('shake.shakeDetected', '📳 Phát hiện chuyển động lắc điện thoại!'), t('shake.title'));
+    },
+  });
+
+  // Server-Compatible Crypto State & Handlers
+  const [serverPayloadString, setServerPayloadString] = useState<string>('');
+  const [serverDecryptedResult, setServerDecryptedResult] = useState<string>('');
+
+  const handleEncryptForServer = () => {
+    const secret = apiKeyInput.trim() || 'Client-Side User Sensitive Data';
+    const payload = cryptoHelper.encryptForServer(secret);
+    setServerPayloadString(payload.combined);
+    setServerDecryptedResult('');
+    haptics.success();
+    toast.show('success', t('serverCrypto.encryptSuccess'), t('common.success'));
+  };
+
+  const handleDecryptFromServer = () => {
+    if (!serverPayloadString) return;
+    const decrypted = cryptoHelper.decryptFromServer(serverPayloadString);
+    setServerDecryptedResult(decrypted || 'Lỗi giải mã server');
+    haptics.success();
+    toast.show('info', t('serverCrypto.decryptSuccess'), t('common.info'));
+  };
 
   useEffect(() => {
     appStorage.getItem<string>(STORAGE_KEYS.AI_API_KEY).then((key) => {
@@ -412,10 +495,10 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
         />
       </View>
 
-      {/* Demo Cử Chỉ Thông Minh (Smart Gestures) */}
+      {/* Demo Cử Chỉ Thông Minh (Smart Gestures: Touch & Motion) */}
       <View style={styles.skeletonSection}>
         <AppText variant="title" style={styles.sectionHeading}>
-          {t('gestures.title', 'Cử Chỉ Màn Hình Thông Minh (Smart Gestures)')}
+          {t('gestures.title', 'Cử Chỉ Thông Minh (Smart Gestures: Touch & Motion)')}
         </AppText>
         <GestureCard
           title="Thẻ Cảm Ứng Tương Tác"
@@ -424,6 +507,40 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
           onSwipeRight={() => setGestureFeedback(t('gestures.swipedRight', '👉 Đã vuốt sang PHẢI!'))}
           onDoubleTap={() => setGestureFeedback(t('gestures.doubleTapped', '⚡ Đã chạm đúp (Double Tap)!'))}
         />
+
+        {/* Cử chỉ chuyển động rung lắc thiết bị (Device Shake Motion) */}
+        <View style={styles.shakeContainer}>
+          <View style={styles.shakeStatsRow}>
+            <View style={styles.glassFeatureRow}>
+              <Smartphone size={20} color={themeColors.primary} />
+              <AppText variant="body">{t('shake.count', 'Số lần lắc thiết bị')}:</AppText>
+            </View>
+            <View style={styles.shakeCountBadge}>
+              <AppText variant="subtitle" style={styles.shakeCountText}>
+                {shakeCount}
+              </AppText>
+            </View>
+          </View>
+
+          {lastShakeTime ? (
+            <AppText variant="caption" color={themeColors.textSecondary}>
+              {t('shake.lastShake')}: {new Date(lastShakeTime).toLocaleTimeString()}
+            </AppText>
+          ) : null}
+
+          <View style={styles.shakeActionsRow}>
+            <View style={styles.hapticBtn}>
+              <Button mode="contained-tonal" icon="vibrate" onPress={simulateShake}>
+                {t('shake.simulateBtn')}
+              </Button>
+            </View>
+            <View style={styles.hapticBtn}>
+              <Button mode="outlined" disabled={shakeCount === 0} onPress={resetShakeCount}>
+                {t('shake.resetBtn')}
+              </Button>
+            </View>
+          </View>
+        </View>
       </View>
 
       {/* Demo Bảo Mật, UUID & Mã Hóa Đối Xứng */}
@@ -518,6 +635,157 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
             </Button>
           </View>
         </WidgetCard>
+      </View>
+
+      {/* Apple Liquid Glass Cupertino Style Demo */}
+      <View style={styles.skeletonSection}>
+        <AppText variant="title" style={styles.sectionHeading}>
+          {t('appleGlass.title', 'Apple Liquid Glass & Cupertino Style')}
+        </AppText>
+        <GlassCard accentColor={AppleColors.systemBlue} glowEffect={true}>
+          <View style={styles.glassCardInner}>
+            <View style={styles.glassFeatureRow}>
+              <Sparkles size={20} color={AppleColors.systemBlue} />
+              <AppText variant="subtitle">
+                {t('appleGlass.subtitle')}
+              </AppText>
+            </View>
+            <View style={styles.glassFeatureRow}>
+              <CheckCircle2 size={16} color={AppleColors.systemMint} />
+              <AppText variant="caption" style={styles.glassFeatureText}>
+                {t('appleGlass.specularBorder')}
+              </AppText>
+            </View>
+            <View style={styles.glassFeatureRow}>
+              <CheckCircle2 size={16} color={AppleColors.systemPurple} />
+              <AppText variant="caption" style={styles.glassFeatureText}>
+                {t('appleGlass.glassDepth')}
+              </AppText>
+            </View>
+
+            <View style={styles.themeStyleStatusRow}>
+              <AppText variant="caption" color={themeColors.textSecondary}>
+                {t('appleGlass.activeTheme')}:
+              </AppText>
+              <Chip mode="outlined" icon={themeStyle === 'apple-glass' ? 'apple' : 'shape'}>
+                {themeStyle === 'apple-glass' ? t('appleGlass.appleTheme') : t('appleGlass.defaultTheme')}
+              </Chip>
+            </View>
+
+            <Button
+              mode="contained"
+              buttonColor={AppleColors.systemBlue}
+              icon="swap-horizontal"
+              onPress={handleToggleThemeStyle}
+            >
+              {t('appleGlass.toggleTheme')}
+            </Button>
+          </View>
+        </GlassCard>
+      </View>
+
+      {/* Realtime WebSocket Section */}
+      <View style={styles.skeletonSection}>
+        <AppText variant="title" style={styles.sectionHeading}>
+          {t('realtime.title', 'Kết Nối Thời Gian Thực (WebSocket)')}
+        </AppText>
+        <View style={styles.realtimeCard}>
+          <View style={styles.realtimeStatusHeader}>
+            <View style={styles.glassFeatureRow}>
+              <Radio size={20} color={themeColors.primary} />
+              <AppText variant="subtitle">{t('realtime.status')}:</AppText>
+            </View>
+            <View
+              style={
+                socketStatus === 'connected'
+                  ? styles.statusDotConnected
+                  : socketStatus === 'connecting' || socketStatus === 'reconnecting'
+                  ? styles.statusDotConnecting
+                  : styles.statusDotDisconnected
+              }
+            >
+              <AppText variant="caption" style={styles.statusBadgeText}>
+                {socketStatus === 'connected'
+                  ? t('realtime.connected')
+                  : socketStatus === 'connecting' || socketStatus === 'reconnecting'
+                  ? t('realtime.connecting')
+                  : t('realtime.disconnected')}
+              </AppText>
+            </View>
+          </View>
+
+          <AppText variant="caption" color={themeColors.textSecondary}>
+            {t('realtime.subtitle')}
+          </AppText>
+
+          <View style={styles.realtimeEventBox}>
+            <AppText variant="caption" color={themeColors.textSecondary}>
+              {t('realtime.lastEvent')}:
+            </AppText>
+            <AppText variant="caption" color={themeColors.primary} numberOfLines={3}>
+              {lastSocketMessage || t('realtime.emptyEvent')}
+            </AppText>
+          </View>
+
+          <View style={styles.realtimeButtonsRow}>
+            <View style={styles.hapticBtn}>
+              {socketStatus === 'connected' ? (
+                <Button mode="outlined" textColor={themeColors.error} onPress={handleDisconnectSocket}>
+                  {t('realtime.disconnect')}
+                </Button>
+              ) : (
+                <Button mode="contained-tonal" onPress={handleConnectSocket}>
+                  {t('realtime.connect')}
+                </Button>
+              )}
+            </View>
+            <View style={styles.hapticBtn}>
+              <Button mode="contained" buttonColor={themeColors.primary} onPress={handleSendSocketMessage}>
+                {t('realtime.sendPing')}
+              </Button>
+            </View>
+          </View>
+        </View>
+      </View>
+
+
+      {/* Server-Compatible Encryption Section */}
+      <View style={styles.skeletonSection}>
+        <AppText variant="title" style={styles.sectionHeading}>
+          {t('serverCrypto.title', 'Mã Hóa Chuẩn Server Backend')}
+        </AppText>
+        <View style={styles.serverCryptoBox}>
+          <AppText variant="caption" color={themeColors.textSecondary}>
+            {t('serverCrypto.subtitle')}
+          </AppText>
+
+          {serverPayloadString ? (
+            <View style={styles.codeSnippet}>
+              <AppText variant="caption" color="#10B981" numberOfLines={3}>
+                {serverPayloadString}
+              </AppText>
+            </View>
+          ) : null}
+
+          {serverDecryptedResult ? (
+            <AppText variant="caption" color={themeColors.primary} style={styles.savedKeyText}>
+              ✓ {t('common.success')}: {serverDecryptedResult}
+            </AppText>
+          ) : null}
+
+          <View style={styles.cryptoActionRow}>
+            <View style={styles.hapticBtn}>
+              <Button mode="contained-tonal" icon="shield-key" onPress={handleEncryptForServer}>
+                {t('serverCrypto.encryptBtn')}
+              </Button>
+            </View>
+            <View style={styles.hapticBtn}>
+              <Button mode="outlined" icon="shield-check" disabled={!serverPayloadString} onPress={handleDecryptFromServer}>
+                {t('serverCrypto.decryptBtn')}
+              </Button>
+            </View>
+          </View>
+        </View>
       </View>
 
       {/* Demo In-App Webview Container */}

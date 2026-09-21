@@ -125,5 +125,49 @@
     "badge": "Snapshot",
     "syncBtn": "Đồng Bộ Dữ Liệu Widget",
     "syncedSuccess": "Đã đồng bộ dữ liệu Widget thành công!"
+  },
+  "appleGlass": {
+    "title": "Apple Liquid Glass & Cupertino Style",
+    "subtitle": "Giao diện kính mờ Liquid Glass, viền phản xạ ánh sáng & squircles",
+    "toggleTheme": "Chuyển Đổi Phong Cách (Mặc Định / Apple Glass)",
+    "activeTheme": "Chế độ hiện tại",
+    "defaultTheme": "Standard Flat UI",
+    "appleTheme": "Apple Liquid Glass UI",
+    "specularBorder": "Viền phản xạ (Specular Highlight)",
+    "glassDepth": "Độ sâu mờ 3 chiều (Frosted Depth)",
+    "switchedToast": "Đã chuyển đổi phong cách giao diện!"
+  },
+  "realtime": {
+    "title": "Kết Nối Thời Gian Thực (WebSocket Realtime)",
+    "subtitle": "Auto-reconnect, hàng đợi offline, heartbeat & typed pub/sub",
+    "status": "Trạng thái",
+    "connected": "Đã Kết Nối",
+    "disconnected": "Ngắt Kết Nối",
+    "connecting": "Đang Kết Nối...",
+    "connect": "Kết Nối WebSocket",
+    "disconnect": "Ngắt Kết Nối",
+    "sendPing": "Gửi Tin Nhắn / Ping",
+    "sentMessage": "Đã gửi dữ liệu qua WebSocket!",
+    "offlineQueued": "Mất mạng: Đã đưa tin nhắn vào hàng đợi offline!",
+    "lastEvent": "Sự kiện gần nhất",
+    "emptyEvent": "Chưa có sự kiện nào nhận về"
+  },
+  "shake": {
+    "title": "Nhận Diện Lắc Máy (Shake Detection)",
+    "subtitle": "Cảm biến gia tốc rung chuyển, phản hồi xúc giác Haptics & Cooldown",
+    "count": "Số lần lắc",
+    "lastShake": "Thời gian lắc gần nhất",
+    "simulateBtn": "Mô Phỏng Lắc Máy (Test)",
+    "resetBtn": "Đặt Lại Đếm",
+    "shakeDetected": "📳 Phát hiện chuyển động lắc điện thoại!"
+  },
+  "serverCrypto": {
+    "title": "Mã Hóa Chuẩn Server Backend",
+    "subtitle": "Định dạng AESP256 tương thích Node.js, Python, Java & Go",
+    "encryptBtn": "Mã Hóa Chuẩn Server",
+    "decryptBtn": "Giải Mã Chuẩn Server",
+    "outputLabel": "Chuỗi Payload chuẩn",
+    "encryptSuccess": "Đã mã hóa dữ liệu theo chuẩn Server Backend!",
+    "decryptSuccess": "Đã giải mã dữ liệu chuẩn Server thành công!"
   }
 }

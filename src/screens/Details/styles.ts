@@ -132,4 +132,118 @@ export const createDetailsStyles = (colors: {
       alignItems: 'center',
       marginVertical: Spacing.xs,
     },
+    // Apple Liquid Glass Styles
+    glassPreviewContainer: {
+      marginVertical: Spacing.sm,
+      gap: Spacing.md,
+    },
+    glassCardInner: {
+      gap: Spacing.sm,
+    },
+    glassFeatureRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: Spacing.sm,
+      marginVertical: Spacing.xxs,
+    },
+    glassFeatureText: {
+      color: colors.text,
+      fontWeight: '500',
+    },
+    themeStyleStatusRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginTop: Spacing.xs,
+      paddingTop: Spacing.sm,
+      borderTopWidth: 1,
+      borderTopColor: colors.border,
+    },
+    // Realtime WebSocket Styles
+    realtimeCard: {
+      backgroundColor: colors.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: BorderRadius.lg,
+      padding: Spacing.lg,
+      gap: Spacing.md,
+    },
+    realtimeStatusHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    realtimeButtonsRow: {
+      flexDirection: 'row',
+      gap: Spacing.sm,
+    },
+    realtimeEventBox: {
+      backgroundColor: colors.background,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: BorderRadius.md,
+      padding: Spacing.md,
+      gap: Spacing.xs,
+    },
+    statusDotConnected: {
+      backgroundColor: '#10B981',
+      paddingHorizontal: Spacing.sm,
+      paddingVertical: Spacing.xxs,
+      borderRadius: BorderRadius.full,
+    },
+    statusDotDisconnected: {
+      backgroundColor: '#EF4444',
+      paddingHorizontal: Spacing.sm,
+      paddingVertical: Spacing.xxs,
+      borderRadius: BorderRadius.full,
+    },
+    statusDotConnecting: {
+      backgroundColor: '#F59E0B',
+      paddingHorizontal: Spacing.sm,
+      paddingVertical: Spacing.xxs,
+      borderRadius: BorderRadius.full,
+    },
+    statusBadgeText: {
+      color: '#FFFFFF',
+      fontWeight: '600',
+    },
+    // Shake Detection Styles
+    shakeContainer: {
+      backgroundColor: colors.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: BorderRadius.lg,
+      padding: Spacing.lg,
+      gap: Spacing.md,
+      marginTop: Spacing.md,
+    },
+    shakeStatsRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingVertical: Spacing.xs,
+    },
+    shakeCountBadge: {
+      backgroundColor: colors.primaryLight,
+      paddingHorizontal: Spacing.md,
+      paddingVertical: Spacing.xs,
+      borderRadius: BorderRadius.full,
+    },
+    shakeCountText: {
+      color: colors.primary,
+      fontWeight: '700',
+    },
+    shakeActionsRow: {
+      flexDirection: 'row',
+      gap: Spacing.sm,
+    },
+    // Server-Compatible Crypto Styles
+    serverCryptoBox: {
+      backgroundColor: colors.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: BorderRadius.lg,
+      padding: Spacing.lg,
+      gap: Spacing.md,
+    },
   });

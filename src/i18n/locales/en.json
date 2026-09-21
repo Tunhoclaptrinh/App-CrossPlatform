@@ -125,5 +125,49 @@
     "badge": "Snapshot",
     "syncBtn": "Sync Widget Snapshot",
     "syncedSuccess": "Widget snapshot synced successfully!"
+  },
+  "appleGlass": {
+    "title": "Apple Liquid Glass & Cupertino Style",
+    "subtitle": "Frosted glass effect, specular highlight borders & continuous squircles",
+    "toggleTheme": "Toggle Theme Style (Default / Apple Glass)",
+    "activeTheme": "Active Style",
+    "defaultTheme": "Standard Flat UI",
+    "appleTheme": "Apple Liquid Glass UI",
+    "specularBorder": "Specular Highlight Border",
+    "glassDepth": "Frosted Depth Glass",
+    "switchedToast": "Switched application theme style!"
+  },
+  "realtime": {
+    "title": "Real-time Connection (WebSocket)",
+    "subtitle": "Auto-reconnect, offline queue, heartbeat & typed pub/sub",
+    "status": "Status",
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "connecting": "Connecting...",
+    "connect": "Connect WebSocket",
+    "disconnect": "Disconnect",
+    "sendPing": "Send Message / Ping",
+    "sentMessage": "Message sent via WebSocket!",
+    "offlineQueued": "Offline: Message queued for reconnection!",
+    "lastEvent": "Last event",
+    "emptyEvent": "No event received yet"
+  },
+  "shake": {
+    "title": "Shake Detection (Motion Sensor)",
+    "subtitle": "Accelerometer shake motion, Haptic feedback & Cooldown",
+    "count": "Shake count",
+    "lastShake": "Last shake time",
+    "simulateBtn": "Simulate Phone Shake (Test)",
+    "resetBtn": "Reset Counter",
+    "shakeDetected": "📳 Phone shake detected!"
+  },
+  "serverCrypto": {
+    "title": "Server-Compatible Encryption",
+    "subtitle": "AESP256 format compatible with Node.js, Python, Java & Go",
+    "encryptBtn": "Encrypt for Server",
+    "decryptBtn": "Decrypt from Server",
+    "outputLabel": "Standard Payload string",
+    "encryptSuccess": "Payload encrypted with Server-compatible standard!",
+    "decryptSuccess": "Payload decrypted successfully from Server standard!"
   }
 }

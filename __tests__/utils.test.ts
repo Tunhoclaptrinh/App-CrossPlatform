@@ -1,3 +1,5 @@
+import React from 'react';
+import ReactTestRenderer from 'react-test-renderer';
 import {
   removeVietnameseTones,
   timeAgo,
@@ -22,6 +24,8 @@ import { fileService } from '@/services/file';
 import { biometricService } from '@/services/biometrics';
 import { widgetBridgeService } from '@/services/widget';
 import { secureStorage } from '@/services/storage';
+import { socketService } from '@/services/realtime';
+import { useShakeDetection } from '@/hooks';
 
 describe('Utils: Formatters', () => {
   it('should remove Vietnamese tones accurately for search indexing', () => {
@@ -281,6 +285,118 @@ describe('Services: Biometrics & Widget Bridge', () => {
     const retrieved = await widgetBridgeService.getWidgetData();
     expect(retrieved.activeCount).toBe(42);
     expect(retrieved.headline).toBe('Test Snapshot');
+  });
+});
+
+describe('Utils: Server-Compatible Encryption (cryptoHelper)', () => {
+  it('should encrypt and produce standard AESP256 payload matching server format', () => {
+    const plainText = 'UserSensitiveData_Token#9981';
+    const secret = 'backend_shared_secret_2026';
+
+    const payload = cryptoHelper.encryptForServer(plainText, secret);
+    expect(payload.iv.length).toBe(32);
+    expect(payload.salt.length).toBe(16);
+    expect(payload.combined.startsWith('AESP256:')).toBe(true);
+
+    const parts = payload.combined.split(':');
+    expect(parts.length).toBe(5);
+  });
+
+  it('should decrypt server payload accurately via round-trip', () => {
+    const plainText = 'Vietnamese UTF-8: Xin chào bảo mật React Native!';
+    const secret = 'secure_symmetric_key_999';
+
+    const payload = cryptoHelper.encryptForServer(plainText, secret);
+    const decrypted = cryptoHelper.decryptFromServer(payload.combined, secret);
+    expect(decrypted).toBe(plainText);
+
+    const decryptedFromObj = cryptoHelper.decryptFromServer(payload, secret);
+    expect(decryptedFromObj).toBe(plainText);
+  });
+
+  it('should return null if secret key is incorrect or data is tampered', () => {
+    const plainText = 'Confidential Bank Info';
+    const secret = 'valid_key';
+
+    const payload = cryptoHelper.encryptForServer(plainText, secret);
+
+    const failedWrongKey = cryptoHelper.decryptFromServer(payload.combined, 'wrong_key');
+    expect(failedWrongKey).toBeNull();
+
+    const corruptedPayload = payload.combined.slice(0, -4) + 'ffff';
+    const failedTampered = cryptoHelper.decryptFromServer(corruptedPayload, secret);
+    expect(failedTampered).toBeNull();
+  });
+
+  it('should handle empty input safely', () => {
+    const emptyPayload = cryptoHelper.encryptForServer('');
+    expect(emptyPayload.combined).toBe('');
+    expect(cryptoHelper.decryptFromServer('')).toBeNull();
+  });
+});
+
+describe('Services: Universal Realtime WebSocket (socketService)', () => {
+  it('should initialize with disconnected state and allow state observation', () => {
+    expect(socketService.getState()).toBe('disconnected');
+
+    const listener = jest.fn();
+    const unsub = socketService.onStateChange(listener);
+    expect(listener).toHaveBeenCalledWith('disconnected');
+
+    unsub();
+  });
+
+  it('should queue messages and return false when disconnected', () => {
+    const sent = socketService.emit('test_event', { sample: 123 });
+    expect(sent).toBe(false);
+  });
+
+  it('should register and unregister event listeners properly', () => {
+    const handler = jest.fn();
+    socketService.on('custom_message', handler);
+    socketService.off('custom_message', handler);
+    expect(() => socketService.disconnect()).not.toThrow();
+  });
+});
+
+describe('Hooks: Smart Shake Detection (useShakeDetection)', () => {
+  it('should initialize and track shake events with cooldown and reset', () => {
+    let hookResult: ReturnType<typeof useShakeDetection>;
+    const onShakeMock = jest.fn();
+
+    function TestComponent() {
+      hookResult = useShakeDetection({ onShake: onShakeMock, timeout: 500 });
+      return null;
+    }
+
+    ReactTestRenderer.act(() => {
+      ReactTestRenderer.create(React.createElement(TestComponent));
+    });
+
+    expect(hookResult!.shakeCount).toBe(0);
+    expect(hookResult!.lastShakeTime).toBeNull();
+
+    // Trigger simulateShake
+    ReactTestRenderer.act(() => {
+      hookResult!.simulateShake();
+    });
+
+    expect(hookResult!.shakeCount).toBe(1);
+    expect(hookResult!.lastShakeTime).not.toBeNull();
+    expect(onShakeMock).toHaveBeenCalledTimes(1);
+
+    // Trigger again immediately within cooldown (500ms) -> should be ignored
+    ReactTestRenderer.act(() => {
+      hookResult!.simulateShake();
+    });
+    expect(hookResult!.shakeCount).toBe(1);
+
+    // Reset shake count
+    ReactTestRenderer.act(() => {
+      hookResult!.resetShakeCount();
+    });
+    expect(hookResult!.shakeCount).toBe(0);
+    expect(hookResult!.lastShakeTime).toBeNull();
   });
 });
 

@@ -45,9 +45,10 @@
   * `id`: Sinh UUID v4 (RFC4122), NanoID ngắn gọn, mã ShortCode OTP và Timestamp ID.
   * `cryptoHelper`: Băm SHA-256 và mã hóa/giải mã đối xứng an toàn cho thông tin nhạy cảm.
   * `secureStorage`: Lớp lưu trữ mã hóa tự động trên nền AsyncStorage.
-* **Cử Chỉ Màn Hình Thông Minh (Smart Gestures):**
+* **Cử Chỉ Màn Hình & Chuyển Động Thông Minh (Smart Touch & Motion Gestures):**
   * `useSwipeGesture`: Nhận diện vuốt 4 hướng (Trái, Phải, Lên, Xuống) qua PanResponder.
   * `useDoubleTap`: Nhận diện chạm đúp dưới 300ms.
+  * `useShakeDetection`: Nhận diện chuyển động lắc điện thoại qua cảm biến gia tốc, phản hồi rung mạnh (`haptics.heavy()`), cơ chế cooldown chống lặp và hàm `simulateShake()` cho máy ảo / test.
   * `GestureCard`: Thẻ tương tác phản hồi cử chỉ trực quan.
 * **Cầu Nối Widget & In-App Webview:**
   * `widgetBridgeService`: Xuất snapshot dữ liệu app đồng bộ ra Android AppWidget / iOS WidgetKit.
@@ -73,6 +74,16 @@
 * **Cơ Sở Dữ Liệu SQLite Siêu Tốc:** `@op-engineering/op-sqlite` chạy JSI C++ trực tiếp trên New Architecture.
 * **Lưu Trữ Bền Vững:** `appStorage` trên nền `@react-native-async-storage/async-storage`.
 * **Chuẩn Hóa Đa Ngôn Ngữ Song Ngữ (i18n):** `i18next` + `react-i18next` hỗ trợ chuyển đổi Tiếng Việt & Tiếng Anh tức thì, phân chia theo các namespaces rõ ràng (`common`, `validation`, `network`, `home`, `details`, `dialogs`, `splash`, `crypto`, `gestures`, `biometrics`, `widget`).
+* **Phong Cách Thiết Kế Apple iOS 18 Cupertino & Liquid Glass:**
+  * Thẻ kính mờ Liquid Glass (`GlassCard`) viền phản xạ ánh sáng (Specular Highlight) và hào quang tinh tế.
+  * Bộ màu Apple System Colors (`AppleColors`) & Tokens Liquid Glass (`AppleGlassTokens`).
+  * Cơ chế chuyển đổi giao diện mô-đun an toàn (`themeStyle: 'default' | 'apple-glass'`), không phá vỡ UI mặc định.
+* **Kiến Trúc Kết Nối Thời Gian Thực Đa Nền Tảng (Universal Real-Time WebSocket):**
+  * `socketService`: Tự động kết nối lại lũy thừa (Exponential Backoff), hàng đợi tin nhắn ngoại tuyến (Offline Queue), nhịp tim định kỳ (Heartbeat Ping/Pong 30s) và bộ lắng nghe sự kiện có định kiểu (Typed Pub/Sub).
+  * Tài liệu so sánh chuyên sâu WebSocket vs. SSE vs. WebRTC tại `docs/REALTIME_GUIDE.md`.
+* **Chuẩn Mã Hóa Tương Thích Server Backend (Server-Compatible AES-256):**
+  * Định dạng payload tiêu chuẩn `AESP256:iv:salt:ciphertext:tag` hỗ trợ đầy đủ IV, Salt, Ciphertext và Auth Tag băm kiểm tra tính toàn vẹn.
+  * Tương thích 100% với Node.js, Python, Java Spring Boot và Go. Hướng dẫn kèm mã nguồn backend hoàn chỉnh tại `docs/SERVER_ENCRYPTION_GUIDE.md`.
 * **Quản Trị Phiên Bản & Cập Nhật:** `appUpdateService` so sánh phiên bản và nhắc nhở người dùng cập nhật qua Store.
 
 ---
@@ -126,14 +137,15 @@ src/
 │   │   ├── Skeleton/
 │   │   ├── WidgetCard/
 │   │   ├── GestureCard/
-│   │   └── AppWebView/
+│   │   ├── AppWebView/
+│   │   └── GlassCard/          # Apple Liquid Glass Cupertino card
 │   └── toast/          # In-App spring toast provider & hook
-├── constants/          # Colors, Spacing, Typography, Shadows, AppConfig
-├── hooks/              # useAppStore, useSwipeGesture, useDoubleTap, useNetworkStatus, useDebounce...
+├── constants/          # Colors, appleTheme (AppleColors & GlassTokens), Spacing, Typography, Shadows
+├── hooks/              # useAppStore (ThemeStyle), useGestures (Swipe & Shake), useDebounce...
 ├── i18n/               # vi.json, en.json, cấu hình i18next
 ├── navigation/         # React Navigation v7 Native Stack & deep linking
 ├── screens/            # Splash, Home, Details (mỗi screen có styles.ts riêng)
-├── services/           # ApiClient, SQLite, fileService, biometricService, widgetBridgeService, storage
+├── services/           # ApiClient, realtime (WebSocket), SQLite, fileService, biometricService, storage
 ├── types/              # Định nghĩa types toàn cục (api.ts, models.ts, index.ts)
-└── utils/              # id, crypto, image, file, clipboard, browser, haptics, share, permissions, schemas
+└── utils/              # id, crypto (AESP256), image, file, clipboard, browser, haptics, permissions, schemas
 ```
