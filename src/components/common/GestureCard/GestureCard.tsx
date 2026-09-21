@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, useColorScheme, TouchableWithoutFeedback } from 'react-native';
+import { View, TouchableWithoutFeedback } from 'react-native';
 import { Hand } from 'lucide-react-native';
 import { AppText } from '@/components/common/AppText';
-import { Colors } from '@/constants/colors';
+import { useThemeMode } from '@/hooks/useThemeMode';
 import { useSwipeGesture, useDoubleTap } from '@/hooks/useGestures';
 import type { GestureCardProps } from './types';
 import { createGestureCardStyles } from './styles';
@@ -14,8 +14,7 @@ export const GestureCard: React.FC<GestureCardProps> = ({
   onSwipeRight,
   onDoubleTap,
 }) => {
-  const isDarkMode = useColorScheme() === 'dark';
-  const themeColors = isDarkMode ? Colors.dark : Colors.light;
+  const { theme: themeColors } = useThemeMode();
   const styles = createGestureCardStyles(themeColors);
 
   const swipeHandlers = useSwipeGesture({

@@ -3,14 +3,13 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  useColorScheme,
 } from 'react-native';
 import { Search, X, SlidersHorizontal } from 'lucide-react-native';
-import { Colors } from '@/constants/colors';
 import { useDebounce } from '@/hooks/useDebounce';
+import { useThemeMode } from '@/hooks/useThemeMode';
 import type { AppSearchBarProps } from './types';
 import { DEFAULT_SEARCH_DEBOUNCE_MS, DEFAULT_SEARCH_PLACEHOLDER } from './constants';
-import { styles } from './styles';
+import { styles, getSearchBarThemedContainer, getFilterButtonThemedStyle } from './styles';
 
 export const AppSearchBar: React.FC<AppSearchBarProps> = ({
   value: controlledValue,
@@ -22,8 +21,7 @@ export const AppSearchBar: React.FC<AppSearchBarProps> = ({
   onClear,
   style,
 }) => {
-  const isDarkMode = useColorScheme() === 'dark';
-  const themeColors = isDarkMode ? Colors.dark : Colors.light;
+  const { theme: themeColors } = useThemeMode();
 
   const [text, setText] = useState(controlledValue || '');
   const debouncedText = useDebounce(text, debounceDelay);
@@ -57,10 +55,7 @@ export const AppSearchBar: React.FC<AppSearchBarProps> = ({
     <View
       style={[
         styles.container,
-        {
-          backgroundColor: themeColors.card,
-          borderColor: themeColors.border,
-        },
+        getSearchBarThemedContainer(themeColors),
         style,
       ]}
     >
@@ -93,7 +88,7 @@ export const AppSearchBar: React.FC<AppSearchBarProps> = ({
           activeOpacity={0.7}
           onPress={onFilterPress}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-          style={[styles.iconButton, styles.filterButton, { borderLeftColor: themeColors.border }]}
+          style={[styles.iconButton, styles.filterButton, getFilterButtonThemedStyle(themeColors)]}
         >
           <SlidersHorizontal size={18} color={themeColors.primary} />
         </TouchableOpacity>

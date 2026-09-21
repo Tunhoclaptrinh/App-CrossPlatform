@@ -1,9 +1,9 @@
 import { StyleSheet } from 'react-native';
-import { Colors } from '@/constants/colors';
 import { BorderRadius, Spacing } from '@/constants/theme';
-import type { AppBadgeVariant, AppBadgeShape } from './types';
+import type { ThemeColors } from '@/constants/colors';
+import type { AppBadgeVariant, AppBadgeShape, AppBadgeSize } from './types';
 
-export const getBadgeColors = (variant: AppBadgeVariant = 'primary', themeColors: typeof Colors.light) => {
+export const getBadgeColors = (variant: AppBadgeVariant = 'primary', themeColors: ThemeColors) => {
   switch (variant) {
     case 'success':
       return {
@@ -57,6 +57,14 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'flex-start',
   },
+  sizeSm: {
+    paddingVertical: Spacing.xxs,
+    paddingHorizontal: Spacing.sm,
+  },
+  sizeMd: {
+    paddingVertical: Spacing.xs,
+    paddingHorizontal: Spacing.md,
+  },
   iconWrapper: {
     marginRight: Spacing.xs,
   },
@@ -64,3 +72,16 @@ export const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
+
+export const getBadgeContainerStyle = (
+  shape: AppBadgeShape = 'pill',
+  size: AppBadgeSize = 'md',
+  bgColor: string
+) => [
+  styles.badge,
+  size === 'sm' ? styles.sizeSm : styles.sizeMd,
+  {
+    backgroundColor: bgColor,
+    borderRadius: getBadgeRadius(shape),
+  },
+];

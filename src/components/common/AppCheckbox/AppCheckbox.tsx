@@ -1,8 +1,8 @@
 import React from 'react';
-import { TouchableOpacity, View, useColorScheme } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { Check } from 'lucide-react-native';
 import { AppText } from '../AppText';
-import { Colors } from '@/constants/colors';
+import { useThemeMode } from '@/hooks/useThemeMode';
 import type { AppCheckboxProps } from './types';
 import { styles } from './styles';
 
@@ -13,8 +13,7 @@ export const AppCheckbox: React.FC<AppCheckboxProps> = ({
   disabled = false,
   style,
 }) => {
-  const isDarkMode = useColorScheme() === 'dark';
-  const themeColors = isDarkMode ? Colors.dark : Colors.light;
+  const { theme: themeColors } = useThemeMode();
 
   const handlePress = () => {
     if (!disabled) {

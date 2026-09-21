@@ -1,37 +1,77 @@
 import React from 'react';
-import { TouchableOpacity, ActivityIndicator } from 'react-native';
+import {
+  TouchableOpacity,
+  ActivityIndicator,
+  View,
+  GestureResponderEvent,
+} from 'react-native';
 import { AppText } from '../AppText';
+import { useThemeMode } from '@/hooks/useThemeMode';
+import { haptics } from '@/utils/haptics';
 import type { AppButtonProps } from './types';
-import { styles, getButtonVariantStyle, getButtonTextColor } from './styles';
+import {
+  createButtonStyles,
+  getButtonTextColor,
+  getVariantStyle,
+  getSizeStyle,
+  getTextSizeStyle,
+} from './styles';
 
 export const AppButton: React.FC<AppButtonProps> = ({
   title,
   variant = 'primary',
+  size = 'md',
   loading = false,
+  disabled = false,
+  leftIcon,
+  rightIcon,
   style,
-  disabled,
+  textStyle,
+  haptic = true,
+  onPress,
   ...props
 }) => {
-  const textColor = getButtonTextColor(variant);
+  const { theme: themeColors } = useThemeMode();
+  const styles = createButtonStyles(themeColors);
+  const textColor = getButtonTextColor(variant, themeColors);
+
+  const handlePress = (e: GestureResponderEvent) => {
+    if (haptic) {
+      haptics.light();
+    }
+    onPress?.(e);
+  };
+
+  const isInteractiveDisabled = disabled || loading;
 
   return (
     <TouchableOpacity
-      activeOpacity={0.8}
+      activeOpacity={0.75}
       style={[
-        styles.button,
-        getButtonVariantStyle(variant),
-        disabled && styles.disabledButton,
+        styles.base,
+        getSizeStyle(size, styles),
+        getVariantStyle(variant, styles),
+        isInteractiveDisabled && styles.disabled,
         style,
       ]}
-      disabled={disabled || loading}
+      disabled={isInteractiveDisabled}
+      onPress={handlePress}
       {...props}
     >
       {loading ? (
-        <ActivityIndicator color={textColor} size="small" />
+        <ActivityIndicator color={textColor} size={size === 'sm' ? 'small' : 'small'} />
       ) : (
-        <AppText variant="subtitle" color={textColor} style={styles.buttonText}>
-          {title}
-        </AppText>
+        <>
+          {leftIcon ? <View style={styles.leftIconWrapper}>{leftIcon}</View> : null}
+          <AppText
+            variant="subtitle"
+            color={textColor}
+            style={[styles.textBase, getTextSizeStyle(size, styles), textStyle]}
+          >
+            {title}
+          </AppText>
+          {rightIcon ? <View style={styles.rightIconWrapper}>{rightIcon}</View> : null}
+        </>
       )}
     </TouchableOpacity>
   );

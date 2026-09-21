@@ -1,7 +1,7 @@
 import React from 'react';
-import { ActivityIndicator, View, ViewStyle, useColorScheme } from 'react-native';
+import { ActivityIndicator, View, ViewStyle } from 'react-native';
 import { AppText } from '../AppText';
-import { Colors } from '@/constants/colors';
+import { useThemeMode } from '@/hooks/useThemeMode';
 import type { LoadingOverlayProps } from './types';
 import { styles } from './styles';
 
@@ -11,8 +11,7 @@ export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
   fullscreen = false,
   style,
 }) => {
-  const isDarkMode = useColorScheme() === 'dark';
-  const themeColors = isDarkMode ? Colors.dark : Colors.light;
+  const { theme: themeColors } = useThemeMode();
 
   if (!visible) return null;
 

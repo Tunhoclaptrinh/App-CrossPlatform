@@ -1,30 +1,39 @@
-import React, { Component, ErrorInfo } from 'react';
-import { View, TouchableOpacity, useColorScheme } from 'react-native';
+import React, { Component } from 'react';
+import { View } from 'react-native';
 import { AlertTriangle, RotateCcw } from 'lucide-react-native';
 import { AppText } from '../AppText';
-import { Colors } from '@/constants/colors';
+import { AppButton } from '../AppButton';
+import { useThemeMode } from '@/hooks/useThemeMode';
 import type { ErrorBoundaryProps, ErrorBoundaryState, ErrorBoundaryFallbackProps } from './types';
-import { styles } from './styles';
+import { styles, getErrorBoundaryThemedStyles } from './styles';
 
 export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  public state: ErrorBoundaryState = {
-    hasError: false,
-    error: null,
-  };
-
-  public static getDerivedStateFromError(error: Error): ErrorBoundaryState {
-    return { hasError: true, error };
+  constructor(props: ErrorBoundaryProps) {
+    super(props);
+    this.state = {
+      hasError: false,
+      error: null,
+    };
   }
 
-  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('[ErrorBoundary] Uncaught error:', error, errorInfo);
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+    return {
+      hasError: true,
+      error,
+    };
   }
 
-  public handleReset = () => {
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
+    if (this.props.onError) {
+      this.props.onError(error, errorInfo);
+    }
+  }
+
+  handleReset = () => {
     this.setState({ hasError: false, error: null });
   };
 
-  public render() {
+  render() {
     if (this.state.hasError) {
       if (this.props.fallback) {
         return this.props.fallback;
@@ -43,13 +52,13 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 }
 
 const ErrorBoundaryFallback: React.FC<ErrorBoundaryFallbackProps> = ({ error, onReset }) => {
-  const isDarkMode = useColorScheme() === 'dark';
-  const themeColors = isDarkMode ? Colors.dark : Colors.light;
+  const { theme: themeColors } = useThemeMode();
+  const themed = getErrorBoundaryThemedStyles(themeColors);
 
   return (
-    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
-      <View style={[styles.card, { backgroundColor: themeColors.card, borderColor: themeColors.border }]}>
-        <View style={[styles.iconWrapper, { backgroundColor: themeColors.errorLight }]}>
+    <View style={[styles.container, themed.container]}>
+      <View style={[styles.card, themed.card]}>
+        <View style={[styles.iconWrapper, themed.iconWrapper]}>
           <AlertTriangle size={36} color={themeColors.error} />
         </View>
 
@@ -61,16 +70,13 @@ const ErrorBoundaryFallback: React.FC<ErrorBoundaryFallbackProps> = ({ error, on
           {error?.message || 'Ứng dụng gặp lỗi không mong muốn trong quá trình xử lý giao diện.'}
         </AppText>
 
-        <TouchableOpacity
-          activeOpacity={0.8}
+        <AppButton
+          title="Thử Lại"
+          variant="primary"
+          leftIcon={<RotateCcw size={18} color="#FFFFFF" />}
           onPress={onReset}
-          style={[styles.resetButton, { backgroundColor: themeColors.primary }]}
-        >
-          <RotateCcw size={18} color="#FFFFFF" style={styles.btnIcon} />
-          <AppText variant="subtitle" color="#FFFFFF" style={styles.btnText}>
-            Thử Lại
-          </AppText>
-        </TouchableOpacity>
+          style={styles.resetButton}
+        />
       </View>
     </View>
   );

@@ -1,15 +1,8 @@
 import { StyleSheet } from 'react-native';
 import { Spacing, BorderRadius } from '@/constants/theme';
+import type { ThemeColors } from '@/constants/colors';
 
-export const createDetailsStyles = (colors: {
-  background: string;
-  card: string;
-  text: string;
-  textSecondary: string;
-  border: string;
-  primary: string;
-  primaryLight: string;
-}) =>
+export const createDetailsStyles = (colors: ThemeColors) =>
   StyleSheet.create({
     container: {
       flex: 1,
@@ -17,58 +10,93 @@ export const createDetailsStyles = (colors: {
     },
     content: {
       padding: Spacing.lg,
+      paddingBottom: Spacing.xxl + 24,
     },
+    // Main Overview Card
     card: {
       backgroundColor: colors.card,
       padding: Spacing.xl,
-      borderRadius: BorderRadius.lg,
+      borderRadius: BorderRadius.xl,
       borderWidth: 1,
       borderColor: colors.border,
       marginBottom: Spacing.lg,
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.05,
+      shadowRadius: 10,
+      elevation: 2,
     },
     badge: {
-      alignSelf: 'flex-start',
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: Spacing.xs,
       backgroundColor: colors.primaryLight,
       paddingHorizontal: Spacing.md,
-      paddingVertical: Spacing.xs,
+      paddingVertical: Spacing.xs - 1,
       borderRadius: BorderRadius.full,
       marginBottom: Spacing.md,
+      alignSelf: 'flex-start',
     },
     badgeText: {
       color: colors.primary,
-      fontWeight: '600',
+      fontWeight: '700',
+      fontSize: 11,
+      letterSpacing: 0.5,
     },
     title: {
       color: colors.text,
-      marginBottom: Spacing.sm,
+      marginBottom: Spacing.xs,
     },
     description: {
       color: colors.textSecondary,
       lineHeight: 22,
       marginBottom: Spacing.lg,
     },
+    infoList: {
+      backgroundColor: colors.surfaceSubtle,
+      borderRadius: BorderRadius.lg,
+      padding: Spacing.md,
+      gap: Spacing.sm + 2,
+      marginBottom: Spacing.lg,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
     infoRow: {
       flexDirection: 'row',
       alignItems: 'center',
       gap: Spacing.sm,
-      marginBottom: Spacing.md,
     },
     infoText: {
       color: colors.text,
       fontWeight: '500',
+      fontSize: 13,
+      flex: 1,
     },
     chipRow: {
       flexDirection: 'row',
+      flexWrap: 'wrap',
       gap: Spacing.sm,
-      marginVertical: Spacing.md,
+      marginBottom: Spacing.lg,
     },
-    demoBox: {
-      marginVertical: Spacing.md,
-    },
+    // Form controls box
     formControlsBox: {
-      marginVertical: Spacing.md,
-      gap: Spacing.sm,
+      backgroundColor: colors.surfaceSubtle,
+      borderRadius: BorderRadius.lg,
+      padding: Spacing.md,
+      gap: Spacing.md,
+      marginBottom: Spacing.lg,
+      borderWidth: 1,
+      borderColor: colors.border,
     },
+    // Sections
+    skeletonSection: {
+      marginTop: Spacing.xl,
+    },
+    sectionHeading: {
+      color: colors.text,
+      marginBottom: Spacing.sm + 2,
+    },
+    // Buttons grids & rows
     hapticRow: {
       flexDirection: 'row',
       gap: Spacing.sm,
@@ -82,28 +110,37 @@ export const createDetailsStyles = (colors: {
       flexDirection: 'row',
       gap: Spacing.sm,
       marginTop: Spacing.xs,
+      marginBottom: Spacing.md,
+    },
+    demoBox: {
+      backgroundColor: colors.surfaceSubtle,
+      borderRadius: BorderRadius.lg,
+      padding: Spacing.md,
+      borderWidth: 1,
+      borderColor: colors.border,
+      marginBottom: Spacing.lg,
     },
     savedKeyText: {
-      marginBottom: Spacing.sm,
+      marginVertical: Spacing.xs,
+      fontWeight: '600',
     },
     actions: {
-      gap: Spacing.md,
-      marginTop: Spacing.md,
+      gap: Spacing.sm + 4,
+      marginTop: Spacing.sm,
     },
-    skeletonSection: {
-      marginTop: Spacing.lg,
-    },
-    sectionHeading: {
-      color: colors.text,
-      marginBottom: Spacing.sm,
-    },
+    // Crypto & Security Box
     cryptoBox: {
       backgroundColor: colors.card,
       borderWidth: 1,
       borderColor: colors.border,
-      borderRadius: BorderRadius.md,
-      padding: Spacing.md,
-      marginVertical: Spacing.sm,
+      borderRadius: BorderRadius.xl,
+      padding: Spacing.lg,
+      gap: Spacing.sm,
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.04,
+      shadowRadius: 6,
+      elevation: 1,
     },
     cryptoActionRow: {
       flexDirection: 'row',
@@ -111,40 +148,41 @@ export const createDetailsStyles = (colors: {
       marginVertical: Spacing.xs,
     },
     codeSnippet: {
-      backgroundColor: colors.background,
-      padding: Spacing.sm,
-      borderRadius: BorderRadius.sm,
+      backgroundColor: colors.surfaceSubtle,
+      padding: Spacing.md,
+      borderRadius: BorderRadius.md,
       marginVertical: Spacing.xs,
       borderWidth: 1,
       borderColor: colors.border,
     },
-    gestureResult: {
-      textAlign: 'center',
-      marginTop: Spacing.xs,
-      fontWeight: '600',
+    codeSnippetText: {
+      fontFamily: 'monospace',
+      fontSize: 12,
+      lineHeight: 18,
     },
+    // Widget Box
     widgetContent: {
       paddingVertical: Spacing.xs,
+      gap: Spacing.md,
     },
     widgetStatusRow: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginVertical: Spacing.xs,
+      backgroundColor: colors.surfaceSubtle,
+      padding: Spacing.md,
+      borderRadius: BorderRadius.md,
+      borderWidth: 1,
+      borderColor: colors.border,
     },
-    // Apple Liquid Glass Styles
-    glassPreviewContainer: {
-      marginVertical: Spacing.sm,
-      gap: Spacing.md,
-    },
+    // Apple Glass Card Inner
     glassCardInner: {
-      gap: Spacing.sm,
+      gap: Spacing.md,
     },
     glassFeatureRow: {
       flexDirection: 'row',
       alignItems: 'center',
       gap: Spacing.sm,
-      marginVertical: Spacing.xxs,
     },
     glassFeatureText: {
       color: colors.text,
@@ -154,7 +192,6 @@ export const createDetailsStyles = (colors: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginTop: Spacing.xs,
       paddingTop: Spacing.sm,
       borderTopWidth: 1,
       borderTopColor: colors.border,
@@ -164,9 +201,14 @@ export const createDetailsStyles = (colors: {
       backgroundColor: colors.card,
       borderWidth: 1,
       borderColor: colors.border,
-      borderRadius: BorderRadius.lg,
+      borderRadius: BorderRadius.xl,
       padding: Spacing.lg,
       gap: Spacing.md,
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.04,
+      shadowRadius: 6,
+      elevation: 1,
     },
     realtimeStatusHeader: {
       flexDirection: 'row',
@@ -176,9 +218,10 @@ export const createDetailsStyles = (colors: {
     realtimeButtonsRow: {
       flexDirection: 'row',
       gap: Spacing.sm,
+      marginTop: Spacing.xs,
     },
     realtimeEventBox: {
-      backgroundColor: colors.background,
+      backgroundColor: colors.surfaceSubtle,
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: BorderRadius.md,
@@ -187,63 +230,75 @@ export const createDetailsStyles = (colors: {
     },
     statusDotConnected: {
       backgroundColor: '#10B981',
-      paddingHorizontal: Spacing.sm,
-      paddingVertical: Spacing.xxs,
+      paddingHorizontal: Spacing.sm + 2,
+      paddingVertical: 3,
       borderRadius: BorderRadius.full,
     },
     statusDotDisconnected: {
       backgroundColor: '#EF4444',
-      paddingHorizontal: Spacing.sm,
-      paddingVertical: Spacing.xxs,
+      paddingHorizontal: Spacing.sm + 2,
+      paddingVertical: 3,
       borderRadius: BorderRadius.full,
     },
     statusDotConnecting: {
       backgroundColor: '#F59E0B',
-      paddingHorizontal: Spacing.sm,
-      paddingVertical: Spacing.xxs,
+      paddingHorizontal: Spacing.sm + 2,
+      paddingVertical: 3,
       borderRadius: BorderRadius.full,
     },
     statusBadgeText: {
       color: '#FFFFFF',
-      fontWeight: '600',
+      fontWeight: '700',
+      fontSize: 11,
     },
     // Shake Detection Styles
     shakeContainer: {
       backgroundColor: colors.card,
       borderWidth: 1,
       borderColor: colors.border,
-      borderRadius: BorderRadius.lg,
+      borderRadius: BorderRadius.xl,
       padding: Spacing.lg,
       gap: Spacing.md,
       marginTop: Spacing.md,
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.04,
+      shadowRadius: 6,
+      elevation: 1,
     },
     shakeStatsRow: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      paddingVertical: Spacing.xs,
     },
     shakeCountBadge: {
       backgroundColor: colors.primaryLight,
       paddingHorizontal: Spacing.md,
-      paddingVertical: Spacing.xs,
+      paddingVertical: Spacing.xs - 1,
       borderRadius: BorderRadius.full,
     },
     shakeCountText: {
       color: colors.primary,
-      fontWeight: '700',
+      fontWeight: '800',
+      fontSize: 16,
     },
     shakeActionsRow: {
       flexDirection: 'row',
       gap: Spacing.sm,
+      marginTop: Spacing.xs,
     },
     // Server-Compatible Crypto Styles
     serverCryptoBox: {
       backgroundColor: colors.card,
       borderWidth: 1,
       borderColor: colors.border,
-      borderRadius: BorderRadius.lg,
+      borderRadius: BorderRadius.xl,
       padding: Spacing.lg,
       gap: Spacing.md,
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.04,
+      shadowRadius: 6,
+      elevation: 1,
     },
   });

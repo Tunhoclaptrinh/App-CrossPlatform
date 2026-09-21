@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { BorderRadius, Spacing } from '@/constants/theme';
+import type { ThemeColors } from '@/constants/colors';
 import type { SkeletonVariant } from './types';
 
 export const getSkeletonRadius = (variant: SkeletonVariant = 'rectangular', customRadius?: number) => {
@@ -28,4 +29,9 @@ export const styles = StyleSheet.create({
   mbSm: {
     marginBottom: Spacing.sm,
   },
+});
+
+export const getSkeletonCardThemedStyle = (colors: ThemeColors) => ({
+  backgroundColor: colors.card,
+  borderColor: colors.border,
 });

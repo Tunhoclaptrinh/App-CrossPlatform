@@ -1,9 +1,9 @@
 import React from 'react';
-import { View, useColorScheme } from 'react-native';
-import { Globe, Lock } from 'lucide-react-native';
-import { Button } from 'react-native-paper';
+import { View } from 'react-native';
+import { Globe, Lock, ExternalLink } from 'lucide-react-native';
 import { AppText } from '@/components/common/AppText';
-import { Colors } from '@/constants/colors';
+import { AppButton } from '@/components/common/AppButton';
+import { useThemeMode } from '@/hooks/useThemeMode';
 import { browserHelper } from '@/utils/browser';
 import type { AppWebViewProps } from './types';
 import { createAppWebViewStyles } from './styles';
@@ -13,8 +13,7 @@ export const AppWebView: React.FC<AppWebViewProps> = ({
   title = 'Trình Duyệt Tích Hợp',
   onOpenExternal,
 }) => {
-  const isDarkMode = useColorScheme() === 'dark';
-  const themeColors = isDarkMode ? Colors.dark : Colors.light;
+  const { theme: themeColors } = useThemeMode();
   const styles = createAppWebViewStyles(themeColors);
 
   const handleOpenBrowser = () => {
@@ -45,13 +44,13 @@ export const AppWebView: React.FC<AppWebViewProps> = ({
           Khung sườn Webview tối ưu hóa bảo mật, sẵn sàng hiển thị nội dung HTML, OAuth hoặc liên kết thanh toán.
         </AppText>
         <View style={styles.actions}>
-          <Button
-            mode="contained-tonal"
-            icon="open-in-new"
+          <AppButton
+            title="Mở Trình Duyệt Ngoài"
+            variant="tonal"
+            size="md"
+            leftIcon={<ExternalLink size={18} color={themeColors.primary} />}
             onPress={handleOpenBrowser}
-          >
-            Mở Trình Duyệt Ngoài
-          </Button>
+          />
         </View>
       </View>
     </View>

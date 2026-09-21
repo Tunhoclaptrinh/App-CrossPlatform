@@ -1,9 +1,9 @@
 import React from 'react';
-import { View, useColorScheme } from 'react-native';
+import { View } from 'react-native';
 import Svg, { Path, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { AppText } from '../AppText';
-import { Colors } from '@/constants/colors';
 import { AppConfig } from '@/constants/config';
+import { useThemeMode } from '@/hooks/useThemeMode';
 import type { AppLogoProps } from './types';
 import { styles } from './styles';
 
@@ -13,8 +13,7 @@ export const AppLogo: React.FC<AppLogoProps> = ({
   orientation = 'horizontal',
   style,
 }) => {
-  const isDarkMode = useColorScheme() === 'dark';
-  const themeColors = isDarkMode ? Colors.dark : Colors.light;
+  const { theme: themeColors } = useThemeMode();
 
   const getDimension = () => {
     if (typeof size === 'number') return size;

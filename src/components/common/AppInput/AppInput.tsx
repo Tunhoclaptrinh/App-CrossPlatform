@@ -3,13 +3,12 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  useColorScheme,
 } from 'react-native';
 import { Eye, EyeOff } from 'lucide-react-native';
-import { Colors } from '@/constants/colors';
+import { useThemeMode } from '@/hooks/useThemeMode';
 import { AppText } from '../AppText';
 import type { AppInputProps } from './types';
-import { styles } from './styles';
+import { styles, getInputStateStyle } from './styles';
 
 export const AppInput: React.FC<AppInputProps> = ({
   label,
@@ -21,17 +20,12 @@ export const AppInput: React.FC<AppInputProps> = ({
   style,
   ...props
 }) => {
-  const isDarkMode = useColorScheme() === 'dark';
-  const themeColors = isDarkMode ? Colors.dark : Colors.light;
+  const { theme: themeColors } = useThemeMode();
 
   const [isFocused, setIsFocused] = useState(false);
   const [showPassword, setShowPassword] = useState(!isPassword);
 
-  const getBorderColor = () => {
-    if (error) return themeColors.notification;
-    if (isFocused) return themeColors.primary;
-    return themeColors.border;
-  };
+  const stateStyle = getInputStateStyle(themeColors, isFocused, !!error);
 
   return (
     <View style={[styles.wrapper, containerStyle]}>
@@ -41,15 +35,7 @@ export const AppInput: React.FC<AppInputProps> = ({
         </AppText>
       )}
 
-      <View
-        style={[
-          styles.inputContainer,
-          {
-            backgroundColor: themeColors.card,
-            borderColor: getBorderColor(),
-          },
-        ]}
-      >
+      <View style={[styles.inputContainer, stateStyle]}>
         {leftIcon && <View style={styles.leftIconContainer}>{leftIcon}</View>}
 
         <TextInput
@@ -77,13 +63,13 @@ export const AppInput: React.FC<AppInputProps> = ({
               <Eye size={20} color={themeColors.textSecondary} />
             )}
           </TouchableOpacity>
-        ) : rightIcon ? (
-          <View style={styles.rightIconContainer}>{rightIcon}</View>
-        ) : null}
+        ) : (
+          rightIcon && <View style={styles.rightIconContainer}>{rightIcon}</View>
+        )}
       </View>
 
       {error && (
-        <AppText variant="caption" color={themeColors.notification} style={styles.errorText}>
+        <AppText variant="caption" color={themeColors.error} style={styles.errorText}>
           {error}
         </AppText>
       )}

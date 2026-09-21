@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { Spacing, BorderRadius, Typography } from '@/constants/theme';
+import type { ThemeColors } from '@/constants/colors';
 
 export const styles = StyleSheet.create({
   container: {
@@ -27,4 +28,13 @@ export const styles = StyleSheet.create({
     borderLeftWidth: 1,
     marginLeft: Spacing.sm,
   },
+});
+
+export const getSearchBarThemedContainer = (colors: ThemeColors) => ({
+  backgroundColor: colors.card,
+  borderColor: colors.border,
+});
+
+export const getFilterButtonThemedStyle = (colors: ThemeColors) => ({
+  borderLeftColor: colors.border,
 });

@@ -3,14 +3,13 @@ import {
   Modal,
   View,
   TouchableWithoutFeedback,
-  useColorScheme,
 } from 'react-native';
 import { AlertCircle, Trash2 } from 'lucide-react-native';
 import { AppText } from '../AppText';
 import { AppButton } from '../AppButton';
-import { Colors } from '@/constants/colors';
+import { useThemeMode } from '@/hooks/useThemeMode';
 import type { ConfirmDialogProps } from './types';
-import { styles } from './styles';
+import { styles, getDialogContainerThemedStyle, getDialogIconThemedStyle } from './styles';
 
 export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   visible,
@@ -25,8 +24,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   icon,
   style,
 }) => {
-  const isDarkMode = useColorScheme() === 'dark';
-  const themeColors = isDarkMode ? Colors.dark : Colors.light;
+  const { theme: themeColors } = useThemeMode();
 
   const defaultIcon = destructive ? (
     <Trash2 size={28} color={themeColors.error} />
@@ -47,21 +45,14 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
             <View
               style={[
                 styles.dialogContainer,
-                {
-                  backgroundColor: themeColors.card,
-                  borderColor: themeColors.border,
-                },
+                getDialogContainerThemedStyle(themeColors),
                 style,
               ]}
             >
               <View
                 style={[
                   styles.iconWrapper,
-                  {
-                    backgroundColor: destructive
-                      ? themeColors.errorLight
-                      : themeColors.primaryLight,
-                  },
+                  getDialogIconThemedStyle(themeColors, destructive),
                 ]}
               >
                 {icon || defaultIcon}
@@ -92,7 +83,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                 <View style={styles.buttonFlex}>
                   <AppButton
                     title={confirmText}
-                    variant={destructive ? 'secondary' : 'primary'}
+                    variant={destructive ? 'danger' : 'primary'}
                     loading={loading}
                     onPress={onConfirm}
                   />

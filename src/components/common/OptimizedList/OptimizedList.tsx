@@ -4,10 +4,9 @@ import {
   RefreshControl,
   ActivityIndicator,
   View,
-  useColorScheme,
 } from 'react-native';
 import { EmptyState } from '../EmptyState';
-import { Colors } from '@/constants/colors';
+import { useThemeMode } from '@/hooks/useThemeMode';
 import type { OptimizedListProps } from './types';
 import { OPTIMIZED_LIST_DEFAULTS } from './constants';
 import { styles } from './styles';
@@ -22,8 +21,7 @@ export function OptimizedList<T>({
   emptyProps,
   ...restProps
 }: OptimizedListProps<T>) {
-  const isDarkMode = useColorScheme() === 'dark';
-  const themeColors = isDarkMode ? Colors.dark : Colors.light;
+  const { theme: themeColors } = useThemeMode();
 
   const renderEmpty = () => {
     if (loading) {

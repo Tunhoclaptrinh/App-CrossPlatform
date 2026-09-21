@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { Spacing, BorderRadius, Shadows } from '@/constants/theme';
+import type { ThemeColors } from '@/constants/colors';
 
 export const styles = StyleSheet.create({
   container: {
@@ -34,18 +35,19 @@ export const styles = StyleSheet.create({
     marginBottom: Spacing.xl,
   },
   resetButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.xl,
-    borderRadius: BorderRadius.md,
     minWidth: 160,
   },
-  btnIcon: {
-    marginRight: Spacing.sm,
+});
+
+export const getErrorBoundaryThemedStyles = (colors: ThemeColors) => ({
+  container: {
+    backgroundColor: colors.background,
   },
-  btnText: {
-    fontWeight: '600',
+  card: {
+    backgroundColor: colors.card,
+    borderColor: colors.border,
+  },
+  iconWrapper: {
+    backgroundColor: colors.errorLight,
   },
 });

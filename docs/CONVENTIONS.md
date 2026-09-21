@@ -247,3 +247,26 @@ Toàn bộ phản hồi từ server hoặc AI model phải được định ki�
 | **TypeScript Types/Interfaces** | PascalCase | `User`, `ServerEncryptedPayload`, `SocketMessage` |
 | **Constants / Enums** | UPPER_SNAKE_CASE hoặc PascalCase | `AppleColors.systemBlue`, `STORAGE_KEYS.AUTH_TOKEN` |
 
+---
+
+## 22. Chuẩn Hóa Nút Bấm & Hệ Thống Icon SVG (AppButton & Lucide Icons)
+
+* **Chuẩn hóa nút bấm qua `AppButton` (`src/components/common/AppButton/`)**:
+  * **CẤM tuyệt đối sử dụng nút bấm từ thư viện `react-native-paper` (`<Button>`)**: Thư viện này sử dụng icon font vector truyền thống, trên kiến trúc mới (React Native 0.76+ New Architecture) sẽ bị lỗi mất font và hiển thị ô vuông rỗng `[ ]`.
+  * Toàn bộ thao tác bấm trong ứng dụng phải dùng `AppButton`.
+  * **7 Biến thể phong cách (Variants)**: `primary`, `secondary`, `outline`, `tonal`, `danger`, `ghost`, `glass`.
+  * **3 Kích thước chuẩn (Sizes)**: `sm` (gọn gàng), `md` (chuẩn), `lg` (to nổi bật).
+  * **Hỗ trợ Icon SVG**: Truyền trực tiếp qua `leftIcon` hoặc `rightIcon` sử dụng thư viện `lucide-react-native` (đảm bảo hiển thị sắc nét 100%, không phụ thuộc font linking native).
+  * **Tích hợp xúc giác rung (Haptics)**: `AppButton` tự động kích hoạt phản hồi rung xúc giác nhẹ (`haptics.light()`) khi bấm, tạo cảm giác bấm chân thực như ứng dụng Apple gốc.
+
+---
+
+## 23. Đồng Bộ Hóa Toàn Diện Chế Độ Sáng/Tối (Theme Mode Synchronization)
+
+* **CẤM gọi trực tiếp `useColorScheme()` từ `react-native` trong các components**:
+  * `useColorScheme()` của hệ điều hành không nắm bắt được việc người dùng chủ động chuyển chế độ Sáng / Tối trong cài đặt app, dẫn đến xung đột màu sắc (giao diện nửa tối nửa sáng, nhấp nháy màn hình).
+* **Bắt buộc dùng hook chuẩn `useThemeMode()` (`src/hooks/useThemeMode.ts`)**:
+  * Hook này tự động lấy trạng thái từ Zustand Store `useAppStore` và kết hợp với chế độ hệ thống khi ở chế độ `'system'`.
+  * Đảm bảo toàn bộ 20+ components và các màn hình chuyển đổi màu sắc đồng thời, mượt mà và chuẩn xác 100%.
+
+

@@ -3,10 +3,9 @@ import {
   TouchableOpacity,
   View,
   ViewStyle,
-  useColorScheme,
 } from 'react-native';
-import { Colors } from '@/constants/colors';
 import { BorderRadius, Spacing } from '@/constants/theme';
+import { useThemeMode } from '@/hooks/useThemeMode';
 import type { AppCardProps } from './types';
 import { styles, createCardVariantStyle } from './styles';
 
@@ -18,8 +17,7 @@ export const AppCard: React.FC<AppCardProps> = ({
   onPress,
   style,
 }) => {
-  const isDarkMode = useColorScheme() === 'dark';
-  const themeColors = isDarkMode ? Colors.dark : Colors.light;
+  const { theme: themeColors } = useThemeMode();
 
   const cardStyle: ViewStyle = {
     borderRadius: BorderRadius[radius],

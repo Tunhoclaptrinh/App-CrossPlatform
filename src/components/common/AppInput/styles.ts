@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { Spacing, BorderRadius, Typography } from '@/constants/theme';
+import type { ThemeColors } from '@/constants/colors';
 
 export const styles = StyleSheet.create({
   wrapper: {
@@ -24,12 +25,29 @@ export const styles = StyleSheet.create({
   },
   leftIconContainer: {
     marginRight: Spacing.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   rightIconContainer: {
     marginLeft: Spacing.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   errorText: {
     marginTop: 4,
     fontSize: 11,
   },
+});
+
+export const getInputStateStyle = (
+  colors: ThemeColors,
+  isFocused: boolean,
+  hasError: boolean
+) => ({
+  backgroundColor: colors.card,
+  borderColor: hasError
+    ? colors.error
+    : isFocused
+    ? colors.primary
+    : colors.border,
 });

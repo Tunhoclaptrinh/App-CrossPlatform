@@ -1,9 +1,9 @@
 import React from 'react';
-import { View, useColorScheme } from 'react-native';
+import { View } from 'react-native';
 import { Inbox } from 'lucide-react-native';
-import { Button } from 'react-native-paper';
 import { AppText } from '../AppText';
-import { Colors } from '@/constants/colors';
+import { AppButton } from '../AppButton';
+import { useThemeMode } from '@/hooks/useThemeMode';
 import type { EmptyStateProps } from './types';
 import { styles } from './styles';
 
@@ -15,8 +15,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   onActionPress,
   style,
 }) => {
-  const isDarkMode = useColorScheme() === 'dark';
-  const themeColors = isDarkMode ? Colors.dark : Colors.light;
+  const { theme: themeColors } = useThemeMode();
 
   return (
     <View style={[styles.container, style]}>
@@ -37,9 +36,12 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
       </AppText>
 
       {actionText && onActionPress && (
-        <Button mode="contained-tonal" onPress={onActionPress}>
-          {actionText}
-        </Button>
+        <AppButton
+          title={actionText}
+          variant="tonal"
+          size="sm"
+          onPress={onActionPress}
+        />
       )}
     </View>
   );

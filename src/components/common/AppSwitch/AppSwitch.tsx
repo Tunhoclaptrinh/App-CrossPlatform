@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Switch, useColorScheme, Platform } from 'react-native';
+import { View, Switch, Platform } from 'react-native';
 import { AppText } from '../AppText';
-import { Colors } from '@/constants/colors';
+import { useThemeMode } from '@/hooks/useThemeMode';
 import type { AppSwitchProps } from './types';
 import { styles } from './styles';
 
@@ -14,8 +14,7 @@ export const AppSwitch: React.FC<AppSwitchProps> = ({
   style,
   ...props
 }) => {
-  const isDarkMode = useColorScheme() === 'dark';
-  const themeColors = isDarkMode ? Colors.dark : Colors.light;
+  const { theme: themeColors, isDark } = useThemeMode();
 
   return (
     <View style={[styles.container, style]}>
@@ -47,7 +46,7 @@ export const AppSwitch: React.FC<AppSwitchProps> = ({
         onValueChange={onValueChange}
         disabled={disabled}
         trackColor={{
-          false: isDarkMode ? '#374151' : '#E5E7EB',
+          false: isDark ? '#374151' : '#E5E7EB',
           true: themeColors.primary,
         }}
         thumbColor={
@@ -57,7 +56,7 @@ export const AppSwitch: React.FC<AppSwitchProps> = ({
               : '#F3F4F6'
             : undefined
         }
-        ios_backgroundColor={isDarkMode ? '#374151' : '#E5E7EB'}
+        ios_backgroundColor={isDark ? '#374151' : '#E5E7EB'}
         {...props}
       />
     </View>

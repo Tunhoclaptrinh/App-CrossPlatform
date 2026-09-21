@@ -1,9 +1,9 @@
 import React from 'react';
-import { View, useColorScheme, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { RefreshCw } from 'lucide-react-native';
 import { AppText } from '@/components/common/AppText';
 import { AppBadge } from '@/components/common/AppBadge';
-import { Colors } from '@/constants/colors';
+import { useThemeMode } from '@/hooks/useThemeMode';
 import { haptics } from '@/utils/haptics';
 import type { WidgetCardProps } from './types';
 import { createWidgetCardStyles } from './styles';
@@ -17,8 +17,7 @@ export const WidgetCard: React.FC<WidgetCardProps> = ({
   onRefresh,
   isRefreshing = false,
 }) => {
-  const isDarkMode = useColorScheme() === 'dark';
-  const themeColors = isDarkMode ? Colors.dark : Colors.light;
+  const { theme: themeColors } = useThemeMode();
   const styles = createWidgetCardStyles(themeColors);
 
   const handleRefresh = () => {

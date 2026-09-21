@@ -16,6 +16,7 @@
 * **Crash Resilience & Error Boundary:** Tích hợp sẵn `ErrorBoundary` chống văng app khi gặp lỗi JavaScript runtime và `useDoubleBackExit` chống thoát nhầm trên Android.
 * **Design System Toàn Cầu:** Bảng màu Semantic Palette (50–950), Thang Bo góc (`none` đến `pill`), Khoảng cách (`Spacing`), Kiểu chữ (`Typography`) và Đổ bóng Cross-platform (`Shadows`).
 * **Bộ UI Components Chuẩn Hóa:**
+  * `AppButton`: Nút bấm đa năng chuẩn Agency/Apple-tier: 7 biến thể (`primary`, `secondary`, `outline`, `tonal`, `danger`, `ghost`, `glass`), 3 kích thước (`sm`, `md`, `lg`), tích hợp icon SVG Lucide (tránh lỗi ô vuông `[ ]`), và tự động phản hồi rung xúc giác (Haptics).
   * `ConfirmDialog`: Hộp thoại xác nhận hành động theo Theme (Xác nhận xóa, Đăng xuất, Hủy thao tác).
   * `AppCheckbox`: Hộp tích chọn tùy chỉnh có hiệu ứng và nhãn.
   * `AppSwitch`: Nút gạt bật/tắt thiết lập (Ghi nhớ đăng nhập, Nhận thông báo).
@@ -31,6 +32,10 @@
   * `Skeleton` & `SkeletonCard`: Khung xương tải dữ liệu nhấp nháy 60 FPS Native Driver.
   * `EmptyState`: Màn hình thông báo danh sách trống thân thiện kèm nút hành động.
   * `LoadingOverlay`: Lớp phủ mờ xoay vòng khi đang xử lý giao dịch.
+* **Chuẩn Hóa Icon Vector SVG 100% (`lucide-react-native`):**
+  * Loại bỏ hoàn toàn icon font vector cũ (nguyên nhân gây ô vuông rỗng `[ ]` trên React Native New Architecture), thay thế bằng SVG render native mượt mà và sắc nét tuyệt đối.
+* **Đồng Bộ Hóa Chế Độ Giao Diện Toàn Cầu (Synchronized Dark/Light Mode):**
+  * 100% component đồng bộ qua `useThemeMode()`, đảm bảo khi chuyển đổi theme không bao giờ xảy ra tình trạng lệch màu hay chớp đen màn hình.
 * **Hệ Thống API & Type Response Đầy Đủ:**
   * `apiClient`: Universal HTTP client hỗ trợ REST API và AI endpoints (`get`, `post`, `put`, `patch`, `delete`, `upload` multipart/form-data) cùng tệp mẫu cấu hình môi trường `.env.example`.
   * `ApiResponse<T>`, `ApiError`, `PaginatedResponse<T>`, `PaginationParams`, `RequestOptions`, `AiChatRequest`, `AiChatResponse`.

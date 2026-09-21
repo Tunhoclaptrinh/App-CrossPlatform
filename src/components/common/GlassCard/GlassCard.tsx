@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, useColorScheme, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
+import { useThemeMode } from '@/hooks/useThemeMode';
 import { haptics } from '@/utils/haptics';
 import type { GlassCardProps } from './types';
 import { createGlassCardStyles } from './styles';
@@ -11,8 +12,8 @@ export const GlassCard: React.FC<GlassCardProps> = ({
   onPress,
   glowEffect = true,
 }) => {
-  const isDarkMode = useColorScheme() === 'dark';
-  const styles = createGlassCardStyles(isDarkMode, accentColor);
+  const { isDark } = useThemeMode();
+  const styles = createGlassCardStyles(isDark, accentColor);
 
   const handlePress = () => {
     if (onPress) {

@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, View, ViewStyle, useColorScheme } from 'react-native';
-import { Colors } from '@/constants/colors';
+import { Animated, View, ViewStyle } from 'react-native';
+import { useThemeMode } from '@/hooks/useThemeMode';
 import type { SkeletonProps, SkeletonCardProps } from './types';
-import { styles, getSkeletonRadius } from './styles';
+import { styles, getSkeletonRadius, getSkeletonCardThemedStyle } from './styles';
 
 export const Skeleton: React.FC<SkeletonProps> = ({
   width = '100%',
@@ -11,8 +11,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({
   variant = 'rectangular',
   style,
 }) => {
-  const isDarkMode = useColorScheme() === 'dark';
-  const themeColors = isDarkMode ? Colors.dark : Colors.light;
+  const { theme: themeColors } = useThemeMode();
 
   const opacity = useRef(new Animated.Value(0.3)).current;
 
@@ -48,14 +47,13 @@ export const Skeleton: React.FC<SkeletonProps> = ({
 };
 
 export const SkeletonCard: React.FC<SkeletonCardProps> = ({ style }) => {
-  const isDarkMode = useColorScheme() === 'dark';
-  const themeColors = isDarkMode ? Colors.dark : Colors.light;
+  const { theme: themeColors } = useThemeMode();
 
   return (
     <Animated.View
       style={[
         styles.cardContainer,
-        { backgroundColor: themeColors.card, borderColor: themeColors.border },
+        getSkeletonCardThemedStyle(themeColors),
         style,
       ]}
     >

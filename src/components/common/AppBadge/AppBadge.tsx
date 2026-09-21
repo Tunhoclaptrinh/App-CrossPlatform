@@ -1,10 +1,9 @@
 import React from 'react';
-import { View, useColorScheme } from 'react-native';
+import { View } from 'react-native';
 import { AppText } from '../AppText';
-import { Colors } from '@/constants/colors';
-import { Spacing } from '@/constants/theme';
+import { useThemeMode } from '@/hooks/useThemeMode';
 import type { AppBadgeProps } from './types';
-import { styles, getBadgeColors, getBadgeRadius } from './styles';
+import { styles, getBadgeColors, getBadgeContainerStyle } from './styles';
 
 export const AppBadge: React.FC<AppBadgeProps> = ({
   label,
@@ -14,22 +13,14 @@ export const AppBadge: React.FC<AppBadgeProps> = ({
   icon,
   style,
 }) => {
-  const isDarkMode = useColorScheme() === 'dark';
-  const themeColors = isDarkMode ? Colors.dark : Colors.light;
-
+  const { theme: themeColors } = useThemeMode();
   const colors = getBadgeColors(variant, themeColors);
   const isSm = size === 'sm';
 
   return (
     <View
       style={[
-        styles.badge,
-        {
-          backgroundColor: colors.bg,
-          borderRadius: getBadgeRadius(shape),
-          paddingVertical: isSm ? Spacing.xxs : Spacing.xs,
-          paddingHorizontal: isSm ? Spacing.sm : Spacing.md,
-        },
+        getBadgeContainerStyle(shape, size, colors.bg),
         style,
       ]}
     >

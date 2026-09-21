@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { Spacing, BorderRadius } from '@/constants/theme';
+import type { ThemeColors } from '@/constants/colors';
 
 export const styles = StyleSheet.create({
   container: {
@@ -36,4 +37,13 @@ export const styles = StyleSheet.create({
   title: {
     fontWeight: '600',
   },
+});
+
+export const getHeaderThemedStyle = (colors: ThemeColors) => ({
+  backgroundColor: colors.card,
+  borderBottomColor: colors.border,
+});
+
+export const getBackButtonThemedStyle = (colors: ThemeColors) => ({
+  backgroundColor: colors.surfaceSubtle,
 });

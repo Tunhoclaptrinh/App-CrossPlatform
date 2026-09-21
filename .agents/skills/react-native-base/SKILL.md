@@ -18,7 +18,7 @@ This skill documents the conventions, directory structure, state protocols, and 
 - `src/components/`:
   - `common/`: Reusable atomic UI. Each component is an isolated folder:
     - `AppText/`: `AppText.tsx`, `styles.ts`, `types.ts`, `index.ts`.
-    - `AppButton/`: `AppButton.tsx`, `styles.ts`, `types.ts`, `index.ts`.
+    - `AppButton/`: `AppButton.tsx`, `styles.ts`, `types.ts`, `index.ts` (Agency-grade button: 7 variants, 3 sizes, left/right Lucide SVG icons, built-in tactile haptics).
     - `AppInput/`: `AppInput.tsx`, `styles.ts`, `types.ts`, `index.ts`.
     - `AppCard/`: `AppCard.tsx`, `styles.ts`, `types.ts`, `index.ts`.
     - `AppBadge/`: `AppBadge.tsx`, `styles.ts`, `types.ts`, `index.ts`.
@@ -320,5 +320,33 @@ console.log(payload.combined); // AESP256:iv:salt:ciphertext:tag
 const decrypted = cryptoHelper.decryptFromServer(payload.combined, 'SharedSecretKey');
 console.log(decrypted); // SensitiveData
 ```
+
+### 3.14. Agency-Tier AppButton & Lucide SVG Icons Standard
+```typescript
+import { AppButton } from '@/components';
+import { Save, Share2, Bell } from 'lucide-react-native';
+
+// Standard Agency Button with Crisp SVG Icons (NO broken font square boxes [ ])
+<AppButton
+  title="Lưu Thay Đổi"
+  variant="primary" // 'primary' | 'secondary' | 'outline' | 'tonal' | 'danger' | 'ghost' | 'glass'
+  size="md"         // 'sm' | 'md' | 'lg'
+  leftIcon={<Save size={18} color="#FFFFFF" />}
+  onPress={handleSave}
+/>
+
+<AppButton
+  title="Chia Sẻ"
+  variant="tonal"
+  size="sm"
+  leftIcon={<Share2 size={16} color={textColor} />}
+  onPress={handleShare}
+/>
+```
+
+### 3.15. Unified Global Theme Synchronization
+- **Rule**: NEVER use React Native's `useColorScheme()` directly in individual components or screens. OS-level color scheme does not reflect in-app theme switches (Light/Dark/System) managed by `useAppStore`.
+- **Standard**: Always import `useThemeMode()` from `@/hooks`. It resolves user preference from `useAppStore` with system fallback, ensuring 100% synchronized styling across all 20+ components without flickering or mismatched background colors.
+
 
 

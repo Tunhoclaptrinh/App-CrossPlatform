@@ -1,10 +1,10 @@
 import React from 'react';
-import { View, TouchableOpacity, useColorScheme } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import { ArrowLeft } from 'lucide-react-native';
 import { AppText } from '../AppText';
-import { Colors } from '@/constants/colors';
+import { useThemeMode } from '@/hooks/useThemeMode';
 import type { AppHeaderProps } from './types';
-import { styles } from './styles';
+import { styles, getHeaderThemedStyle, getBackButtonThemedStyle } from './styles';
 
 export const AppHeader: React.FC<AppHeaderProps> = ({
   title,
@@ -15,17 +15,13 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
   rightAction,
   style,
 }) => {
-  const isDarkMode = useColorScheme() === 'dark';
-  const themeColors = isDarkMode ? Colors.dark : Colors.light;
+  const { theme: themeColors } = useThemeMode();
 
   return (
     <View
       style={[
         styles.container,
-        {
-          backgroundColor: themeColors.card,
-          borderBottomColor: themeColors.border,
-        },
+        getHeaderThemedStyle(themeColors),
         style,
       ]}
     >
@@ -35,7 +31,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
             activeOpacity={0.7}
             onPress={onBack}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            style={[styles.backButton, { backgroundColor: themeColors.surfaceSubtle }]}
+            style={[styles.backButton, getBackButtonThemedStyle(themeColors)]}
           >
             <ArrowLeft size={20} color={themeColors.text} />
           </TouchableOpacity>

@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { Spacing, BorderRadius, Shadows } from '@/constants/theme';
+import type { ThemeColors } from '@/constants/colors';
 
 export const styles = StyleSheet.create({
   backdrop: {
@@ -43,4 +44,13 @@ export const styles = StyleSheet.create({
   buttonFlex: {
     flex: 1,
   },
+});
+
+export const getDialogContainerThemedStyle = (colors: ThemeColors) => ({
+  backgroundColor: colors.card,
+  borderColor: colors.border,
+});
+
+export const getDialogIconThemedStyle = (colors: ThemeColors, destructive: boolean) => ({
+  backgroundColor: destructive ? colors.errorLight : colors.primaryLight,
 });

@@ -4,12 +4,11 @@ import {
   StyleSheet,
   TouchableOpacity,
   View,
-  useColorScheme,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CheckCircle2, AlertCircle, AlertTriangle, Info, X } from 'lucide-react-native';
 import { AppText } from '@/components/common/AppText';
-import { Colors } from '@/constants/colors';
+import { useThemeMode } from '@/hooks/useThemeMode';
 import { BorderRadius, Spacing, Shadows } from '@/constants/theme';
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info';
@@ -29,8 +28,7 @@ interface ToastContextType {
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const isDarkMode = useColorScheme() === 'dark';
-  const themeColors = isDarkMode ? Colors.dark : Colors.light;
+  const { theme: themeColors } = useThemeMode();
   const insets = useSafeAreaInsets();
 
   const [toast, setToast] = useState<ToastOptions | null>(null);

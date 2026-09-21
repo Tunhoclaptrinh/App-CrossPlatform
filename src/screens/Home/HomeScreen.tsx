@@ -12,10 +12,12 @@ import {
   Sparkles,
   Radio,
   Smartphone,
+  Sun,
+  Moon,
+  Plus,
 } from 'lucide-react-native';
-import { Button, Chip } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
-import { AppText, ScreenWrapper, AppSearchBar, EmptyState } from '@/components';
+import { AppText, ScreenWrapper, AppSearchBar, EmptyState, AppButton } from '@/components';
 import { useAppStore, useThemeMode, useDoubleBackExit } from '@/hooks';
 import { removeVietnameseTones, haptics } from '@/utils';
 import type { HomeScreenProps } from '@/navigation/types';
@@ -130,43 +132,81 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
   return (
     <ScreenWrapper scrollable contentContainerStyle={styles.content}>
+      {/* Header Card */}
       <View style={styles.headerCard}>
+        {/* Tier 1: Badge & Language */}
         <View style={styles.headerTopRow}>
           <View style={styles.badge}>
-            <ShieldCheck size={16} color={themeColors.primary} />
+            <ShieldCheck size={14} color={themeColors.primary} />
             <AppText variant="caption" style={styles.badgeText}>
               {t('home.badge', 'UNIVERSAL BASE APP')}
             </AppText>
           </View>
 
-          <View style={styles.headerControls}>
-            <Chip
-              mode="outlined"
-              onPress={handleToggleThemeStyle}
-              style={styles.langChip}
-            >
-              {themeStyle === 'apple-glass' ? '✨ Apple Glass' : '📱 Flat UI'}
-            </Chip>
+          <TouchableOpacity
+            style={styles.langPill}
+            onPress={toggleLanguage}
+            activeOpacity={0.7}
+          >
+            <Languages size={14} color={themeColors.textSecondary} />
+            <AppText variant="caption" style={styles.langPillText}>
+              {language === 'vi' ? '🇻🇳 Tiếng Việt' : '🇺🇸 English'}
+            </AppText>
+          </TouchableOpacity>
+        </View>
 
-            <Chip
-              mode="outlined"
-              onPress={() => {
-                haptics.light();
-                toggleTheme();
-              }}
-              style={styles.langChip}
+        {/* Tier 2: Segmented Controls for Theme Style and Light/Dark Mode */}
+        <View style={styles.headerSegmentsRow}>
+          <TouchableOpacity
+            style={[
+              styles.segmentBtn,
+              themeStyle === 'apple-glass' && styles.segmentBtnActive,
+            ]}
+            onPress={handleToggleThemeStyle}
+            activeOpacity={0.7}
+          >
+            <Sparkles
+              size={14}
+              color={themeStyle === 'apple-glass' ? themeColors.primary : themeColors.textSecondary}
+            />
+            <AppText
+              variant="caption"
+              style={themeStyle === 'apple-glass' ? styles.segmentTextActive : styles.segmentText}
             >
-              {isDark ? '🌙 ' + t('common.dark', 'Tối') : '☀️ ' + t('common.light', 'Sáng')}
-            </Chip>
+              Apple Glass
+            </AppText>
+          </TouchableOpacity>
 
-            <Chip
-              mode="outlined"
-              onPress={toggleLanguage}
-              style={styles.langChip}
+          <TouchableOpacity
+            style={[
+              styles.segmentBtn,
+              themeStyle === 'default' && styles.segmentBtnActive,
+            ]}
+            onPress={handleToggleThemeStyle}
+            activeOpacity={0.7}
+          >
+            <Palette
+              size={14}
+              color={themeStyle === 'default' ? themeColors.primary : themeColors.textSecondary}
+            />
+            <AppText
+              variant="caption"
+              style={themeStyle === 'default' ? styles.segmentTextActive : styles.segmentText}
             >
-              {language === 'vi' ? '🇻🇳 VI' : '🇺🇸 EN'}
-            </Chip>
-          </View>
+              Flat UI
+            </AppText>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.themeToggleBtn}
+            onPress={toggleTheme}
+            activeOpacity={0.7}
+          >
+            {isDark ? <Moon size={14} color="#FBBF24" /> : <Sun size={14} color="#F59E0B" />}
+            <AppText variant="caption" style={styles.themeToggleText}>
+              {isDark ? t('common.dark', 'Tối') : t('common.light', 'Sáng')}
+            </AppText>
+          </TouchableOpacity>
         </View>
 
         <AppText variant="header" style={styles.title}>
@@ -178,15 +218,35 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         </AppText>
       </View>
 
-      <View style={styles.storeBox}>
-        <AppText variant="subtitle">
-          {t('home.counterLabel', 'Global State Counter')}: <AppText variant="title" color={themeColors.primary}>{counter}</AppText>
-        </AppText>
-        <Button mode="contained-tonal" onPress={increment}>
-          {t('home.incrementBtn', 'Tăng biến toàn cục (+1)')}
-        </Button>
+      {/* Double-Bezel Counter Card */}
+      <View style={styles.counterOuterShell}>
+        <View style={styles.counterInnerCore}>
+          <View style={styles.counterInfo}>
+            <AppText variant="caption" style={styles.counterEyebrow}>
+              {t('home.counterLabel', 'Zustand Global State')}
+            </AppText>
+            <View style={styles.counterValueRow}>
+              <AppText variant="header" style={styles.counterValue}>
+                {counter}
+              </AppText>
+              <AppText variant="caption" style={styles.counterValueSub}>
+                count
+              </AppText>
+            </View>
+          </View>
+
+          <AppButton
+            title={t('home.incrementBtn', 'Tăng biến (+1)')}
+            variant="tonal"
+            size="sm"
+            leftIcon={<Plus size={16} color={themeColors.primary} />}
+            onPress={increment}
+            style={styles.counterBtn}
+          />
+        </View>
       </View>
 
+      {/* Search Input */}
       <View style={styles.searchContainer}>
         <AppSearchBar
           value={searchQuery}
@@ -196,10 +256,19 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         />
       </View>
 
-      <AppText variant="title" style={styles.sectionTitle}>
-        {t('home.modulesTitle', 'Các Module Nền Tảng Đã Sẵn Sàng')} ({filteredModules.length})
-      </AppText>
+      {/* Section Header */}
+      <View style={styles.sectionHeaderRow}>
+        <AppText variant="title" style={styles.sectionTitle}>
+          {t('home.modulesTitle', 'Các Module Nền Tảng Đã Sẵn Sàng')}
+        </AppText>
+        <View style={styles.moduleCountBadge}>
+          <AppText variant="caption" style={styles.moduleCountText}>
+            {filteredModules.length}
+          </AppText>
+        </View>
+      </View>
 
+      {/* Modules List */}
       {filteredModules.length === 0 ? (
         <EmptyState
           title={t('home.noResultsTitle', 'Không tìm thấy kết quả')}
@@ -237,7 +306,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                     </AppText>
                   </View>
                 </View>
-                <ChevronRight size={20} color={themeColors.textSecondary} />
+                <View style={styles.chevronWrapper}>
+                  <ChevronRight size={16} color={themeColors.textSecondary} />
+                </View>
               </TouchableOpacity>
             );
           })}
