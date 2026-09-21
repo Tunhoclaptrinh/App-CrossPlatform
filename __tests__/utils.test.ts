@@ -25,6 +25,7 @@ import { biometricService } from '@/services/biometrics';
 import { widgetBridgeService } from '@/services/widget';
 import { secureStorage } from '@/services/storage';
 import { socketService } from '@/services/realtime';
+import { apiClient } from '@/services/api';
 import { useShakeDetection } from '@/hooks';
 
 describe('Utils: Formatters', () => {
@@ -397,6 +398,42 @@ describe('Hooks: Smart Shake Detection (useShakeDetection)', () => {
     });
     expect(hookResult!.shakeCount).toBe(0);
     expect(hookResult!.lastShakeTime).toBeNull();
+  });
+});
+
+describe('Services: Universal API Client (apiClient)', () => {
+  const originalFetch = globalThis.fetch;
+
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+  });
+
+  it('should perform GET and PATCH requests properly', async () => {
+    globalThis.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      headers: { get: () => 'application/json' },
+      json: async () => ({ updated: true }),
+    } as any);
+
+    const patchRes = await apiClient.patch('/test/resource', { status: 'active' });
+    expect(patchRes.ok).toBe(true);
+    expect(patchRes.data).toEqual({ updated: true });
+    expect(globalThis.fetch).toHaveBeenCalled();
+  });
+
+  it('should support multipart FormData upload', async () => {
+    globalThis.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      headers: { get: () => 'application/json' },
+      json: async () => ({ fileId: 'doc_123', url: 'https://cdn.example.com/doc.pdf' }),
+    } as any);
+
+    const formData = new FormData();
+    const uploadRes = await apiClient.upload('/upload', formData);
+    expect(uploadRes.ok).toBe(true);
+    expect(uploadRes.data?.fileId).toBe('doc_123');
   });
 });
 

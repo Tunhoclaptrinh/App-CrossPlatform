@@ -10,15 +10,17 @@ import {
   Languages,
   Server,
   Sparkles,
+  Radio,
+  Smartphone,
 } from 'lucide-react-native';
 import { Button, Chip } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { AppText, ScreenWrapper, AppSearchBar, EmptyState } from '@/components';
 import { Colors } from '@/constants/colors';
 import { useAppStore, useThemeMode, useDoubleBackExit } from '@/hooks';
-import { removeVietnameseTones } from '@/utils';
+import { removeVietnameseTones, haptics } from '@/utils';
 import type { HomeScreenProps } from '@/navigation/types';
-import { createHomeStyles } from './styles';
+import { createHomeStyles, getIconWrapperStyle } from './styles';
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const deviceColorScheme = useColorScheme();
@@ -29,16 +31,50 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   useDoubleBackExit();
 
   const { t } = useTranslation();
-  const { counter, increment, language, setLanguage } = useAppStore();
+  const { counter, increment, language, setLanguage, themeStyle, toggleThemeStyle } = useAppStore();
   const { isDark, toggleTheme } = useThemeMode();
   const [searchQuery, setSearchQuery] = useState('');
 
   const toggleLanguage = () => {
+    haptics.light();
     const nextLang = language === 'vi' ? 'en' : 'vi';
     setLanguage(nextLang);
   };
 
+  const handleToggleThemeStyle = () => {
+    haptics.light();
+    toggleThemeStyle();
+  };
+
   const modules = [
+    {
+      id: 'apple',
+      title: 'Apple iOS 18 Liquid Glass',
+      desc: 'Cupertino frosted glassmorphism, specular borders & squircles',
+      icon: Sparkles,
+      color: '#007AFF',
+    },
+    {
+      id: 'realtime',
+      title: 'Universal Real-Time WebSocket',
+      desc: 'Auto-reconnect, offline message queue, heartbeat ping/pong & pub/sub',
+      icon: Radio,
+      color: '#10B981',
+    },
+    {
+      id: 'gestures',
+      title: 'Smart Gestures & Shake Motion',
+      desc: 'Swipe 4 directions, double tap & phone shake sensor with Haptics',
+      icon: Smartphone,
+      color: '#F59E0B',
+    },
+    {
+      id: 'crypto',
+      title: 'Server AES-256 & Security',
+      desc: 'AESP256 format compatible with Node.js, Python, Java, Go',
+      icon: ShieldCheck,
+      color: '#8B5CF6',
+    },
     {
       id: 'paper',
       title: 'React Native Paper',
@@ -108,9 +144,21 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
           <View style={styles.headerControls}>
             <Chip
+              icon={themeStyle === 'apple-glass' ? 'apple' : 'shape'}
+              mode="outlined"
+              onPress={handleToggleThemeStyle}
+              style={styles.langChip}
+            >
+              {themeStyle === 'apple-glass' ? 'Apple Glass' : 'Flat UI'}
+            </Chip>
+
+            <Chip
               icon={isDark ? 'weather-night' : 'weather-sunny'}
               mode="outlined"
-              onPress={toggleTheme}
+              onPress={() => {
+                haptics.light();
+                toggleTheme();
+              }}
               style={styles.langChip}
             >
               {isDark ? t('common.dark', 'Tối') : t('common.light', 'Sáng')}
@@ -173,7 +221,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
               <TouchableOpacity
                 key={item.id}
                 activeOpacity={0.7}
-                style={styles.itemCard}
+                style={themeStyle === 'apple-glass' ? styles.itemCardGlass : styles.itemCard}
                 onPress={() =>
                   navigation.navigate('Details', {
                     itemId: item.id,
@@ -183,7 +231,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                 }
               >
                 <View style={styles.itemLeft}>
-                  <View style={[styles.iconWrapper, { backgroundColor: item.color + '20' }]}>
+                  <View style={[styles.iconWrapper, getIconWrapperStyle(item.color)]}>
                     <IconComponent size={22} color={item.color} />
                   </View>
                   <View style={styles.itemTexts}>

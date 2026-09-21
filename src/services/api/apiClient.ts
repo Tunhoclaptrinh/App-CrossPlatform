@@ -22,9 +22,13 @@ async function request<T = any>(
   const token = await appStorage.getItem<string>(STORAGE_KEYS.AUTH_TOKEN);
 
   const defaultHeaders: Record<string, string> = {
-    'Content-Type': 'application/json',
     Accept: 'application/json',
   };
+
+  // Nếu body là FormData (upload file/ảnh), trình duyệt/Hermes tự động gán Content-Type boundary
+  if (!(rest.body instanceof FormData)) {
+    defaultHeaders['Content-Type'] = 'application/json';
+  }
 
   if (token) {
     defaultHeaders.Authorization = `Bearer ${token}`;
@@ -94,7 +98,23 @@ export const apiClient = {
     });
   },
 
+  patch<T = any>(endpoint: string, body?: any, options?: RequestOptions) {
+    return request<T>(endpoint, {
+      ...options,
+      method: 'PATCH',
+      body: body ? JSON.stringify(body) : undefined,
+    });
+  },
+
   delete<T = any>(endpoint: string, options?: RequestOptions) {
     return request<T>(endpoint, { ...options, method: 'DELETE' });
+  },
+
+  upload<T = any>(endpoint: string, formData: FormData, options?: RequestOptions) {
+    return request<T>(endpoint, {
+      ...options,
+      method: 'POST',
+      body: formData,
+    });
   },
 };

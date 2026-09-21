@@ -32,7 +32,7 @@
   * `EmptyState`: Màn hình thông báo danh sách trống thân thiện kèm nút hành động.
   * `LoadingOverlay`: Lớp phủ mờ xoay vòng khi đang xử lý giao dịch.
 * **Hệ Thống API & Type Response Đầy Đủ:**
-  * `apiClient`: Universal HTTP client hỗ trợ REST API và AI endpoints.
+  * `apiClient`: Universal HTTP client hỗ trợ REST API và AI endpoints (`get`, `post`, `put`, `patch`, `delete`, `upload` multipart/form-data) cùng tệp mẫu cấu hình môi trường `.env.example`.
   * `ApiResponse<T>`, `ApiError`, `PaginatedResponse<T>`, `PaginationParams`, `RequestOptions`, `AiChatRequest`, `AiChatResponse`.
 * **Thư Viện Validate & Schemas Chặt Chẽ:**
   * `zod`: Tích hợp schema xác thực form (`loginSchema`, `registerSchema`, `searchSchema`) đa ngôn ngữ kèm hàm `validateWithZod(schema, data, t?)` dịch thông báo lỗi trực tiếp theo ngôn ngữ đang chọn.

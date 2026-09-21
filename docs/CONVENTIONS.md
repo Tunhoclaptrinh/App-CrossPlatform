@@ -43,6 +43,8 @@ Toàn bộ phản hồi từ server hoặc AI model phải được định ki�
 * `PaginationParams`: Tham số truy vấn `page`, `limit`, `search`, `sortBy`, `order`.
 * `RequestOptions`: Cấu hình fetch bổ sung `timeout`, `headers`, `params`.
 * `AiChatRequest` & `AiChatResponse`: Tham số gửi và nhận từ các mô hình AI ngôn ngữ lớn.
+* **`apiClient` (`src/services/api/apiClient.ts`)**: Universal HTTP Client hỗ trợ đầy đủ `get`, `post`, `put`, `patch`, `delete` và `upload` (multipart/form-data cho tải tệp/ảnh), tự động gán Bearer token và xử lý timeout bằng `AbortController`.
+* **Cấu hình môi trường (`.env.example`)**: Tệp mẫu khai báo các biến môi trường (`API_BASE_URL`, `WEBSOCKET_URL`, `CRYPTO_SHARED_SECRET`, `AI_API_KEY`...).
 
 ---
 

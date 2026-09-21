@@ -85,6 +85,21 @@ export const createHomeStyles = (colors: {
       alignItems: 'center',
       justifyContent: 'space-between',
     },
+    itemCardGlass: {
+      backgroundColor: colors.card,
+      borderRadius: 22,
+      borderWidth: 1.2,
+      borderColor: colors.border,
+      padding: Spacing.md,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 6 },
+      shadowOpacity: 0.08,
+      shadowRadius: 12,
+      elevation: 4,
+    },
     itemLeft: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -123,3 +138,7 @@ export const createHomeStyles = (colors: {
       gap: Spacing.sm,
     },
   });
+
+export const getIconWrapperStyle = (color: string) => ({
+  backgroundColor: color + '20',
+});
