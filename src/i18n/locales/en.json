@@ -169,5 +169,30 @@
     "outputLabel": "Standard Payload string",
     "encryptSuccess": "Payload encrypted with Server-compatible standard!",
     "decryptSuccess": "Payload decrypted successfully from Server standard!"
+  },
+  "weather": {
+    "appTitle": "Weather Forecast",
+    "searchPlaceholder": "Search city (Hanoi, Tokyo, Paris...)",
+    "searchTitle": "Search Location",
+    "searching": "Searching locations...",
+    "noLocationsFound": "No matching cities found",
+    "popularCities": "Popular Cities",
+    "currentWeather": "Current Weather",
+    "feelsLike": "Feels like",
+    "humidity": "Humidity",
+    "wind": "Wind",
+    "precipitation": "Precipitation",
+    "pressure": "Pressure",
+    "hourlyForecast": "Hourly Forecast (Next 24 Hours)",
+    "dailyForecast": "7-Day Forecast",
+    "rainChance": "Rain",
+    "highLow": "H: {{high}} • L: {{low}}",
+    "lastUpdated": "Updated",
+    "pullToRefresh": "Pull to refresh weather",
+    "switchToFahrenheit": "Switch to °F",
+    "switchToCelsius": "Switch to °C",
+    "developerShowcase": "Explore Base Modules",
+    "sunrise": "Sunrise",
+    "sunset": "Sunset"
   }
 }

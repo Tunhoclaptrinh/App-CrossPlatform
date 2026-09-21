@@ -91,6 +91,13 @@
   * Định dạng payload tiêu chuẩn `AESP256:iv:salt:ciphertext:tag` hỗ trợ đầy đủ IV, Salt, Ciphertext và Auth Tag băm kiểm tra tính toàn vẹn.
   * Tương thích 100% với Node.js, Python, Java Spring Boot và Go. Hướng dẫn kèm mã nguồn backend hoàn chỉnh tại `docs/SERVER_ENCRYPTION_GUIDE.md`.
 * **Quản Trị Phiên Bản & Cập Nhật:** `appUpdateService` so sánh phiên bản và nhắc nhở người dùng cập nhật qua Store.
+* **Ứng Dụng Di Động Dự Báo Thời Tiết Hoàn Chỉnh (Open-Meteo Weather Forecast App):**
+  * **Thời tiết & Địa điểm hiện tại:** Hiển thị nhiệt độ tức thì, tình trạng bầu trời (WMO codes), nhiệt độ cảm nhận (Feels like), biên độ nhiệt độ ngày (Min/Max) cùng 4 chỉ số chi tiết (Độ ẩm, Tốc độ gió, Lượng mưa, Áp suất khí quyển).
+  * **Dự báo theo giờ (24h Hourly Forecast):** Thanh trượt ngang hiển thị thời gian, icon SVG thời tiết động, xác suất mưa (%) và nhiệt độ chi tiết từng giờ.
+  * **Dự báo theo ngày (7-Day Daily Forecast):** Danh sách 7 ngày tới với ngày trong tuần, icon thời tiết, xác suất mưa và thanh hiển thị dải nhiệt độ Apple-style Min-Max.
+  * **Tìm kiếm & Caching địa điểm:** Tích hợp Open-Meteo Geocoding API tìm kiếm thành phố toàn cầu với cơ chế Debounce, hỗ trợ các thành phố lớn (Hà Nội, TP.HCM, Đà Lạt, Đà Nẵng...) và ghi nhớ vị trí chọn qua AsyncStorage.
+  * **Đơn vị nhiệt độ linh hoạt:** Chuyển đổi mượt mà giữa độ C (°C) và độ F (°F).
+  * **Chuẩn Agency UI/UX:** Hỗ trợ đầy đủ Light/Dark Mode, Apple Liquid Glass UI, Pull-to-refresh cập nhật dữ liệu, và 100% tuân thủ quy chuẩn Zero Inline Styles.
 
 ---
 

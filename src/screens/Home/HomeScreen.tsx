@@ -47,12 +47,20 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
   const modules = [
     {
+      id: 'weather',
+      title: 'Dự Báo Thời Tiết (Open-Meteo)',
+      desc: 'Nhiệt độ hiện tại, dự báo theo giờ (24h), theo ngày (7 ngày), tìm kiếm toàn cầu',
+      icon: Sun,
+      color: '#F59E0B',
+    },
+    {
       id: 'apple',
       title: 'Apple iOS 18 Liquid Glass',
       desc: 'Cupertino frosted glassmorphism, specular borders & squircles',
       icon: Sparkles,
       color: '#007AFF',
     },
+
     {
       id: 'realtime',
       title: 'Universal Real-Time WebSocket',
@@ -285,13 +293,18 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                 key={item.id}
                 activeOpacity={0.7}
                 style={themeStyle === 'apple-glass' ? styles.itemCardGlass : styles.itemCard}
-                onPress={() =>
-                  navigation.navigate('Details', {
-                    itemId: item.id,
-                    title: item.title,
-                    description: item.desc,
-                  })
-                }
+                onPress={() => {
+                  if (item.id === 'weather') {
+                    navigation.navigate('Weather');
+                  } else {
+                    navigation.navigate('Details', {
+                      itemId: item.id,
+                      title: item.title,
+                      description: item.desc,
+                    });
+                  }
+                }}
+
               >
                 <View style={styles.itemLeft}>
                   <View style={[styles.iconWrapper, getIconWrapperStyle(item.color)]}>

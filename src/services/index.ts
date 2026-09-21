@@ -6,3 +6,4 @@ export * from './file';
 export * from './biometrics';
 export * from './widget';
 export * from './realtime';
+export * from './weather';

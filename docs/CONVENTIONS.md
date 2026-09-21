@@ -269,4 +269,22 @@ Toàn bộ phản hồi từ server hoặc AI model phải được định ki�
   * Hook này tự động lấy trạng thái từ Zustand Store `useAppStore` và kết hợp với chế độ hệ thống khi ở chế độ `'system'`.
   * Đảm bảo toàn bộ 20+ components và các màn hình chuyển đổi màu sắc đồng thời, mượt mà và chuẩn xác 100%.
 
+---
+
+## 24. Chuẩn Tích Hợp Dự Báo Thời Tiết (Weather Forecast Architecture & Open-Meteo)
+
+* **Nguồn Dữ Liệu Công Khai (Public API Open-Meteo)**:
+  * Sử dụng endpoint công khai không yêu cầu API key: `https://api.open-meteo.com/v1/forecast` và Geocoding API `https://geocoding-api.open-meteo.com/v1/search`.
+  * Tối ưu hóa tham số query: Lấy chính xác các trường cần thiết (`temperature_2m`, `relative_humidity_2m`, `apparent_temperature`, `is_day`, `precipitation`, `weather_code`, `surface_pressure`, `wind_speed_10m`, `temperature_2m_max`, `temperature_2m_min`, `precipitation_probability_max`).
+* **Chuẩn Hóa Mã Thời Tiết WMO (WMO Weather Interpretation Codes)**:
+  * Hàm `weatherService.getWmoWeatherInfo(code, isDay, lang)` ánh xạ 100 mã thời tiết chuẩn WMO sang nhãn mô tả đa ngôn ngữ (Tiếng Việt & Tiếng Anh), mã màu nhấn (`accentColor`), và icon định danh.
+  * Hiển thị trực quan qua `<WeatherIcon code={code} isDay={isDay} size={size} color={color} />` bằng SVG Lucide (`Sun`, `Moon`, `CloudSun`, `CloudMoon`, `Cloud`, `CloudFog`, `CloudDrizzle`, `CloudRain`, `CloudSnow`, `CloudLightning`).
+* **Quản Lý Trạng Thái & Caching Vị Trí (`useWeatherStore`)**:
+  * Lưu trữ bền vững vị trí được chọn (`selectedCity`), danh sách thành phố yêu thích (`savedCities`), bộ nhớ đệm dự báo (`weatherData`), và đơn vị nhiệt độ (`tempUnit: 'celsius' | 'fahrenheit'`) qua middleware `persist` của Zustand và `AsyncStorage`.
+  * Hỗ trợ tìm kiếm địa điểm toàn cầu với cơ chế Debounce chống spam mạng và danh sách chọn nhanh các thành phố lớn (Hà Nội, TP. Hồ Chí Minh, Đà Nẵng, Đà Lạt, Tokyo, New York...).
+* **Nguyên Tắc Zero Inline Styles Tuyệt Đối Trên Giao Diện Thời Tiết**:
+  * Toàn bộ các thẻ (`CurrentWeatherCard`, `HourlyForecast`, `DailyForecast`, `CitySearchModal`) phải tạo style trong `src/screens/Weather/styles.ts`.
+  * Các kiểu dáng động (màu badge theo trạng thái thời tiết, thanh tỉ lệ nhiệt độ Min/Max theo ngày, màu nền icon) phải được định nghĩa bằng các hàm generator (`getStatusBadgeStyle`, `getMetricIconBoxStyle`, `getDailyTempBarFillStyle`) đặt trong file `styles.ts`.
+
+
 

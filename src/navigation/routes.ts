@@ -1,6 +1,8 @@
 export const Routes = {
+  WEATHER: 'Weather',
   HOME: 'Home',
   DETAILS: 'Details',
+
   LOGIN: 'Login',
   REGISTER: 'Register',
   PROFILE: 'Profile',

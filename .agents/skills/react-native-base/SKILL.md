@@ -49,6 +49,7 @@ This skill documents the conventions, directory structure, state protocols, and 
   - `biometrics/`: `biometricService.ts` for Fingerprint / Face ID authentication with interactive fallback.
   - `widget/`: `widgetBridgeService.ts` for exporting snapshot data to home screen widgets.
   - `update/`: `appUpdate.ts` for version tracking and update prompting.
+  - `weather/`: `weatherService.ts` for Open-Meteo public API integration (current, 24h hourly, 7-day daily forecasts, geocoding city search, WMO weather code mapping, and temperature conversions).
 - `src/types/`:
   - `api.ts`: Re-export API request & response types (`ApiResponse`, `ApiError`, `PaginatedResponse`, `AiChatRequest`, etc.).
   - `models.ts`: Core domain models (`User`, `MenuItem`).
@@ -60,6 +61,11 @@ This skill documents the conventions, directory structure, state protocols, and 
     - Language (`language`, `setLanguage` -> auto syncs with `i18n`)
     - User session (`user`, `setUser`, `logout`)
     - Metrics (`counter`, `increment`, `reset`)
+  - `useWeatherStore.ts`: **Dedicated Weather State (Zustand + AsyncStorage persistence)**:
+    - Selected City (`selectedCity`), Saved Cities list (`savedCities`, `addSavedCity`, `removeSavedCity`)
+    - Weather Data cache (`weatherData`, `fetchWeather`, `refreshWeather`)
+    - Temperature Unit preference (`tempUnit`: `'celsius' | 'fahrenheit'`, `toggleTempUnit`)
+    - Loading & error states (`isLoading`, `isRefreshing`, `error`)
   - Gestures & Interaction:
     - `useSwipeGesture`: PanResponder 4-direction swipe detection.
     - `useDoubleTap`: Multi-tap gesture detection with threshold.
@@ -97,7 +103,8 @@ This skill documents the conventions, directory structure, state protocols, and 
   - `schemas.ts`: Bilingual Zod schemas (`loginSchema`, `registerSchema`, `searchSchema`) and `validateWithZod(schema, data, t?)` UI error helper.
 - `src/i18n/`: Multilingual system (vi, en) via `i18next` with structured namespaces (`common`, `validation`, `network`, `home`, `details`, `dialogs`, `splash`, `crypto`, `gestures`, `biometrics`, `widget`).
 - `src/navigation/`: React Navigation v7 Native Stack (`AppNavigator`, `routes.ts`, `types.ts`, `linking.ts`).
-- `src/screens/`: Feature screens (`Splash/`, `Home/`, `Details/`). Each screen has `Screen.tsx`, `styles.ts`, `index.ts`.
+- `src/screens/`: Feature screens (`Splash/`, `Weather/`, `Home/`, `Details/`).
+  - `Weather/`: Complete Open-Meteo forecast app (`WeatherScreen.tsx`, `styles.ts`, `components/WeatherIcon.tsx`, `components/CurrentWeatherCard.tsx`, `components/HourlyForecast.tsx`, `components/DailyForecast.tsx`, `components/CitySearchModal.tsx`). Each screen strictly conforms to zero inline styles.
 
 ## 2. Mandatory Maintenance & Refactoring Rules
 
@@ -347,6 +354,26 @@ import { Save, Share2, Bell } from 'lucide-react-native';
 ### 3.15. Unified Global Theme Synchronization
 - **Rule**: NEVER use React Native's `useColorScheme()` directly in individual components or screens. OS-level color scheme does not reflect in-app theme switches (Light/Dark/System) managed by `useAppStore`.
 - **Standard**: Always import `useThemeMode()` from `@/hooks`. It resolves user preference from `useAppStore` with system fallback, ensuring 100% synchronized styling across all 20+ components without flickering or mismatched background colors.
+
+### 3.16. Weather Forecast Service & Store Integration (Open-Meteo)
+```typescript
+import { weatherService } from '@/services/weather';
+import { useWeatherStore } from '@/hooks';
+
+// Fetch full forecast (current, 24h hourly, 7-day daily)
+const { selectedCity, weatherData, tempUnit, fetchWeather, toggleTempUnit } = useWeatherStore();
+
+// Search cities worldwide with Open-Meteo Geocoding
+const results = await weatherService.searchCities('Da Lat');
+
+// Convert & format temperature according to user preference
+const tempStr = weatherService.formatTemperature(weatherData.current.temperature, tempUnit); // "28°C" or "82°F"
+
+// Map WMO code to human-readable text, color, and SVG icon
+const wmoInfo = weatherService.getWmoWeatherInfo(weatherData.current.weatherCode, weatherData.current.isDay, 'vi');
+console.log(wmoInfo.label, wmoInfo.accentColor); // "Trời Nắng", "#F59E0B"
+```
+
 
 
 
