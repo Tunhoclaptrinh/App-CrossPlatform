@@ -14,3 +14,12 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
   multiSet: jest.fn(() => Promise.resolve()),
   multiRemove: jest.fn(() => Promise.resolve()),
 }));
+
+// Mock op-sqlite
+jest.mock('@op-engineering/op-sqlite', () => ({
+  open: jest.fn(() => ({
+    execute: jest.fn(() => ({ rows: { _array: [], length: 0 } })),
+    executeAsync: jest.fn(() => Promise.resolve({ rows: { _array: [], length: 0 } })),
+    close: jest.fn(),
+  })),
+}));

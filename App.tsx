@@ -4,6 +4,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { PaperProvider, MD3DarkTheme, MD3LightTheme } from 'react-native-paper';
 import { AppNavigator } from '@/navigation';
+import '@/i18n';
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';

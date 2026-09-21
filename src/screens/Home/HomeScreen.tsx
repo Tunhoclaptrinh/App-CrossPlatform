@@ -8,11 +8,15 @@ import {
   ChevronRight,
   Database,
   Layers,
+  Languages,
+  Server,
 } from 'lucide-react-native';
-import { Button } from 'react-native-paper';
+import { Button, Chip } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 import { AppText, ScreenWrapper } from '@/components';
 import { Colors } from '@/constants/colors';
 import { useAppStore } from '@/hooks';
+import { changeLanguage } from '@/i18n';
 import type { HomeScreenProps } from '@/navigation/types';
 import { createHomeStyles } from './styles';
 
@@ -21,34 +25,47 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const themeColors = isDarkMode ? Colors.dark : Colors.light;
   const styles = createHomeStyles(themeColors);
 
+  const { t, i18n } = useTranslation();
   const { counter, increment } = useAppStore();
 
-  const libraries = [
+  const toggleLanguage = () => {
+    const nextLang = i18n.language === 'vi' ? 'en' : 'vi';
+    changeLanguage(nextLang);
+  };
+
+  const modules = [
     {
       id: 'paper',
       title: 'React Native Paper',
-      desc: 'Bộ UI chuẩn Material Design 3, siêu ổn định khi lên Store',
+      desc: 'UI Kit Material Design 3 chuẩn Accessibility & Store',
       icon: Palette,
       color: '#2563EB',
     },
     {
       id: 'nav',
       title: 'React Navigation v7',
-      desc: 'Điều hướng Stack & Native Screens mượt mà 60-120fps',
+      desc: 'Native Stack Navigator 60-120fps mượt mà',
       icon: Compass,
       color: '#10B981',
     },
     {
-      id: 'icons',
-      title: 'Lucide React Native',
-      desc: 'Hệ thống icons SVG hiện đại, sắc nét, không cần link font',
-      icon: Sparkles,
-      color: '#F59E0B',
+      id: 'sqlite',
+      title: 'SQLite Database',
+      desc: '@op-engineering/op-sqlite: Cực nhanh qua JSI New Architecture',
+      icon: Server,
+      color: '#0284C7',
+    },
+    {
+      id: 'i18n',
+      title: 'Đa Ngôn Ngữ (i18n)',
+      desc: 'i18next: Chuyển đổi linh hoạt Tiếng Việt / Tiếng Anh',
+      icon: Languages,
+      color: '#D97706',
     },
     {
       id: 'store',
       title: 'Zustand & AsyncStorage',
-      desc: 'Quản lý state toàn cục & lưu trữ cục bộ bền vững',
+      desc: 'Quản lý state toàn cục & lưu trữ bền vững',
       icon: Database,
       color: '#8B5CF6',
     },
@@ -64,19 +81,30 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   return (
     <ScreenWrapper scrollable contentContainerStyle={styles.content}>
       <View style={styles.headerCard}>
-        <View style={styles.badge}>
-          <ShieldCheck size={16} color={themeColors.primary} />
-          <AppText variant="caption" style={styles.badgeText}>
-            UNIVERSAL BASE APP
-          </AppText>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+          <View style={styles.badge}>
+            <ShieldCheck size={16} color={themeColors.primary} />
+            <AppText variant="caption" style={styles.badgeText}>
+              UNIVERSAL BASE APP
+            </AppText>
+          </View>
+
+          <Chip
+            icon="web"
+            mode="outlined"
+            onPress={toggleLanguage}
+            style={{ marginBottom: 12 }}
+          >
+            {i18n.language === 'vi' ? '🇻🇳 Tiếng Việt' : '🇬🇧 English'}
+          </Chip>
         </View>
 
         <AppText variant="header" style={styles.title}>
-          React Native Starter
+          {t('title', 'React Native Starter')}
         </AppText>
 
         <AppText variant="body" style={styles.subtitle}>
-          Bộ khung hoàn chỉnh cho mọi loại ứng dụng (Local Tool, AI Client, Server)
+          {t('subtitle', 'Bộ khung hoàn chỉnh cho mọi loại ứng dụng (Local, AI, Server)')}
         </AppText>
       </View>
 
@@ -90,11 +118,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       </View>
 
       <AppText variant="title" style={styles.sectionTitle}>
-        Các Module Nền Tảng Đã Sẵn Sàng
+        {t('modulesTitle', 'Các Module Nền Tảng Đã Sẵn Sàng')}
       </AppText>
 
       <View style={styles.grid}>
-        {libraries.map((item) => {
+        {modules.map((item) => {
           const IconComponent = item.icon;
           return (
             <TouchableOpacity

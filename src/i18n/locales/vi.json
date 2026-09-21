@@ -1,0 +1,16 @@
+{
+  "common": {
+    "welcome": "Chào mừng đến với Base App",
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "delete": "Xóa",
+    "success": "Thành công",
+    "error": "Lỗi",
+    "language": "Ngôn ngữ"
+  },
+  "home": {
+    "title": "React Native Starter",
+    "subtitle": "Bộ khung hoàn chỉnh cho mọi loại ứng dụng",
+    "modulesTitle": "Các Module Nền Tảng Đã Sẵn Sàng"
+  }
+}

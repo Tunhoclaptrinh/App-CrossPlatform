@@ -1,0 +1,16 @@
+{
+  "common": {
+    "welcome": "Welcome to Base App",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "success": "Success",
+    "error": "Error",
+    "language": "Language"
+  },
+  "home": {
+    "title": "React Native Starter",
+    "subtitle": "Universal production-ready template",
+    "modulesTitle": "Ready-to-use Core Modules"
+  }
+}
