@@ -1,16 +1,16 @@
 import React from 'react';
-import { ScrollView, View, useColorScheme, TouchableOpacity } from 'react-native';
+import { View, useColorScheme, TouchableOpacity } from 'react-native';
 import {
   Sparkles,
-  Layers,
   Compass,
   Palette,
   ShieldCheck,
   ChevronRight,
   Database,
+  Layers,
 } from 'lucide-react-native';
 import { Button } from 'react-native-paper';
-import { AppText } from '@/components';
+import { AppText, ScreenWrapper } from '@/components';
 import { Colors } from '@/constants/colors';
 import { useAppStore } from '@/hooks';
 import type { HomeScreenProps } from '@/navigation/types';
@@ -47,43 +47,50 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     },
     {
       id: 'store',
-      title: 'Zustand State Store',
-      desc: 'Quản lý state toàn cục siêu nhẹ, không boilerplate',
+      title: 'Zustand & AsyncStorage',
+      desc: 'Quản lý state toàn cục & lưu trữ cục bộ bền vững',
       icon: Database,
       color: '#8B5CF6',
+    },
+    {
+      id: 'core',
+      title: 'Universal Base Architecture',
+      desc: 'ScreenWrapper, AppInput, ApiClient, useDebounce tích hợp sẵn',
+      icon: Layers,
+      color: '#EC4899',
     },
   ];
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScreenWrapper scrollable contentContainerStyle={styles.content}>
       <View style={styles.headerCard}>
         <View style={styles.badge}>
           <ShieldCheck size={16} color={themeColors.primary} />
           <AppText variant="caption" style={styles.badgeText}>
-            PRODUCTION-READY STACK
+            UNIVERSAL BASE APP
           </AppText>
         </View>
 
         <AppText variant="header" style={styles.title}>
-          React Native HK7
+          React Native Starter
         </AppText>
 
         <AppText variant="body" style={styles.subtitle}>
-          Đã cài đặt sẵn bộ thư viện ổn định, an toàn khi cập nhật và publish Store!
+          Bộ khung hoàn chỉnh cho mọi loại ứng dụng (Local Tool, AI Client, Server)
         </AppText>
       </View>
 
       <View style={styles.storeBox}>
         <AppText variant="subtitle">
-          Zustand Global Counter: <AppText variant="title" color={themeColors.primary}>{counter}</AppText>
+          Global State Counter: <AppText variant="title" color={themeColors.primary}>{counter}</AppText>
         </AppText>
         <Button mode="contained-tonal" onPress={increment}>
-          Bấm tăng Counter toàn cục (+1)
+          Tăng biến toàn cục (+1)
         </Button>
       </View>
 
       <AppText variant="title" style={styles.sectionTitle}>
-        Thư Viện Đã Tích Hợp (Bấm để xem chi tiết)
+        Các Module Nền Tảng Đã Sẵn Sàng
       </AppText>
 
       <View style={styles.grid}>
@@ -120,6 +127,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           );
         })}
       </View>
-    </ScrollView>
+    </ScreenWrapper>
   );
 };
