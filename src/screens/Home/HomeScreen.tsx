@@ -447,7 +447,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                 onPress={() => {
                   haptics.light();
                   if (item.id === 'weather') {
-                    navigation.navigate('Weather');
+                    if (navigation.canGoBack()) {
+                      navigation.goBack();
+                    } else {
+                      navigation.navigate('Weather');
+                    }
                   } else if (item.id === 'theme-studio') {
                     setIsStudioOpen(true);
                   } else {

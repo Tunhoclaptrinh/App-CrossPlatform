@@ -427,6 +427,23 @@ export const createWeatherStyles = (themeColors: ThemeColors, isDark: boolean) =
       textShadowOffset: { width: 0, height: 1 },
       textShadowRadius: 3,
     },
+    metricSubtitle: {
+      fontSize: 10,
+      color: 'rgba(255, 255, 255, 0.75)',
+      marginTop: 2,
+      fontWeight: '500',
+    },
+    metricBadge: {
+      alignSelf: 'flex-start',
+      paddingHorizontal: 6,
+      paddingVertical: 1,
+      borderRadius: BorderRadius.pill,
+      marginTop: 4,
+    },
+    metricBadgeText: {
+      fontSize: 9,
+      fontWeight: '700',
+    },
 
     // 8. Modal Tìm Kiếm Thành Phố (City Search Modal)
     modalOverlay: {
@@ -476,6 +493,24 @@ export const createWeatherStyles = (themeColors: ThemeColors, isDark: boolean) =
       flexDirection: 'row',
       flexWrap: 'wrap',
       gap: Spacing.xs,
+    },
+    gpsButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: Spacing.xs,
+      paddingHorizontal: Spacing.md,
+      paddingVertical: Spacing.xs,
+      borderRadius: BorderRadius.pill,
+      backgroundColor: isDark ? 'rgba(56, 189, 248, 0.15)' : 'rgba(14, 165, 233, 0.12)',
+      borderWidth: 1,
+      borderColor: isDark ? 'rgba(56, 189, 248, 0.35)' : 'rgba(14, 165, 233, 0.3)',
+      marginBottom: Spacing.sm,
+      alignSelf: 'flex-start',
+    },
+    gpsButtonText: {
+      fontSize: 12,
+      fontWeight: '700',
+      color: isDark ? '#38BDF8' : '#0284C7',
     },
     popularChip: {
       paddingHorizontal: Spacing.sm,
@@ -553,6 +588,143 @@ export const createWeatherStyles = (themeColors: ThemeColors, isDark: boolean) =
     animatedContainer: {
       width: '100%',
     },
+
+    // 10. Modal Chi Tiết Thời Tiết (Weather Detail Modal)
+    detailModalOverlay: {
+      flex: 1,
+      backgroundColor: 'rgba(0, 0, 0, 0.65)',
+      justifyContent: 'flex-end',
+    },
+    detailModalContent: {
+      backgroundColor: isDark ? '#0F172A' : '#FFFFFF',
+      borderTopLeftRadius: BorderRadius.xxl,
+      borderTopRightRadius: BorderRadius.xxl,
+      paddingHorizontal: Spacing.md,
+      paddingTop: Spacing.md,
+      paddingBottom: Spacing.xl,
+      maxHeight: '90%',
+      borderWidth: 1,
+      borderColor: isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.08)',
+    },
+    detailModalHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: Spacing.sm,
+    },
+    detailModalTitleRow: {
+      flex: 1,
+    },
+    detailModalTitle: {
+      fontSize: 18,
+      fontWeight: '700',
+      color: themeColors.text,
+    },
+    detailModalSubtitle: {
+      fontSize: 12,
+      color: themeColors.textSecondary,
+      marginTop: 2,
+    },
+    detailHeroCard: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: Spacing.md,
+      borderRadius: BorderRadius.xl,
+      backgroundColor: isDark ? 'rgba(30, 41, 59, 0.7)' : 'rgba(241, 245, 249, 0.9)',
+      marginBottom: Spacing.md,
+      borderWidth: 1,
+      borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)',
+    },
+    detailHeroIconWrap: {
+      width: 56,
+      height: 56,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: Spacing.md,
+    },
+    detailHeroInfo: {
+      flex: 1,
+    },
+    detailHeroTemp: {
+      fontSize: 32,
+      fontWeight: '800',
+      color: themeColors.text,
+      lineHeight: 36,
+    },
+    detailHeroCondition: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: themeColors.primary,
+      marginTop: 2,
+    },
+    detailHeroSub: {
+      fontSize: 11,
+      color: themeColors.textSecondary,
+      marginTop: 2,
+    },
+    detailMetricsGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: Spacing.xs,
+      marginBottom: Spacing.md,
+    },
+    detailMetricItem: {
+      width: '48%',
+      padding: Spacing.sm,
+      borderRadius: BorderRadius.lg,
+      backgroundColor: isDark ? 'rgba(30, 41, 59, 0.5)' : 'rgba(248, 250, 252, 0.9)',
+      borderWidth: 1,
+      borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)',
+    },
+    detailMetricItemHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+      marginBottom: 4,
+    },
+    detailMetricItemLabel: {
+      fontSize: 11,
+      color: themeColors.textSecondary,
+      fontWeight: '500',
+    },
+    detailMetricItemVal: {
+      fontSize: 16,
+      fontWeight: '700',
+      color: themeColors.text,
+    },
+    detailMetricItemSub: {
+      fontSize: 10,
+      color: themeColors.textSecondary,
+      marginTop: 2,
+    },
+    detailAdviceCard: {
+      padding: Spacing.md,
+      borderRadius: BorderRadius.xl,
+      borderWidth: 1,
+      marginBottom: Spacing.md,
+    },
+    detailAdviceTitle: {
+      fontSize: 13,
+      fontWeight: '700',
+      marginBottom: 4,
+    },
+    detailAdviceBody: {
+      fontSize: 12,
+      lineHeight: 18,
+    },
+    detailCloseButton: {
+      paddingVertical: Spacing.sm,
+      borderRadius: BorderRadius.pill,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: themeColors.primary,
+      marginTop: Spacing.xs,
+    },
+    detailCloseButtonText: {
+      color: '#FFFFFF',
+      fontSize: 14,
+      fontWeight: '700',
+    },
   });
 
 export const getFadeAnimStyle = (opacity: any) => ({
@@ -569,6 +741,15 @@ export const getStatusBadgeTextStyle = (accentColor: string) => ({
 
 export const getMetricIconBoxStyle = (color: string) => ({
   backgroundColor: `${color}1A`,
+});
+
+export const getDetailAdviceStyle = (color: string, isDark: boolean) => ({
+  backgroundColor: isDark ? `${color}18` : `${color}10`,
+  borderColor: `${color}40`,
+});
+
+export const getDetailAdviceTextStyle = (color: string) => ({
+  color,
 });
 
 export const getDailyTempBarFillStyle = (minTemp: number, maxTemp: number) => {

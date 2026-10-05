@@ -195,6 +195,14 @@
     "switchToCelsius": "Switch to °C",
     "developerShowcase": "Explore Base Modules",
     "sunrise": "Sunrise",
-    "sunset": "Sunset"
+    "sunset": "Sunset",
+    "uvIndex": "UV Index",
+    "windDirection": "Wind Direction",
+    "weatherDetails": "Weather Details",
+    "visibility": "Visibility",
+    "currentLocation": "Current Location (GPS)",
+    "selectDetailHint": "Tap any hour or day to view full details",
+    "healthAdvice": "Health Advice",
+    "dominantWind": "Dominant Wind"
   }
 }

@@ -7,9 +7,10 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { X, MapPin } from 'lucide-react-native';
+import { X, MapPin, Navigation } from 'lucide-react-native';
 import { AppText, AppSearchBar } from '@/components';
 import { useThemeMode } from '@/hooks';
 import { GeoCityLocation, DEFAULT_CITIES, weatherService } from '@/services/weather';
@@ -29,12 +30,14 @@ export const CitySearchModal: React.FC<CitySearchModalProps> = ({
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<GeoCityLocation[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [isLocating, setIsLocating] = useState(false);
 
   useEffect(() => {
     if (!visible) {
       setQuery('');
       setResults([]);
       setIsSearching(false);
+      setIsLocating(false);
       return;
     }
   }, [visible]);
@@ -78,6 +81,23 @@ export const CitySearchModal: React.FC<CitySearchModalProps> = ({
     onClose();
   };
 
+  const handleGetLocation = async () => {
+    try {
+      setIsLocating(true);
+      haptics.light();
+      const city = await weatherService.getCurrentLocationCity();
+      haptics.success();
+      onSelectCity(city);
+      onClose();
+    } catch (err: unknown) {
+      haptics.warning();
+      const msg = err instanceof Error ? err.message : 'Không thể lấy vị trí hiện tại';
+      Alert.alert('Vị trí', msg);
+    } finally {
+      setIsLocating(false);
+    }
+  };
+
   return (
     <Modal
       visible={visible}
@@ -105,8 +125,24 @@ export const CitySearchModal: React.FC<CitySearchModalProps> = ({
               onChangeText={setQuery}
               placeholder={t('weather.searchPlaceholder')}
             />
-
           </View>
+
+          {/* Nút định vị GPS hiện tại */}
+          <TouchableOpacity
+            style={styles.gpsButton}
+            onPress={handleGetLocation}
+            disabled={isLocating}
+            activeOpacity={0.7}
+          >
+            {isLocating ? (
+              <ActivityIndicator size="small" color={isDark ? '#38BDF8' : '#0284C7'} />
+            ) : (
+              <Navigation size={14} color={isDark ? '#38BDF8' : '#0284C7'} />
+            )}
+            <AppText style={styles.gpsButtonText}>
+              {isLocating ? 'Đang định vị GPS...' : t('weather.currentLocation')}
+            </AppText>
+          </TouchableOpacity>
 
           {/* Gợi ý Thành Phố Phổ Biến khi chưa gõ tìm kiếm */}
           {query.trim().length < 2 && (

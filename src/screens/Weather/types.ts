@@ -5,6 +5,7 @@ import type {
   GeoCityLocation,
   HourlyForecastItem,
   DailyForecastItem,
+  CurrentWeather,
 } from '@/services/weather';
 import type { TemperatureUnit } from '@/hooks/useWeatherStore';
 
@@ -20,15 +21,37 @@ export interface WeatherIconProps {
 export interface CurrentWeatherCardProps {
   weather: WeatherData;
   tempUnit: TemperatureUnit;
+  onPressCard?: () => void;
 }
 
 export interface HourlyForecastProps {
   hourly: HourlyForecastItem[];
   tempUnit: TemperatureUnit;
+  onSelectHour?: (hour: HourlyForecastItem) => void;
 }
 
 export interface DailyForecastProps {
   daily: DailyForecastItem[];
+  tempUnit: TemperatureUnit;
+  onSelectDay?: (day: DailyForecastItem) => void;
+}
+
+export interface WeatherMetricsGridProps {
+  current: CurrentWeather;
+  daily: DailyForecastItem[];
+  tempUnit: TemperatureUnit;
+  onSelectMetric?: (metricKey: string) => void;
+}
+
+export type WeatherDetailTarget =
+  | { type: 'current'; current: CurrentWeather; city: GeoCityLocation; sunrise?: string; sunset?: string }
+  | { type: 'hourly'; hour: HourlyForecastItem; cityName: string }
+  | { type: 'daily'; day: DailyForecastItem; cityName: string };
+
+export interface WeatherDetailModalProps {
+  visible: boolean;
+  onClose: () => void;
+  target: WeatherDetailTarget | null;
   tempUnit: TemperatureUnit;
 }
 

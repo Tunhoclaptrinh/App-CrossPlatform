@@ -18,16 +18,26 @@ export interface CurrentWeather {
   precipitation: number; // in mm
   weatherCode: number; // WMO code
   windSpeed: number; // in km/h
+  windDirection: number; // in degrees
+  windDirectionCardinal: string; // e.g. "Đông Nam", "Bắc"
+  uvIndex: number; // 0 - 11+
+  uvIndexLevel: string; // "Thấp", "Trung bình", "Cao", "Rất cao", "Nguy hiểm"
   surfacePressure: number; // in hPa
+  visibility: number; // in km
 }
 
 export interface HourlyForecastItem {
   time: string; // ISO string e.g. "2026-09-21T14:00"
   hourLabel: string; // e.g. "14:00" or "Bây giờ"
   temperature: number; // in °C
+  apparentTemperature: number; // in °C
   weatherCode: number;
   precipitationProbability: number; // in %
+  precipitation: number; // in mm
   relativeHumidity: number; // in %
+  windSpeed: number; // in km/h
+  windDirection: number; // in degrees
+  uvIndex: number; // 0 - 11+
   isDay: boolean;
 }
 
@@ -38,6 +48,10 @@ export interface DailyForecastItem {
   tempMax: number; // in °C
   tempMin: number; // in °C
   precipitationProbabilityMax: number; // in %
+  precipitationSum: number; // in mm
+  uvIndexMax: number; // 0 - 11+
+  windSpeedMax: number; // in km/h
+  windDirectionDominant: number; // in degrees
   sunrise: string;
   sunset: string;
 }

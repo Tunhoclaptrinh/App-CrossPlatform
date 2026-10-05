@@ -6,6 +6,7 @@ import {
   DailyForecastItem,
   WeatherConditionInfo,
 } from './types';
+import { permissions } from '@/utils/permissions';
 
 const FORECAST_BASE_URL = 'https://api.open-meteo.com/v1/forecast';
 const GEOCODING_BASE_URL = 'https://geocoding-api.open-meteo.com/v1/search';
@@ -296,6 +297,75 @@ function getVietnameseDayLabel(dateStr: string, index: number): string {
 }
 
 /**
+ * Chuyển đổi hướng gió dạng độ (0 - 360) sang hướng la bàn tiếng Việt
+ */
+export function getWindDirectionInfo(degrees: number): {
+  code: string;
+  labelVi: string;
+  degrees: number;
+} {
+  const directions = [
+    { code: 'N', labelVi: 'Bắc' },
+    { code: 'NE', labelVi: 'Đông Bắc' },
+    { code: 'E', labelVi: 'Đông' },
+    { code: 'SE', labelVi: 'Đông Nam' },
+    { code: 'S', labelVi: 'Nam' },
+    { code: 'SW', labelVi: 'Tây Nam' },
+    { code: 'W', labelVi: 'Tây' },
+    { code: 'NW', labelVi: 'Tây Bắc' },
+  ];
+  const normalized = ((Math.round(degrees) % 360) + 360) % 360;
+  const index = Math.round(normalized / 45) % 8;
+  return {
+    ...directions[index],
+    degrees: normalized,
+  };
+}
+
+/**
+ * Phân loại chỉ số UV thành mức độ cảnh báo và màu sắc tương ứng
+ */
+export function getUvIndexInfo(uv: number): {
+  levelVi: string;
+  color: string;
+  adviceVi: string;
+} {
+  if (uv < 3) {
+    return {
+      levelVi: 'Thấp',
+      color: '#10B981',
+      adviceVi: 'An toàn khi hoạt động ngoài trời, không cần che chắn đặc biệt.',
+    };
+  }
+  if (uv < 6) {
+    return {
+      levelVi: 'Trung bình',
+      color: '#F59E0B',
+      adviceVi: 'Nên đeo kính râm và bôi kem chống nắng khi ra nắng.',
+    };
+  }
+  if (uv < 8) {
+    return {
+      levelVi: 'Cao',
+      color: '#F97316',
+      adviceVi: 'Cần mặc áo chống nắng, đội nón rộng vành từ 10h đến 16h.',
+    };
+  }
+  if (uv < 11) {
+    return {
+      levelVi: 'Rất cao',
+      color: '#EF4444',
+      adviceVi: 'Hạn chế ra ngoài vào giờ cao điểm nắng gắt.',
+    };
+  }
+  return {
+    levelVi: 'Nguy hiểm',
+    color: '#7C3AED',
+    adviceVi: 'Cực kỳ nguy hiểm! Tránh tiếp xúc trực tiếp với ánh nắng mặt trời.',
+  };
+}
+
+/**
  * Gọi API Open-Meteo để lấy thông tin dự báo thời tiết đầy đủ
  */
 export async function fetchWeatherForecast(city: GeoCityLocation): Promise<WeatherData> {
@@ -310,13 +380,21 @@ export async function fetchWeatherForecast(city: GeoCityLocation): Promise<Weath
       'precipitation',
       'weather_code',
       'wind_speed_10m',
+      'wind_direction_10m',
       'surface_pressure',
+      'uv_index',
+      'visibility',
     ].join(','),
     hourly: [
       'temperature_2m',
+      'apparent_temperature',
       'weather_code',
       'precipitation_probability',
+      'precipitation',
       'relative_humidity_2m',
+      'wind_speed_10m',
+      'wind_direction_10m',
+      'uv_index',
       'is_day',
     ].join(','),
     daily: [
@@ -324,6 +402,10 @@ export async function fetchWeatherForecast(city: GeoCityLocation): Promise<Weath
       'temperature_2m_max',
       'temperature_2m_min',
       'precipitation_probability_max',
+      'precipitation_sum',
+      'uv_index_max',
+      'wind_speed_10m_max',
+      'wind_direction_10m_dominant',
       'sunrise',
       'sunset',
     ].join(','),
@@ -340,24 +422,39 @@ export async function fetchWeatherForecast(city: GeoCityLocation): Promise<Weath
   const data = await response.json();
 
   // 1. Phân tích dữ liệu hiện tại
+  const windDirDeg = Math.round(data.current?.wind_direction_10m ?? 0);
+  const uvVal = Number(data.current?.uv_index ?? 0);
+  const uvInfo = getUvIndexInfo(uvVal);
+  const windDirInfo = getWindDirectionInfo(windDirDeg);
+
   const current: CurrentWeather = {
     time: data.current?.time || new Date().toISOString(),
     temperature: data.current?.temperature_2m ?? 25,
     apparentTemperature: data.current?.apparent_temperature ?? data.current?.temperature_2m ?? 25,
     relativeHumidity: data.current?.relative_humidity_2m ?? 70,
     isDay: data.current?.is_day === 1,
-    precipitation: data.current?.precipitation ?? 0,
+    precipitation: Number(data.current?.precipitation ?? 0),
     weatherCode: data.current?.weather_code ?? 0,
     windSpeed: data.current?.wind_speed_10m ?? 0,
+    windDirection: windDirDeg,
+    windDirectionCardinal: windDirInfo.labelVi,
+    uvIndex: uvVal,
+    uvIndexLevel: uvInfo.levelVi,
     surfacePressure: Math.round(data.current?.surface_pressure ?? 1013),
+    visibility: Math.round((data.current?.visibility ?? 10000) / 1000), // mét -> km
   };
 
   // 2. Phân tích dữ liệu 24 giờ tới (Lọc từ giờ hiện tại)
   const hourlyTimes: string[] = data.hourly?.time || [];
   const hourlyTemps: number[] = data.hourly?.temperature_2m || [];
+  const hourlyApparent: number[] = data.hourly?.apparent_temperature || [];
   const hourlyCodes: number[] = data.hourly?.weather_code || [];
   const hourlyPrecipProb: number[] = data.hourly?.precipitation_probability || [];
+  const hourlyPrecip: number[] = data.hourly?.precipitation || [];
   const hourlyHumidity: number[] = data.hourly?.relative_humidity_2m || [];
+  const hourlyWindSpeed: number[] = data.hourly?.wind_speed_10m || [];
+  const hourlyWindDir: number[] = data.hourly?.wind_direction_10m || [];
+  const hourlyUv: number[] = data.hourly?.uv_index || [];
   const hourlyIsDay: number[] = data.hourly?.is_day || [];
 
   // Tìm index gần nhất với thời gian hiện tại
@@ -379,9 +476,14 @@ export async function fetchWeatherForecast(city: GeoCityLocation): Promise<Weath
       time: timeStr,
       hourLabel: isFirst ? 'Bây giờ' : hourOnly,
       temperature: Math.round(hourlyTemps[i] ?? current.temperature),
+      apparentTemperature: Math.round(hourlyApparent[i] ?? current.apparentTemperature),
       weatherCode: hourlyCodes[i] ?? current.weatherCode,
       precipitationProbability: hourlyPrecipProb[i] ?? 0,
+      precipitation: Number(hourlyPrecip[i] ?? 0),
       relativeHumidity: hourlyHumidity[i] ?? 70,
+      windSpeed: Math.round(hourlyWindSpeed[i] ?? current.windSpeed),
+      windDirection: Math.round(hourlyWindDir[i] ?? current.windDirection),
+      uvIndex: Number(hourlyUv[i] ?? 0),
       isDay: hourlyIsDay[i] === 1,
     });
   }
@@ -392,6 +494,10 @@ export async function fetchWeatherForecast(city: GeoCityLocation): Promise<Weath
   const dailyMaxTemps: number[] = data.daily?.temperature_2m_max || [];
   const dailyMinTemps: number[] = data.daily?.temperature_2m_min || [];
   const dailyPrecipMax: number[] = data.daily?.precipitation_probability_max || [];
+  const dailyPrecipSum: number[] = data.daily?.precipitation_sum || [];
+  const dailyUvMax: number[] = data.daily?.uv_index_max || [];
+  const dailyWindMax: number[] = data.daily?.wind_speed_10m_max || [];
+  const dailyWindDir: number[] = data.daily?.wind_direction_10m_dominant || [];
   const dailySunrises: string[] = data.daily?.sunrise || [];
   const dailySunsets: string[] = data.daily?.sunset || [];
 
@@ -406,6 +512,10 @@ export async function fetchWeatherForecast(city: GeoCityLocation): Promise<Weath
       tempMax: Math.round(dailyMaxTemps[i] ?? 30),
       tempMin: Math.round(dailyMinTemps[i] ?? 20),
       precipitationProbabilityMax: dailyPrecipMax[i] ?? 0,
+      precipitationSum: Number(dailyPrecipSum[i] ?? 0),
+      uvIndexMax: Number(dailyUvMax[i] ?? 5),
+      windSpeedMax: Math.round(dailyWindMax[i] ?? 10),
+      windDirectionDominant: Math.round(dailyWindDir[i] ?? 0),
       sunrise: dailySunrises[i] ? dailySunrises[i].split('T')[1]?.slice(0, 5) : '05:30',
       sunset: dailySunsets[i] ? dailySunsets[i].split('T')[1]?.slice(0, 5) : '18:00',
     });
@@ -458,11 +568,49 @@ export async function searchCities(query: string): Promise<GeoCityLocation[]> {
   }));
 }
 
+/**
+ * Lấy vị trí thiết bị hiện tại (GPS / IP Geolocation fallback)
+ */
+export async function getCurrentLocationCity(): Promise<GeoCityLocation> {
+  const hasPermission = await permissions.requestLocation();
+  if (!hasPermission) {
+    throw new Error('Quyền vị trí bị từ chối. Vui lòng cấp quyền trong Cài đặt.');
+  }
+
+  try {
+    const res = await fetch(
+      'http://ip-api.com/json/?fields=status,city,regionName,country,countryCode,lat,lon',
+      { headers: { Accept: 'application/json' } }
+    );
+    if (res.ok) {
+      const info = await res.json();
+      if (info && info.status === 'success') {
+        return {
+          id: Math.round(Number(info.lat) * 1000 + Number(info.lon) * 100),
+          name: info.city || info.regionName || 'Vị trí của bạn',
+          country: info.country || 'Việt Nam',
+          countryCode: info.countryCode || 'VN',
+          admin1: info.regionName,
+          latitude: Number(info.lat),
+          longitude: Number(info.lon),
+        };
+      }
+    }
+  } catch (err) {
+    console.warn('[weatherService] IP location fallback error:', err);
+  }
+
+  return DEFAULT_CITIES[0];
+}
+
 export const weatherService = {
   DEFAULT_CITIES,
   fetchWeatherForecast,
   searchCities,
   getWmoWeatherInfo,
+  getWindDirectionInfo,
+  getUvIndexInfo,
+  getCurrentLocationCity,
   celsiusToFahrenheit,
   formatTemperature,
 };

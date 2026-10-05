@@ -3,6 +3,7 @@ import {
   formatTemperature,
   getWmoWeatherInfo,
   DEFAULT_CITIES,
+  weatherService,
 } from '../src/services/weather';
 
 describe('Weather Service & Utilities', () => {
@@ -102,4 +103,68 @@ describe('Weather Service & Utilities', () => {
       expect(london).toBeDefined();
     });
   });
+
+  describe('getWindDirectionInfo', () => {
+    it('correctly maps 0 degrees to North (Bắc)', () => {
+      const dir = weatherService.getWindDirectionInfo(0);
+      expect(dir.code).toBe('N');
+      expect(dir.labelVi).toBe('Bắc');
+    });
+
+    it('correctly maps 90 degrees to East (Đông)', () => {
+      const dir = weatherService.getWindDirectionInfo(90);
+      expect(dir.code).toBe('E');
+      expect(dir.labelVi).toBe('Đông');
+    });
+
+    it('correctly maps 135 degrees to Southeast (Đông Nam)', () => {
+      const dir = weatherService.getWindDirectionInfo(135);
+      expect(dir.code).toBe('SE');
+      expect(dir.labelVi).toBe('Đông Nam');
+    });
+
+    it('correctly maps 180 degrees to South (Nam)', () => {
+      const dir = weatherService.getWindDirectionInfo(180);
+      expect(dir.code).toBe('S');
+      expect(dir.labelVi).toBe('Nam');
+    });
+
+    it('handles negative or >360 degree angles gracefully', () => {
+      const dir = weatherService.getWindDirectionInfo(450); // 450 - 360 = 90 (E)
+      expect(dir.code).toBe('E');
+    });
+  });
+
+  describe('getUvIndexInfo', () => {
+    it('categorizes UV < 3 as Thấp (Low)', () => {
+      const uv = weatherService.getUvIndexInfo(1.5);
+      expect(uv.levelVi).toBe('Thấp');
+      expect(uv.color).toBe('#10B981');
+    });
+
+    it('categorizes UV 3-5 as Trung bình (Moderate)', () => {
+      const uv = weatherService.getUvIndexInfo(4.2);
+      expect(uv.levelVi).toBe('Trung bình');
+      expect(uv.color).toBe('#F59E0B');
+    });
+
+    it('categorizes UV 6-7 as Cao (High)', () => {
+      const uv = weatherService.getUvIndexInfo(6.8);
+      expect(uv.levelVi).toBe('Cao');
+      expect(uv.color).toBe('#F97316');
+    });
+
+    it('categorizes UV 8-10 as Rất cao (Very High)', () => {
+      const uv = weatherService.getUvIndexInfo(9.1);
+      expect(uv.levelVi).toBe('Rất cao');
+      expect(uv.color).toBe('#EF4444');
+    });
+
+    it('categorizes UV 11+ as Nguy hiểm (Extreme)', () => {
+      const uv = weatherService.getUvIndexInfo(12);
+      expect(uv.levelVi).toBe('Nguy hiểm');
+      expect(uv.color).toBe('#7C3AED');
+    });
+  });
 });
+

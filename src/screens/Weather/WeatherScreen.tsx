@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   Animated,
   LayoutAnimation,
+  Alert,
 } from 'react-native';
 import {
   MapPin,
@@ -14,13 +15,16 @@ import {
   Sun,
   Moon,
   Sparkles,
+  Layers,
+  Navigation,
 } from 'lucide-react-native';
 
 import { ScreenWrapper, AppText, EmptyState } from '@/components';
 import { useThemeMode, useAppStore, useDoubleBackExit } from '@/hooks';
 import { useWeatherStore } from '@/hooks/useWeatherStore';
+import { weatherService, HourlyForecastItem, DailyForecastItem } from '@/services/weather';
 import { haptics } from '@/utils';
-import type { WeatherScreenProps } from './types';
+import type { WeatherScreenProps, WeatherDetailTarget } from './types';
 import { createWeatherStyles, getFadeAnimStyle } from './styles';
 import {
   WeatherAtmosphereBackground,
@@ -29,9 +33,10 @@ import {
   DailyForecast,
   WeatherMetricsGrid,
   CitySearchModal,
+  WeatherDetailModal,
 } from './components';
 
-export const WeatherScreen: React.FC<WeatherScreenProps> = () => {
+export const WeatherScreen: React.FC<WeatherScreenProps> = ({ navigation }) => {
   const { theme: themeColors, isDark, toggleTheme } = useThemeMode();
   const { themeStyle, toggleThemeStyle } = useAppStore();
   const styles = createWeatherStyles(themeColors, isDark);
@@ -53,6 +58,10 @@ export const WeatherScreen: React.FC<WeatherScreenProps> = () => {
   } = useWeatherStore();
 
   const [searchModalVisible, setSearchModalVisible] = useState(false);
+  const [detailModalVisible, setDetailModalVisible] = useState(false);
+  const [detailTarget, setDetailTarget] = useState<WeatherDetailTarget | null>(null);
+  const [isLocating, setIsLocating] = useState(false);
+
   const fadeAnim = useRef(new Animated.Value(1)).current;
 
   // Kích hoạt hiệu ứng xuất hiện mượt mà khi đổi thành phố hoặc nạp dữ liệu
@@ -93,6 +102,59 @@ export const WeatherScreen: React.FC<WeatherScreenProps> = () => {
     haptics.light();
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setSelectedCity(city);
+  };
+
+  // Định vị GPS trực tiếp từ thanh trên cùng
+  const handleGpsLocate = async () => {
+    try {
+      setIsLocating(true);
+      haptics.light();
+      const city = await weatherService.getCurrentLocationCity();
+      haptics.success();
+      handleSelectCity(city);
+    } catch (err: unknown) {
+      haptics.warning();
+      const msg = err instanceof Error ? err.message : 'Không thể lấy vị trí hiện tại';
+      Alert.alert('Vị trí', msg);
+    } finally {
+      setIsLocating(false);
+    }
+  };
+
+  // Mở modal chi tiết thời tiết hiện tại
+  const handleOpenCurrentDetail = () => {
+    if (!weatherData) return;
+    haptics.light();
+    setDetailTarget({
+      type: 'current',
+      current: weatherData.current,
+      city: weatherData.city,
+      sunrise: weatherData.daily[0]?.sunrise,
+      sunset: weatherData.daily[0]?.sunset,
+    });
+    setDetailModalVisible(true);
+  };
+
+  // Mở modal chi tiết theo giờ
+  const handleOpenHourDetail = (hour: HourlyForecastItem) => {
+    if (!weatherData) return;
+    setDetailTarget({
+      type: 'hourly',
+      hour,
+      cityName: weatherData.city.name,
+    });
+    setDetailModalVisible(true);
+  };
+
+  // Mở modal chi tiết theo ngày
+  const handleOpenDayDetail = (day: DailyForecastItem) => {
+    if (!weatherData) return;
+    setDetailTarget({
+      type: 'daily',
+      day,
+      cityName: weatherData.city.name,
+    });
+    setDetailModalVisible(true);
   };
 
   const animatedContentStyle = [styles.animatedContainer, getFadeAnimStyle(fadeAnim)];
@@ -143,8 +205,23 @@ export const WeatherScreen: React.FC<WeatherScreenProps> = () => {
             </View>
           </TouchableOpacity>
 
-          {/* Các nút hành động phụ: Đổi °C/°F, Đổi Theme, Đổi Style & Mở Showcase */}
+          {/* Các nút hành động phụ: Định vị GPS, Đổi °C/°F, Đổi Theme, Đổi Style & Navigation */}
           <View style={styles.topActionsRow}>
+            {/* Nút GPS định vị nhanh */}
+            <TouchableOpacity
+              style={styles.actionIconBtn}
+              onPress={handleGpsLocate}
+              disabled={isLocating}
+              activeOpacity={0.7}
+              accessibilityLabel="Định vị GPS vị trí hiện tại"
+            >
+              {isLocating ? (
+                <ActivityIndicator size="small" color={themeColors.primary} />
+              ) : (
+                <Navigation size={17} color={isDark ? '#38BDF8' : themeColors.primary} />
+              )}
+            </TouchableOpacity>
+
             {/* Đổi đơn vị °C / °F */}
             <TouchableOpacity
               style={styles.actionPillBtn}
@@ -180,6 +257,19 @@ export const WeatherScreen: React.FC<WeatherScreenProps> = () => {
                 <Sun size={18} color="#F59E0B" />
               )}
             </TouchableOpacity>
+
+            {/* Nút Navigation: Chuyển sang màn hình Base App & Module Showcase */}
+            <TouchableOpacity
+              style={styles.actionIconBtn}
+              onPress={() => {
+                haptics.light();
+                navigation.navigate('Home');
+              }}
+              activeOpacity={0.7}
+              accessibilityLabel="Chuyển sang màn hình chính"
+            >
+              <Layers size={18} color={themeColors.text} />
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -207,22 +297,39 @@ export const WeatherScreen: React.FC<WeatherScreenProps> = () => {
         {/* 4. Khối Hiển Thị Dữ Liệu Thời Tiết Mờ Kính & Chuyển Động Mượt Mà */}
         {weatherData && (
           <Animated.View style={animatedContentStyle}>
-            {/* 4.1. Hero Thời Tiết Hiện Tại Không Khung Viền (Cardless Floating Hero) */}
-            <CurrentWeatherCard weather={weatherData} tempUnit={tempUnit} />
+            {/* 4.1. Hero Thời Tiết Hiện Tại Không Khung Viền - Chạm để xem chi tiết */}
+            <CurrentWeatherCard
+              weather={weatherData}
+              tempUnit={tempUnit}
+              onPressCard={handleOpenCurrentDetail}
+            />
 
-            {/* 4.2. Lưới 4 Chỉ Số Khí Quyển Kính Mờ 2x2 Đưa Lên Trên (Weather Metrics Grid) */}
-            <WeatherMetricsGrid current={weatherData.current} daily={weatherData.daily} />
+            {/* 4.2. Lưới 6 Chỉ Số Khí Quyển Kính Mờ Đầy Đủ (Nhiệt độ, Độ ẩm, Gió, Hướng gió, UV, Mưa) */}
+            <WeatherMetricsGrid
+              current={weatherData.current}
+              daily={weatherData.daily}
+              tempUnit={tempUnit}
+              onSelectMetric={handleOpenCurrentDetail}
+            />
 
-            {/* 4.3. Dự Báo Theo Giờ 24h Viên Nang Kính Mờ (Frosted Glass Capsule) */}
-            <HourlyForecast hourly={weatherData.hourly} tempUnit={tempUnit} />
+            {/* 4.3. Dự Báo Theo Giờ 24h - Chạm vào giờ bất kỳ để xem chi tiết */}
+            <HourlyForecast
+              hourly={weatherData.hourly}
+              tempUnit={tempUnit}
+              onSelectHour={handleOpenHourDetail}
+            />
 
-            {/* 4.4. Dự Báo 7 Ngày Tới Phiến Kính Mờ (Frosted Glass Panel) */}
-            <DailyForecast daily={weatherData.daily} tempUnit={tempUnit} />
+            {/* 4.4. Dự Báo 7 Ngày Tới - Chạm vào ngày bất kỳ để xem chi tiết */}
+            <DailyForecast
+              daily={weatherData.daily}
+              tempUnit={tempUnit}
+              onSelectDay={handleOpenDayDetail}
+            />
           </Animated.View>
         )}
       </ScrollView>
 
-      {/* 6. Modal Tìm Kiếm Địa Điểm Toàn Cầu */}
+      {/* 5. Modal Tìm Kiếm Địa Điểm Toàn Cầu & GPS */}
       <CitySearchModal
         visible={searchModalVisible}
         onClose={() => setSearchModalVisible(false)}
@@ -230,6 +337,14 @@ export const WeatherScreen: React.FC<WeatherScreenProps> = () => {
         onSelectCity={(city) => {
           handleSelectCity(city);
         }}
+      />
+
+      {/* 6. Modal Xem Chi Tiết Toàn Diện Thời Điểm / Ngày Được Chọn */}
+      <WeatherDetailModal
+        visible={detailModalVisible}
+        onClose={() => setDetailModalVisible(false)}
+        target={detailTarget}
+        tempUnit={tempUnit}
       />
     </ScreenWrapper>
   );

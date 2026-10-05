@@ -1,10 +1,11 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Thermometer } from 'lucide-react-native';
 import { AppText } from '@/components';
 import { useThemeMode } from '@/hooks';
 import { weatherService } from '@/services/weather';
+import { haptics } from '@/utils';
 import type { CurrentWeatherCardProps } from '../types';
 import {
   createWeatherStyles,
@@ -13,7 +14,11 @@ import {
 } from '../styles';
 import { WeatherIcon } from './WeatherIcon';
 
-export const CurrentWeatherCard: React.FC<CurrentWeatherCardProps> = ({ weather, tempUnit }) => {
+export const CurrentWeatherCard: React.FC<CurrentWeatherCardProps> = ({
+  weather,
+  tempUnit,
+  onPressCard,
+}) => {
   const { t } = useTranslation();
   const { theme: themeColors, isDark } = useThemeMode();
   const styles = createWeatherStyles(themeColors, isDark);
@@ -39,8 +44,19 @@ export const CurrentWeatherCard: React.FC<CurrentWeatherCardProps> = ({ weather,
     getStatusBadgeTextStyle(conditionInfo.accentColor),
   ];
 
+  const handlePress = () => {
+    if (onPressCard) {
+      haptics.light();
+      onPressCard();
+    }
+  };
+
   return (
-    <View style={styles.floatingHeroContainer}>
+    <TouchableOpacity
+      style={styles.floatingHeroContainer}
+      activeOpacity={0.85}
+      onPress={handlePress}
+    >
       {/* 1. Huy hiệu trạng thái thời tiết mờ kính */}
       <View style={styles.heroBadgeRow}>
         <View style={statusBadgeStyle}>
@@ -76,6 +92,6 @@ export const CurrentWeatherCard: React.FC<CurrentWeatherCardProps> = ({ weather,
           </AppText>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };

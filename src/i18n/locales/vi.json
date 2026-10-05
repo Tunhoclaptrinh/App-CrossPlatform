@@ -195,6 +195,14 @@
     "switchToCelsius": "Đổi sang °C",
     "developerShowcase": "Khám Phá Module Nền Tảng",
     "sunrise": "Bình minh",
-    "sunset": "Hoàng hôn"
+    "sunset": "Hoàng hôn",
+    "uvIndex": "Chỉ số UV",
+    "windDirection": "Hướng gió",
+    "weatherDetails": "Chi Tiết Thời Tiết",
+    "visibility": "Tầm nhìn",
+    "currentLocation": "Vị trí hiện tại (GPS)",
+    "selectDetailHint": "Chạm vào một giờ hoặc một ngày để xem chi tiết",
+    "healthAdvice": "Lời khuyên sức khỏe",
+    "dominantWind": "Hướng gió chính"
   }
 }

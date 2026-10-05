@@ -1,15 +1,20 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Calendar } from 'lucide-react-native';
 import { AppText } from '@/components';
 import { useThemeMode } from '@/hooks';
 import { weatherService } from '@/services/weather';
+import { haptics } from '@/utils';
 import type { DailyForecastProps } from '../types';
 import { createWeatherStyles, getDailyTempBarFillStyle } from '../styles';
 import { WeatherIcon } from './WeatherIcon';
 
-export const DailyForecast: React.FC<DailyForecastProps> = ({ daily, tempUnit }) => {
+export const DailyForecast: React.FC<DailyForecastProps> = ({
+  daily,
+  tempUnit,
+  onSelectDay,
+}) => {
   const { t } = useTranslation();
   const { theme: themeColors, isDark } = useThemeMode();
   const styles = createWeatherStyles(themeColors, isDark);
@@ -17,6 +22,11 @@ export const DailyForecast: React.FC<DailyForecastProps> = ({ daily, tempUnit })
   if (!daily || daily.length === 0) {
     return null;
   }
+
+  const handlePressDay = (item: (typeof daily)[0]) => {
+    haptics.light();
+    onSelectDay?.(item);
+  };
 
   return (
     <View style={styles.sectionCard}>
@@ -38,7 +48,12 @@ export const DailyForecast: React.FC<DailyForecastProps> = ({ daily, tempUnit })
           ];
 
           return (
-            <View key={`daily-${item.date}-${index}`} style={styles.dailyRow}>
+            <TouchableOpacity
+              key={`daily-${item.date}-${index}`}
+              style={styles.dailyRow}
+              activeOpacity={0.7}
+              onPress={() => handlePressDay(item)}
+            >
               {/* Cột Tên Ngày */}
               <View style={styles.dailyDayCol}>
                 <AppText style={styles.dailyDayName}>{item.dayLabel}</AppText>
@@ -64,7 +79,7 @@ export const DailyForecast: React.FC<DailyForecastProps> = ({ daily, tempUnit })
 
                 <AppText style={styles.dailyMaxTempText}>{maxTempStr}</AppText>
               </View>
-            </View>
+            </TouchableOpacity>
           );
         })}
       </View>

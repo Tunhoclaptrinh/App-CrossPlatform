@@ -1,15 +1,20 @@
 import React from 'react';
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Clock } from 'lucide-react-native';
 import { AppText } from '@/components';
 import { useThemeMode } from '@/hooks';
 import { weatherService } from '@/services/weather';
+import { haptics } from '@/utils';
 import type { HourlyForecastProps } from '../types';
 import { createWeatherStyles } from '../styles';
 import { WeatherIcon } from './WeatherIcon';
 
-export const HourlyForecast: React.FC<HourlyForecastProps> = ({ hourly, tempUnit }) => {
+export const HourlyForecast: React.FC<HourlyForecastProps> = ({
+  hourly,
+  tempUnit,
+  onSelectHour,
+}) => {
   const { t } = useTranslation();
   const { theme: themeColors, isDark } = useThemeMode();
   const styles = createWeatherStyles(themeColors, isDark);
@@ -17,6 +22,11 @@ export const HourlyForecast: React.FC<HourlyForecastProps> = ({ hourly, tempUnit
   if (!hourly || hourly.length === 0) {
     return null;
   }
+
+  const handlePressHour = (item: (typeof hourly)[0]) => {
+    haptics.light();
+    onSelectHour?.(item);
+  };
 
   return (
     <View style={styles.sectionCard}>
@@ -41,7 +51,12 @@ export const HourlyForecast: React.FC<HourlyForecastProps> = ({ hourly, tempUnit
           const hourlyItemStyle = [styles.hourlyItem, isCurrentHour && styles.hourlyItemActive];
 
           return (
-            <View key={`hourly-${item.time}-${index}`} style={hourlyItemStyle}>
+            <TouchableOpacity
+              key={`hourly-${item.time}-${index}`}
+              style={hourlyItemStyle}
+              activeOpacity={0.7}
+              onPress={() => handlePressHour(item)}
+            >
               <AppText style={styles.hourlyTimeText}>{item.hourLabel}</AppText>
 
               <View style={styles.hourlyIconBox}>
@@ -53,7 +68,7 @@ export const HourlyForecast: React.FC<HourlyForecastProps> = ({ hourly, tempUnit
               </AppText>
 
               <AppText style={styles.hourlyTempText}>{tempStr}</AppText>
-            </View>
+            </TouchableOpacity>
           );
         })}
       </ScrollView>

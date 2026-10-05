@@ -5,3 +5,4 @@ export * from './WeatherMetricsGrid';
 export * from './HourlyForecast';
 export * from './DailyForecast';
 export * from './CitySearchModal';
+export * from './WeatherDetailModal';
