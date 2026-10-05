@@ -31,8 +31,8 @@ export const AppButton: React.FC<AppButtonProps> = ({
   onPress,
   ...props
 }) => {
-  const { theme: themeColors } = useThemeMode();
-  const styles = createButtonStyles(themeColors);
+  const { theme: themeColors, radiusTokens } = useThemeMode();
+  const styles = createButtonStyles(themeColors, radiusTokens);
   const textColor = getButtonTextColor(variant, themeColors);
 
   const handlePress = (e: GestureResponderEvent) => {

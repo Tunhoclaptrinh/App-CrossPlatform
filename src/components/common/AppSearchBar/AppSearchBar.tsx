@@ -21,7 +21,7 @@ export const AppSearchBar: React.FC<AppSearchBarProps> = ({
   onClear,
   style,
 }) => {
-  const { theme: themeColors } = useThemeMode();
+  const { theme: themeColors, radiusTokens } = useThemeMode();
 
   const [text, setText] = useState(controlledValue || '');
   const debouncedText = useDebounce(text, debounceDelay);
@@ -55,7 +55,7 @@ export const AppSearchBar: React.FC<AppSearchBarProps> = ({
     <View
       style={[
         styles.container,
-        getSearchBarThemedContainer(themeColors),
+        getSearchBarThemedContainer(themeColors, radiusTokens),
         style,
       ]}
     >

@@ -20,12 +20,12 @@ export const AppInput: React.FC<AppInputProps> = ({
   style,
   ...props
 }) => {
-  const { theme: themeColors } = useThemeMode();
+  const { theme: themeColors, radiusTokens } = useThemeMode();
 
   const [isFocused, setIsFocused] = useState(false);
   const [showPassword, setShowPassword] = useState(!isPassword);
 
-  const stateStyle = getInputStateStyle(themeColors, isFocused, !!error);
+  const stateStyle = getInputStateStyle(themeColors, isFocused, !!error, radiusTokens);
 
   return (
     <View style={[styles.wrapper, containerStyle]}>

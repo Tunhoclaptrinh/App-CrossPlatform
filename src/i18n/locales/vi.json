@@ -33,7 +33,7 @@
     "nameMin": "Họ và tên phải có tối thiểu {{min}} ký tự"
   },
   "network": {
-    "offline": "Không có kết nối Internet. Đang ở chế độ ngoại tuyến.",
+    "offline": "Không có kết nối Internet",
     "retry": "Thử lại"
   },
   "home": {

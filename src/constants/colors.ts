@@ -80,6 +80,124 @@ export const Palette = {
   },
 };
 
+export type AccentColor = 'blue' | 'emerald' | 'violet' | 'amber' | 'rose' | 'cyan';
+
+export interface AccentColorDefinition {
+  id: AccentColor;
+  name: string;
+  nameVi: string;
+  hex: string;
+  light: {
+    primary: string;
+    primaryLight: string;
+    primaryDark: string;
+  };
+  dark: {
+    primary: string;
+    primaryLight: string;
+    primaryDark: string;
+  };
+}
+
+export const AccentPalettes: Record<AccentColor, AccentColorDefinition> = {
+  blue: {
+    id: 'blue',
+    name: 'Royal Blue',
+    nameVi: 'Xanh Hoàng Gia',
+    hex: '#2563EB',
+    light: {
+      primary: '#2563EB',
+      primaryLight: '#DBEAFE',
+      primaryDark: '#1D4ED8',
+    },
+    dark: {
+      primary: '#60A5FA',
+      primaryLight: '#1E3A8A',
+      primaryDark: '#3B82F6',
+    },
+  },
+  emerald: {
+    id: 'emerald',
+    name: 'Emerald Forest',
+    nameVi: 'Xanh Lục Bảo',
+    hex: '#059669',
+    light: {
+      primary: '#059669',
+      primaryLight: '#D1FAE5',
+      primaryDark: '#047857',
+    },
+    dark: {
+      primary: '#34D399',
+      primaryLight: '#064E3B',
+      primaryDark: '#10B981',
+    },
+  },
+  violet: {
+    id: 'violet',
+    name: 'Electric Violet',
+    nameVi: 'Tím Điện Biên',
+    hex: '#7C3AED',
+    light: {
+      primary: '#7C3AED',
+      primaryLight: '#EDE9FE',
+      primaryDark: '#6D28D9',
+    },
+    dark: {
+      primary: '#A78BFA',
+      primaryLight: '#4C1D95',
+      primaryDark: '#8B5CF6',
+    },
+  },
+  amber: {
+    id: 'amber',
+    name: 'Sunset Amber',
+    nameVi: 'Cam Hổ Phách',
+    hex: '#D97706',
+    light: {
+      primary: '#D97706',
+      primaryLight: '#FEF3C7',
+      primaryDark: '#B45309',
+    },
+    dark: {
+      primary: '#FBBF24',
+      primaryLight: '#78350F',
+      primaryDark: '#F59E0B',
+    },
+  },
+  rose: {
+    id: 'rose',
+    name: 'Crimson Rose',
+    nameVi: 'Đỏ Hồng Ngọc',
+    hex: '#E11D48',
+    light: {
+      primary: '#E11D48',
+      primaryLight: '#FFE4E6',
+      primaryDark: '#BE123C',
+    },
+    dark: {
+      primary: '#FB7185',
+      primaryLight: '#881337',
+      primaryDark: '#F43F5E',
+    },
+  },
+  cyan: {
+    id: 'cyan',
+    name: 'Nordic Cyan',
+    nameVi: 'Xanh Lam Bắc Âu',
+    hex: '#0891B2',
+    light: {
+      primary: '#0891B2',
+      primaryLight: '#CFFAFE',
+      primaryDark: '#0E7490',
+    },
+    dark: {
+      primary: '#22D3EE',
+      primaryLight: '#164E63',
+      primaryDark: '#06B6D4',
+    },
+  },
+};
+
 export const Colors = {
   light: {
     // Brand

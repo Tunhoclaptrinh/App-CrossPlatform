@@ -12,8 +12,8 @@ export const GlassCard: React.FC<GlassCardProps> = ({
   onPress,
   glowEffect = true,
 }) => {
-  const { isDark } = useThemeMode();
-  const styles = createGlassCardStyles(isDark, accentColor);
+  const { isDark, radiusTokens } = useThemeMode();
+  const styles = createGlassCardStyles(isDark, accentColor, radiusTokens.card);
 
   const handlePress = () => {
     if (onPress) {

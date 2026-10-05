@@ -32,7 +32,7 @@ export const AppleColors = {
 
 export const AppleGlassTokens = {
   blurIntensity: 25,
-  borderRadius: 22, // Apple Squircle curvature
+  borderRadius: 16, // Standardized 16px maximum boundary
   borderWidth: 1.2,
   shadows: {
     light: {

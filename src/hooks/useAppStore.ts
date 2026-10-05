@@ -3,6 +3,8 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { changeLanguage } from '@/i18n';
 import type { User } from '@/types';
+import type { AccentColor } from '@/constants/colors';
+import type { RadiusPreset } from '@/constants/theme';
 
 export type ThemeMode = 'system' | 'light' | 'dark';
 export type ThemeStyle = 'default' | 'apple-glass';
@@ -17,6 +19,15 @@ export interface AppStoreState {
   setThemeStyle: (style: ThemeStyle) => void;
   toggleThemeStyle: () => void;
 
+  // Dynamic UI Customizations
+  accentColor: AccentColor;
+  setAccentColor: (accent: AccentColor) => void;
+  radiusPreset: RadiusPreset;
+  setRadiusPreset: (preset: RadiusPreset) => void;
+  hapticsEnabled: boolean;
+  setHapticsEnabled: (enabled: boolean) => void;
+  resetThemeSettings: () => void;
+
   // Localization & Language
   language: Language;
   setLanguage: (lang: Language) => void;
@@ -29,6 +40,7 @@ export interface AppStoreState {
   // Global Metrics / Counter
   counter: number;
   increment: () => void;
+  decrement: () => void;
   reset: () => void;
 }
 
@@ -50,6 +62,24 @@ export const useAppStore = create<AppStoreState>()(
         set({ themeStyle: current === 'apple-glass' ? 'default' : 'apple-glass' });
       },
 
+      accentColor: 'blue',
+      setAccentColor: (accent: AccentColor) => set({ accentColor: accent }),
+
+      radiusPreset: 'standard',
+      setRadiusPreset: (preset: RadiusPreset) => set({ radiusPreset: preset }),
+
+      hapticsEnabled: true,
+      setHapticsEnabled: (enabled: boolean) => set({ hapticsEnabled: enabled }),
+
+      resetThemeSettings: () =>
+        set({
+          accentColor: 'blue',
+          radiusPreset: 'standard',
+          themeStyle: 'apple-glass',
+          themeMode: 'light',
+          hapticsEnabled: true,
+        }),
+
       language: 'vi',
       setLanguage: (lang: Language) => {
         changeLanguage(lang);
@@ -62,6 +92,7 @@ export const useAppStore = create<AppStoreState>()(
 
       counter: 0,
       increment: () => set((state) => ({ counter: state.counter + 1 })),
+      decrement: () => set((state) => ({ counter: Math.max(0, state.counter - 1) })),
       reset: () => set({ counter: 0 }),
     }),
     {
@@ -70,6 +101,9 @@ export const useAppStore = create<AppStoreState>()(
       partialize: (state) => ({
         themeMode: state.themeMode,
         themeStyle: state.themeStyle,
+        accentColor: state.accentColor,
+        radiusPreset: state.radiusPreset,
+        hapticsEnabled: state.hapticsEnabled,
         language: state.language,
         user: state.user,
         counter: state.counter,

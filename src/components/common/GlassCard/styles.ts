@@ -2,15 +2,20 @@ import { StyleSheet } from 'react-native';
 import { AppleColors, AppleGlassTokens } from '@/constants/appleTheme';
 import { Spacing } from '@/constants/theme';
 
-export const createGlassCardStyles = (isDark: boolean, accentColor?: string) => {
+export const createGlassCardStyles = (
+  isDark: boolean,
+  accentColor?: string,
+  radius?: number
+) => {
   const bg = isDark ? AppleColors.glassDark : AppleColors.glassLight;
   const borderColor = isDark ? AppleColors.glassBorderDark : AppleColors.glassBorderLight;
   const shadow = isDark ? AppleGlassTokens.shadows.dark : AppleGlassTokens.shadows.light;
+  const cardRadius = Math.min(radius ?? AppleGlassTokens.borderRadius, 16);
 
   return StyleSheet.create({
     container: {
       backgroundColor: bg,
-      borderRadius: AppleGlassTokens.borderRadius,
+      borderRadius: cardRadius,
       borderWidth: AppleGlassTokens.borderWidth,
       borderColor: borderColor,
       padding: Spacing.lg,
@@ -20,13 +25,14 @@ export const createGlassCardStyles = (isDark: boolean, accentColor?: string) => 
     },
     accentGlow: {
       position: 'absolute',
-      top: -30,
-      right: -30,
-      width: 100,
-      height: 100,
-      borderRadius: 50,
+      top: -40,
+      right: -40,
+      width: 130,
+      height: 130,
+      borderRadius: 65,
       backgroundColor: accentColor || (isDark ? AppleColors.glassAccentDark : AppleColors.glassAccentLight),
-      opacity: 0.8,
+      opacity: isDark ? 0.25 : 0.08,
+      pointerEvents: 'none',
     },
     content: {
       zIndex: 1,

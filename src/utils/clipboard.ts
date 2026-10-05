@@ -17,6 +17,13 @@ export const clipboardHelper = {
   },
 
   /**
+   * Alias ngắn gọn cho setString
+   */
+  async copy(text: string): Promise<boolean> {
+    return this.setString(text);
+  },
+
+  /**
    * Lấy nội dung đã sao chép gần nhất
    */
   async getString(): Promise<string> {

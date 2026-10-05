@@ -13,14 +13,14 @@ export const AppBadge: React.FC<AppBadgeProps> = ({
   icon,
   style,
 }) => {
-  const { theme: themeColors } = useThemeMode();
+  const { theme: themeColors, radiusTokens } = useThemeMode();
   const colors = getBadgeColors(variant, themeColors);
   const isSm = size === 'sm';
 
   return (
     <View
       style={[
-        getBadgeContainerStyle(shape, size, colors.bg),
+        getBadgeContainerStyle(shape, size, colors.bg, radiusTokens),
         style,
       ]}
     >

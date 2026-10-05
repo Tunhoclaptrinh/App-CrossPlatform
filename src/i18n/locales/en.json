@@ -33,7 +33,7 @@
     "nameMin": "Name must have at least {{min}} characters"
   },
   "network": {
-    "offline": "No Internet connection. Running in offline mode.",
+    "offline": "No Internet connection",
     "retry": "Retry"
   },
   "home": {
