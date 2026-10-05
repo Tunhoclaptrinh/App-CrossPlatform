@@ -1,284 +1,433 @@
 import { StyleSheet } from 'react-native';
-import { Spacing, BorderRadius } from '@/constants/theme';
+import { Spacing, RadiusPresets, RadiusPresetConfig, ControlSize } from '@/constants/theme';
 import type { ThemeColors } from '@/constants/colors';
 
-export const createHomeStyles = (colors: ThemeColors) =>
+export const createHomeStyles = (
+  colors: ThemeColors,
+  radius: RadiusPresetConfig = RadiusPresets.standard,
+  isDark: boolean = false
+) =>
   StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: colors.background,
     },
     content: {
-      padding: Spacing.lg,
-      paddingBottom: Spacing.xxl + 16,
+      paddingHorizontal: Spacing.lg,
+      paddingTop: Spacing.md,
+      paddingBottom: Spacing.xxl + 24,
     },
-    // Header Hero Card
-    headerCard: {
-      backgroundColor: colors.card,
-      padding: Spacing.lg,
-      borderRadius: BorderRadius.xl,
-      borderWidth: 1,
-      borderColor: colors.border,
-      marginBottom: Spacing.lg,
-      shadowColor: '#000000',
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.05,
-      shadowRadius: 10,
-      elevation: 2,
-    },
-    headerTopRow: {
+
+    // 1. Top Navigation Bar (Header)
+    topBar: {
       flexDirection: 'row',
+      alignItems: 'center',
       justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: Spacing.md,
-      width: '100%',
+      marginBottom: Spacing.md + 4,
+      paddingVertical: Spacing.xs,
     },
-    badge: {
+    brandGroup: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: Spacing.xs,
-      backgroundColor: colors.primaryLight,
-      paddingHorizontal: Spacing.sm + 4,
-      paddingVertical: Spacing.xs - 1,
-      borderRadius: BorderRadius.full,
+      gap: 10,
+      flexShrink: 1,
     },
-    badgeText: {
-      color: colors.primary,
-      fontWeight: '700',
-      fontSize: 11,
-      letterSpacing: 0.5,
-    },
-    langPill: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 6,
-      backgroundColor: colors.surfaceSubtle,
-      paddingHorizontal: Spacing.sm + 4,
-      paddingVertical: Spacing.xs - 1,
-      borderRadius: BorderRadius.full,
-      borderWidth: 1,
-      borderColor: colors.border,
-    },
-    langPillText: {
-      fontSize: 12,
-      fontWeight: '600',
-      color: colors.text,
-    },
-    // Floating segmented control for theme style & mode
-    headerSegmentsRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: colors.surfaceSubtle,
-      padding: 4,
-      borderRadius: BorderRadius.pill,
-      borderWidth: 1,
-      borderColor: colors.border,
-      marginBottom: Spacing.lg,
-      gap: 4,
-    },
-    segmentBtn: {
-      flex: 1,
-      flexDirection: 'row',
+    brandLogoBox: {
+      width: 38,
+      height: 38,
+      borderRadius: Math.min(radius.smControl, 19),
+      backgroundColor: colors.primary,
       alignItems: 'center',
       justifyContent: 'center',
-      paddingVertical: 7,
-      paddingHorizontal: 8,
-      borderRadius: BorderRadius.pill,
-      gap: 6,
+      shadowColor: colors.primary,
+      shadowOffset: { width: 0, height: 3 },
+      shadowOpacity: 0.2,
+      shadowRadius: 6,
+      elevation: 3,
     },
-    segmentBtnActive: {
+    brandTextGroup: {
+      justifyContent: 'center',
+    },
+    brandTitleText: {
+      fontSize: 16.5,
+      lineHeight: 22,
+      fontWeight: '800',
+      color: colors.text,
+      letterSpacing: -0.3,
+    },
+    brandSubtitleBadge: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+      marginTop: 1,
+    },
+    brandLiveDot: {
+      width: 5,
+      height: 5,
+      borderRadius: 2.5,
+      backgroundColor: '#10B981',
+    },
+    brandSubtitleText: {
+      fontSize: 10,
+      fontWeight: '700',
+      color: colors.textSecondary,
+      textTransform: 'uppercase',
+      letterSpacing: 0.6,
+    },
+    topControlCapsule: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: colors.surfaceSubtle,
+      borderRadius: radius.control,
+      borderWidth: 1,
+      borderColor: colors.border,
+      paddingHorizontal: 3,
+      paddingVertical: 2,
+      height: 36,
+    },
+    capsuleBtn: {
+      width: 30,
+      height: 30,
+      borderRadius: Math.min(radius.smControl, 15),
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    capsuleBtnActive: {
+      backgroundColor: colors.primaryLight,
+    },
+    capsuleDivider: {
+      width: 1,
+      height: 14,
+      backgroundColor: colors.border,
+      marginHorizontal: 1,
+    },
+    flagEmojiText: {
+      fontSize: 15,
+    },
+    actionCircleBtn: {
+      // Standardized icon button: 36×36, clamp smControl → circle-safe in smooth mode
+      width: ControlSize.iconBtnSm,
+      height: ControlSize.iconBtnSm,
+      borderRadius: Math.min(radius.smControl, ControlSize.iconBtnSm / 2),
       backgroundColor: colors.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+      alignItems: 'center',
+      justifyContent: 'center',
       shadowColor: '#000000',
       shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.08,
+      shadowOpacity: 0.05,
       shadowRadius: 4,
       elevation: 2,
     },
-    segmentText: {
-      fontSize: 12,
-      fontWeight: '500',
-      color: colors.textSecondary,
+    actionCircleBtnActive: {
+      backgroundColor: colors.primaryLight,
+      borderColor: colors.primary,
     },
-    segmentTextActive: {
-      fontSize: 12,
-      fontWeight: '700',
-      color: colors.primary,
+
+    // 2. Metric / Global State Card (Refined Apple Stepper)
+    metricCard: {
+      backgroundColor: colors.card,
+      borderRadius: radius.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+      padding: Spacing.md + 4,
+      marginBottom: Spacing.lg,
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.04,
+      shadowRadius: 10,
+      elevation: 2,
     },
-    themeToggleBtn: {
+    metricCardGlass: {
+      backgroundColor: isDark ? 'rgba(30, 34, 48, 0.65)' : 'rgba(255, 255, 255, 0.60)',
+      borderRadius: Math.min(radius.card, 16),
+      borderWidth: 1.2,
+      borderColor: isDark ? 'rgba(255, 255, 255, 0.22)' : 'rgba(255, 255, 255, 0.75)',
+      padding: Spacing.md + 4,
+      marginBottom: Spacing.lg,
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 6 },
+      shadowOpacity: isDark ? 0.35 : 0.08,
+      shadowRadius: 16,
+      elevation: 0,
+      position: 'relative',
+      overflow: 'hidden',
+    },
+    metricHeaderRow: {
       flexDirection: 'row',
       alignItems: 'center',
-      justifyContent: 'center',
-      paddingVertical: 7,
-      paddingHorizontal: 12,
-      borderRadius: BorderRadius.pill,
-      gap: 5,
-      backgroundColor: colors.card,
-      borderWidth: 1,
-      borderColor: colors.border,
+      justifyContent: 'space-between',
+      marginBottom: Spacing.sm,
     },
-    themeToggleText: {
-      fontSize: 12,
-      fontWeight: '600',
-      color: colors.text,
+    metricLabelGroup: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
     },
-    // Typography
-    title: {
-      color: colors.text,
-      textAlign: 'center',
-      marginBottom: Spacing.xs,
+    metricPulseDot: {
+      width: 8,
+      height: 8,
+      borderRadius: 4,
+      backgroundColor: '#10B981',
     },
-    subtitle: {
+    metricEyebrow: {
+      fontSize: 11,
+      fontWeight: '700',
       color: colors.textSecondary,
-      textAlign: 'center',
-      lineHeight: 20,
-      paddingHorizontal: Spacing.sm,
+      letterSpacing: 0.6,
+      textTransform: 'uppercase',
     },
-    // Double-Bezel Counter Card (Machined luxury look)
-    counterOuterShell: {
+    metricSyncBadge: {
       backgroundColor: colors.surfaceSubtle,
-      borderRadius: BorderRadius.xl,
+      paddingHorizontal: 8,
+      // Fixed height badge for visual parity with other badges
+      height: 24,
+      justifyContent: 'center',
+      borderRadius: radius.badge,
       borderWidth: 1,
       borderColor: colors.border,
-      padding: 6,
-      marginBottom: Spacing.lg,
     },
-    counterInnerCore: {
-      backgroundColor: colors.card,
-      borderRadius: BorderRadius.lg,
-      padding: Spacing.md + 2,
+    metricSyncBadgeText: {
+      fontSize: 10,
+      fontWeight: '700',
+      color: '#10B981',
+      letterSpacing: 0.5,
+    },
+    metricBodyRow: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
     },
-    counterInfo: {
-      flex: 1,
+    metricValueBlock: {
+      gap: 2,
     },
-    counterEyebrow: {
-      fontSize: 11,
+    metricValueSubtitle: {
+      fontSize: 11.5,
       fontWeight: '600',
-      letterSpacing: 0.4,
       color: colors.textSecondary,
-      marginBottom: 2,
-      textTransform: 'uppercase',
     },
-    counterValueRow: {
-      flexDirection: 'row',
-      alignItems: 'baseline',
-      gap: 6,
-    },
-    counterValue: {
-      fontSize: 28,
+    metricBigValue: {
+      fontSize: 32,
+      lineHeight: 40,
       fontWeight: '800',
       color: colors.primary,
       fontVariant: ['tabular-nums'],
+      letterSpacing: -0.5,
+      paddingVertical: 2,
     },
-    counterValueSub: {
-      fontSize: 12,
+    stepperBox: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: colors.surfaceSubtle,
+      // Stepper container: card-level radius capped at 16px
+      borderRadius: Math.min(radius.card, 16),
+      borderWidth: 1,
+      borderColor: colors.border,
+      padding: 3,
+      gap: 4,
+    },
+    stepperBtn: {
+      width: 36,
+      height: 36,
+      borderRadius: radius.smControl,
+      backgroundColor: colors.card,
+      alignItems: 'center',
+      justifyContent: 'center',
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.06,
+      shadowRadius: 2,
+      elevation: 1,
+    },
+    stepperBtnPrimary: {
+      backgroundColor: colors.primary,
+    },
+
+    // 3. Category Filter Tabs
+    filterScroll: {
+      flexGrow: 0,
+      height: 44,
+      marginBottom: Spacing.md,
+      marginHorizontal: -Spacing.lg,
+    },
+    filterScrollContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+      paddingHorizontal: Spacing.lg,
+    },
+    filterPill: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: 14,
+      height: 36,
+      borderRadius: radius.control,
+      backgroundColor: colors.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+      gap: 6,
+    },
+    filterPillActive: {
+      backgroundColor: colors.primary,
+      borderColor: colors.primary,
+      shadowColor: colors.primary,
+      shadowOffset: { width: 0, height: 3 },
+      shadowOpacity: 0.25,
+      shadowRadius: 6,
+      elevation: 3,
+    },
+    filterPillText: {
+      fontSize: 13,
+      fontWeight: '600',
       color: colors.textSecondary,
     },
-    counterBtn: {
-      paddingHorizontal: Spacing.md + 4,
+    filterPillTextActive: {
+      color: '#FFFFFF',
     },
-    // Search
+
+    // 4. Search Bar
     searchContainer: {
       marginBottom: Spacing.md,
     },
-    // Section Title
+
+    // 5. Section Header
     sectionHeaderRow: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      marginBottom: Spacing.md,
+      marginBottom: Spacing.sm + 2,
       marginTop: Spacing.xs,
     },
     sectionTitle: {
+      fontSize: 16,
+      fontWeight: '700',
       color: colors.text,
+      letterSpacing: -0.2,
     },
     moduleCountBadge: {
       backgroundColor: colors.surfaceSubtle,
-      paddingHorizontal: Spacing.sm,
-      paddingVertical: 2,
-      borderRadius: BorderRadius.pill,
+      paddingHorizontal: 8,
+      // Fixed height badge — matches metricSyncBadge
+      height: 24,
+      justifyContent: 'center',
+      borderRadius: radius.badge,
       borderWidth: 1,
       borderColor: colors.border,
     },
     moduleCountText: {
       fontSize: 12,
-      fontWeight: '600',
+      fontWeight: '700',
       color: colors.textSecondary,
     },
-    // Module Grid / List
+
+    // 6. Modules List
     grid: {
       gap: Spacing.sm + 2,
       marginBottom: Spacing.lg,
     },
     itemCard: {
       backgroundColor: colors.card,
-      borderRadius: BorderRadius.lg,
+      borderRadius: radius.card,
       borderWidth: 1,
       borderColor: colors.border,
-      padding: Spacing.md,
+      padding: Spacing.md + 2,
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
       shadowColor: '#000000',
       shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.04,
+      shadowOpacity: 0.03,
       shadowRadius: 6,
       elevation: 1,
     },
     itemCardGlass: {
-      backgroundColor: colors.card,
-      borderRadius: BorderRadius.xl,
+      backgroundColor: isDark ? 'rgba(30, 34, 48, 0.65)' : 'rgba(255, 255, 255, 0.60)',
+      borderRadius: Math.min(radius.card, 16),
       borderWidth: 1.2,
-      borderColor: colors.border,
-      padding: Spacing.md,
+      borderColor: isDark ? 'rgba(255, 255, 255, 0.22)' : 'rgba(255, 255, 255, 0.75)',
+      padding: Spacing.md + 2,
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
       shadowColor: '#000000',
       shadowOffset: { width: 0, height: 6 },
-      shadowOpacity: 0.08,
-      shadowRadius: 12,
-      elevation: 3,
+      shadowOpacity: isDark ? 0.35 : 0.06,
+      shadowRadius: 14,
+      elevation: 0,
+      position: 'relative',
+      overflow: 'hidden',
+    },
+    itemGlassHighlight: {
+      position: 'absolute',
+      top: 0,
+      left: 12,
+      right: 12,
+      height: 1.2,
+      backgroundColor: isDark ? 'rgba(255, 255, 255, 0.35)' : 'rgba(255, 255, 255, 0.95)',
+      borderRadius: 1,
     },
     itemLeft: {
       flexDirection: 'row',
       alignItems: 'center',
       gap: Spacing.md,
       flex: 1,
+      paddingRight: Spacing.sm,
     },
     iconWrapper: {
-      width: 46,
-      height: 46,
-      borderRadius: BorderRadius.md,
+      width: ControlSize.iconBtnMd,
+      height: ControlSize.iconBtnMd,
+      // 44×44 icon: clamp smControl to radius/2 to stay circle-safe in smooth mode
+      borderRadius: Math.min(radius.smControl, ControlSize.iconBtnMd / 2),
       alignItems: 'center',
       justifyContent: 'center',
     },
     itemTexts: {
       flex: 1,
+      gap: 3,
+    },
+    itemTitleRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+      flexWrap: 'wrap',
     },
     itemTitle: {
+      fontSize: 15,
+      fontWeight: '700',
       color: colors.text,
-      fontWeight: '600',
-      marginBottom: 3,
+      letterSpacing: -0.2,
+    },
+    itemTagBadge: {
+      paddingHorizontal: 6,
+      paddingVertical: 2,
+      borderRadius: radius.badge,
+      backgroundColor: colors.surfaceSubtle,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    itemTagBadgeGlass: {
+      backgroundColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.50)',
+      borderColor: isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.70)',
+    },
+    itemTagText: {
+      fontSize: 10,
+      fontWeight: '700',
+      color: colors.textSecondary,
+      textTransform: 'uppercase',
     },
     itemDesc: {
+      fontSize: 12.5,
+      lineHeight: 18,
       color: colors.textSecondary,
-      fontSize: 12,
-      lineHeight: 16,
     },
     chevronWrapper: {
-      width: 28,
-      height: 28,
-      borderRadius: BorderRadius.full,
-      backgroundColor: colors.surfaceSubtle,
       alignItems: 'center',
       justifyContent: 'center',
-      marginLeft: Spacing.xs,
+      paddingLeft: Spacing.xs,
     },
   });
 
-export const getIconWrapperStyle = (color: string) => ({
-  backgroundColor: color + '18',
+export const getIconWrapperStyle = (hexColor: string) => ({
+  backgroundColor: `${hexColor}18`, // 10% opacity tint
 });

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity, ScrollView } from 'react-native';
 import {
   Compass,
   Palette,
@@ -15,24 +15,48 @@ import {
   Sun,
   Moon,
   Plus,
+  Minus,
+  RotateCcw,
+  SlidersHorizontal,
 } from 'lucide-react-native';
-import { useTranslation } from 'react-i18next';
-import { AppText, ScreenWrapper, AppSearchBar, EmptyState, AppButton } from '@/components';
+import {
+  AppText,
+  ScreenWrapper,
+  AppSearchBar,
+  EmptyState,
+  ThemeStudioModal,
+  AppleMeshBackground,
+} from '@/components';
 import { useAppStore, useThemeMode, useDoubleBackExit } from '@/hooks';
 import { removeVietnameseTones, haptics } from '@/utils';
 import type { HomeScreenProps } from '@/navigation/types';
-import { createHomeStyles, getIconWrapperStyle } from './styles';
+import { createHomeStyles } from './styles';
+import { useTranslation } from 'react-i18next';
+
+type CategoryFilter = 'all' | 'ui' | 'realtime' | 'security' | 'storage';
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
-  const { theme: themeColors, isDark, toggleTheme } = useThemeMode();
-  const styles = createHomeStyles(themeColors);
+  const { theme: themeColors, isDark, toggleTheme, radiusTokens } = useThemeMode();
+  const styles = createHomeStyles(themeColors, radiusTokens, isDark);
+  const [isStudioOpen, setIsStudioOpen] = useState(false);
 
   // Bảo vệ không bị vô tình thoát app khi nhấn Back ở màn hình chính
   useDoubleBackExit();
 
   const { t } = useTranslation();
-  const { counter, increment, language, setLanguage, themeStyle, toggleThemeStyle } = useAppStore();
+  const {
+    counter,
+    increment,
+    decrement,
+    reset,
+    language,
+    setLanguage,
+    themeStyle,
+    toggleThemeStyle,
+  } = useAppStore();
+
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>('all');
 
   const toggleLanguage = () => {
     haptics.light();
@@ -45,16 +69,42 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     toggleThemeStyle();
   };
 
+  const handleToggleTheme = () => {
+    haptics.light();
+    toggleTheme();
+  };
+
+  const categories = [
+    { id: 'all', label: language === 'vi' ? 'Tất cả' : 'All', icon: Layers },
+    { id: 'ui', label: language === 'vi' ? 'Giao diện & UI' : 'UI & Glass', icon: Palette },
+    { id: 'realtime', label: language === 'vi' ? 'Kết nối & Mạng' : 'Network', icon: Radio },
+    { id: 'security', label: language === 'vi' ? 'Bảo mật & Cảm biến' : 'Security', icon: ShieldCheck },
+    { id: 'storage', label: language === 'vi' ? 'Dữ liệu & Lưu trữ' : 'Storage', icon: Database },
+  ] as const;
+
   const modules = [
     {
       id: 'weather',
+      category: 'ui' as const,
+      tag: 'Weather',
       title: 'Dự Báo Thời Tiết (Open-Meteo)',
       desc: 'Nhiệt độ hiện tại, dự báo theo giờ (24h), theo ngày (7 ngày), tìm kiếm toàn cầu',
       icon: Sun,
       color: '#F59E0B',
     },
     {
+      id: 'theme-studio',
+      category: 'ui' as const,
+      tag: 'Studio',
+      title: 'Studio Theme & Bo Góc',
+      desc: 'Bộ tinh chỉnh màu sắc chủ đạo, 4 cấp độ bo góc, phản hồi rung và kính Apple Glass',
+      icon: SlidersHorizontal,
+      color: themeColors.primary,
+    },
+    {
       id: 'apple',
+      category: 'ui' as const,
+      tag: 'Cupertino',
       title: 'Apple iOS 18 Liquid Glass',
       desc: 'Cupertino frosted glassmorphism, specular borders & squircles',
       icon: Sparkles,
@@ -63,6 +113,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
     {
       id: 'realtime',
+      category: 'realtime' as const,
+      tag: 'WebSocket',
       title: 'Universal Real-Time WebSocket',
       desc: 'Auto-reconnect, offline message queue, heartbeat ping/pong & pub/sub',
       icon: Radio,
@@ -70,6 +122,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     },
     {
       id: 'gestures',
+      category: 'security' as const,
+      tag: 'Motion & Haptics',
       title: 'Smart Gestures & Shake Motion',
       desc: 'Swipe 4 directions, double tap & phone shake sensor with Haptics',
       icon: Smartphone,
@@ -77,184 +131,247 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     },
     {
       id: 'crypto',
+      category: 'security' as const,
+      tag: 'AES-256-GCM',
       title: 'Server AES-256 & Security',
-      desc: 'AESP256 format compatible with Node.js, Python, Java, Go',
+      desc: 'Cross-platform cryptography & biometric FaceID/Fingerprint auth',
       icon: ShieldCheck,
       color: '#8B5CF6',
     },
     {
       id: 'paper',
-      title: 'React Native Paper',
-      desc: 'Material Design 3 UI Kit, Accessibility & Theme',
+      category: 'ui' as const,
+      tag: 'Material 3',
+      title: 'React Native Paper & UI Kit',
+      desc: 'Material Design 3 tokens, component studio, accessibility & themes',
       icon: Palette,
       color: '#2563EB',
     },
     {
       id: 'nav',
+      category: 'realtime' as const,
+      tag: 'Native Stack',
       title: 'React Navigation v7',
-      desc: 'Native Stack Navigator, 60-120fps & Deep Linking',
+      desc: 'Native Stack Navigator, 60-120fps hardware transitions & Deep Linking',
       icon: Compass,
-      color: '#10B981',
+      color: '#06B6D4',
     },
     {
       id: 'sqlite',
-      title: 'SQLite Database',
-      desc: '@op-engineering/op-sqlite: C++ JSI New Architecture',
+      category: 'storage' as const,
+      tag: 'C++ JSI',
+      title: 'High-Speed SQLite Database',
+      desc: '@op-engineering/op-sqlite: C++ JSI direct memory query engine',
       icon: Server,
       color: '#0284C7',
     },
     {
       id: 'i18n',
-      title: t('home.modulesTitle', 'Đa Ngôn Ngữ (i18n)'),
-      desc: 'i18next: Tiếng Việt & English dynamic runtime switching',
+      category: 'ui' as const,
+      tag: 'i18next',
+      title: t('home.i18nTitle', 'Đa Ngôn Ngữ (i18n)'),
+      desc: 'i18next: Tiếng Việt & English dynamic runtime zero-reload switching',
       icon: Languages,
       color: '#D97706',
     },
     {
       id: 'store',
-      title: 'Zustand & AsyncStorage',
-      desc: 'Unified state management & persistent rehydration',
+      category: 'storage' as const,
+      tag: 'Zustand Store',
+      title: 'Zustand & Persistent Storage',
+      desc: 'Unified state management, AsyncStorage & automatic state rehydration',
       icon: Database,
-      color: '#8B5CF6',
+      color: '#9333EA',
     },
     {
       id: 'utils',
-      title: 'Validation & Performance',
-      desc: 'Zod schemas, useDebounce, useThrottle, OptimizedList, Formatters',
+      category: 'storage' as const,
+      tag: 'Zod & Tools',
+      title: 'Validation & Performance Tools',
+      desc: 'Zod schema parsing, useDebounce, useThrottle, OptimizedList, Formatters',
       icon: Sparkles,
       color: '#EC4899',
     },
     {
       id: 'core',
+      category: 'ui' as const,
+      tag: 'Architecture',
       title: 'Universal Base Architecture',
       desc: 'ScreenWrapper, AppInput, ApiClient, Skeleton, Toast, ErrorBoundary',
       icon: Layers,
-      color: '#6366F1',
+      color: '#4F46E5',
     },
   ];
 
-  const normalizedQuery = removeVietnameseTones(searchQuery);
-  const filteredModules = modules.filter((item) =>
-    removeVietnameseTones(item.title + ' ' + item.desc).includes(normalizedQuery)
-  );
+  const normalizedQuery = removeVietnameseTones(searchQuery.trim().toLowerCase());
+  const filteredModules = modules.filter((item) => {
+    const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
+    if (!matchesCategory) return false;
+    if (!normalizedQuery) return true;
+    return removeVietnameseTones((item.title + ' ' + item.desc + ' ' + item.tag).toLowerCase()).includes(
+      normalizedQuery
+    );
+  });
+
+  const isGlass = themeStyle === 'apple-glass';
 
   return (
-    <ScreenWrapper scrollable contentContainerStyle={styles.content}>
-      {/* Header Card */}
-      <View style={styles.headerCard}>
-        {/* Tier 1: Badge & Language */}
-        <View style={styles.headerTopRow}>
-          <View style={styles.badge}>
-            <ShieldCheck size={14} color={themeColors.primary} />
-            <AppText variant="caption" style={styles.badgeText}>
-              {t('home.badge', 'UNIVERSAL BASE APP')}
-            </AppText>
+    <View style={styles.container}>
+      {/* Full-bleed Apple Mesh Wallpaper behind the entire screen */}
+      {isGlass && <AppleMeshBackground variant="aurora" />}
+
+      <ScreenWrapper
+        scrollable
+        backgroundColor={isGlass ? 'transparent' : undefined}
+        contentContainerStyle={styles.content}
+      >
+
+      {/* 1. Header Top Bar */}
+      <View style={styles.topBar}>
+        <View style={styles.brandGroup}>
+          <View style={styles.brandLogoBox}>
+            <Layers size={20} color="#FFFFFF" />
           </View>
-
-          <TouchableOpacity
-            style={styles.langPill}
-            onPress={toggleLanguage}
-            activeOpacity={0.7}
-          >
-            <Languages size={14} color={themeColors.textSecondary} />
-            <AppText variant="caption" style={styles.langPillText}>
-              {language === 'vi' ? '🇻🇳 Tiếng Việt' : '🇺🇸 English'}
+          <View style={styles.brandTextGroup}>
+            <AppText style={styles.brandTitleText}>
+              React Native Starter
             </AppText>
-          </TouchableOpacity>
-        </View>
-
-        {/* Tier 2: Segmented Controls for Theme Style and Light/Dark Mode */}
-        <View style={styles.headerSegmentsRow}>
-          <TouchableOpacity
-            style={[
-              styles.segmentBtn,
-              themeStyle === 'apple-glass' && styles.segmentBtnActive,
-            ]}
-            onPress={handleToggleThemeStyle}
-            activeOpacity={0.7}
-          >
-            <Sparkles
-              size={14}
-              color={themeStyle === 'apple-glass' ? themeColors.primary : themeColors.textSecondary}
-            />
-            <AppText
-              variant="caption"
-              style={themeStyle === 'apple-glass' ? styles.segmentTextActive : styles.segmentText}
-            >
-              Apple Glass
-            </AppText>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[
-              styles.segmentBtn,
-              themeStyle === 'default' && styles.segmentBtnActive,
-            ]}
-            onPress={handleToggleThemeStyle}
-            activeOpacity={0.7}
-          >
-            <Palette
-              size={14}
-              color={themeStyle === 'default' ? themeColors.primary : themeColors.textSecondary}
-            />
-            <AppText
-              variant="caption"
-              style={themeStyle === 'default' ? styles.segmentTextActive : styles.segmentText}
-            >
-              Flat UI
-            </AppText>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.themeToggleBtn}
-            onPress={toggleTheme}
-            activeOpacity={0.7}
-          >
-            {isDark ? <Moon size={14} color="#FBBF24" /> : <Sun size={14} color="#F59E0B" />}
-            <AppText variant="caption" style={styles.themeToggleText}>
-              {isDark ? t('common.dark', 'Tối') : t('common.light', 'Sáng')}
-            </AppText>
-          </TouchableOpacity>
-        </View>
-
-        <AppText variant="header" style={styles.title}>
-          {t('home.title', 'React Native Starter')}
-        </AppText>
-
-        <AppText variant="body" style={styles.subtitle}>
-          {t('home.subtitle', 'Bộ khung hoàn chỉnh cho mọi loại ứng dụng (Local, AI, Server)')}
-        </AppText>
-      </View>
-
-      {/* Double-Bezel Counter Card */}
-      <View style={styles.counterOuterShell}>
-        <View style={styles.counterInnerCore}>
-          <View style={styles.counterInfo}>
-            <AppText variant="caption" style={styles.counterEyebrow}>
-              {t('home.counterLabel', 'Zustand Global State')}
-            </AppText>
-            <View style={styles.counterValueRow}>
-              <AppText variant="header" style={styles.counterValue}>
-                {counter}
-              </AppText>
-              <AppText variant="caption" style={styles.counterValueSub}>
-                count
+            <View style={styles.brandSubtitleBadge}>
+              <View style={styles.brandLiveDot} />
+              <AppText style={styles.brandSubtitleText}>
+                {t('home.badge', 'UNIVERSAL BASE APP')}
               </AppText>
             </View>
           </View>
+        </View>
 
-          <AppButton
-            title={t('home.incrementBtn', 'Tăng biến (+1)')}
-            variant="tonal"
-            size="sm"
-            leftIcon={<Plus size={16} color={themeColors.primary} />}
-            onPress={increment}
-            style={styles.counterBtn}
-          />
+        {/* Compact Tactile Control Capsule */}
+        <View style={styles.topControlCapsule}>
+          {/* Language Switcher */}
+          <TouchableOpacity
+            style={styles.capsuleBtn}
+            onPress={toggleLanguage}
+            activeOpacity={0.7}
+            accessibilityLabel="Switch Language"
+          >
+            <AppText style={styles.flagEmojiText}>
+              {language === 'vi' ? '🇻🇳' : '🇺🇸'}
+            </AppText>
+          </TouchableOpacity>
+
+          <View style={styles.capsuleDivider} />
+
+          {/* Theme Style Toggle (Apple Glass / Flat) */}
+          <TouchableOpacity
+            style={[
+              styles.capsuleBtn,
+              themeStyle === 'apple-glass' && styles.capsuleBtnActive,
+            ]}
+            onPress={handleToggleThemeStyle}
+            activeOpacity={0.7}
+            accessibilityLabel="Toggle Theme Style"
+          >
+            <Sparkles
+              size={15}
+              color={themeStyle === 'apple-glass' ? '#007AFF' : themeColors.textSecondary}
+            />
+          </TouchableOpacity>
+
+          <View style={styles.capsuleDivider} />
+
+          {/* Dark / Light Mode */}
+          <TouchableOpacity
+            style={styles.capsuleBtn}
+            onPress={handleToggleTheme}
+            activeOpacity={0.7}
+            accessibilityLabel="Toggle Dark Mode"
+          >
+            {isDark ? <Moon size={15} color="#FBBF24" /> : <Sun size={15} color="#F59E0B" />}
+          </TouchableOpacity>
+
+          <View style={styles.capsuleDivider} />
+
+          {/* Theme Studio Trigger */}
+          <TouchableOpacity
+            style={styles.capsuleBtn}
+            onPress={() => {
+              haptics.light();
+              setIsStudioOpen(true);
+            }}
+            activeOpacity={0.7}
+            accessibilityLabel="Open Theme Studio"
+          >
+            <SlidersHorizontal size={15} color={themeColors.primary} />
+          </TouchableOpacity>
         </View>
       </View>
 
-      {/* Search Input */}
+      {/* 2. Global State Metric Stepper Card */}
+      <View style={isGlass ? styles.metricCardGlass : styles.metricCard}>
+        {isGlass && <View style={styles.itemGlassHighlight} />}
+        <View style={styles.metricHeaderRow}>
+          <View style={styles.metricLabelGroup}>
+            <View style={styles.metricPulseDot} />
+            <AppText style={styles.metricEyebrow}>
+              {language === 'vi' ? 'BỘ ĐẾM TOÀN CỤC (ZUSTAND)' : 'ZUSTAND GLOBAL STORE'}
+            </AppText>
+          </View>
+          <View style={styles.metricSyncBadge}>
+            <AppText style={styles.metricSyncBadgeText}>
+              LIVE SYNC
+            </AppText>
+          </View>
+        </View>
+
+        <View style={styles.metricBodyRow}>
+          <View style={styles.metricValueBlock}>
+            <AppText style={styles.metricValueSubtitle}>
+              {language === 'vi' ? 'Giá trị hiện tại' : 'Current Value'}
+            </AppText>
+            <AppText style={styles.metricBigValue}>
+              {counter}
+            </AppText>
+          </View>
+
+          {/* Stepper Controls */}
+          <View style={styles.stepperBox}>
+            <TouchableOpacity
+              style={styles.stepperBtn}
+              onPress={() => {
+                haptics.light();
+                decrement();
+              }}
+              activeOpacity={0.7}
+            >
+              <Minus size={16} color={themeColors.text} />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.stepperBtn}
+              onPress={() => {
+                haptics.warning();
+                reset();
+              }}
+              activeOpacity={0.7}
+            >
+              <RotateCcw size={14} color={themeColors.textSecondary} />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.stepperBtn, styles.stepperBtnPrimary]}
+              onPress={() => {
+                haptics.success();
+                increment();
+              }}
+              activeOpacity={0.7}
+            >
+              <Plus size={16} color="#FFFFFF" />
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+
+      {/* 3. Search Bar */}
       <View style={styles.searchContainer}>
         <AppSearchBar
           value={searchQuery}
@@ -264,25 +381,59 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         />
       </View>
 
-      {/* Section Header */}
+      {/* 4. Category Filter Pills */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.filterScroll}
+        contentContainerStyle={styles.filterScrollContent}
+      >
+        {categories.map((cat) => {
+          const isActive = selectedCategory === cat.id;
+          const CatIcon = cat.icon;
+          return (
+            <TouchableOpacity
+              key={cat.id}
+              activeOpacity={0.7}
+              style={[styles.filterPill, isActive && styles.filterPillActive]}
+              onPress={() => {
+                haptics.light();
+                setSelectedCategory(cat.id as CategoryFilter);
+              }}
+            >
+              <CatIcon size={14} color={isActive ? '#FFFFFF' : themeColors.textSecondary} />
+              <AppText
+                style={[styles.filterPillText, isActive && styles.filterPillTextActive]}
+              >
+                {cat.label}
+              </AppText>
+            </TouchableOpacity>
+          );
+        })}
+      </ScrollView>
+
+      {/* 5. Section Header */}
       <View style={styles.sectionHeaderRow}>
-        <AppText variant="title" style={styles.sectionTitle}>
+        <AppText style={styles.sectionTitle}>
           {t('home.modulesTitle', 'Các Module Nền Tảng Đã Sẵn Sàng')}
         </AppText>
         <View style={styles.moduleCountBadge}>
-          <AppText variant="caption" style={styles.moduleCountText}>
+          <AppText style={styles.moduleCountText}>
             {filteredModules.length}
           </AppText>
         </View>
       </View>
 
-      {/* Modules List */}
+      {/* 6. Modules List */}
       {filteredModules.length === 0 ? (
         <EmptyState
           title={t('home.noResultsTitle', 'Không tìm thấy kết quả')}
           description={`${t('home.noResultsDesc', 'Không có module nào khớp với từ khóa')} "${searchQuery}"`}
           actionText={t('home.clearSearch', 'Xóa tìm kiếm')}
-          onActionPress={() => setSearchQuery('')}
+          onActionPress={() => {
+            setSearchQuery('');
+            setSelectedCategory('all');
+          }}
         />
       ) : (
         <View style={styles.grid}>
@@ -292,10 +443,13 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
               <TouchableOpacity
                 key={item.id}
                 activeOpacity={0.7}
-                style={themeStyle === 'apple-glass' ? styles.itemCardGlass : styles.itemCard}
+                style={isGlass ? styles.itemCardGlass : styles.itemCard}
                 onPress={() => {
+                  haptics.light();
                   if (item.id === 'weather') {
                     navigation.navigate('Weather');
+                  } else if (item.id === 'theme-studio') {
+                    setIsStudioOpen(true);
                   } else {
                     navigation.navigate('Details', {
                       itemId: item.id,
@@ -304,29 +458,54 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                     });
                   }
                 }}
-
               >
+                {/* Specular Highlight Hairline */}
+                {isGlass && <View style={styles.itemGlassHighlight} />}
+
                 <View style={styles.itemLeft}>
-                  <View style={[styles.iconWrapper, getIconWrapperStyle(item.color)]}>
-                    <IconComponent size={22} color={item.color} />
+                  {/* Clean Flat Icon Badge with soft accent tint */}
+                  <View
+                    style={[
+                      styles.iconWrapper,
+                      { backgroundColor: `${item.color}18` },
+                    ]}
+                  >
+                    <IconComponent size={22} color={item.color} strokeWidth={2.2} />
                   </View>
+
                   <View style={styles.itemTexts}>
-                    <AppText variant="subtitle" style={styles.itemTitle}>
-                      {item.title}
-                    </AppText>
-                    <AppText variant="caption" style={styles.itemDesc} numberOfLines={2}>
+                    <View style={styles.itemTitleRow}>
+                      <AppText style={styles.itemTitle}>
+                        {item.title}
+                      </AppText>
+                      <View style={[styles.itemTagBadge, isGlass && styles.itemTagBadgeGlass]}>
+                        <AppText style={styles.itemTagText}>
+                          {item.tag}
+                        </AppText>
+                      </View>
+                    </View>
+                    <AppText style={styles.itemDesc} numberOfLines={2}>
                       {item.desc}
                     </AppText>
                   </View>
                 </View>
+
+                {/* Clean navigation chevron */}
                 <View style={styles.chevronWrapper}>
-                  <ChevronRight size={16} color={themeColors.textSecondary} />
+                  <ChevronRight size={18} color={themeColors.textSecondary} />
                 </View>
               </TouchableOpacity>
             );
           })}
         </View>
       )}
+
+      {/* Dynamic Theme & Radius Studio Modal */}
+      <ThemeStudioModal
+        visible={isStudioOpen}
+        onClose={() => setIsStudioOpen(false)}
+      />
     </ScreenWrapper>
+  </View>
   );
 };

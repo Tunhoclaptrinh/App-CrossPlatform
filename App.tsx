@@ -18,10 +18,10 @@ function AppContent(): React.JSX.Element {
     <PaperProvider theme={paperTheme}>
       <ToastProvider>
         <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
-        {!isConnected && <OfflineBanner onRetry={checkConnection} />}
         <NavigationContainer linking={linking}>
           <AppNavigator />
         </NavigationContainer>
+        {!isConnected && <OfflineBanner onRetry={checkConnection} />}
       </ToastProvider>
     </PaperProvider>
   );

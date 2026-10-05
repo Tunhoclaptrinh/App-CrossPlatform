@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { BorderRadius, Spacing } from '@/constants/theme';
+import { BorderRadius, Spacing, RadiusPresetConfig, ControlSize } from '@/constants/theme';
 import type { ThemeColors } from '@/constants/colors';
 import type { AppBadgeVariant, AppBadgeShape, AppBadgeSize } from './types';
 
@@ -39,15 +39,15 @@ export const getBadgeColors = (variant: AppBadgeVariant = 'primary', themeColors
   }
 };
 
-export const getBadgeRadius = (shape: AppBadgeShape = 'pill') => {
+export const getBadgeRadius = (shape: AppBadgeShape = 'pill', radius?: RadiusPresetConfig) => {
   switch (shape) {
     case 'sharp':
-      return BorderRadius.none;
+      return 3;
     case 'rounded':
-      return BorderRadius.sm;
+      return radius ? radius.smControl : BorderRadius.sm;
     case 'pill':
     default:
-      return BorderRadius.full;
+      return radius ? radius.badge : BorderRadius.full;
   }
 };
 
@@ -58,12 +58,14 @@ export const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   sizeSm: {
-    paddingVertical: Spacing.xxs,
+    height: ControlSize.badgeHeightSm,
     paddingHorizontal: Spacing.sm,
+    justifyContent: 'center',
   },
   sizeMd: {
-    paddingVertical: Spacing.xs,
+    height: ControlSize.badgeHeightMd,
     paddingHorizontal: Spacing.md,
+    justifyContent: 'center',
   },
   iconWrapper: {
     marginRight: Spacing.xs,
@@ -76,12 +78,13 @@ export const styles = StyleSheet.create({
 export const getBadgeContainerStyle = (
   shape: AppBadgeShape = 'pill',
   size: AppBadgeSize = 'md',
-  bgColor: string
+  bgColor: string,
+  radius?: RadiusPresetConfig
 ) => [
   styles.badge,
   size === 'sm' ? styles.sizeSm : styles.sizeMd,
   {
     backgroundColor: bgColor,
-    borderRadius: getBadgeRadius(shape),
+    borderRadius: getBadgeRadius(shape, radius),
   },
 ];

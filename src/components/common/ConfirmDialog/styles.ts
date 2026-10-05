@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { Spacing, BorderRadius, Shadows } from '@/constants/theme';
+import { Spacing, BorderRadius, Shadows, RadiusPresetConfig } from '@/constants/theme';
 import type { ThemeColors } from '@/constants/colors';
 
 export const styles = StyleSheet.create({
@@ -46,9 +46,13 @@ export const styles = StyleSheet.create({
   },
 });
 
-export const getDialogContainerThemedStyle = (colors: ThemeColors) => ({
+export const getDialogContainerThemedStyle = (
+  colors: ThemeColors,
+  radius?: RadiusPresetConfig
+) => ({
   backgroundColor: colors.card,
   borderColor: colors.border,
+  borderRadius: Math.min(radius ? radius.card : 16, 16),
 });
 
 export const getDialogIconThemedStyle = (colors: ThemeColors, destructive: boolean) => ({

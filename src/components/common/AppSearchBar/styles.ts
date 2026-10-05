@@ -1,14 +1,13 @@
 import { StyleSheet } from 'react-native';
-import { Spacing, BorderRadius, Typography } from '@/constants/theme';
+import { Spacing, Typography, RadiusPresetConfig, ControlSize } from '@/constants/theme';
 import type { ThemeColors } from '@/constants/colors';
 
 export const styles = StyleSheet.create({
   container: {
-    height: 46,
+    height: ControlSize.md.height,
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderRadius: BorderRadius.pill,
     paddingHorizontal: Spacing.md,
   },
   searchIcon: {
@@ -30,9 +29,13 @@ export const styles = StyleSheet.create({
   },
 });
 
-export const getSearchBarThemedContainer = (colors: ThemeColors) => ({
+export const getSearchBarThemedContainer = (
+  colors: ThemeColors,
+  radius?: RadiusPresetConfig
+) => ({
   backgroundColor: colors.card,
   borderColor: colors.border,
+  borderRadius: radius ? radius.control : 12,
 });
 
 export const getFilterButtonThemedStyle = (colors: ThemeColors) => ({

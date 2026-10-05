@@ -27,14 +27,99 @@ export const Spacing = {
 export const BorderRadius = {
   none: 0,
   xs: 4,
-  sm: 8,
+  sm: 6,
   md: 12,
-  lg: 16,
-  xl: 20,
-  xxl: 28,
+  lg: 16, // Standard card & container radius (Max 16px)
+  xl: 16, // Enforced 16px maximum boundary for cards
+  xxl: 16, // Enforced 16px maximum boundary
   pill: 9999,
   full: 9999,
   circle: 9999,
+};
+
+export type RadiusPreset = 'sharp' | 'compact' | 'standard' | 'smooth';
+
+export interface RadiusPresetConfig {
+  id: RadiusPreset;
+  name: string;
+  card: number;
+  control: number;
+  smControl: number;
+  badge: number;
+  pill: number;
+  desc: string;
+}
+
+export const RadiusPresets: Record<RadiusPreset, RadiusPresetConfig> = {
+  sharp: {
+    id: 'sharp',
+    name: 'Sắc Nét',
+    card: 8,
+    control: 6,
+    smControl: 4,
+    badge: 4,
+    pill: 6,
+    desc: 'Dứt khoát, góc nhọn sắc sảo',
+  },
+  compact: {
+    id: 'compact',
+    name: 'Gọn Gàng',
+    card: 12,
+    control: 8,
+    smControl: 6,
+    badge: 6,
+    pill: 8,
+    desc: 'Hiện đại, tiết kiệm diện tích',
+  },
+  standard: {
+    id: 'standard',
+    name: 'Chuẩn Mực',
+    card: 16,
+    control: 12,
+    smControl: 8,
+    badge: 8,
+    pill: 9999,
+    desc: 'Apple Squircle (16px max)',
+  },
+  smooth: {
+    id: 'smooth',
+    name: 'Mềm Mại (Pill)',
+    card: 16,
+    control: 9999,
+    smControl: 9999,
+    badge: 9999,
+    pill: 9999,
+    desc: 'Nút dạng viên thuốc (Pill), Card 16px',
+  },
+};
+
+/**
+ * Global Control & Button Sizing Scale (in px)
+ * Ensures 100% size parity across all buttons, inputs, chips and icon actions.
+ */
+export const ControlSize = {
+  sm: {
+    height: 36,
+    iconSize: 16,
+    paddingHorizontal: 14,
+    fontSize: 13,
+  },
+  md: {
+    height: 44, // Apple 44pt touch target standard
+    iconSize: 18,
+    paddingHorizontal: 16,
+    fontSize: 15,
+  },
+  lg: {
+    height: 52,
+    iconSize: 20,
+    paddingHorizontal: 22,
+    fontSize: 16,
+  },
+  iconBtnSm: 36,
+  iconBtnMd: 44,
+  badgeHeightSm: 24,
+  badgeHeightMd: 28,
 };
 
 /**

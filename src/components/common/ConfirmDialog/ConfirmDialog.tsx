@@ -24,7 +24,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   icon,
   style,
 }) => {
-  const { theme: themeColors } = useThemeMode();
+  const { theme: themeColors, radiusTokens } = useThemeMode();
 
   const defaultIcon = destructive ? (
     <Trash2 size={28} color={themeColors.error} />
@@ -45,7 +45,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
             <View
               style={[
                 styles.dialogContainer,
-                getDialogContainerThemedStyle(themeColors),
+                getDialogContainerThemedStyle(themeColors, radiusTokens),
                 style,
               ]}
             >

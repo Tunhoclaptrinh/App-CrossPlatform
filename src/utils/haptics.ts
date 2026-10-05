@@ -1,4 +1,5 @@
 import { Vibration, Platform, PermissionsAndroid } from 'react-native';
+import { useAppStore } from '@/hooks/useAppStore';
 
 let isVibrationPermitted = Platform.OS === 'ios';
 
@@ -14,6 +15,15 @@ if (Platform.OS === 'android') {
 }
 
 function safeVibrate(pattern?: number | number[]) {
+  // Kiểm tra người dùng có bật phản hồi haptic trong cài đặt giao diện không
+  try {
+    if (!useAppStore.getState().hapticsEnabled) {
+      return;
+    }
+  } catch {
+    // Store not yet initialized, continue
+  }
+
   // Trên Android nếu binary cài trên máy chưa có quyền VIBRATE (tránh SecurityException gây RedBox)
   if (Platform.OS === 'android' && !isVibrationPermitted) {
     return;
@@ -71,6 +81,13 @@ export const haptics = {
    */
   error() {
     safeVibrate(Platform.OS === 'android' ? [0, 35, 50, 35, 50, 40] : undefined);
+  },
+
+  /**
+   * Nhip rung canh bao nhe (Warning)
+   */
+  warning() {
+    safeVibrate(Platform.OS === 'android' ? [0, 20, 30, 20] : undefined);
   },
 
   /**

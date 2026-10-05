@@ -1,31 +1,40 @@
 import { StyleSheet } from 'react-native';
-import { Spacing, BorderRadius } from '@/constants/theme';
+import { Spacing, RadiusPresets, RadiusPresetConfig, ControlSize } from '@/constants/theme';
 import type { ThemeColors } from '@/constants/colors';
 import type { AppButtonVariant, AppButtonSize } from './types';
 
-export const createButtonStyles = (colors: ThemeColors) =>
+export const createButtonStyles = (
+  colors: ThemeColors,
+  radius: RadiusPresetConfig = RadiusPresets.standard
+) =>
   StyleSheet.create({
     base: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      borderRadius: BorderRadius.md,
+      borderRadius: radius.control,
     },
-    // Sizes
+    // Sizes - Standardized via ControlSize Tokens
     sizeSm: {
       paddingVertical: Spacing.xs + 2,
-      paddingHorizontal: Spacing.md,
-      minHeight: 36,
+      paddingHorizontal: ControlSize.sm.paddingHorizontal,
+      minHeight: ControlSize.sm.height,
+      height: ControlSize.sm.height,
+      borderRadius: radius.control,
     },
     sizeMd: {
       paddingVertical: Spacing.sm + 2,
-      paddingHorizontal: Spacing.lg,
-      minHeight: 46,
+      paddingHorizontal: ControlSize.md.paddingHorizontal,
+      minHeight: ControlSize.md.height,
+      height: ControlSize.md.height,
+      borderRadius: radius.control,
     },
     sizeLg: {
       paddingVertical: Spacing.md,
-      paddingHorizontal: Spacing.xl,
-      minHeight: 54,
+      paddingHorizontal: ControlSize.lg.paddingHorizontal,
+      minHeight: ControlSize.lg.height,
+      height: ControlSize.lg.height,
+      borderRadius: radius.control,
     },
     // Variants
     primary: {

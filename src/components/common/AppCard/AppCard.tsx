@@ -12,15 +12,17 @@ import { styles, createCardVariantStyle } from './styles';
 export const AppCard: React.FC<AppCardProps> = ({
   children,
   variant = 'elevated',
-  radius = 'lg',
+  radius,
   padding = 'base',
   onPress,
   style,
 }) => {
-  const { theme: themeColors } = useThemeMode();
+  const { theme: themeColors, radiusTokens } = useThemeMode();
+
+  const cardRadius = radius ? BorderRadius[radius] : Math.min(radiusTokens.card, 16);
 
   const cardStyle: ViewStyle = {
-    borderRadius: BorderRadius[radius],
+    borderRadius: cardRadius,
     padding: Spacing[padding],
     ...createCardVariantStyle(variant, themeColors),
   };

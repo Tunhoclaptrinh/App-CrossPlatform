@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { Spacing, BorderRadius, Typography } from '@/constants/theme';
+import { Spacing, Typography, RadiusPresetConfig, ControlSize } from '@/constants/theme';
 import type { ThemeColors } from '@/constants/colors';
 
 export const styles = StyleSheet.create({
@@ -14,9 +14,8 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1.5,
-    borderRadius: BorderRadius.md,
     paddingHorizontal: Spacing.md,
-    height: 48,
+    height: ControlSize.md.height,
   },
   input: {
     flex: 1,
@@ -42,9 +41,11 @@ export const styles = StyleSheet.create({
 export const getInputStateStyle = (
   colors: ThemeColors,
   isFocused: boolean,
-  hasError: boolean
+  hasError: boolean,
+  radius?: RadiusPresetConfig
 ) => ({
   backgroundColor: colors.card,
+  borderRadius: radius ? radius.control : 12,
   borderColor: hasError
     ? colors.error
     : isFocused
