@@ -6,7 +6,7 @@ import {
   DailyForecastItem,
   WeatherConditionInfo,
 } from './types';
-import { permissions } from '@/utils/permissions';
+import { location } from '@/utils';
 
 const FORECAST_BASE_URL = 'https://api.open-meteo.com/v1/forecast';
 const GEOCODING_BASE_URL = 'https://geocoding-api.open-meteo.com/v1/search';
@@ -569,38 +569,19 @@ export async function searchCities(query: string): Promise<GeoCityLocation[]> {
 }
 
 /**
- * Lấy vị trí thiết bị hiện tại (GPS / IP Geolocation fallback)
+ * Lấy vị trí thiết bị hiện tại bằng Base Location Service
  */
 export async function getCurrentLocationCity(): Promise<GeoCityLocation> {
-  const hasPermission = await permissions.requestLocation();
-  if (!hasPermission) {
-    throw new Error('Quyền vị trí bị từ chối. Vui lòng cấp quyền trong Cài đặt.');
-  }
-
-  try {
-    const res = await fetch(
-      'http://ip-api.com/json/?fields=status,city,regionName,country,countryCode,lat,lon',
-      { headers: { Accept: 'application/json' } }
-    );
-    if (res.ok) {
-      const info = await res.json();
-      if (info && info.status === 'success') {
-        return {
-          id: Math.round(Number(info.lat) * 1000 + Number(info.lon) * 100),
-          name: info.city || info.regionName || 'Vị trí của bạn',
-          country: info.country || 'Việt Nam',
-          countryCode: info.countryCode || 'VN',
-          admin1: info.regionName,
-          latitude: Number(info.lat),
-          longitude: Number(info.lon),
-        };
-      }
-    }
-  } catch (err) {
-    console.warn('[weatherService] IP location fallback error:', err);
-  }
-
-  return DEFAULT_CITIES[0];
+  const loc = await location.getCurrentLocation();
+  return {
+    id: Math.round(loc.latitude * 1000 + loc.longitude * 100),
+    name: loc.cityName || 'Vị trí của bạn',
+    country: loc.country || 'Việt Nam',
+    countryCode: loc.countryCode || 'VN',
+    admin1: loc.regionName,
+    latitude: loc.latitude,
+    longitude: loc.longitude,
+  };
 }
 
 export const weatherService = {
