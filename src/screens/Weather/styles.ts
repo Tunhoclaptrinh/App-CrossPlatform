@@ -188,23 +188,17 @@ export const createWeatherStyles = (
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      gap: 6,
+      gap: 8,
       marginTop: 4,
-      paddingHorizontal: Spacing.sm + 4,
-      paddingVertical: 2,
-      borderRadius: BorderRadius.pill,
-      backgroundColor: isDark ? 'rgba(15, 23, 42, 0.35)' : 'rgba(255, 255, 255, 0.22)',
-      borderWidth: 1,
-      borderColor: isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.45)',
     },
     floatingHighLowText: {
       fontSize: Typography.caption.fontSize,
       fontWeight: '600',
       color: '#FFFFFF',
       fontVariant: ['tabular-nums'],
-      textShadowColor: 'rgba(0, 0, 0, 0.3)',
+      textShadowColor: 'rgba(0, 0, 0, 0.4)',
       textShadowOffset: { width: 0, height: 1 },
-      textShadowRadius: 2,
+      textShadowRadius: 3,
     },
     highLowDotDivider: {
       width: 3,
@@ -284,9 +278,8 @@ export const createWeatherStyles = (
       height: 104,
     },
     hourlyItemActive: {
-      backgroundColor: isDark ? 'rgba(56, 189, 248, 0.22)' : 'rgba(255, 255, 255, 0.32)',
-      borderWidth: 1,
-      borderColor: isDark ? 'rgba(56, 189, 248, 0.45)' : 'rgba(255, 255, 255, 0.6)',
+      backgroundColor: isDark ? 'rgba(56, 189, 248, 0.18)' : 'rgba(255, 255, 255, 0.28)',
+      borderRadius: BorderRadius.lg,
     },
     hourlyTimeText: {
       fontSize: 11,
@@ -401,7 +394,37 @@ export const createWeatherStyles = (
       textShadowRadius: 2,
     },
 
-    // 7. Lưới 6 Chỉ Số Khí Quyển Bento Squircle (Bento Grid 2x3)
+    // 7. Thống Nhất Chi Tiết Khí Quyển (Unified Atmospheric Metrics Card)
+    unifiedMetricsGrid: {
+      marginTop: 2,
+    },
+    unifiedMetricRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingVertical: Spacing.xs,
+    },
+    unifiedMetricCell: {
+      flex: 1,
+      paddingHorizontal: Spacing.xs,
+    },
+    unifiedMetricColDivider: {
+      width: 1,
+      height: 48,
+      backgroundColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.25)',
+      marginHorizontal: Spacing.xs,
+    },
+    unifiedMetricRowDivider: {
+      height: 1,
+      width: '100%',
+      backgroundColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.25)',
+    },
+    uvRowWrap: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: Spacing.xs,
+    },
+
+    // Legacy Bento Grid (nếu cần tương thích ngược)
     metricsGrid: {
       flexDirection: 'row',
       flexWrap: 'wrap',

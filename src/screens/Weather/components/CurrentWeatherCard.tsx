@@ -7,11 +7,7 @@ import { useThemeMode } from '@/hooks';
 import { weatherService } from '@/services/weather';
 import { haptics } from '@/utils';
 import type { CurrentWeatherCardProps } from '../types';
-import {
-  createWeatherStyles,
-  getStatusBadgeStyle,
-  getStatusBadgeTextStyle,
-} from '../styles';
+import { createWeatherStyles } from '../styles';
 import { WeatherIcon } from './WeatherIcon';
 
 export const CurrentWeatherCard: React.FC<CurrentWeatherCardProps> = ({
@@ -38,12 +34,6 @@ export const CurrentWeatherCard: React.FC<CurrentWeatherCardProps> = ({
   const currentTempStr = weatherService.formatTemperature(current.temperature, tempUnit);
   const feelsLikeStr = weatherService.formatTemperature(current.apparentTemperature, tempUnit);
 
-  const statusBadgeStyle = [styles.statusBadge, getStatusBadgeStyle(conditionInfo.accentColor)];
-  const statusBadgeTextStyle = [
-    styles.statusBadgeText,
-    getStatusBadgeTextStyle(conditionInfo.accentColor),
-  ];
-
   const handlePress = () => {
     if (onPressCard) {
       haptics.light();
@@ -57,21 +47,13 @@ export const CurrentWeatherCard: React.FC<CurrentWeatherCardProps> = ({
       activeOpacity={0.85}
       onPress={handlePress}
     >
-      {/* 1. Huy hiệu trạng thái thời tiết mờ kính */}
-      <View style={styles.heroBadgeRow}>
-        <View style={statusBadgeStyle}>
-          <WeatherIcon weatherCode={current.weatherCode} isDay={current.isDay} size={15} />
-          <AppText style={statusBadgeTextStyle}>{conditionInfo.labelVi}</AppText>
-        </View>
-      </View>
-
-      {/* 2. Nhiệt độ khổng lồ không khung viền (Floating Giant Temp) */}
+      {/* 1. Biểu tượng thời tiết lớn & Nhiệt độ thanh thoát không viền hộp */}
       <View style={styles.heroCenterBlock}>
         <View style={styles.heroIconBox}>
           <WeatherIcon
             weatherCode={current.weatherCode}
             isDay={current.isDay}
-            size={76}
+            size={72}
             color={conditionInfo.accentColor}
           />
         </View>
@@ -79,14 +61,14 @@ export const CurrentWeatherCard: React.FC<CurrentWeatherCardProps> = ({
         <AppText style={styles.floatingConditionText}>{conditionInfo.labelVi}</AppText>
       </View>
 
-      {/* 3. Biên độ nhiệt Max/Min & Cảm giác thực tế */}
+      {/* 2. Dòng thông tin biên độ nhiệt thanh thoát (Typographic, không viền hộp) */}
       <View style={styles.floatingHighLowRow}>
         <AppText style={styles.floatingHighLowText}>
           {t('weather.highLow', { high: maxTempStr, low: minTempStr })}
         </AppText>
         <View style={styles.highLowDotDivider} />
         <View style={styles.floatingFeelsLikeCol}>
-          <Thermometer size={13} color={isDark ? 'rgba(255, 255, 255, 0.75)' : 'rgba(0, 0, 0, 0.65)'} />
+          <Thermometer size={13} color="rgba(255, 255, 255, 0.85)" />
           <AppText style={styles.floatingFeelsLikeText}>
             {' '}{t('weather.feelsLike')} {feelsLikeStr}
           </AppText>

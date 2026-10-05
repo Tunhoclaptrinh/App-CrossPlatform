@@ -315,26 +315,26 @@ export const WeatherScreen: React.FC<WeatherScreenProps> = ({ navigation }) => {
               onPressCard={handleOpenCurrentDetail}
             />
 
-            {/* 4.2. Lưới 6 Chỉ Số Khí Quyển Kính Mờ Đầy Đủ (Nhiệt độ, Độ ẩm, Gió, Hướng gió, UV, Mưa) */}
-            <WeatherMetricsGrid
-              current={weatherData.current}
-              daily={weatherData.daily}
-              tempUnit={tempUnit}
-              onSelectMetric={handleOpenCurrentDetail}
-            />
-
-            {/* 4.3. Dự Báo Theo Giờ 24h - Chạm vào giờ bất kỳ để xem chi tiết */}
+            {/* 4.2. Dự Báo Theo Giờ 24h - Chạm vào giờ bất kỳ để xem chi tiết */}
             <HourlyForecast
               hourly={weatherData.hourly}
               tempUnit={tempUnit}
               onSelectHour={handleOpenHourDetail}
             />
 
-            {/* 4.4. Dự Báo 7 Ngày Tới - Chạm vào ngày bất kỳ để xem chi tiết */}
+            {/* 4.3. Dự Báo 7 Ngày Tới - Chạm vào ngày bất kỳ để xem chi tiết */}
             <DailyForecast
               daily={weatherData.daily}
               tempUnit={tempUnit}
               onSelectDay={handleOpenDayDetail}
+            />
+
+            {/* 4.4. Thẻ Chi Tiết Khí Quyển Thống Nhất Kính Mờ (Nhiệt độ, Độ ẩm, Gió, Hướng gió, UV, Mưa) */}
+            <WeatherMetricsGrid
+              current={weatherData.current}
+              daily={weatherData.daily}
+              tempUnit={tempUnit}
+              onSelectMetric={handleOpenCurrentDetail}
             />
           </Animated.View>
         )}

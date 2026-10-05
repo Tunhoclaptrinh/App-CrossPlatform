@@ -8,6 +8,7 @@ import {
   Compass,
   Sun,
   Thermometer,
+  Gauge,
 } from 'lucide-react-native';
 import { AppText } from '@/components';
 import { useThemeMode } from '@/hooks';
@@ -47,126 +48,146 @@ export const WeatherMetricsGrid: React.FC<WeatherMetricsGridProps> = ({
   const uvBadgeTextStyle = [styles.metricBadgeText, getDetailAdviceTextStyle(uvInfo.color)];
 
   return (
-    <View style={styles.metricsGrid}>
-      {/* 1. Nhiệt độ cảm nhận */}
-      <TouchableOpacity
-        style={styles.metricTile}
-        activeOpacity={0.8}
-        onPress={() => onSelectMetric?.('temperature')}
-      >
-        <View style={styles.metricGlassHighlight} />
-        <View style={styles.metricTileHeader}>
-          <View style={feelsLikeIconStyle}>
-            <Thermometer size={12} color="#F97316" />
-          </View>
-          <AppText variant="caption" numberOfLines={1} style={styles.metricLabel}>
-            {t('weather.feelsLike')}
-          </AppText>
-        </View>
-        <AppText style={styles.metricValue}>{feelsLikeStr}</AppText>
-        <AppText style={styles.metricSubtitle}>Thực tế: {actualTempStr}</AppText>
-      </TouchableOpacity>
-
-      {/* 2. Độ ẩm không khí */}
-      <TouchableOpacity
-        style={styles.metricTile}
-        activeOpacity={0.8}
-        onPress={() => onSelectMetric?.('humidity')}
-      >
-        <View style={styles.metricGlassHighlight} />
-        <View style={styles.metricTileHeader}>
-          <View style={humidityIconStyle}>
-            <Droplets size={12} color="#0EA5E9" />
-          </View>
-          <AppText variant="caption" numberOfLines={1} style={styles.metricLabel}>
-            {t('weather.humidity')}
-          </AppText>
-        </View>
-        <AppText style={styles.metricValue}>{current.relativeHumidity}%</AppText>
-        <AppText style={styles.metricSubtitle}>
-          {current.relativeHumidity > 75 ? 'Độ ẩm cao' : current.relativeHumidity < 40 ? 'Khô ráo' : 'Lý tưởng'}
+    <View style={styles.sectionCard}>
+      <View style={styles.sectionGlassHighlight} />
+      {/* Tiêu đề mục */}
+      <View style={styles.sectionHeaderRow}>
+        <Gauge size={15} color="rgba(255, 255, 255, 0.85)" />
+        <AppText style={styles.sectionTitle}>
+          {t('weather.weatherDetails', 'CHI TIẾT KHÍ QUYỂN')}
         </AppText>
-      </TouchableOpacity>
+      </View>
 
-      {/* 3. Tốc độ gió */}
-      <TouchableOpacity
-        style={styles.metricTile}
-        activeOpacity={0.8}
-        onPress={() => onSelectMetric?.('wind')}
-      >
-        <View style={styles.metricGlassHighlight} />
-        <View style={styles.metricTileHeader}>
-          <View style={windIconStyle}>
-            <Wind size={12} color="#10B981" />
-          </View>
-          <AppText variant="caption" numberOfLines={1} style={styles.metricLabel}>
-            {t('weather.windSpeed')}
-          </AppText>
-        </View>
-        <AppText style={styles.metricValue}>{current.windSpeed} km/h</AppText>
-        <AppText style={styles.metricSubtitle}>
-          Cấp {Math.min(Math.max(Math.round(current.windSpeed / 5), 1), 12)} gió
-        </AppText>
-      </TouchableOpacity>
+      <View style={styles.unifiedMetricsGrid}>
+        {/* Hàng 1: Nhiệt độ cảm nhận & Độ ẩm */}
+        <View style={styles.unifiedMetricRow}>
+          <TouchableOpacity
+            style={styles.unifiedMetricCell}
+            activeOpacity={0.7}
+            onPress={() => onSelectMetric?.('temperature')}
+          >
+            <View style={styles.metricTileHeader}>
+              <View style={feelsLikeIconStyle}>
+                <Thermometer size={12} color="#F97316" />
+              </View>
+              <AppText variant="caption" numberOfLines={1} style={styles.metricLabel}>
+                {t('weather.feelsLike')}
+              </AppText>
+            </View>
+            <AppText style={styles.metricValue}>{feelsLikeStr}</AppText>
+            <AppText numberOfLines={1} style={styles.metricSubtitle}>Thực tế: {actualTempStr}</AppText>
+          </TouchableOpacity>
 
-      {/* 4. Hướng gió */}
-      <TouchableOpacity
-        style={styles.metricTile}
-        activeOpacity={0.8}
-        onPress={() => onSelectMetric?.('windDirection')}
-      >
-        <View style={styles.metricGlassHighlight} />
-        <View style={styles.metricTileHeader}>
-          <View style={windDirIconStyle}>
-            <Compass size={12} color="#6366F1" />
-          </View>
-          <AppText variant="caption" numberOfLines={1} style={styles.metricLabel}>
-            {t('weather.windDirection')}
-          </AppText>
-        </View>
-        <AppText style={styles.metricValue}>{current.windDirectionCardinal}</AppText>
-        <AppText style={styles.metricSubtitle}>{current.windDirection}° góc la bàn</AppText>
-      </TouchableOpacity>
+          <View style={styles.unifiedMetricColDivider} />
 
-      {/* 5. Chỉ số UV */}
-      <TouchableOpacity
-        style={styles.metricTile}
-        activeOpacity={0.8}
-        onPress={() => onSelectMetric?.('uv')}
-      >
-        <View style={styles.metricGlassHighlight} />
-        <View style={styles.metricTileHeader}>
-          <View style={uvIconStyle}>
-            <Sun size={12} color={uvInfo.color} />
-          </View>
-          <AppText variant="caption" numberOfLines={1} style={styles.metricLabel}>
-            {t('weather.uvIndex')}
-          </AppText>
+          <TouchableOpacity
+            style={styles.unifiedMetricCell}
+            activeOpacity={0.7}
+            onPress={() => onSelectMetric?.('humidity')}
+          >
+            <View style={styles.metricTileHeader}>
+              <View style={humidityIconStyle}>
+                <Droplets size={12} color="#0EA5E9" />
+              </View>
+              <AppText variant="caption" numberOfLines={1} style={styles.metricLabel}>
+                {t('weather.humidity')}
+              </AppText>
+            </View>
+            <AppText style={styles.metricValue}>{current.relativeHumidity}%</AppText>
+            <AppText numberOfLines={1} style={styles.metricSubtitle}>
+              {current.relativeHumidity > 75 ? 'Độ ẩm cao' : current.relativeHumidity < 40 ? 'Khô ráo' : 'Lý tưởng'}
+            </AppText>
+          </TouchableOpacity>
         </View>
-        <AppText style={styles.metricValue}>{current.uvIndex}</AppText>
-        <View style={uvBadgeStyle}>
-          <AppText style={uvBadgeTextStyle}>{current.uvIndexLevel}</AppText>
-        </View>
-      </TouchableOpacity>
 
-      {/* 6. Lượng mưa & Khả năng mưa */}
-      <TouchableOpacity
-        style={styles.metricTile}
-        activeOpacity={0.8}
-        onPress={() => onSelectMetric?.('precipitation')}
-      >
-        <View style={styles.metricGlassHighlight} />
-        <View style={styles.metricTileHeader}>
-          <View style={rainIconStyle}>
-            <CloudRain size={12} color="#3B82F6" />
-          </View>
-          <AppText variant="caption" numberOfLines={1} style={styles.metricLabel}>
-            {t('weather.precipitation')}
-          </AppText>
+        <View style={styles.unifiedMetricRowDivider} />
+
+        {/* Hàng 2: Tốc độ gió & Hướng gió */}
+        <View style={styles.unifiedMetricRow}>
+          <TouchableOpacity
+            style={styles.unifiedMetricCell}
+            activeOpacity={0.7}
+            onPress={() => onSelectMetric?.('wind')}
+          >
+            <View style={styles.metricTileHeader}>
+              <View style={windIconStyle}>
+                <Wind size={12} color="#10B981" />
+              </View>
+              <AppText variant="caption" numberOfLines={1} style={styles.metricLabel}>
+                {t('weather.windSpeed')}
+              </AppText>
+            </View>
+            <AppText style={styles.metricValue}>{current.windSpeed} km/h</AppText>
+            <AppText numberOfLines={1} style={styles.metricSubtitle}>
+              Cấp {Math.min(Math.max(Math.round(current.windSpeed / 5), 1), 12)} gió
+            </AppText>
+          </TouchableOpacity>
+
+          <View style={styles.unifiedMetricColDivider} />
+
+          <TouchableOpacity
+            style={styles.unifiedMetricCell}
+            activeOpacity={0.7}
+            onPress={() => onSelectMetric?.('windDirection')}
+          >
+            <View style={styles.metricTileHeader}>
+              <View style={windDirIconStyle}>
+                <Compass size={12} color="#6366F1" />
+              </View>
+              <AppText variant="caption" numberOfLines={1} style={styles.metricLabel}>
+                {t('weather.windDirection')}
+              </AppText>
+            </View>
+            <AppText style={styles.metricValue}>{current.windDirectionCardinal}</AppText>
+            <AppText numberOfLines={1} style={styles.metricSubtitle}>{current.windDirection}° góc la bàn</AppText>
+          </TouchableOpacity>
         </View>
-        <AppText style={styles.metricValue}>{current.precipitation} mm</AppText>
-        <AppText style={styles.metricSubtitle}>{rainProbability}% khả năng mưa</AppText>
-      </TouchableOpacity>
+
+        <View style={styles.unifiedMetricRowDivider} />
+
+        {/* Hàng 3: Chỉ số UV & Lượng mưa */}
+        <View style={styles.unifiedMetricRow}>
+          <TouchableOpacity
+            style={styles.unifiedMetricCell}
+            activeOpacity={0.7}
+            onPress={() => onSelectMetric?.('uv')}
+          >
+            <View style={styles.metricTileHeader}>
+              <View style={uvIconStyle}>
+                <Sun size={12} color={uvInfo.color} />
+              </View>
+              <AppText variant="caption" numberOfLines={1} style={styles.metricLabel}>
+                {t('weather.uvIndex')}
+              </AppText>
+            </View>
+            <View style={styles.uvRowWrap}>
+              <AppText style={styles.metricValue}>{current.uvIndex}</AppText>
+              <View style={uvBadgeStyle}>
+                <AppText style={uvBadgeTextStyle}>{current.uvIndexLevel}</AppText>
+              </View>
+            </View>
+          </TouchableOpacity>
+
+          <View style={styles.unifiedMetricColDivider} />
+
+          <TouchableOpacity
+            style={styles.unifiedMetricCell}
+            activeOpacity={0.7}
+            onPress={() => onSelectMetric?.('precipitation')}
+          >
+            <View style={styles.metricTileHeader}>
+              <View style={rainIconStyle}>
+                <CloudRain size={12} color="#3B82F6" />
+              </View>
+              <AppText variant="caption" numberOfLines={1} style={styles.metricLabel}>
+                {t('weather.precipitation')}
+              </AppText>
+            </View>
+            <AppText style={styles.metricValue}>{current.precipitation} mm</AppText>
+            <AppText numberOfLines={1} style={styles.metricSubtitle}>{rainProbability}% khả năng mưa</AppText>
+          </TouchableOpacity>
+        </View>
+      </View>
     </View>
   );
 };
