@@ -100,22 +100,45 @@ export const permissions = {
   },
 
   /**
-   * Xin quyen vi tri / Location
+   * Kiểm tra quyền vị trí đã được cấp chưa
    */
-  async requestLocation(): Promise<boolean> {
+  async checkLocation(): Promise<boolean> {
     if (Platform.OS !== 'android') return true;
 
     try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-        {
-          title: 'Quyền Truy Cập Vị Trí',
-          message: 'Ứng dụng cần vị trí chính xác để định vị bản đồ và giao hàng.',
-          buttonPositive: 'Đồng ý',
-          buttonNegative: 'Từ chối',
-        }
+      const fineGranted = await PermissionsAndroid.check(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
       );
-      return granted === PermissionsAndroid.RESULTS.GRANTED;
+      const coarseGranted = await PermissionsAndroid.check(
+        PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION
+      );
+      return fineGranted || coarseGranted;
+    } catch (err) {
+      console.warn('[permissions] checkLocation error:', err);
+      return false;
+    }
+  },
+
+  /**
+   * Xin quyền vị trí (Fine & Coarse Location chuẩn Android 12+)
+   */
+  async requestLocation(_customRationale?: { title?: string; message?: string }): Promise<boolean> {
+    if (Platform.OS !== 'android') return true;
+
+    try {
+      const result = await PermissionsAndroid.requestMultiple([
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
+      ]);
+
+      const fineGranted =
+        result[PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION] ===
+        PermissionsAndroid.RESULTS.GRANTED;
+      const coarseGranted =
+        result[PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION] ===
+        PermissionsAndroid.RESULTS.GRANTED;
+
+      return fineGranted || coarseGranted;
     } catch (err) {
       console.warn('[permissions] Location request error:', err);
       return false;

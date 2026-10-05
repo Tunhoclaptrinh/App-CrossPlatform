@@ -11,3 +11,4 @@ export * from './image';
 export * from './file';
 export * from './clipboard';
 export * from './browser';
+export * from './location';
