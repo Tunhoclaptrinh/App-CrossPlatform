@@ -19,11 +19,11 @@ export function useNetworkStatus(pingUrl: string = 'https://clients3.google.com/
     setIsChecking(true);
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 4000);
+      const timeoutId = setTimeout(() => controller.abort(), 3500);
 
       const targetUrl = `${pingUrl}?_t=${Date.now()}`;
       const res = await fetch(targetUrl, {
-        method: 'HEAD',
+        method: 'GET',
         signal: controller.signal,
       });
 
@@ -32,8 +32,16 @@ export function useNetworkStatus(pingUrl: string = 'https://clients3.google.com/
       setIsConnected(online);
       return online;
     } catch {
-      setIsConnected(false);
-      return false;
+      // Retry once before marking disconnected (handles emulator socket init delay)
+      try {
+        const retryRes = await fetch('https://www.google.com/generate_204', { method: 'GET' });
+        const retryOnline = retryRes.status >= 200 && retryRes.status < 400;
+        setIsConnected(retryOnline);
+        return retryOnline;
+      } catch {
+        setIsConnected(false);
+        return false;
+      }
     } finally {
       setIsChecking(false);
     }

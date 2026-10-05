@@ -34,20 +34,36 @@ export const AppleGlassTokens = {
   blurIntensity: 25,
   borderRadius: 16, // Standardized 16px maximum boundary
   borderWidth: 1.2,
+  surface: {
+    light: 'rgba(255, 255, 255, 0.60)',
+    dark: 'rgba(24, 27, 38, 0.65)',
+    subtleLight: 'rgba(255, 255, 255, 0.40)',
+    subtleDark: 'rgba(20, 23, 33, 0.50)',
+  },
+  border: {
+    light: 'rgba(255, 255, 255, 0.80)',
+    dark: 'rgba(255, 255, 255, 0.22)',
+    subtleLight: 'rgba(255, 255, 255, 0.50)',
+    subtleDark: 'rgba(255, 255, 255, 0.12)',
+  },
+  highlight: {
+    light: 'rgba(255, 255, 255, 0.95)',
+    dark: 'rgba(255, 255, 255, 0.40)',
+  },
   shadows: {
     light: {
       shadowColor: '#000000',
-      shadowOffset: { width: 0, height: 10 },
+      shadowOffset: { width: 0, height: 8 },
       shadowOpacity: 0.08,
-      shadowRadius: 20,
-      elevation: 6,
+      shadowRadius: 16,
+      elevation: 0,
     },
     dark: {
       shadowColor: '#000000',
-      shadowOffset: { width: 0, height: 12 },
+      shadowOffset: { width: 0, height: 8 },
       shadowOpacity: 0.35,
-      shadowRadius: 24,
-      elevation: 8,
+      shadowRadius: 16,
+      elevation: 0,
     },
   },
 } as const;

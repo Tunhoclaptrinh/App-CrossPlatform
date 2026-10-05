@@ -4,7 +4,8 @@ import type { ThemeColors } from '@/constants/colors';
 
 export const createHomeStyles = (
   colors: ThemeColors,
-  radius: RadiusPresetConfig = RadiusPresets.standard
+  radius: RadiusPresetConfig = RadiusPresets.standard,
+  isDark: boolean = false
 ) =>
   StyleSheet.create({
     container: {
@@ -137,6 +138,21 @@ export const createHomeStyles = (
       shadowOpacity: 0.04,
       shadowRadius: 10,
       elevation: 2,
+    },
+    metricCardGlass: {
+      backgroundColor: isDark ? 'rgba(30, 34, 48, 0.65)' : 'rgba(255, 255, 255, 0.60)',
+      borderRadius: Math.min(radius.card, 16),
+      borderWidth: 1.2,
+      borderColor: isDark ? 'rgba(255, 255, 255, 0.22)' : 'rgba(255, 255, 255, 0.75)',
+      padding: Spacing.md + 4,
+      marginBottom: Spacing.lg,
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 6 },
+      shadowOpacity: isDark ? 0.35 : 0.08,
+      shadowRadius: 16,
+      elevation: 0,
+      position: 'relative',
+      overflow: 'hidden',
     },
     metricHeaderRow: {
       flexDirection: 'row',
@@ -326,19 +342,30 @@ export const createHomeStyles = (
       elevation: 1,
     },
     itemCardGlass: {
-      backgroundColor: colors.card,
-      borderRadius: radius.card,
+      backgroundColor: isDark ? 'rgba(30, 34, 48, 0.65)' : 'rgba(255, 255, 255, 0.60)',
+      borderRadius: Math.min(radius.card, 16),
       borderWidth: 1.2,
-      borderColor: colors.border,
+      borderColor: isDark ? 'rgba(255, 255, 255, 0.22)' : 'rgba(255, 255, 255, 0.75)',
       padding: Spacing.md + 2,
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
       shadowColor: '#000000',
       shadowOffset: { width: 0, height: 6 },
-      shadowOpacity: 0.08,
-      shadowRadius: 12,
-      elevation: 3,
+      shadowOpacity: isDark ? 0.35 : 0.06,
+      shadowRadius: 14,
+      elevation: 0,
+      position: 'relative',
+      overflow: 'hidden',
+    },
+    itemGlassHighlight: {
+      position: 'absolute',
+      top: 0,
+      left: 12,
+      right: 12,
+      height: 1.2,
+      backgroundColor: isDark ? 'rgba(255, 255, 255, 0.35)' : 'rgba(255, 255, 255, 0.95)',
+      borderRadius: 1,
     },
     itemLeft: {
       flexDirection: 'row',
@@ -379,6 +406,10 @@ export const createHomeStyles = (
       borderWidth: 1,
       borderColor: colors.border,
     },
+    itemTagBadgeGlass: {
+      backgroundColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.50)',
+      borderColor: isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.70)',
+    },
     itemTagText: {
       fontSize: 10,
       fontWeight: '700',
@@ -391,12 +422,9 @@ export const createHomeStyles = (
       color: colors.textSecondary,
     },
     chevronWrapper: {
-      width: 28,
-      height: 28,
-      borderRadius: radius.smControl,
-      backgroundColor: colors.surfaceSubtle,
       alignItems: 'center',
       justifyContent: 'center',
+      paddingLeft: Spacing.xs,
     },
   });
 

@@ -26,6 +26,7 @@ import {
   Server,
   Sliders,
   SlidersHorizontal,
+  Eye,
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import {
@@ -39,6 +40,9 @@ import {
   GestureCard,
   GlassCard,
   ThemeStudioModal,
+  AppleMeshBackground,
+  AppleGlassCard,
+  GlassTile,
 } from '@/components';
 import { useAppStore, useToast, useShakeDetection, useThemeMode } from '@/hooks';
 import { AccentPalettes } from '@/constants/colors';
@@ -84,7 +88,7 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
     isDark,
     toggleTheme,
   } = useThemeMode();
-  const styles = createDetailsStyles(themeColors, radiusTokens);
+  const styles = createDetailsStyles(themeColors, radiusTokens, isDark);
 
   const { t } = useTranslation();
   const {
@@ -118,6 +122,18 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
 
   // Gestures feedback
   const [gestureFeedback, setGestureFeedback] = useState('Chạm đúp hoặc vuốt để thử nghiệm');
+
+  // Apple Liquid Glass Showcase state
+  type BackdropTheme = 'aurora' | 'sunset' | 'ocean' | 'minimal';
+  const [backdropTheme, setBackdropTheme] = useState<BackdropTheme>('aurora');
+  const [compareMode, setCompareMode] = useState<'glass' | 'flat'>('glass');
+
+  const backdropThemeList: { key: BackdropTheme; name: string; dotColor: string }[] = [
+    { key: 'aurora', name: 'Cực Quang', dotColor: '#8B5CF6' },
+    { key: 'sunset', name: 'Hoàng Hôn', dotColor: '#F59E0B' },
+    { key: 'ocean', name: 'Biển Sâu', dotColor: '#0EA5E9' },
+    { key: 'minimal', name: 'Tối Giản', dotColor: '#94A3B8' },
+  ];
 
   // WebSocket State
   const [socketStatus, setSocketStatus] = useState(socketService.getState());
@@ -385,7 +401,7 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
         <GlassCard style={styles.glassShowcaseCard}>
           <View style={styles.headerTopRow}>
             <View style={[styles.headerIconBox, styles.headerIconBoxGlass]}>
-              <Sparkles size={24} color="#007AFF" />
+              <Sparkles size={24} color="#007AFF" strokeWidth={2.2} />
             </View>
             <View style={styles.headerBadge}>
               <View style={styles.headerBadgeDot} />
@@ -445,7 +461,7 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
         <View style={styles.headerCard}>
           <View style={styles.headerTopRow}>
             <View style={[styles.headerIconBox, { backgroundColor: `${currentTab.color}18` }]}>
-              <currentTab.icon size={24} color={currentTab.color} />
+              <currentTab.icon size={24} color={currentTab.color} strokeWidth={2.2} />
             </View>
             <View style={styles.headerBadge}>
               <View style={styles.headerBadgeDot} />
@@ -475,6 +491,206 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
             <View style={styles.tagChip}>
               <ShieldCheck size={12} color={themeColors.primary} />
               <AppText style={styles.tagChipText}>Type Safe (TypeScript)</AppText>
+            </View>
+          </View>
+        </View>
+      )}
+
+      {/* ======================================================== */}
+      {/* 2.5 DEDICATED SHOWCASE: APPLE LIQUID GLASS STUDIO        */}
+      {/* ======================================================== */}
+      {activeModule === 'apple' && (
+        <View style={styles.glassStudioSection}>
+          {/* Interactive Ambient Mesh Canvas (Nổi bật trên nền tương phản) */}
+          <View style={styles.backdropCanvas}>
+            {/* Dynamic Apple Seamless Mesh Wallpaper */}
+            <AppleMeshBackground variant={backdropTheme} />
+
+            {/* Backdrop Palette Header & Switcher */}
+            <View style={styles.backdropHeaderCol}>
+              <AppText style={styles.backdropCanvasTitle}>
+                🎨 NỀN TƯƠNG PHẢN (BACKDROP MESH)
+              </AppText>
+              <AppText style={styles.backdropCanvasSubtitle}>
+                Chạm để đổi màu nền kiểm tra độ khúc xạ quang học
+              </AppText>
+            </View>
+
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.backdropThemeScrollContent}
+              style={styles.backdropThemeScroll}
+            >
+              {backdropThemeList.map((item) => {
+                const isSelected = backdropTheme === item.key;
+                return (
+                  <TouchableOpacity
+                    key={item.key}
+                    activeOpacity={0.7}
+                    style={[styles.backdropChip, isSelected && styles.backdropChipActive]}
+                    onPress={() => {
+                      haptics.light();
+                      setBackdropTheme(item.key);
+                    }}
+                  >
+                    <View style={[styles.backdropDot, { backgroundColor: item.dotColor }]} />
+                    <AppText
+                      style={[
+                        styles.backdropChipText,
+                        isSelected && styles.backdropChipTextActive,
+                      ]}
+                    >
+                      {item.name}
+                    </AppText>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+
+            {/* Showcase Component 1: Apple Pay Titanium Frosted Card (Base Component) */}
+            <AppleGlassCard
+              balance="$14,850.25"
+              balanceLabel="Số dư khả dụng"
+              cardNumber="•••• •••• •••• 9248"
+              cardHolder="UNIVERSAL DEVELOPER"
+            />
+
+            {/* Showcase Component 2: Bento Grid of Glass Specs (Base GlassTile Components) */}
+            <View style={styles.glassBentoGrid}>
+              <View style={styles.glassBentoCol}>
+                <GlassTile
+                  icon={CheckCircle2}
+                  iconColor="#007AFF"
+                  value="78% Translucent"
+                  label="Độ trong quang học kính mờ"
+                />
+                <GlassTile
+                  icon={Sparkles}
+                  iconColor="#8B5CF6"
+                  value="1.2px Specular"
+                  label="Viền phản xạ ánh sáng nổi"
+                />
+              </View>
+
+              <View style={styles.glassBentoCol}>
+                <GlassTile
+                  icon={Zap}
+                  iconColor="#F59E0B"
+                  value="60 FPS Native"
+                  label="GPU tăng tốc phần cứng"
+                />
+                <GlassTile
+                  icon={ShieldCheck}
+                  iconColor="#10B981"
+                  value="R=16px Squircle"
+                  label="Bo góc liên tục Cupertino"
+                />
+              </View>
+            </View>
+          </View>
+
+          {/* C. Interactive Side-by-Side Comparison */}
+          <View style={styles.compareSection}>
+            <View style={styles.showcaseTitleRow}>
+              <Eye size={18} color="#007AFF" />
+              <AppText style={styles.showcaseTitle}>
+                So Sánh Trực Quan: Flat UI vs Liquid Glass
+              </AppText>
+            </View>
+            <AppText style={styles.showcaseDesc}>
+              Chuyển đổi giữa 2 chế độ hiển thị để cảm nhận rõ rệt sự khác biệt về chiều sâu, viền phản xạ ánh sáng và độ nổi khối.
+            </AppText>
+
+            {/* Segmented Switcher */}
+            <View style={styles.compareToggleRow}>
+              <TouchableOpacity
+                activeOpacity={0.8}
+                style={[
+                  styles.compareToggleBtn,
+                  compareMode === 'glass' && styles.compareToggleBtnActive,
+                ]}
+                onPress={() => {
+                  haptics.light();
+                  setCompareMode('glass');
+                }}
+              >
+                <Sparkles size={14} color={compareMode === 'glass' ? '#007AFF' : themeColors.textSecondary} />
+                <AppText
+                  style={[
+                    styles.compareToggleText,
+                    compareMode === 'glass' && styles.compareToggleTextActive,
+                  ]}
+                >
+                  Apple Liquid Glass
+                </AppText>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                activeOpacity={0.8}
+                style={[
+                  styles.compareToggleBtn,
+                  compareMode === 'flat' && styles.compareToggleBtnActive,
+                ]}
+                onPress={() => {
+                  haptics.light();
+                  setCompareMode('flat');
+                }}
+              >
+                <Palette size={14} color={compareMode === 'flat' ? themeColors.primary : themeColors.textSecondary} />
+                <AppText
+                  style={[
+                    styles.compareToggleText,
+                    compareMode === 'flat' && styles.compareToggleTextActive,
+                  ]}
+                >
+                  Giao Diện Flat UI
+                </AppText>
+              </TouchableOpacity>
+            </View>
+
+            {/* Live Interactive Preview Stage with Ambient Mesh */}
+            <View style={styles.compareStage}>
+              <AppleMeshBackground variant="aurora" />
+
+              <View
+                style={[
+                  styles.comparePreviewBox,
+                  compareMode === 'glass' ? styles.comparePreviewGlass : styles.comparePreviewFlat,
+                ]}
+              >
+                {compareMode === 'glass' && <View style={styles.compareGlassHighlight} />}
+
+                <View style={styles.comparePreviewTopRow}>
+                  <AppText style={styles.comparePreviewHeading}>
+                    {compareMode === 'glass' ? '✨ Chế Độ: Apple Liquid Glass' : '🎨 Chế Độ: Flat UI Chuẩn'}
+                  </AppText>
+                  <View
+                    style={compareMode === 'glass' ? styles.compareBadgeGlass : styles.compareBadgeFlat}
+                  >
+                    <AppText
+                      style={compareMode === 'glass' ? styles.compareBadgeTextGlass : styles.compareBadgeTextFlat}
+                    >
+                      {compareMode === 'glass' ? 'TRANSLUCENT 78%' : 'OPAQUE 100%'}
+                    </AppText>
+                  </View>
+                </View>
+
+                <AppText style={styles.comparePreviewDesc}>
+                  {compareMode === 'glass'
+                    ? 'Nền kính mờ khúc xạ ánh sáng đa tầng từ wallpaper bên dưới, viền phản xạ Specular 1.2px và độ sâu quang học.'
+                    : 'Nền đặc 100% che khuất hoàn toàn màu nền bên dưới, viền 1px xám phẳng thông thường, không xuyên thấu.'}
+                </AppText>
+
+                {/* Code tokens inspection */}
+                <View style={styles.compareCodeSnippet}>
+                  <AppText style={styles.compareCodeText}>
+                    {compareMode === 'glass'
+                      ? `backgroundColor: 'rgba(255, 255, 255, 0.64)'\nborderColor: 'rgba(255, 255, 255, 0.88)'\nborderWidth: 1.2, specularHighlight: 1.2px`
+                      : `backgroundColor: '#FFFFFF'\nborderColor: '#E2E8F0'\nborderWidth: 1.0, shadowRadius: 4`}
+                  </AppText>
+                </View>
+              </View>
             </View>
           </View>
         </View>

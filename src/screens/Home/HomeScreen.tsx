@@ -19,18 +19,25 @@ import {
   RotateCcw,
   SlidersHorizontal,
 } from 'lucide-react-native';
-import { useTranslation } from 'react-i18next';
-import { AppText, ScreenWrapper, AppSearchBar, EmptyState, ThemeStudioModal } from '@/components';
+import {
+  AppText,
+  ScreenWrapper,
+  AppSearchBar,
+  EmptyState,
+  ThemeStudioModal,
+  AppleMeshBackground,
+} from '@/components';
 import { useAppStore, useThemeMode, useDoubleBackExit } from '@/hooks';
 import { removeVietnameseTones, haptics } from '@/utils';
 import type { HomeScreenProps } from '@/navigation/types';
-import { createHomeStyles, getIconWrapperStyle } from './styles';
+import { createHomeStyles } from './styles';
+import { useTranslation } from 'react-i18next';
 
 type CategoryFilter = 'all' | 'ui' | 'realtime' | 'security' | 'storage';
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const { theme: themeColors, isDark, toggleTheme, radiusTokens } = useThemeMode();
-  const styles = createHomeStyles(themeColors, radiusTokens);
+  const styles = createHomeStyles(themeColors, radiusTokens, isDark);
   const [isStudioOpen, setIsStudioOpen] = useState(false);
 
   // Bảo vệ không bị vô tình thoát app khi nhấn Back ở màn hình chính
@@ -196,8 +203,19 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     );
   });
 
+  const isGlass = themeStyle === 'apple-glass';
+
   return (
-    <ScreenWrapper scrollable contentContainerStyle={styles.content}>
+    <View style={styles.container}>
+      {/* Full-bleed Apple Mesh Wallpaper behind the entire screen */}
+      {isGlass && <AppleMeshBackground variant="aurora" />}
+
+      <ScreenWrapper
+        scrollable
+        backgroundColor={isGlass ? 'transparent' : undefined}
+        contentContainerStyle={styles.content}
+      >
+
       {/* 1. Header Top Bar */}
       <View style={styles.topBar}>
         <View style={styles.brandGroup}>
@@ -279,7 +297,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       </View>
 
       {/* 2. Global State Metric Stepper Card */}
-      <View style={styles.metricCard}>
+      <View style={isGlass ? styles.metricCardGlass : styles.metricCard}>
+        {isGlass && <View style={styles.itemGlassHighlight} />}
         <View style={styles.metricHeaderRow}>
           <View style={styles.metricLabelGroup}>
             <View style={styles.metricPulseDot} />
@@ -414,7 +433,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
               <TouchableOpacity
                 key={item.id}
                 activeOpacity={0.7}
-                style={themeStyle === 'apple-glass' ? styles.itemCardGlass : styles.itemCard}
+                style={isGlass ? styles.itemCardGlass : styles.itemCard}
                 onPress={() => {
                   haptics.light();
                   if (item.id === 'theme-studio') {
@@ -428,16 +447,26 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                   }
                 }}
               >
+                {/* Specular Highlight Hairline */}
+                {isGlass && <View style={styles.itemGlassHighlight} />}
+
                 <View style={styles.itemLeft}>
-                  <View style={[styles.iconWrapper, getIconWrapperStyle(item.color)]}>
-                    <IconComponent size={24} color={item.color} />
+                  {/* Clean Flat Icon Badge with soft accent tint */}
+                  <View
+                    style={[
+                      styles.iconWrapper,
+                      { backgroundColor: `${item.color}18` },
+                    ]}
+                  >
+                    <IconComponent size={22} color={item.color} strokeWidth={2.2} />
                   </View>
+
                   <View style={styles.itemTexts}>
                     <View style={styles.itemTitleRow}>
                       <AppText style={styles.itemTitle}>
                         {item.title}
                       </AppText>
-                      <View style={styles.itemTagBadge}>
+                      <View style={[styles.itemTagBadge, isGlass && styles.itemTagBadgeGlass]}>
                         <AppText style={styles.itemTagText}>
                           {item.tag}
                         </AppText>
@@ -448,8 +477,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                     </AppText>
                   </View>
                 </View>
+
+                {/* Clean navigation chevron */}
                 <View style={styles.chevronWrapper}>
-                  <ChevronRight size={16} color={themeColors.textSecondary} />
+                  <ChevronRight size={18} color={themeColors.textSecondary} />
                 </View>
               </TouchableOpacity>
             );
@@ -463,5 +494,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         onClose={() => setIsStudioOpen(false)}
       />
     </ScreenWrapper>
+  </View>
   );
 };
