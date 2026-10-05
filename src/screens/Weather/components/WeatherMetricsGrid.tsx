@@ -27,8 +27,8 @@ export const WeatherMetricsGrid: React.FC<WeatherMetricsGridProps> = ({
   onSelectMetric,
 }) => {
   const { t } = useTranslation();
-  const { theme: themeColors, isDark } = useThemeMode();
-  const styles = createWeatherStyles(themeColors, isDark);
+  const { theme: themeColors, isDark, radiusTokens } = useThemeMode();
+  const styles = createWeatherStyles(themeColors, isDark, radiusTokens);
 
   const rainProbability = daily[0]?.precipitationProbabilityMax ?? 0;
   const uvInfo = weatherService.getUvIndexInfo(current.uvIndex);
@@ -54,6 +54,7 @@ export const WeatherMetricsGrid: React.FC<WeatherMetricsGridProps> = ({
         activeOpacity={0.8}
         onPress={() => onSelectMetric?.('temperature')}
       >
+        <View style={styles.metricGlassHighlight} />
         <View style={styles.metricTileHeader}>
           <View style={feelsLikeIconStyle}>
             <Thermometer size={12} color="#F97316" />
@@ -72,6 +73,7 @@ export const WeatherMetricsGrid: React.FC<WeatherMetricsGridProps> = ({
         activeOpacity={0.8}
         onPress={() => onSelectMetric?.('humidity')}
       >
+        <View style={styles.metricGlassHighlight} />
         <View style={styles.metricTileHeader}>
           <View style={humidityIconStyle}>
             <Droplets size={12} color="#0EA5E9" />
@@ -92,6 +94,7 @@ export const WeatherMetricsGrid: React.FC<WeatherMetricsGridProps> = ({
         activeOpacity={0.8}
         onPress={() => onSelectMetric?.('wind')}
       >
+        <View style={styles.metricGlassHighlight} />
         <View style={styles.metricTileHeader}>
           <View style={windIconStyle}>
             <Wind size={12} color="#10B981" />
@@ -112,6 +115,7 @@ export const WeatherMetricsGrid: React.FC<WeatherMetricsGridProps> = ({
         activeOpacity={0.8}
         onPress={() => onSelectMetric?.('windDirection')}
       >
+        <View style={styles.metricGlassHighlight} />
         <View style={styles.metricTileHeader}>
           <View style={windDirIconStyle}>
             <Compass size={12} color="#6366F1" />
@@ -130,6 +134,7 @@ export const WeatherMetricsGrid: React.FC<WeatherMetricsGridProps> = ({
         activeOpacity={0.8}
         onPress={() => onSelectMetric?.('uv')}
       >
+        <View style={styles.metricGlassHighlight} />
         <View style={styles.metricTileHeader}>
           <View style={uvIconStyle}>
             <Sun size={12} color={uvInfo.color} />
@@ -150,6 +155,7 @@ export const WeatherMetricsGrid: React.FC<WeatherMetricsGridProps> = ({
         activeOpacity={0.8}
         onPress={() => onSelectMetric?.('precipitation')}
       >
+        <View style={styles.metricGlassHighlight} />
         <View style={styles.metricTileHeader}>
           <View style={rainIconStyle}>
             <CloudRain size={12} color="#3B82F6" />

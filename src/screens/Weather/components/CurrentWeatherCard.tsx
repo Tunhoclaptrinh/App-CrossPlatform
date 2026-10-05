@@ -20,8 +20,8 @@ export const CurrentWeatherCard: React.FC<CurrentWeatherCardProps> = ({
   onPressCard,
 }) => {
   const { t } = useTranslation();
-  const { theme: themeColors, isDark } = useThemeMode();
-  const styles = createWeatherStyles(themeColors, isDark);
+  const { theme: themeColors, isDark, radiusTokens } = useThemeMode();
+  const styles = createWeatherStyles(themeColors, isDark, radiusTokens);
 
   const { current, daily } = weather;
   const conditionInfo = weatherService.getWmoWeatherInfo(current.weatherCode, current.isDay);

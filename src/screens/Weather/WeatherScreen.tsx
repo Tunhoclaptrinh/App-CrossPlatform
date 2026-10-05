@@ -37,9 +37,9 @@ import {
 } from './components';
 
 export const WeatherScreen: React.FC<WeatherScreenProps> = ({ navigation }) => {
-  const { theme: themeColors, isDark, toggleTheme } = useThemeMode();
+  const { theme: themeColors, isDark, toggleTheme, radiusTokens } = useThemeMode();
   const { themeStyle, toggleThemeStyle } = useAppStore();
-  const styles = createWeatherStyles(themeColors, isDark);
+  const styles = createWeatherStyles(themeColors, isDark, radiusTokens);
 
   // Chống vô tình thoát ứng dụng khi nhấn nút Back trên Android
   useDoubleBackExit();
@@ -190,77 +190,88 @@ export const WeatherScreen: React.FC<WeatherScreenProps> = ({ navigation }) => {
             activeOpacity={0.7}
           >
             <View style={styles.locationPinIconWrap}>
-              <MapPin size={16} color={isDark ? '#38BDF8' : themeColors.primary} />
+              <MapPin size={15} color={isDark ? '#38BDF8' : themeColors.primary} />
             </View>
             <View style={styles.locationTextCol}>
               <View style={styles.locationCityRow}>
-                <AppText style={styles.locationCityName}>{selectedCity.name}</AppText>
+                <AppText numberOfLines={1} style={styles.locationCityName}>{selectedCity.name}</AppText>
               </View>
-              <AppText style={styles.locationCountryName}>
+              <AppText numberOfLines={1} style={styles.locationCountryName}>
                 {[selectedCity.admin1, selectedCity.country].filter(Boolean).join(', ')}
               </AppText>
             </View>
             <View style={styles.locationSearchBadge}>
-              <Search size={13} color="#FFFFFF" />
+              <Search size={12} color="#FFFFFF" />
             </View>
           </TouchableOpacity>
 
-          {/* Các nút hành động phụ: Định vị GPS, Đổi °C/°F, Đổi Theme, Đổi Style & Navigation */}
-          <View style={styles.topActionsRow}>
-            {/* Nút GPS định vị nhanh */}
+          {/* Capsule Điều Khiển Tinh Gọn (Apple Bento Glass Capsule) */}
+          <View style={styles.topControlCapsule}>
+            {/* GPS Định Vị Nhanh */}
             <TouchableOpacity
-              style={styles.actionIconBtn}
+              style={styles.capsuleBtn}
               onPress={handleGpsLocate}
               disabled={isLocating}
               activeOpacity={0.7}
               accessibilityLabel="Định vị GPS vị trí hiện tại"
             >
               {isLocating ? (
-                <ActivityIndicator size="small" color={themeColors.primary} />
+                <ActivityIndicator size="small" color={isDark ? '#38BDF8' : themeColors.primary} />
               ) : (
-                <Navigation size={17} color={isDark ? '#38BDF8' : themeColors.primary} />
+                <Navigation size={15} color={isDark ? '#38BDF8' : themeColors.primary} />
               )}
             </TouchableOpacity>
 
-            {/* Đổi đơn vị °C / °F */}
+            <View style={styles.capsuleDivider} />
+
+            {/* Đổi Đơn Vị °C / °F */}
             <TouchableOpacity
-              style={styles.actionPillBtn}
+              style={styles.capsuleBtn}
               onPress={handleToggleTempUnit}
               activeOpacity={0.7}
+              accessibilityLabel="Chuyển đổi đơn vị nhiệt độ"
             >
-              <AppText style={styles.actionPillText}>
+              <AppText style={styles.capsulePillText}>
                 {tempUnit === 'celsius' ? '°C' : '°F'}
               </AppText>
             </TouchableOpacity>
 
-            {/* Đổi phong cách Apple Glass / Flat UI */}
+            <View style={styles.capsuleDivider} />
+
+            {/* Đổi Phong Cách Apple Glass / Flat UI */}
             <TouchableOpacity
-              style={styles.actionIconBtn}
+              style={[styles.capsuleBtn, themeStyle === 'apple-glass' && styles.capsuleBtnActive]}
               onPress={handleToggleThemeStyle}
               activeOpacity={0.7}
+              accessibilityLabel="Chuyển đổi phong cách giao diện"
             >
               <Sparkles
-                size={18}
-                color={themeStyle === 'apple-glass' ? '#007AFF' : themeColors.textSecondary}
+                size={15}
+                color={themeStyle === 'apple-glass' ? '#38BDF8' : 'rgba(255, 255, 255, 0.75)'}
               />
             </TouchableOpacity>
 
-            {/* Đổi chế độ Sáng / Tối */}
+            <View style={styles.capsuleDivider} />
+
+            {/* Đổi Chế Độ Sáng / Tối */}
             <TouchableOpacity
-              style={styles.actionIconBtn}
+              style={styles.capsuleBtn}
               onPress={handleToggleTheme}
               activeOpacity={0.7}
+              accessibilityLabel="Chuyển đổi nền sáng tối"
             >
               {isDark ? (
-                <Moon size={18} color="#FBBF24" />
+                <Sun size={15} color="#FBBF24" />
               ) : (
-                <Sun size={18} color="#F59E0B" />
+                <Moon size={15} color="rgba(255, 255, 255, 0.85)" />
               )}
             </TouchableOpacity>
 
-            {/* Nút Navigation: Chuyển sang màn hình Base App & Module Showcase */}
+            <View style={styles.capsuleDivider} />
+
+            {/* Nút Navigation: Trở Về Màn Hình Chính Base App */}
             <TouchableOpacity
-              style={styles.actionIconBtn}
+              style={styles.capsuleBtn}
               onPress={() => {
                 haptics.light();
                 navigation.navigate('Home');
@@ -268,7 +279,7 @@ export const WeatherScreen: React.FC<WeatherScreenProps> = ({ navigation }) => {
               activeOpacity={0.7}
               accessibilityLabel="Chuyển sang màn hình chính"
             >
-              <Layers size={18} color={themeColors.text} />
+              <Layers size={15} color="#FFFFFF" />
             </TouchableOpacity>
           </View>
         </View>

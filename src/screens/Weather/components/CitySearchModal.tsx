@@ -24,8 +24,8 @@ export const CitySearchModal: React.FC<CitySearchModalProps> = ({
   onSelectCity,
 }) => {
   const { t } = useTranslation();
-  const { theme: themeColors, isDark } = useThemeMode();
-  const styles = createWeatherStyles(themeColors, isDark);
+  const { theme: themeColors, isDark, radiusTokens } = useThemeMode();
+  const styles = createWeatherStyles(themeColors, isDark, radiusTokens);
 
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<GeoCityLocation[]>([]);

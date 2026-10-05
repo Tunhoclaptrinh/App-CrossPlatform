@@ -35,8 +35,8 @@ export const WeatherDetailModal: React.FC<WeatherDetailModalProps> = ({
   tempUnit,
 }) => {
   const { t } = useTranslation();
-  const { theme: themeColors, isDark } = useThemeMode();
-  const styles = createWeatherStyles(themeColors, isDark);
+  const { theme: themeColors, isDark, radiusTokens } = useThemeMode();
+  const styles = createWeatherStyles(themeColors, isDark, radiusTokens);
 
   if (!visible || !target) {
     return null;

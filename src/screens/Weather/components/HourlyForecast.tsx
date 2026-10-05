@@ -16,8 +16,8 @@ export const HourlyForecast: React.FC<HourlyForecastProps> = ({
   onSelectHour,
 }) => {
   const { t } = useTranslation();
-  const { theme: themeColors, isDark } = useThemeMode();
-  const styles = createWeatherStyles(themeColors, isDark);
+  const { theme: themeColors, isDark, radiusTokens } = useThemeMode();
+  const styles = createWeatherStyles(themeColors, isDark, radiusTokens);
 
   if (!hourly || hourly.length === 0) {
     return null;
@@ -30,6 +30,7 @@ export const HourlyForecast: React.FC<HourlyForecastProps> = ({
 
   return (
     <View style={styles.sectionCard}>
+      <View style={styles.sectionGlassHighlight} />
       {/* Tiêu đề mục */}
       <View style={styles.sectionHeaderRow}>
         <Clock size={15} color="rgba(255, 255, 255, 0.85)" />

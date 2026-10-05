@@ -1,9 +1,18 @@
 import { StyleSheet } from 'react-native';
 import { Spacing, BorderRadius, Typography } from '@/constants';
 import type { ThemeColors } from '@/constants/colors';
+import type { RadiusPresetConfig } from '@/constants/theme';
 
-export const createWeatherStyles = (themeColors: ThemeColors, isDark: boolean) =>
-  StyleSheet.create({
+export const createWeatherStyles = (
+  themeColors: ThemeColors,
+  isDark: boolean,
+  radiusTokens?: RadiusPresetConfig,
+) => {
+  const cardRadius = radiusTokens?.card ?? 18;
+  const smControlRadius = radiusTokens?.smControl ?? 12;
+  const controlRadius = radiusTokens?.control ?? BorderRadius.pill;
+
+  return StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: 'transparent',
@@ -27,21 +36,22 @@ export const createWeatherStyles = (themeColors: ThemeColors, isDark: boolean) =
       alignItems: 'center',
       flex: 1,
       marginRight: Spacing.xs,
-      paddingVertical: 6,
+      paddingVertical: 5,
       paddingHorizontal: Spacing.sm,
-      borderRadius: BorderRadius.pill,
-      backgroundColor: isDark ? 'rgba(15, 23, 42, 0.45)' : 'rgba(255, 255, 255, 0.25)',
+      borderRadius: controlRadius,
+      backgroundColor: isDark ? 'rgba(15, 23, 42, 0.45)' : 'rgba(255, 255, 255, 0.28)',
       borderWidth: 1,
-      borderColor: isDark ? 'rgba(255, 255, 255, 0.18)' : 'rgba(255, 255, 255, 0.45)',
+      borderColor: isDark ? 'rgba(255, 255, 255, 0.16)' : 'rgba(255, 255, 255, 0.45)',
+      height: 38,
     },
     locationPinIconWrap: {
-      width: 30,
-      height: 30,
+      width: 26,
+      height: 26,
       borderRadius: BorderRadius.full,
-      backgroundColor: isDark ? 'rgba(56, 189, 248, 0.25)' : 'rgba(2, 132, 199, 0.2)',
+      backgroundColor: isDark ? 'rgba(56, 189, 248, 0.2)' : 'rgba(2, 132, 199, 0.15)',
       alignItems: 'center',
       justifyContent: 'center',
-      marginRight: Spacing.xs,
+      marginRight: 6,
     },
     locationTextCol: {
       flex: 1,
@@ -52,81 +62,83 @@ export const createWeatherStyles = (themeColors: ThemeColors, isDark: boolean) =
       gap: 4,
     },
     locationCityName: {
-      fontSize: Typography.body.fontSize,
+      fontSize: 13,
       fontWeight: '700',
       color: '#FFFFFF',
       textShadowColor: 'rgba(0, 0, 0, 0.35)',
       textShadowOffset: { width: 0, height: 1 },
       textShadowRadius: 3,
+      lineHeight: 16,
     },
     locationCountryName: {
-      fontSize: 11,
+      fontSize: 10,
       color: 'rgba(255, 255, 255, 0.85)',
       textShadowColor: 'rgba(0, 0, 0, 0.3)',
       textShadowOffset: { width: 0, height: 1 },
       textShadowRadius: 2,
+      lineHeight: 12,
     },
     locationSearchBadge: {
-      width: 26,
-      height: 26,
+      width: 24,
+      height: 24,
       borderRadius: BorderRadius.full,
       backgroundColor: isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.3)',
       alignItems: 'center',
       justifyContent: 'center',
       marginLeft: Spacing.xxs,
     },
-    topActionsRow: {
+    topControlCapsule: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 6,
+      backgroundColor: isDark ? 'rgba(15, 23, 42, 0.45)' : 'rgba(255, 255, 255, 0.28)',
+      borderRadius: controlRadius,
+      borderWidth: 1,
+      borderColor: isDark ? 'rgba(255, 255, 255, 0.16)' : 'rgba(255, 255, 255, 0.45)',
+      paddingHorizontal: 2,
+      paddingVertical: 2,
+      height: 38,
     },
-    actionPillBtn: {
-      height: 36,
-      paddingHorizontal: Spacing.sm,
+    capsuleBtn: {
+      width: 32,
+      height: 32,
+      borderRadius: Math.min(smControlRadius, 16),
       alignItems: 'center',
       justifyContent: 'center',
-      borderRadius: BorderRadius.pill,
-      backgroundColor: isDark ? 'rgba(15, 23, 42, 0.45)' : 'rgba(255, 255, 255, 0.25)',
-      borderWidth: 1,
-      borderColor: isDark ? 'rgba(255, 255, 255, 0.18)' : 'rgba(255, 255, 255, 0.45)',
     },
-    actionPillText: {
-      fontSize: Typography.caption.fontSize,
+    capsuleBtnActive: {
+      backgroundColor: isDark ? 'rgba(255, 255, 255, 0.16)' : 'rgba(0, 0, 0, 0.08)',
+    },
+    capsuleDivider: {
+      width: 1,
+      height: 14,
+      backgroundColor: isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.12)',
+      marginHorizontal: 1,
+    },
+    capsulePillText: {
+      fontSize: 11,
       fontWeight: '700',
       color: '#FFFFFF',
-      textShadowColor: 'rgba(0, 0, 0, 0.3)',
-      textShadowOffset: { width: 0, height: 1 },
-      textShadowRadius: 2,
-    },
-    actionIconBtn: {
-      width: 36,
-      height: 36,
-      borderRadius: BorderRadius.full,
-      backgroundColor: isDark ? 'rgba(15, 23, 42, 0.45)' : 'rgba(255, 255, 255, 0.25)',
-      alignItems: 'center',
-      justifyContent: 'center',
-      borderWidth: 1,
-      borderColor: isDark ? 'rgba(255, 255, 255, 0.18)' : 'rgba(255, 255, 255, 0.45)',
+      fontVariant: ['tabular-nums'],
     },
 
     // 2. Hero Không Viền Nổi Tự Do (Cardless Floating Hero)
     floatingHeroContainer: {
       alignItems: 'center',
       justifyContent: 'center',
-      paddingVertical: Spacing.xs,
-      marginBottom: Spacing.sm,
+      paddingVertical: 2,
+      marginBottom: Spacing.xs,
     },
     heroBadgeRow: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      marginBottom: Spacing.xs,
+      marginBottom: 2,
     },
     statusBadge: {
       flexDirection: 'row',
       alignItems: 'center',
-      paddingHorizontal: Spacing.md,
-      paddingVertical: Spacing.xs,
+      paddingHorizontal: Spacing.sm + 2,
+      paddingVertical: 3,
       borderRadius: BorderRadius.pill,
       borderWidth: 1,
       borderColor: 'rgba(255, 255, 255, 0.35)',
@@ -134,7 +146,7 @@ export const createWeatherStyles = (themeColors: ThemeColors, isDark: boolean) =
       backgroundColor: isDark ? 'rgba(15, 23, 42, 0.45)' : 'rgba(255, 255, 255, 0.25)',
     },
     statusBadgeText: {
-      fontSize: Typography.caption.fontSize,
+      fontSize: 11,
       fontWeight: '700',
       color: '#FFFFFF',
       textShadowColor: 'rgba(0, 0, 0, 0.3)',
@@ -144,44 +156,44 @@ export const createWeatherStyles = (themeColors: ThemeColors, isDark: boolean) =
     heroCenterBlock: {
       alignItems: 'center',
       justifyContent: 'center',
-      marginVertical: Spacing.xxs,
+      marginVertical: 0,
     },
     heroIconBox: {
-      width: 80,
-      height: 80,
+      width: 60,
+      height: 60,
       alignItems: 'center',
       justifyContent: 'center',
-      marginBottom: 2,
+      marginBottom: 0,
     },
     floatingBigTempText: {
-      fontSize: 80,
-      fontWeight: '800',
+      fontSize: 66,
+      fontWeight: '700',
       color: '#FFFFFF',
-      lineHeight: 88,
+      lineHeight: 72,
       fontVariant: ['tabular-nums'],
-      textShadowColor: 'rgba(0, 0, 0, 0.45)',
+      textShadowColor: 'rgba(0, 0, 0, 0.4)',
       textShadowOffset: { width: 0, height: 2 },
-      textShadowRadius: 8,
+      textShadowRadius: 6,
     },
     floatingConditionText: {
-      fontSize: Typography.title.fontSize,
+      fontSize: 16,
       fontWeight: '600',
       color: '#FFFFFF',
-      marginTop: 2,
+      marginTop: 1,
       textShadowColor: 'rgba(0, 0, 0, 0.4)',
       textShadowOffset: { width: 0, height: 1 },
-      textShadowRadius: 6,
+      textShadowRadius: 4,
     },
     floatingHighLowRow: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      gap: Spacing.sm,
-      marginTop: Spacing.xs,
-      paddingHorizontal: Spacing.md,
-      paddingVertical: Spacing.xxs,
+      gap: 6,
+      marginTop: 4,
+      paddingHorizontal: Spacing.sm + 4,
+      paddingVertical: 2,
       borderRadius: BorderRadius.pill,
-      backgroundColor: isDark ? 'rgba(15, 23, 42, 0.35)' : 'rgba(255, 255, 255, 0.25)',
+      backgroundColor: isDark ? 'rgba(15, 23, 42, 0.35)' : 'rgba(255, 255, 255, 0.22)',
       borderWidth: 1,
       borderColor: isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.45)',
     },
@@ -195,9 +207,9 @@ export const createWeatherStyles = (themeColors: ThemeColors, isDark: boolean) =
       textShadowRadius: 2,
     },
     highLowDotDivider: {
-      width: 4,
-      height: 4,
-      borderRadius: 2,
+      width: 3,
+      height: 3,
+      borderRadius: 1.5,
       backgroundColor: 'rgba(255, 255, 255, 0.6)',
     },
     floatingFeelsLikeCol: {
@@ -215,13 +227,24 @@ export const createWeatherStyles = (themeColors: ThemeColors, isDark: boolean) =
 
     // 4. Khối Kính Mờ Trong Suốt Chung (Translucent Frosted Glass Card)
     sectionCard: {
-      borderRadius: 22,
+      borderRadius: cardRadius,
       backgroundColor: isDark ? 'rgba(15, 23, 42, 0.38)' : 'rgba(255, 255, 255, 0.22)',
       borderWidth: 1,
       borderColor: isDark ? 'rgba(255, 255, 255, 0.14)' : 'rgba(255, 255, 255, 0.38)',
       paddingHorizontal: Spacing.md,
       paddingVertical: Spacing.sm,
       marginBottom: Spacing.md,
+      overflow: 'hidden',
+      position: 'relative',
+    },
+    sectionGlassHighlight: {
+      position: 'absolute',
+      top: 0,
+      left: 16,
+      right: 16,
+      height: 1,
+      backgroundColor: isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.45)',
+      borderRadius: 1,
     },
     sectionHeaderRow: {
       flexDirection: 'row',
@@ -378,22 +401,33 @@ export const createWeatherStyles = (themeColors: ThemeColors, isDark: boolean) =
       textShadowRadius: 2,
     },
 
-    // 7. Lưới 4 Chỉ Số Khí Quyển Kính Mờ 2x2 (Weather Metrics Grid 2x2)
+    // 7. Lưới 6 Chỉ Số Khí Quyển Bento Squircle (Bento Grid 2x3)
     metricsGrid: {
       flexDirection: 'row',
       flexWrap: 'wrap',
-      gap: Spacing.xs,
+      justifyContent: 'space-between',
+      rowGap: Spacing.xs,
       marginBottom: Spacing.md,
     },
     metricTile: {
-      flex: 1,
-      minWidth: '47%',
+      width: '48.5%',
       backgroundColor: isDark ? 'rgba(15, 23, 42, 0.4)' : 'rgba(255, 255, 255, 0.22)',
-      borderRadius: BorderRadius.xl,
+      borderRadius: cardRadius,
       paddingHorizontal: Spacing.sm,
-      paddingVertical: Spacing.xs,
+      paddingVertical: Spacing.xs + 2,
       borderWidth: 1,
       borderColor: isDark ? 'rgba(255, 255, 255, 0.14)' : 'rgba(255, 255, 255, 0.38)',
+      overflow: 'hidden',
+      position: 'relative',
+    },
+    metricGlassHighlight: {
+      position: 'absolute',
+      top: 0,
+      left: 12,
+      right: 12,
+      height: 1,
+      backgroundColor: isDark ? 'rgba(255, 255, 255, 0.25)' : 'rgba(255, 255, 255, 0.5)',
+      borderRadius: 1,
     },
     metricTileHeader: {
       flexDirection: 'row',
@@ -726,7 +760,7 @@ export const createWeatherStyles = (themeColors: ThemeColors, isDark: boolean) =
       fontWeight: '700',
     },
   });
-
+}
 export const getFadeAnimStyle = (opacity: any) => ({
   opacity,
 });
