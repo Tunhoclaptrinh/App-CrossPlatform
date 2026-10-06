@@ -14,8 +14,8 @@ export const GestureCard: React.FC<GestureCardProps> = ({
   onSwipeRight,
   onDoubleTap,
 }) => {
-  const { theme: themeColors } = useThemeMode();
-  const styles = createGestureCardStyles(themeColors);
+  const { theme: themeColors, radiusTokens } = useThemeMode();
+  const styles = createGestureCardStyles(themeColors, radiusTokens);
 
   const swipeHandlers = useSwipeGesture({
     onSwipeLeft,

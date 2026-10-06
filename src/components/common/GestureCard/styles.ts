@@ -1,12 +1,15 @@
 import { StyleSheet } from 'react-native';
 import { Colors } from '@/constants/colors';
-import { Spacing, BorderRadius } from '@/constants/theme';
+import { Spacing, BorderRadius, type RadiusPresetConfig } from '@/constants/theme';
 
-export const createGestureCardStyles = (themeColors: typeof Colors.light) =>
+export const createGestureCardStyles = (
+  themeColors: typeof Colors.light,
+  radiusTokens?: RadiusPresetConfig,
+) =>
   StyleSheet.create({
     container: {
       backgroundColor: themeColors.card,
-      borderRadius: BorderRadius.lg,
+      borderRadius: radiusTokens ? radiusTokens.card : BorderRadius.lg,
       borderWidth: 1,
       borderColor: themeColors.border,
       padding: Spacing.lg,
@@ -43,7 +46,7 @@ export const createGestureCardStyles = (themeColors: typeof Colors.light) =>
       flexDirection: 'row',
       justifyContent: 'space-between',
       backgroundColor: themeColors.surfaceSubtle,
-      borderRadius: BorderRadius.md,
+      borderRadius: radiusTokens ? radiusTokens.smControl : BorderRadius.md,
       padding: Spacing.xs + 2,
       borderWidth: 1,
       borderColor: themeColors.border,
