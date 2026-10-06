@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState, useEffect, useMemo } from 'react';
+import { View } from 'react-native';
 import {
   Sparkles,
   Radio,
@@ -10,9 +10,16 @@ import {
   Sliders,
   SlidersHorizontal,
   ArrowLeft,
+  BookOpen,
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { ScreenWrapper, ConfirmDialog, ThemeStudioModal, AppText } from '@/components';
+import {
+  ScreenWrapper,
+  ConfirmDialog,
+  ThemeStudioModal,
+  AppButton,
+  AppleMeshBackground,
+} from '@/components';
 import { useAppStore, useToast, useShakeDetection, useThemeMode } from '@/hooks';
 import { appStorage, STORAGE_KEYS } from '@/services/storage';
 import { appUpdateService } from '@/services/update';
@@ -22,6 +29,7 @@ import { socketService } from '@/services/realtime';
 import { permissions, haptics, generateId, cryptoHelper, clipboardHelper } from '@/utils';
 import type { ServerEncryptedPayload } from '@/utils';
 import type { DetailsScreenProps } from '@/navigation/types';
+import { createDetailsStyles } from './styles';
 import {
   ModuleTabs,
   ModuleHeaderCard,
@@ -33,6 +41,7 @@ import {
   PaperShowcase,
   StorageShowcase,
   UtilsShowcase,
+  StorybookShowcase,
   type ModuleTabItem,
 } from './components';
 
@@ -43,6 +52,7 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
     if (id === 'i18n') return 'utils';
     if (id === 'core') return 'paper';
     if (id === 'nav') return 'utils';
+    if (id === 'storybook') return 'storybook';
     return id;
   };
 
@@ -66,6 +76,11 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
     isDark,
     toggleTheme,
   } = useThemeMode();
+
+  const styles = useMemo(
+    () => createDetailsStyles(themeColors, radiusTokens, isDark),
+    [themeColors, radiusTokens, isDark]
+  );
 
   const { t } = useTranslation();
   const {
@@ -155,6 +170,15 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
       icon: Sparkles,
       color: '#007AFF',
     },
+    {
+      id: 'storybook',
+      label: 'Storybook UI',
+      fullTitle: 'Design System & Storybook Catalog',
+      desc: 'Ma trận đồng bộ kích thước chuẩn Button, Input, Select, Badge, Card (sm, md, lg)',
+      icon: BookOpen,
+      color: '#6366F1',
+    },
+
     {
       id: 'realtime',
       label: 'WebSocket',
@@ -325,237 +349,223 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
     }
   };
 
+  const isGlass = themeStyle === 'apple-glass';
+
   return (
-    <ScreenWrapper scrollable edges={['bottom', 'left', 'right']} contentContainerStyle={styles.content}>
-      {/* 1. Horizontal Module Navigation Tabs */}
-      <ModuleTabs
-        tabs={moduleTabs}
-        activeModule={activeModule}
-        onSelectTab={(id) => setActiveModule(id)}
-        isDark={isDark}
-        radiusTokens={radiusTokens}
-      />
+    <View style={styles.container}>
+      {/* Full-bleed Apple Mesh Wallpaper behind the entire screen */}
+      {isGlass && <AppleMeshBackground variant="aurora" />}
 
-      {/* 2. Top Header Overview Card (for non-apple tabs) */}
-      {activeModule !== 'apple' && (
-        <ModuleHeaderCard
-          currentTab={currentTab}
-          themeColors={themeColors}
-          radiusTokens={radiusTokens}
+      <ScreenWrapper
+        scrollable
+        edges={['bottom', 'left', 'right']}
+        backgroundColor={isGlass ? 'transparent' : undefined}
+        contentContainerStyle={styles.content}
+      >
+        {/* 1. Horizontal Module Navigation Tabs */}
+        <ModuleTabs
+          tabs={moduleTabs}
+          activeModule={activeModule}
+          onSelectTab={(id) => setActiveModule(id)}
           isDark={isDark}
+          radiusTokens={radiusTokens}
+          isGlass={isGlass}
         />
-      )}
 
-      {/* 3. Dedicated Modules Showcase */}
-      {activeModule === 'apple' && (
-        <AppleGlassShowcase
-          themeColors={themeColors}
-          radiusTokens={radiusTokens}
-          isDark={isDark}
-          themeStyle={themeStyle}
-          onToggleThemeStyle={handleToggleThemeStyle}
-        />
-      )}
+        {/* 2. Top Header Overview Card (for non-apple tabs) */}
+        {activeModule !== 'apple' && (
+          <ModuleHeaderCard
+            currentTab={currentTab}
+            themeColors={themeColors}
+            radiusTokens={radiusTokens}
+            isDark={isDark}
+            isGlass={isGlass}
+          />
+        )}
 
-      {activeModule === 'theme-studio' && (
-        <ThemeStudioShowcase
-          themeColors={themeColors}
-          radiusTokens={radiusTokens}
-          accentColor={accentColor}
-          setAccentColor={setAccentColor}
-          radiusPreset={radiusPreset}
-          setRadiusPreset={setRadiusPreset}
-          isDark={isDark}
-          toggleTheme={toggleTheme}
-          themeStyle={themeStyle}
-          onToggleThemeStyle={handleToggleThemeStyle}
-          onOpenStudioModal={() => setIsStudioOpen(true)}
-        />
-      )}
+        {/* 3. Dedicated Modules Showcase */}
+        {activeModule === 'apple' && (
+          <AppleGlassShowcase
+            themeColors={themeColors}
+            radiusTokens={radiusTokens}
+            isDark={isDark}
+            themeStyle={themeStyle}
+            onToggleThemeStyle={handleToggleThemeStyle}
+          />
+        )}
 
-      {activeModule === 'realtime' && (
-        <RealtimeShowcase
-          themeColors={themeColors}
-          radiusTokens={radiusTokens}
-          isDark={isDark}
-          socketStatus={socketStatus}
-          lastSocketMessage={lastSocketMessage}
-          onConnect={handleConnectSocket}
-          onDisconnect={handleDisconnectSocket}
-          onSendMessage={handleSendSocketMessage}
-        />
-      )}
+        {activeModule === 'storybook' && (
+          <StorybookShowcase
+            themeColors={themeColors}
+            radiusTokens={radiusTokens}
+            isDark={isDark}
+            isGlass={isGlass}
+          />
+        )}
 
-      {activeModule === 'gestures' && (
-        <GesturesShowcase
-          themeColors={themeColors}
-          radiusTokens={radiusTokens}
-          isDark={isDark}
-          gestureFeedback={gestureFeedback}
-          setGestureFeedback={setGestureFeedback}
-          shakeCount={shakeCount}
-          resetShakeCount={resetShakeCount}
-          simulateShake={simulateShake}
-          language={language}
-        />
-      )}
+        {activeModule === 'theme-studio' && (
+          <ThemeStudioShowcase
+            themeColors={themeColors}
+            radiusTokens={radiusTokens}
+            accentColor={accentColor}
+            setAccentColor={setAccentColor}
+            radiusPreset={radiusPreset}
+            setRadiusPreset={setRadiusPreset}
+            isDark={isDark}
+            toggleTheme={toggleTheme}
+            themeStyle={themeStyle}
+            onToggleThemeStyle={handleToggleThemeStyle}
+            onOpenStudioModal={() => setIsStudioOpen(true)}
+          />
+        )}
 
-      {activeModule === 'crypto' && (
-        <CryptoShowcase
-          themeColors={themeColors}
-          radiusTokens={radiusTokens}
-          isDark={isDark}
-          cryptoInput={cryptoInput}
-          setCryptoInput={setCryptoInput}
-          cipherResult={cipherResult}
-          decryptedResult={decryptedResult}
-          onEncrypt={handleEncryptCrypto}
-          onDecrypt={handleDecryptCrypto}
-          onBiometricAuth={handleBiometricAuth}
-        />
-      )}
+        {activeModule === 'realtime' && (
+          <RealtimeShowcase
+            themeColors={themeColors}
+            radiusTokens={radiusTokens}
+            isDark={isDark}
+            isGlass={isGlass}
+            socketStatus={socketStatus}
+            lastSocketMessage={lastSocketMessage}
+            onConnect={handleConnectSocket}
+            onDisconnect={handleDisconnectSocket}
+            onSendMessage={handleSendSocketMessage}
+          />
+        )}
 
-      {activeModule === 'paper' && (
-        <PaperShowcase
-          themeColors={themeColors}
-          radiusTokens={radiusTokens}
-          isDark={isDark}
-          rememberLogin={rememberLogin}
-          setRememberLogin={setRememberLogin}
-          pushNotification={pushNotification}
-          setPushNotification={setPushNotification}
-          onShowToast={() => toast.show('success', 'Thông báo Toast hiển thị sắc nét!', 'UI Feedback')}
-          onOpenDialog={() => setIsDialogOpen(true)}
-        />
-      )}
+        {activeModule === 'gestures' && (
+          <GesturesShowcase
+            themeColors={themeColors}
+            radiusTokens={radiusTokens}
+            isDark={isDark}
+            isGlass={isGlass}
+            gestureFeedback={gestureFeedback}
+            setGestureFeedback={setGestureFeedback}
+            shakeCount={shakeCount}
+            resetShakeCount={resetShakeCount}
+            simulateShake={simulateShake}
+            language={language}
+          />
+        )}
 
-      {activeModule === 'sqlite' && (
-        <StorageShowcase
-          themeColors={themeColors}
-          radiusTokens={radiusTokens}
-          isDark={isDark}
-          counter={counter}
-          onIncrement={increment}
-          onDecrement={decrement}
-          onReset={reset}
-          storageInput={storageInput}
-          setStorageInput={setStorageInput}
-          savedStorageVal={savedStorageVal}
-          onSaveStorage={handleSaveStorage}
-          fileContent={fileContent}
-          setFileContent={setFileContent}
-          onSaveFile={handleSaveFile}
-          onShareFile={handleShareFile}
-          language={language}
-        />
-      )}
+        {activeModule === 'crypto' && (
+          <CryptoShowcase
+            themeColors={themeColors}
+            radiusTokens={radiusTokens}
+            isDark={isDark}
+            isGlass={isGlass}
+            cryptoInput={cryptoInput}
+            setCryptoInput={setCryptoInput}
+            cipherResult={cipherResult}
+            decryptedResult={decryptedResult}
+            onEncrypt={handleEncryptCrypto}
+            onDecrypt={handleDecryptCrypto}
+            onBiometricAuth={handleBiometricAuth}
+          />
+        )}
 
-      {activeModule === 'utils' && (
-        <UtilsShowcase
-          themeColors={themeColors}
-          radiusTokens={radiusTokens}
-          isDark={isDark}
-          uuidValue={uuidValue}
-          onGenerateUuid={() => {
-            haptics.light();
-            setUuidValue(generateId());
+        {activeModule === 'paper' && (
+          <PaperShowcase
+            themeColors={themeColors}
+            radiusTokens={radiusTokens}
+            isDark={isDark}
+            isGlass={isGlass}
+            rememberLogin={rememberLogin}
+            setRememberLogin={setRememberLogin}
+            pushNotification={pushNotification}
+            setPushNotification={setPushNotification}
+            onShowToast={() => toast.show('success', 'Thông báo Toast hiển thị sắc nét!', 'UI Feedback')}
+            onOpenDialog={() => setIsDialogOpen(true)}
+          />
+        )}
+
+        {activeModule === 'sqlite' && (
+          <StorageShowcase
+            themeColors={themeColors}
+            radiusTokens={radiusTokens}
+            isDark={isDark}
+            isGlass={isGlass}
+            counter={counter}
+            onIncrement={increment}
+            onDecrement={decrement}
+            onReset={reset}
+            storageInput={storageInput}
+            setStorageInput={setStorageInput}
+            savedStorageVal={savedStorageVal}
+            onSaveStorage={handleSaveStorage}
+            fileContent={fileContent}
+            setFileContent={setFileContent}
+            onSaveFile={handleSaveFile}
+            onShareFile={handleShareFile}
+            language={language}
+          />
+        )}
+
+        {activeModule === 'utils' && (
+          <UtilsShowcase
+            themeColors={themeColors}
+            radiusTokens={radiusTokens}
+            isDark={isDark}
+            isGlass={isGlass}
+            uuidValue={uuidValue}
+            onGenerateUuid={() => {
+              haptics.light();
+              setUuidValue(generateId());
+            }}
+            onCopyUuid={() => {
+              clipboardHelper.copy(uuidValue);
+              toast.show('success', 'Đã copy UUID vào bộ nhớ tạm!');
+            }}
+            onCheckCamera={handleCheckCamera}
+            onCheckUpdate={async () => {
+              haptics.light();
+              const update = await appUpdateService.checkForUpdates();
+              if (update && update.hasUpdate) {
+                toast.show('info', `Phiên bản mới ${update.latestVersion} đã sẵn sàng!`);
+              } else {
+                toast.show('success', 'Ứng dụng đang ở phiên bản mới nhất!');
+              }
+            }}
+          />
+        )}
+
+        {/* 4. Footer Back Button with Cupertino Liquid Glass */}
+        <View style={styles.footerRow}>
+          <AppButton
+            title={t('common.backToHome', 'Quay lại Trang Chủ')}
+            variant="glass"
+            size="md"
+            leftIcon={<ArrowLeft size={16} color={themeColors.text} strokeWidth={2.2} />}
+            onPress={() => {
+              haptics.light();
+              navigation.goBack();
+            }}
+          />
+        </View>
+
+        {/* Confirm Dialog Modal */}
+        <ConfirmDialog
+          visible={isDialogOpen}
+          title="Xác nhận thao tác kiểm tra?"
+          message="Hộp thoại này minh họa ConfirmDialog component với hiệu ứng mờ nền và nút bấm an toàn."
+          onConfirm={() => {
+            haptics.success();
+            setIsDialogOpen(false);
+            toast.show('success', 'Bạn đã nhấn Xác nhận!');
           }}
-          onCopyUuid={() => {
-            clipboardHelper.copy(uuidValue);
-            toast.show('success', 'Đã copy UUID vào bộ nhớ tạm!');
-          }}
-          onCheckCamera={handleCheckCamera}
-          onCheckUpdate={async () => {
-            haptics.light();
-            const update = await appUpdateService.checkForUpdates();
-            if (update && update.hasUpdate) {
-              toast.show('info', `Phiên bản mới ${update.latestVersion} đã sẵn sàng!`);
-            } else {
-              toast.show('success', 'Ứng dụng đang ở phiên bản mới nhất!');
-            }
+          onCancel={() => {
+            setIsDialogOpen(false);
           }}
         />
-      )}
 
-      {/* 4. Footer Back Button */}
-      <View style={styles.footerRow}>
-        <TouchableOpacity
-          style={[
-            styles.backHomeBtn,
-            { borderRadius: radiusTokens.control },
-            isDark ? styles.backHomeBtnDark : styles.backHomeBtnLight,
-          ]}
-          activeOpacity={0.75}
-          onPress={() => {
-            haptics.light();
-            navigation.goBack();
-          }}
-        >
-          <ArrowLeft size={16} color={themeColors.text} strokeWidth={2.2} />
-          <AppText style={[styles.backHomeText, { color: themeColors.text }]}>
-            Quay lại Trang Chủ
-          </AppText>
-        </TouchableOpacity>
-      </View>
-
-      {/* Confirm Dialog Modal */}
-      <ConfirmDialog
-        visible={isDialogOpen}
-        title="Xác nhận thao tác kiểm tra?"
-        message="Hộp thoại này minh họa ConfirmDialog component với hiệu ứng mờ nền và nút bấm an toàn."
-        onConfirm={() => {
-          haptics.success();
-          setIsDialogOpen(false);
-          toast.show('success', 'Bạn đã nhấn Xác nhận!');
-        }}
-        onCancel={() => {
-          setIsDialogOpen(false);
-        }}
-      />
-
-      {/* Dynamic Theme & Radius Studio Modal */}
-      <ThemeStudioModal
-        visible={isStudioOpen}
-        onClose={() => setIsStudioOpen(false)}
-      />
-    </ScreenWrapper>
+        {/* Dynamic Theme & Radius Studio Modal */}
+        <ThemeStudioModal
+          visible={isStudioOpen}
+          onClose={() => setIsStudioOpen(false)}
+        />
+      </ScreenWrapper>
+    </View>
   );
 };
 
-const styles = StyleSheet.create({
-  content: {
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 24,
-  },
-  footerRow: {
-    marginTop: 8,
-    marginBottom: 20,
-    alignItems: 'center',
-  },
-  backHomeBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    height: 40,
-    paddingHorizontal: 18,
-    borderRadius: 20,
-    borderWidth: 1.2,
-  },
-  backHomeBtnLight: {
-    backgroundColor: '#FFFFFF',
-    borderColor: '#E2E8F0',
-    shadowColor: '#000000',
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
-  },
-  backHomeBtnDark: {
-    backgroundColor: '#1E293B',
-    borderColor: '#334155',
-  },
-  backHomeText: {
-    fontSize: 13,
-    fontWeight: '700',
-  },
-});
+

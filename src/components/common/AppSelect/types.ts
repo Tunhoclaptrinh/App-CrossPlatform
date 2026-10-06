@@ -1,0 +1,27 @@
+import { ReactNode } from 'react';
+import { ViewStyle } from 'react-native';
+import type { ControlSizeKey } from '@/constants/theme';
+
+export interface AppSelectOption<T = string | number> {
+  label: string;
+  value: T;
+  icon?: ReactNode;
+  sublabel?: string;
+  disabled?: boolean;
+}
+
+export type AppSelectSize = ControlSizeKey;
+
+export interface AppSelectProps<T = string | number> {
+  options: AppSelectOption<T>[];
+  value?: T;
+  onSelect: (value: T) => void;
+  size?: AppSelectSize;
+  label?: string;
+  placeholder?: string;
+  error?: string;
+  disabled?: boolean;
+  leftIcon?: ReactNode;
+  containerStyle?: ViewStyle;
+  sheetTitle?: string;
+}

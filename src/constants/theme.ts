@@ -93,34 +93,67 @@ export const RadiusPresets: Record<RadiusPreset, RadiusPresetConfig> = {
   },
 };
 
+export type ControlSizeKey = 'sm' | 'md' | 'lg';
+
+export interface ControlSizeMetric {
+  height: number;
+  iconSize: number;
+  paddingHorizontal: number;
+  fontSize: number;
+  lineHeight: number;
+  gap: number;
+}
+
 /**
- * Global Control & Button Sizing Scale (in px)
- * Ensures 100% size parity across all buttons, inputs, chips and icon actions.
+ * Global Control & Component Sizing Scale (in px)
+ * Ensures 100% size parity across Buttons, Inputs, Selects, SearchBars and form controls.
+ * - sm: 36px (compact lists, dense tables, toolbar actions)
+ * - md: 44px (Apple iOS standard 44pt touch target - default)
+ * - lg: 52px (hero actions, prominent checkout/login forms)
  */
-export const ControlSize = {
+export const ControlSize: Record<ControlSizeKey, ControlSizeMetric> & {
+  iconBtnSm: number;
+  iconBtnMd: number;
+  badgeHeightSm: number;
+  badgeHeightMd: number;
+} = {
   sm: {
     height: 36,
     iconSize: 16,
-    paddingHorizontal: 14,
+    paddingHorizontal: 12,
     fontSize: 13,
+    lineHeight: 18,
+    gap: 6,
   },
   md: {
     height: 44, // Apple 44pt touch target standard
     iconSize: 18,
     paddingHorizontal: 16,
     fontSize: 15,
+    lineHeight: 20,
+    gap: 8,
   },
   lg: {
     height: 52,
     iconSize: 20,
-    paddingHorizontal: 22,
-    fontSize: 16,
+    paddingHorizontal: 20,
+    fontSize: 17,
+    lineHeight: 22,
+    gap: 10,
   },
   iconBtnSm: 36,
   iconBtnMd: 44,
   badgeHeightSm: 24,
   badgeHeightMd: 28,
 };
+
+/**
+ * Returns standardized sizing metrics for any control element.
+ */
+export const getControlMetric = (size: ControlSizeKey = 'md'): ControlSizeMetric => {
+  return ControlSize[size] ?? ControlSize.md;
+};
+
 
 /**
  * Global Typography Scale

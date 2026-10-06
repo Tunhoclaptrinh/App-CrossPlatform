@@ -13,7 +13,7 @@ export type AppButtonVariant =
 export type AppButtonSize = 'sm' | 'md' | 'lg';
 
 export interface AppButtonProps extends TouchableOpacityProps {
-  title: string;
+  title?: string;
   variant?: AppButtonVariant;
   size?: AppButtonSize;
   loading?: boolean;
@@ -23,3 +23,4 @@ export interface AppButtonProps extends TouchableOpacityProps {
   textStyle?: TextStyle;
   haptic?: boolean;
 }
+

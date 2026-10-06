@@ -5,7 +5,8 @@ import type { AppButtonVariant, AppButtonSize } from './types';
 
 export const createButtonStyles = (
   colors: ThemeColors,
-  radius: RadiusPresetConfig = RadiusPresets.standard
+  radius: RadiusPresetConfig = RadiusPresets.standard,
+  isDark: boolean = false
 ) =>
   StyleSheet.create({
     base: {
@@ -13,6 +14,8 @@ export const createButtonStyles = (
       alignItems: 'center',
       justifyContent: 'center',
       borderRadius: radius.control,
+      overflow: 'hidden',
+      position: 'relative',
     },
     // Sizes - Standardized via ControlSize Tokens
     sizeSm: {
@@ -63,14 +66,22 @@ export const createButtonStyles = (
       borderWidth: 0,
     },
     glass: {
-      backgroundColor: colors.card,
+      backgroundColor: isDark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(255, 255, 255, 0.78)',
       borderWidth: 1.2,
-      borderColor: colors.border,
+      borderColor: isDark ? 'rgba(255, 255, 255, 0.22)' : 'rgba(255, 255, 255, 0.90)',
       shadowColor: '#000000',
       shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.08,
+      shadowOpacity: isDark ? 0.35 : 0.08,
       shadowRadius: 10,
       elevation: 2,
+    },
+    specularHighlight: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      height: 1.2,
+      backgroundColor: isDark ? 'rgba(255, 255, 255, 0.40)' : 'rgba(255, 255, 255, 0.98)',
     },
     // State
     disabled: {
@@ -82,16 +93,16 @@ export const createButtonStyles = (
       textAlign: 'center',
     },
     textSm: {
-      fontSize: 13,
-      lineHeight: 18,
+      fontSize: ControlSize.sm.fontSize,
+      lineHeight: ControlSize.sm.lineHeight,
     },
     textMd: {
-      fontSize: 15,
-      lineHeight: 20,
+      fontSize: ControlSize.md.fontSize,
+      lineHeight: ControlSize.md.lineHeight,
     },
     textLg: {
-      fontSize: 17,
-      lineHeight: 22,
+      fontSize: ControlSize.lg.fontSize,
+      lineHeight: ControlSize.lg.lineHeight,
     },
     // Icon containers
     leftIconWrapper: {
@@ -103,6 +114,14 @@ export const createButtonStyles = (
       marginLeft: Spacing.sm,
       alignItems: 'center',
       justifyContent: 'center',
+    },
+    iconOnly: {
+      paddingHorizontal: 0,
+      paddingVertical: 0,
+    },
+    iconOnlyWrapper: {
+      marginRight: 0,
+      marginLeft: 0,
     },
   });
 

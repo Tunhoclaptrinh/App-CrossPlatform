@@ -1,15 +1,17 @@
 import React, { useMemo } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { Palette, Bell, AlertTriangle } from 'lucide-react-native';
 import { AppText, AppButton, AppCheckbox, AppSwitch } from '@/components';
 import { haptics } from '@/utils';
 import type { ThemeColors } from '@/constants/colors';
 import type { RadiusPresetConfig } from '@/constants/theme';
+import { createPaperStyles } from './PaperShowcase.styles';
 
 interface PaperShowcaseProps {
   themeColors: ThemeColors;
   radiusTokens: RadiusPresetConfig;
   isDark: boolean;
+  isGlass?: boolean;
   rememberLogin: boolean;
   setRememberLogin: (val: boolean) => void;
   pushNotification: boolean;
@@ -22,6 +24,7 @@ export const PaperShowcase: React.FC<PaperShowcaseProps> = ({
   themeColors,
   radiusTokens,
   isDark,
+  isGlass = false,
   rememberLogin,
   setRememberLogin,
   pushNotification,
@@ -30,11 +33,27 @@ export const PaperShowcase: React.FC<PaperShowcaseProps> = ({
   onOpenDialog,
 }) => {
   const styles = useMemo(() => createPaperStyles(radiusTokens), [radiusTokens]);
+
   return (
-    <View style={[styles.card, isDark ? styles.cardDark : styles.cardLight]}>
+    <View
+      style={[
+        styles.card,
+        isGlass
+          ? isDark
+            ? styles.cardGlassDark
+            : styles.cardGlassLight
+          : isDark
+          ? styles.cardDark
+          : styles.cardLight,
+      ]}
+    >
+      {isGlass && (
+        <View style={isDark ? styles.specularHighlightDark : styles.specularHighlight} />
+      )}
+
       {/* Title Header */}
       <View style={styles.titleRow}>
-        <View style={[styles.iconBox, { backgroundColor: 'rgba(37, 99, 235, 0.15)' }]}>
+        <View style={styles.iconBox}>
           <Palette size={18} color="#2563EB" strokeWidth={2.4} />
         </View>
         <View style={styles.titleTextCol}>
@@ -53,13 +72,21 @@ export const PaperShowcase: React.FC<PaperShowcaseProps> = ({
           <AppButton title="Primary Button" variant="primary" size="sm" />
         </View>
         <View style={styles.gridItem}>
-          <AppButton title="Tonal Button" variant="tonal" size="sm" />
+          <AppButton
+            title={isGlass ? 'Glass Button' : 'Tonal Button'}
+            variant={isGlass ? 'glass' : 'tonal'}
+            size="sm"
+          />
         </View>
       </View>
 
       <View style={styles.grid2}>
         <View style={styles.gridItem}>
-          <AppButton title="Outline Button" variant="outline" size="sm" />
+          <AppButton
+            title="Outline Button"
+            variant={isGlass ? 'glass' : 'outline'}
+            size="sm"
+          />
         </View>
         <View style={styles.gridItem}>
           <AppButton title="Danger Button" variant="danger" size="sm" />
@@ -67,7 +94,18 @@ export const PaperShowcase: React.FC<PaperShowcaseProps> = ({
       </View>
 
       {/* Form Controls */}
-      <View style={[styles.formBox, isDark ? styles.formBoxDark : styles.formBoxLight]}>
+      <View
+        style={[
+          styles.formBox,
+          isGlass
+            ? isDark
+              ? styles.formBoxGlassDark
+              : styles.formBoxGlassLight
+            : isDark
+            ? styles.formBoxDark
+            : styles.formBoxLight,
+        ]}
+      >
         <AppCheckbox
           checked={rememberLogin}
           onChange={(val) => {
@@ -93,16 +131,22 @@ export const PaperShowcase: React.FC<PaperShowcaseProps> = ({
         <View style={styles.gridItem}>
           <AppButton
             title="Bật Thử Toast"
-            variant="outline"
+            variant={isGlass ? 'glass' : 'outline'}
             size="sm"
-            leftIcon={<Bell size={14} color={themeColors.primary} strokeWidth={2.2} />}
+            leftIcon={
+              <Bell
+                size={14}
+                color={isGlass ? themeColors.text : themeColors.primary}
+                strokeWidth={2.2}
+              />
+            }
             onPress={onShowToast}
           />
         </View>
         <View style={styles.gridItem}>
           <AppButton
             title="Mở Hộp Thoại"
-            variant="outline"
+            variant={isGlass ? 'glass' : 'outline'}
             size="sm"
             leftIcon={<AlertTriangle size={14} color="#EF4444" strokeWidth={2.2} />}
             onPress={onOpenDialog}
@@ -112,68 +156,3 @@ export const PaperShowcase: React.FC<PaperShowcaseProps> = ({
     </View>
   );
 };
-
-const createPaperStyles = (radius: RadiusPresetConfig) =>
-  StyleSheet.create({
-    card: {
-      borderRadius: radius.card,
-      padding: 16,
-      borderWidth: 1,
-      gap: 14,
-      marginBottom: 20,
-    },
-    cardLight: {
-      backgroundColor: '#FFFFFF',
-      borderColor: '#E2E8F0',
-    },
-    cardDark: {
-      backgroundColor: '#111827',
-      borderColor: '#1F2937',
-    },
-    titleRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 10,
-    },
-    iconBox: {
-      width: 38,
-      height: 38,
-      borderRadius: Math.min(radius.smControl * 1.8, radius.card),
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    titleTextCol: {
-      flex: 1,
-      gap: 2,
-    },
-    title: {
-      fontSize: 16,
-      fontWeight: '800',
-      letterSpacing: -0.2,
-    },
-    subtitle: {
-      fontSize: 12,
-      lineHeight: 16,
-    },
-    grid2: {
-      flexDirection: 'row',
-      gap: 8,
-    },
-    gridItem: {
-      flex: 1,
-    },
-    formBox: {
-      borderRadius: radius.control,
-      padding: 14,
-      borderWidth: 1,
-      gap: 14,
-    },
-  formBoxLight: {
-    backgroundColor: '#F8FAFC',
-    borderColor: '#E2E8F0',
-  },
-  formBoxDark: {
-    backgroundColor: '#1E293B',
-    borderColor: '#334155',
-  },
-});

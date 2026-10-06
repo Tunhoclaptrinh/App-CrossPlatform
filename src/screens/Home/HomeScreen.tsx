@@ -18,6 +18,7 @@ import {
   Minus,
   RotateCcw,
   SlidersHorizontal,
+  BookOpen,
 } from 'lucide-react-native';
 import {
   AppText,
@@ -101,6 +102,16 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       icon: Sparkles,
       color: '#007AFF',
     },
+    {
+      id: 'storybook',
+      category: 'ui' as const,
+      tag: 'Design System',
+      title: 'Storybook & Component Catalog',
+      desc: 'Chuẩn hóa tỷ lệ kích thước Button, Input, Select, Badge, Card (sm, md, lg)',
+      icon: BookOpen,
+      color: '#6366F1',
+    },
+
     {
       id: 'realtime',
       category: 'realtime' as const,

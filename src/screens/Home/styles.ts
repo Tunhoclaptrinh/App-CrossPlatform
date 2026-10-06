@@ -219,11 +219,11 @@ export const createHomeStyles = (
     stepperBox: {
       flexDirection: 'row',
       alignItems: 'center',
-      backgroundColor: colors.surfaceSubtle,
+      backgroundColor: isDark ? 'rgba(0, 0, 0, 0.28)' : colors.surfaceSubtle,
       // Stepper container: card-level radius capped at 16px
       borderRadius: Math.min(radius.card, 16),
       borderWidth: 1,
-      borderColor: colors.border,
+      borderColor: isDark ? 'rgba(255, 255, 255, 0.12)' : colors.border,
       padding: 3,
       gap: 4,
     },
@@ -231,17 +231,20 @@ export const createHomeStyles = (
       width: 36,
       height: 36,
       borderRadius: radius.smControl,
-      backgroundColor: colors.card,
+      backgroundColor: isDark ? 'rgba(255, 255, 255, 0.10)' : colors.card,
       alignItems: 'center',
       justifyContent: 'center',
+      borderWidth: 1,
+      borderColor: isDark ? 'rgba(255, 255, 255, 0.15)' : colors.border,
       shadowColor: '#000000',
       shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.06,
+      shadowOpacity: isDark ? 0.2 : 0.06,
       shadowRadius: 2,
       elevation: 1,
     },
     stepperBtnPrimary: {
       backgroundColor: colors.primary,
+      borderColor: colors.primary,
     },
 
     // 3. Category Filter Tabs

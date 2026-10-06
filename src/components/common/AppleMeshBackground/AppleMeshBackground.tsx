@@ -1,15 +1,9 @@
 import React from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
+import { View } from 'react-native';
 import Svg, { Defs, LinearGradient, RadialGradient, Rect, Stop } from 'react-native-svg';
 import { useThemeMode } from '@/hooks/useThemeMode';
-
-export type MeshVariant = 'aurora' | 'sunset' | 'ocean' | 'minimal';
-
-export interface AppleMeshBackgroundProps {
-  variant?: MeshVariant;
-  style?: ViewStyle;
-  children?: React.ReactNode;
-}
+import type { AppleMeshBackgroundProps, MeshVariant } from './types';
+import { styles } from './styles';
 
 export const AppleMeshBackground: React.FC<AppleMeshBackgroundProps> = ({
   variant = 'aurora',
@@ -59,92 +53,87 @@ export const AppleMeshBackground: React.FC<AppleMeshBackgroundProps> = ({
         return isDark
           ? {
               base: '#0B0F19',
-              linear: ['#171E2E', '#101624', '#0B0F19'],
-              radial1: { color: '#334155', opacity: 0.45, cx: '80%', cy: '15%', r: '60%' },
-              radial2: { color: '#1E293B', opacity: 0.45, cx: '20%', cy: '85%', r: '65%' },
-              radial3: { color: '#475569', opacity: 0.30, cx: '50%', cy: '50%', r: '50%' },
+              linear: ['#111827', '#0F172A', '#0B0F19'],
+              radial1: { color: '#38BDF8', opacity: 0.18, cx: '80%', cy: '10%', r: '60%' },
+              radial2: { color: '#818CF8', opacity: 0.15, cx: '10%', cy: '80%', r: '60%' },
+              radial3: { color: '#34D399', opacity: 0.10, cx: '50%', cy: '50%', r: '40%' },
             }
           : {
-              base: '#F1F5F9',
-              linear: ['#E2E8F0', '#F1F5F9', '#CBD5E1'],
-              radial1: { color: '#94A3B8', opacity: 0.45, cx: '80%', cy: '15%', r: '60%' },
-              radial2: { color: '#CBD5E1', opacity: 0.50, cx: '20%', cy: '85%', r: '65%' },
-              radial3: { color: '#64748B', opacity: 0.25, cx: '50%', cy: '50%', r: '50%' },
+              base: '#F8FAFC',
+              linear: ['#F1F5F9', '#F8FAFC', '#FFFFFF'],
+              radial1: { color: '#38BDF8', opacity: 0.25, cx: '80%', cy: '10%', r: '60%' },
+              radial2: { color: '#818CF8', opacity: 0.20, cx: '10%', cy: '80%', r: '60%' },
+              radial3: { color: '#34D399', opacity: 0.15, cx: '50%', cy: '50%', r: '40%' },
             };
 
       case 'aurora':
       default:
         return isDark
           ? {
-              base: '#0B0D1B',
-              linear: ['#181236', '#0F0E24', '#080814'],
-              radial1: { color: '#8B5CF6', opacity: 0.58, cx: '85%', cy: '12%', r: '65%' },
-              radial2: { color: '#3B82F6', opacity: 0.52, cx: '15%', cy: '78%', r: '70%' },
-              radial3: { color: '#06B6D4', opacity: 0.42, cx: '50%', cy: '45%', r: '55%' },
+              base: '#0A0E1A',
+              linear: ['#130E26', '#091528', '#070C18'],
+              radial1: { color: '#6366F1', opacity: 0.55, cx: '80%', cy: '10%', r: '65%' },
+              radial2: { color: '#06B6D4', opacity: 0.45, cx: '15%', cy: '65%', r: '75%' },
+              radial3: { color: '#EC4899', opacity: 0.35, cx: '50%', cy: '90%', r: '60%' },
             }
           : {
               base: '#EEF2FF',
-              linear: ['#C7D2FE', '#DDD6FE', '#BAE6FD'],
-              radial1: { color: '#7C3AED', opacity: 0.48, cx: '85%', cy: '12%', r: '65%' },
-              radial2: { color: '#2563EB', opacity: 0.45, cx: '15%', cy: '78%', r: '70%' },
-              radial3: { color: '#06B6D4', opacity: 0.38, cx: '50%', cy: '45%', r: '55%' },
+              linear: ['#E0E7FF', '#CFFAFE', '#FCE7F3'],
+              radial1: { color: '#818CF8', opacity: 0.60, cx: '80%', cy: '10%', r: '65%' },
+              radial2: { color: '#22D3EE', opacity: 0.50, cx: '15%', cy: '65%', r: '75%' },
+              radial3: { color: '#F472B6', opacity: 0.40, cx: '50%', cy: '90%', r: '60%' },
             };
     }
   };
 
-  const g = getGradients();
+  const current = getGradients();
 
   return (
-    <View style={[styles.container, style]} pointerEvents="box-none">
-      <Svg style={styles.svg} width="100%" height="100%" preserveAspectRatio="none">
+    <View style={[styles.container, { backgroundColor: current.base }, style]} pointerEvents="none">
+      <Svg width="100%" height="100%" style={styles.svg}>
         <Defs>
-          {/* Main Diagonal Linear Base */}
+          {/* Base Atmospheric Linear Gradient */}
           <LinearGradient id="meshLinearGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <Stop offset="0%" stopColor={g.linear[0]} stopOpacity="1" />
-            <Stop offset="50%" stopColor={g.linear[1]} stopOpacity="1" />
-            <Stop offset="100%" stopColor={g.linear[2]} stopOpacity="1" />
+            <Stop offset="0%" stopColor={current.linear[0]} stopOpacity="1" />
+            <Stop offset="50%" stopColor={current.linear[1]} stopOpacity="1" />
+            <Stop offset="100%" stopColor={current.linear[2]} stopOpacity="1" />
           </LinearGradient>
 
-          {/* Organic Fluid Radial Glow 1 (Top-Right) */}
+          {/* Radial Plasma Light Emitters */}
           <RadialGradient
             id="meshRadial1"
-            cx={g.radial1.cx}
-            cy={g.radial1.cy}
-            r={g.radial1.r}
-            fx={g.radial1.cx}
-            fy={g.radial1.cy}
+            cx={current.radial1.cx}
+            cy={current.radial1.cy}
+            r={current.radial1.r}
+            fx={current.radial1.cx}
+            fy={current.radial1.cy}
           >
-            <Stop offset="0%" stopColor={g.radial1.color} stopOpacity={g.radial1.opacity} />
-            <Stop offset="50%" stopColor={g.radial1.color} stopOpacity={g.radial1.opacity * 0.45} />
-            <Stop offset="100%" stopColor={g.radial1.color} stopOpacity="0" />
+            <Stop offset="0%" stopColor={current.radial1.color} stopOpacity={current.radial1.opacity} />
+            <Stop offset="100%" stopColor={current.radial1.color} stopOpacity="0" />
           </RadialGradient>
 
-          {/* Organic Fluid Radial Glow 2 (Bottom-Left) */}
           <RadialGradient
             id="meshRadial2"
-            cx={g.radial2.cx}
-            cy={g.radial2.cy}
-            r={g.radial2.r}
-            fx={g.radial2.cx}
-            fy={g.radial2.cy}
+            cx={current.radial2.cx}
+            cy={current.radial2.cy}
+            r={current.radial2.r}
+            fx={current.radial2.cx}
+            fy={current.radial2.cy}
           >
-            <Stop offset="0%" stopColor={g.radial2.color} stopOpacity={g.radial2.opacity} />
-            <Stop offset="50%" stopColor={g.radial2.color} stopOpacity={g.radial2.opacity * 0.45} />
-            <Stop offset="100%" stopColor={g.radial2.color} stopOpacity="0" />
+            <Stop offset="0%" stopColor={current.radial2.color} stopOpacity={current.radial2.opacity} />
+            <Stop offset="100%" stopColor={current.radial2.color} stopOpacity="0" />
           </RadialGradient>
 
-          {/* Organic Fluid Radial Glow 3 (Center Refraction) */}
           <RadialGradient
             id="meshRadial3"
-            cx={g.radial3.cx}
-            cy={g.radial3.cy}
-            r={g.radial3.r}
-            fx={g.radial3.cx}
-            fy={g.radial3.cy}
+            cx={current.radial3.cx}
+            cy={current.radial3.cy}
+            r={current.radial3.r}
+            fx={current.radial3.cx}
+            fy={current.radial3.cy}
           >
-            <Stop offset="0%" stopColor={g.radial3.color} stopOpacity={g.radial3.opacity} />
-            <Stop offset="60%" stopColor={g.radial3.color} stopOpacity={g.radial3.opacity * 0.35} />
-            <Stop offset="100%" stopColor={g.radial3.color} stopOpacity="0" />
+            <Stop offset="0%" stopColor={current.radial3.color} stopOpacity={current.radial3.opacity} />
+            <Stop offset="100%" stopColor={current.radial3.color} stopOpacity="0" />
           </RadialGradient>
         </Defs>
 
@@ -161,20 +150,4 @@ export const AppleMeshBackground: React.FC<AppleMeshBackgroundProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    overflow: 'hidden',
-  },
-  svg: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-  },
-});
+export type { AppleMeshBackgroundProps, MeshVariant };

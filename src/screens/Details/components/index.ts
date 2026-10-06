@@ -8,3 +8,5 @@ export * from './CryptoShowcase';
 export * from './PaperShowcase';
 export * from './StorageShowcase';
 export * from './UtilsShowcase';
+export * from './StorybookShowcase';
+

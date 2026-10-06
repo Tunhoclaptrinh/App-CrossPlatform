@@ -9,7 +9,14 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { useThemeMode } from '@/hooks/useThemeMode';
 import type { AppSearchBarProps } from './types';
 import { DEFAULT_SEARCH_DEBOUNCE_MS, DEFAULT_SEARCH_PLACEHOLDER } from './constants';
-import { styles, getSearchBarThemedContainer, getFilterButtonThemedStyle } from './styles';
+import {
+  styles,
+  getSearchBarThemedContainer,
+  getFilterButtonThemedStyle,
+  getSearchBarSizeStyle,
+  getSearchBarInputSizeStyle,
+} from './styles';
+import { ControlSize } from '@/constants/theme';
 
 export const AppSearchBar: React.FC<AppSearchBarProps> = ({
   value: controlledValue,
@@ -17,11 +24,13 @@ export const AppSearchBar: React.FC<AppSearchBarProps> = ({
   onDebounceChange,
   debounceDelay = DEFAULT_SEARCH_DEBOUNCE_MS,
   placeholder = DEFAULT_SEARCH_PLACEHOLDER,
+  size = 'md',
   onFilterPress,
   onClear,
   style,
 }) => {
   const { theme: themeColors, radiusTokens } = useThemeMode();
+  const iconSize = ControlSize[size].iconSize;
 
   const [text, setText] = useState(controlledValue || '');
   const debouncedText = useDebounce(text, debounceDelay);
@@ -55,18 +64,19 @@ export const AppSearchBar: React.FC<AppSearchBarProps> = ({
     <View
       style={[
         styles.container,
+        getSearchBarSizeStyle(size),
         getSearchBarThemedContainer(themeColors, radiusTokens),
         style,
       ]}
     >
-      <Search size={18} color={themeColors.textSecondary} style={styles.searchIcon} />
+      <Search size={iconSize} color={themeColors.textSecondary} style={styles.searchIcon} />
 
       <TextInput
         value={text}
         onChangeText={handleChangeText}
         placeholder={placeholder}
         placeholderTextColor={themeColors.textSecondary}
-        style={[styles.input, { color: themeColors.text }]}
+        style={[styles.input, getSearchBarInputSizeStyle(size), { color: themeColors.text }]}
         returnKeyType="search"
         autoCapitalize="none"
         autoCorrect={false}

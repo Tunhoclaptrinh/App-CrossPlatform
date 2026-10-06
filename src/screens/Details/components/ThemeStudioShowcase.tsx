@@ -1,11 +1,12 @@
 import React, { useMemo } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import { Sliders, CheckCircle2 } from 'lucide-react-native';
 import { AppText, AppButton } from '@/components';
 import { AccentPalettes, type AccentColor, type ThemeColors } from '@/constants/colors';
 import { RadiusPresets, type RadiusPreset, type RadiusPresetConfig } from '@/constants/theme';
 import { haptics } from '@/utils';
 import type { ThemeStyle } from '@/hooks';
+import { createThemeStudioStyles } from './ThemeStudioShowcase.styles';
 
 interface ThemeStudioShowcaseProps {
   themeColors: ThemeColors;
@@ -35,8 +36,25 @@ export const ThemeStudioShowcase: React.FC<ThemeStudioShowcaseProps> = ({
   onOpenStudioModal,
 }) => {
   const styles = useMemo(() => createThemeStudioStyles(radiusTokens), [radiusTokens]);
+  const isGlass = themeStyle === 'apple-glass';
+
   return (
-    <View style={[styles.card, isDark ? styles.cardDark : styles.cardLight]}>
+    <View
+      style={[
+        styles.card,
+        isGlass
+          ? isDark
+            ? styles.cardGlassDark
+            : styles.cardGlassLight
+          : isDark
+          ? styles.cardDark
+          : styles.cardLight,
+      ]}
+    >
+      {isGlass && (
+        <View style={isDark ? styles.specularHighlightDark : styles.specularHighlight} />
+      )}
+
       {/* Title Header */}
       <View style={styles.titleRow}>
         <View style={[styles.iconBox, { backgroundColor: `${themeColors.primary}18` }]}>
@@ -57,7 +75,7 @@ export const ThemeStudioShowcase: React.FC<ThemeStudioShowcaseProps> = ({
         <View style={styles.gridItem}>
           <AppButton
             title={isDark ? 'Chế độ Tối (Dark)' : 'Chế độ Sáng (Light)'}
-            variant="tonal"
+            variant={isGlass ? 'glass' : 'tonal'}
             size="sm"
             onPress={() => {
               haptics.light();
@@ -68,7 +86,7 @@ export const ThemeStudioShowcase: React.FC<ThemeStudioShowcaseProps> = ({
         <View style={styles.gridItem}>
           <AppButton
             title={themeStyle === 'apple-glass' ? 'Kính Apple Glass' : 'Giao diện Flat UI'}
-            variant="tonal"
+            variant={isGlass ? 'glass' : 'tonal'}
             size="sm"
             onPress={onToggleThemeStyle}
           />
@@ -87,7 +105,13 @@ export const ThemeStudioShowcase: React.FC<ThemeStudioShowcaseProps> = ({
               key={acc.id}
               style={[
                 styles.accentBtn,
-                isDark ? styles.accentBtnDark : styles.accentBtnLight,
+                isGlass
+                  ? isDark
+                    ? styles.accentBtnGlassDark
+                    : styles.accentBtnGlassLight
+                  : isDark
+                  ? styles.accentBtnDark
+                  : styles.accentBtnLight,
                 isSelected && {
                   borderColor: acc.hex,
                   backgroundColor: `${acc.hex}15`,
@@ -127,7 +151,13 @@ export const ThemeStudioShowcase: React.FC<ThemeStudioShowcaseProps> = ({
               key={preset.id}
               style={[
                 styles.radiusCard,
-                isDark ? styles.radiusCardDark : styles.radiusCardLight,
+                isGlass
+                  ? isDark
+                    ? styles.radiusCardGlassDark
+                    : styles.radiusCardGlassLight
+                  : isDark
+                  ? styles.radiusCardDark
+                  : styles.radiusCardLight,
                 isSelected && {
                   borderColor: themeColors.primary,
                   backgroundColor: `${themeColors.primary}12`,
@@ -142,13 +172,12 @@ export const ThemeStudioShowcase: React.FC<ThemeStudioShowcaseProps> = ({
               <View
                 style={[
                   styles.radiusPreview,
-                  preset.id === 'sharp' && { borderRadius: 3 },
-                  preset.id === 'compact' && { borderRadius: 6 },
-                  preset.id === 'standard' && { borderRadius: 9 },
-                  preset.id === 'smooth' && { borderRadius: 12 },
-                  isSelected
-                    ? { borderColor: themeColors.primary, borderStyle: 'solid' }
-                    : { borderColor: themeColors.textSecondary },
+                  preset.id === 'sharp' && styles.radiusSharp,
+                  preset.id === 'compact' && styles.radiusCompact,
+                  preset.id === 'standard' && styles.radiusStandard,
+                  preset.id === 'smooth' && styles.radiusSmooth,
+                  isSelected ? styles.radiusBorderSelected : styles.radiusBorderDefault,
+                  isSelected && { borderColor: themeColors.primary },
                 ]}
               />
               <AppText
@@ -169,7 +198,18 @@ export const ThemeStudioShowcase: React.FC<ThemeStudioShowcaseProps> = ({
       </View>
 
       {/* Current tokens summary */}
-      <View style={[styles.summaryBox, isDark ? styles.summaryBoxDark : styles.summaryBoxLight]}>
+      <View
+        style={[
+          styles.summaryBox,
+          isGlass
+            ? isDark
+              ? styles.summaryBoxGlassDark
+              : styles.summaryBoxGlassLight
+            : isDark
+            ? styles.summaryBoxDark
+            : styles.summaryBoxLight,
+        ]}
+      >
         <View style={styles.summaryRow}>
           <CheckCircle2 size={15} color={themeColors.primary} strokeWidth={2.4} />
           <AppText style={[styles.summaryText, { color: themeColors.text }]}>
@@ -186,166 +226,19 @@ export const ThemeStudioShowcase: React.FC<ThemeStudioShowcaseProps> = ({
 
       <AppButton
         title="Mở Bảng Tinh Chỉnh Nổi (Studio Modal)"
-        variant="primary"
+        variant={isGlass ? 'glass' : 'primary'}
         size="md"
-        leftIcon={<Sliders size={16} color="#FFFFFF" strokeWidth={2.2} />}
+        leftIcon={
+          <Sliders
+            size={16}
+            color={isGlass ? themeColors.text : '#FFFFFF'}
+            strokeWidth={2.2}
+          />
+        }
         onPress={onOpenStudioModal}
       />
     </View>
   );
 };
 
-const createThemeStudioStyles = (radius: RadiusPresetConfig) =>
-  StyleSheet.create({
-    card: {
-      borderRadius: radius.card,
-      padding: 16,
-      borderWidth: 1,
-      gap: 14,
-      marginBottom: 20,
-    },
-    cardLight: {
-      backgroundColor: '#FFFFFF',
-      borderColor: '#E2E8F0',
-    },
-    cardDark: {
-      backgroundColor: '#111827',
-      borderColor: '#1F2937',
-    },
-    titleRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 10,
-    },
-    iconBox: {
-      width: 38,
-      height: 38,
-      borderRadius: Math.min(radius.smControl * 1.8, radius.card),
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    titleTextCol: {
-      flex: 1,
-      gap: 2,
-    },
-    title: {
-      fontSize: 16,
-      fontWeight: '800',
-      letterSpacing: -0.2,
-    },
-    subtitle: {
-      fontSize: 12,
-      lineHeight: 16,
-    },
-    grid2: {
-      flexDirection: 'row',
-      gap: 8,
-    },
-    gridItem: {
-      flex: 1,
-    },
-    sectionLabel: {
-      fontSize: 10.5,
-      fontWeight: '800',
-      letterSpacing: 0.6,
-      marginTop: 2,
-    },
-    accentGrid: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      gap: 8,
-      justifyContent: 'space-between',
-    },
-    accentBtn: {
-      width: '31%',
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 7,
-      height: 38,
-      paddingHorizontal: 10,
-      borderRadius: radius.smControl,
-      borderWidth: 1.4,
-    },
-    accentBtnLight: {
-      backgroundColor: '#F8FAFC',
-      borderColor: '#E2E8F0',
-    },
-    accentBtnDark: {
-      backgroundColor: '#1E293B',
-      borderColor: '#334155',
-    },
-    accentDot: {
-      width: 14,
-      height: 14,
-      borderRadius: 7,
-    },
-    accentName: {
-      fontSize: 11.5,
-      fontWeight: '600',
-      flex: 1,
-    },
-    accentNameActive: {
-      fontWeight: '700',
-    },
-    radiusGrid: {
-      flexDirection: 'row',
-      gap: 8,
-    },
-    radiusCard: {
-      flex: 1,
-      paddingVertical: 10,
-      paddingHorizontal: 4,
-      alignItems: 'center',
-      borderRadius: radius.control,
-      borderWidth: 1.4,
-      gap: 5,
-    },
-    radiusCardLight: {
-      backgroundColor: '#F8FAFC',
-      borderColor: '#E2E8F0',
-    },
-    radiusCardDark: {
-      backgroundColor: '#1E293B',
-      borderColor: '#334155',
-    },
-    radiusPreview: {
-      width: 24,
-      height: 24,
-      borderWidth: 1.8,
-      borderStyle: 'dashed',
-    },
-    radiusName: {
-      fontSize: 11,
-      fontWeight: '700',
-    },
-    radiusNameActive: {
-      fontWeight: '800',
-    },
-    radiusPx: {
-      fontSize: 9.5,
-    },
-    summaryBox: {
-      borderRadius: radius.card,
-      padding: 12,
-      gap: 8,
-      borderWidth: 1,
-    },
-  summaryBoxLight: {
-    backgroundColor: '#F8FAFC',
-    borderColor: '#E2E8F0',
-  },
-  summaryBoxDark: {
-    backgroundColor: '#1E293B',
-    borderColor: '#334155',
-  },
-  summaryRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  summaryText: {
-    fontSize: 12,
-    fontWeight: '500',
-    flex: 1,
-  },
-});
+

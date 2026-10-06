@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native';
-import { Spacing, Typography, RadiusPresetConfig, ControlSize } from '@/constants/theme';
+import { Spacing, RadiusPresetConfig, ControlSize } from '@/constants/theme';
 import type { ThemeColors } from '@/constants/colors';
+import type { AppInputSize } from './types';
 
 export const styles = StyleSheet.create({
   wrapper: {
@@ -14,13 +15,37 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1.5,
-    paddingHorizontal: Spacing.md,
+  },
+  sizeSm: {
+    height: ControlSize.sm.height,
+    minHeight: ControlSize.sm.height,
+    paddingHorizontal: ControlSize.sm.paddingHorizontal,
+  },
+  sizeMd: {
     height: ControlSize.md.height,
+    minHeight: ControlSize.md.height,
+    paddingHorizontal: ControlSize.md.paddingHorizontal,
+  },
+  sizeLg: {
+    height: ControlSize.lg.height,
+    minHeight: ControlSize.lg.height,
+    paddingHorizontal: ControlSize.lg.paddingHorizontal,
   },
   input: {
     flex: 1,
-    ...Typography.body,
     paddingVertical: 0,
+  },
+  inputSm: {
+    fontSize: ControlSize.sm.fontSize,
+    lineHeight: ControlSize.sm.lineHeight,
+  },
+  inputMd: {
+    fontSize: ControlSize.md.fontSize,
+    lineHeight: ControlSize.md.lineHeight,
+  },
+  inputLg: {
+    fontSize: ControlSize.lg.fontSize,
+    lineHeight: ControlSize.lg.lineHeight,
   },
   leftIconContainer: {
     marginRight: Spacing.sm,
@@ -32,11 +57,38 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  disabled: {
+    opacity: 0.5,
+  },
   errorText: {
     marginTop: 4,
     fontSize: 11,
   },
 });
+
+export const getInputSizeStyle = (size: AppInputSize = 'md') => {
+  switch (size) {
+    case 'sm':
+      return styles.sizeSm;
+    case 'lg':
+      return styles.sizeLg;
+    case 'md':
+    default:
+      return styles.sizeMd;
+  }
+};
+
+export const getInputTextSizeStyle = (size: AppInputSize = 'md') => {
+  switch (size) {
+    case 'sm':
+      return styles.inputSm;
+    case 'lg':
+      return styles.inputLg;
+    case 'md':
+    default:
+      return styles.inputMd;
+  }
+};
 
 export const getInputStateStyle = (
   colors: ThemeColors,
@@ -52,3 +104,4 @@ export const getInputStateStyle = (
     ? colors.primary
     : colors.border,
 });
+

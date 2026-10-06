@@ -8,6 +8,7 @@ import {
 import { AppText } from '../AppText';
 import { useThemeMode } from '@/hooks/useThemeMode';
 import { haptics } from '@/utils/haptics';
+import { ControlSize } from '@/constants/theme';
 import type { AppButtonProps } from './types';
 import {
   createButtonStyles,
@@ -31,8 +32,8 @@ export const AppButton: React.FC<AppButtonProps> = ({
   onPress,
   ...props
 }) => {
-  const { theme: themeColors, radiusTokens } = useThemeMode();
-  const styles = createButtonStyles(themeColors, radiusTokens);
+  const { theme: themeColors, radiusTokens, isDark } = useThemeMode();
+  const styles = createButtonStyles(themeColors, radiusTokens, isDark);
   const textColor = getButtonTextColor(variant, themeColors);
 
   const handlePress = (e: GestureResponderEvent) => {
@@ -43,6 +44,7 @@ export const AppButton: React.FC<AppButtonProps> = ({
   };
 
   const isInteractiveDisabled = disabled || loading;
+  const isIconOnly = !title && (!!leftIcon || !!rightIcon);
 
   return (
     <TouchableOpacity
@@ -51,6 +53,8 @@ export const AppButton: React.FC<AppButtonProps> = ({
         styles.base,
         getSizeStyle(size, styles),
         getVariantStyle(variant, styles),
+        isIconOnly && styles.iconOnly,
+        isIconOnly && { width: ControlSize[size].height },
         isInteractiveDisabled && styles.disabled,
         style,
       ]}
@@ -58,21 +62,29 @@ export const AppButton: React.FC<AppButtonProps> = ({
       onPress={handlePress}
       {...props}
     >
+      {variant === 'glass' && <View style={styles.specularHighlight} />}
       {loading ? (
-        <ActivityIndicator color={textColor} size={size === 'sm' ? 'small' : 'small'} />
+        <ActivityIndicator color={textColor} size="small" />
       ) : (
         <>
-          {leftIcon ? <View style={styles.leftIconWrapper}>{leftIcon}</View> : null}
-          <AppText
-            variant="subtitle"
-            color={textColor}
-            style={[styles.textBase, getTextSizeStyle(size, styles), textStyle]}
-          >
-            {title}
-          </AppText>
+          {leftIcon ? (
+            <View style={[styles.leftIconWrapper, isIconOnly && styles.iconOnlyWrapper]}>
+              {leftIcon}
+            </View>
+          ) : null}
+          {title ? (
+            <AppText
+              variant="subtitle"
+              color={textColor}
+              style={[styles.textBase, getTextSizeStyle(size, styles), textStyle]}
+            >
+              {title}
+            </AppText>
+          ) : null}
           {rightIcon ? <View style={styles.rightIconWrapper}>{rightIcon}</View> : null}
         </>
       )}
     </TouchableOpacity>
   );
 };
+

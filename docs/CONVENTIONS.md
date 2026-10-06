@@ -10,11 +10,16 @@ Mỗi khi thêm mới tính năng, sửa đổi hoặc tái cấu trúc (refacto
 1. **Bắt buộc cập nhật tài liệu:**
    * Cập nhật `README.md` (danh mục tính năng & hướng dẫn).
    * Cập nhật `docs/CONVENTIONS.md` (nếu có quy chuẩn mới).
+   * Cập nhật `docs/DESIGN_SYSTEM_STANDARDS.md` (quy chuẩn kích thước & tokens base).
    * Cập nhật AI Agent Skill: `.agents/skills/react-native-base/SKILL.md`.
-2. **Bắt buộc qua 3 cổng kiểm định (Pre-flight Checklist):**
+2. **Quy tắc bắt buộc khi chỉnh sửa Base Components:**
+   * Mọi cập nhật prop, variant hoặc tạo mới Base Component **BẮT BUỘC** phải cập nhật đồng bộ vào `StorybookShowcase.tsx` (`src/screens/Details/components/StorybookShowcase.tsx`) và file unit test `__tests__/components.test.tsx`.
+   * Tuân thủ triệt để bảng kích thước `ControlSize` (`sm`: 36px, `md`: 44px, `lg`: 52px). Cấm hardcode magic numbers.
+3. **Bắt buộc qua 3 cổng kiểm định (Pre-flight Checklist):**
    * `npm run lint` -> **Phải đạt 0 errors, 0 warnings**.
    * `npx tsc --noEmit` -> **Phải đạt 0 errors (clean type check)**.
    * `npm test` -> **Toàn bộ test suites phải PASS 100%**.
+
 
 ---
 
@@ -268,5 +273,35 @@ Toàn bộ phản hồi từ server hoặc AI model phải được định ki�
 * **Bắt buộc dùng hook chuẩn `useThemeMode()` (`src/hooks/useThemeMode.ts`)**:
   * Hook này tự động lấy trạng thái từ Zustand Store `useAppStore` và kết hợp với chế độ hệ thống khi ở chế độ `'system'`.
   * Đảm bảo toàn bộ 20+ components và các màn hình chuyển đổi màu sắc đồng thời, mượt mà và chuẩn xác 100%.
+
+---
+
+## 24. Kiến Trúc Atomic Design (Atoms, Molecules, Organisms, Templates)
+
+Toàn bộ hệ thống giao diện trong `src/components/` phân định rõ 4 tầng phân cấp:
+1. **Atoms (Nguyên tử)**: `AppText`, `AppBadge`, `AppLogo`, `Skeleton`, `CupertinoIconTile`, `AppleMeshBackground`.
+2. **Molecules (Phân tử)**: `AppButton`, `AppInput`, `AppSelect`, `AppSearchBar`, `AppSwitch`, `AppCheckbox`, `EmptyState`.
+3. **Organisms (Sinh vật)**: `AppCard`, `GlassCard`, `AppleGlassCard`, `GlassTile`, `WidgetCard`, `GestureCard`, `AppHeader`, `ConfirmDialog`, `LoadingOverlay`, `OfflineBanner`, `OptimizedList`, `ThemeStudioModal`, `AppWebView`.
+4. **Templates (Bố cục)**: `ScreenWrapper`.
+
+---
+
+## 25. Quy Chuẩn Tách File Style Độc Lập (Strict Style Separation)
+
+* **CẤM viết inline `StyleSheet.create` bên trong file component `.tsx`**.
+* Mọi component (kể cả showcase component trong màn hình) bắt buộc tách styles sang file riêng:
+  * Component độc lập: `src/components/common/<ComponentName>/styles.ts`
+  * Component con của màn hình: `src/screens/<ScreenName>/components/<ComponentName>.styles.ts`
+* Luôn sử dụng hàm sinh style động nhận `(themeColors, radiusTokens, isDark)` để đảm bảo khả năng đáp ứng tức thì với các chế độ giao diện.
+
+---
+
+## 26. Chuẩn Nút Bấm & Bề Mặt Kính Mờ Apple Liquid Glass
+
+* Nút bấm `AppButton` biến thể `variant="glass"` và các bề mặt `GlassCard`, `AppleGlassCard` bắt buộc tích hợp:
+  * Bán trong suốt chống lóa: `rgba(255, 255, 255, 0.78)` (Light) và `rgba(255, 255, 255, 0.09)` (Dark).
+  * Viền phản xạ Specular Highlight quang học (`height: 1.2px`) trên đỉnh cạnh vát.
+  * Bóng đổ khuếch tán mềm (Ambient Occlusion).
+
 
 
