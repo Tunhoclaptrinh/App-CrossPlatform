@@ -13,6 +13,7 @@ import { styles, createCardVariantStyle } from './styles';
 export const AppCard: React.FC<AppCardProps> = ({
   children,
   variant = 'elevated',
+  size,
   radius,
   padding = 'base',
   contrast,
@@ -45,7 +46,7 @@ export const AppCard: React.FC<AppCardProps> = ({
       ? borderRadius
       : radius
       ? BorderRadius[radius]
-      : Math.min(radiusTokens.card, 16);
+      : radiusTokens.card;
 
   const cardVariantStyle = createCardVariantStyle({
     variant: effectiveVariant,
@@ -58,9 +59,15 @@ export const AppCard: React.FC<AppCardProps> = ({
     backgroundColor,
   });
 
+  let resolvedPadding = Spacing[padding];
+  if (size === 'sm') resolvedPadding = Spacing.sm;
+  else if (size === 'md') resolvedPadding = Spacing.md;
+  else if (size === 'lg') resolvedPadding = Spacing.lg;
+  if (padding !== 'base') resolvedPadding = Spacing[padding];
+
   const cardStyle: ViewStyle = {
     borderRadius: cardRadius,
-    padding: Spacing[padding],
+    padding: resolvedPadding,
     ...cardVariantStyle,
   };
 

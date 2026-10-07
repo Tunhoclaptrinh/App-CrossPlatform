@@ -12,6 +12,8 @@ export interface AppActionSheetItem {
   disabled?: boolean;
 }
 
+export type AppActionSheetSize = 'sm' | 'md' | 'lg';
+
 export interface AppActionSheetProps {
   visible: boolean;
   onClose: () => void;
@@ -20,7 +22,9 @@ export interface AppActionSheetProps {
   actions: AppActionSheetItem[];
   showCancel?: boolean;
   cancelLabel?: string;
+  size?: AppActionSheetSize;
   contrast?: ControlContrast;
+  borderRadius?: number;
   style?: ViewStyle;
 }
 

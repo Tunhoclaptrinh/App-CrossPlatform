@@ -100,10 +100,16 @@ export const styles = StyleSheet.create({
   alignRight: {
     alignItems: 'flex-end',
   },
+  textLeft: {
+    textAlign: 'left',
+  },
+  textRight: {
+    textAlign: 'right',
+  },
   title: {
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: '700',
-    letterSpacing: -0.4,
+    letterSpacing: -0.3,
     textAlign: 'center',
   },
   subtitle: {
@@ -388,13 +394,17 @@ export const getHeaderBackgroundStyle = (color: string, opacity?: number) => ({
   ...(opacity !== undefined ? { opacity } : null),
 });
 
-export const getCenterTitlePadding = (topInset: number, clearance: number) => ({
+export const getCenterTitlePadding = (
+  topInset: number,
+  leftClearance: number,
+  rightClearance?: number
+) => ({
   paddingTop: topInset,
-  paddingLeft: clearance,
-  paddingRight: clearance,
+  paddingLeft: leftClearance,
+  paddingRight: rightClearance !== undefined ? rightClearance : leftClearance,
 });
 
-export const getContainerHeight = (topInset: number) => ({
+export const getContainerHeight = (topInset: number, baseHeight: number = 48) => ({
   paddingTop: topInset,
-  height: 48 + topInset,
+  height: baseHeight + topInset,
 });

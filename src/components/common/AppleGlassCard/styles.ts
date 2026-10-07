@@ -1,15 +1,44 @@
 import { StyleSheet } from 'react-native';
 import { Spacing } from '@/constants/theme';
+import type { ControlContrast } from '../surfaceUtils';
+import type { AppleGlassCardSize } from './types';
 
-export const createAppleGlassCardStyles = (isDark: boolean, cardRadius: number) =>
-  StyleSheet.create({
+export const createAppleGlassCardStyles = (
+  isDark: boolean,
+  cardRadius: number,
+  size: AppleGlassCardSize = 'md',
+  contrast: ControlContrast = 'normal',
+  borderRadiusOverride?: number
+) => {
+  const isHigh = contrast === 'high';
+  const resolvedRadius = borderRadiusOverride !== undefined ? borderRadiusOverride : Math.min(cardRadius, 16);
+
+  let height = 172;
+  let padding: number = Spacing.lg;
+  let balanceFontSize = 22;
+  if (size === 'sm') {
+    height = 144;
+    padding = 14;
+    balanceFontSize = 18;
+  } else if (size === 'lg') {
+    height = 200;
+    padding = 24;
+    balanceFontSize = 26;
+  }
+
+  let borderColor = isDark ? 'rgba(255, 255, 255, 0.25)' : 'rgba(255, 255, 255, 0.88)';
+  if (isHigh) {
+    borderColor = isDark ? 'rgba(255, 255, 255, 0.50)' : 'rgba(0, 0, 0, 0.25)';
+  }
+
+  return StyleSheet.create({
     container: {
-      height: 172,
-      borderRadius: Math.min(cardRadius, 16),
-      padding: Spacing.lg,
+      height,
+      borderRadius: resolvedRadius,
+      padding,
       justifyContent: 'space-between',
-      borderWidth: 1,
-      borderColor: isDark ? 'rgba(255, 255, 255, 0.25)' : 'rgba(255, 255, 255, 0.88)',
+      borderWidth: isHigh ? 1.5 : 1,
+      borderColor,
       backgroundColor: isDark ? 'rgba(24, 27, 38, 0.68)' : 'rgba(255, 255, 255, 0.64)',
       shadowColor: '#000000',
       shadowOffset: { width: 0, height: 8 },
@@ -21,16 +50,16 @@ export const createAppleGlassCardStyles = (isDark: boolean, cardRadius: number) 
     },
     blurBackdrop: {
       ...StyleSheet.absoluteFill,
-      borderRadius: Math.min(cardRadius, 16),
+      borderRadius: resolvedRadius,
     },
     androidBackdropDark: {
       ...StyleSheet.absoluteFill,
-      borderRadius: Math.min(cardRadius, 16),
+      borderRadius: resolvedRadius,
       backgroundColor: 'rgba(24, 27, 38, 0.88)',
     },
     androidBackdropLight: {
       ...StyleSheet.absoluteFill,
-      borderRadius: Math.min(cardRadius, 16),
+      borderRadius: resolvedRadius,
       backgroundColor: 'rgba(255, 255, 255, 0.82)',
     },
     specularHighlight: {
@@ -109,8 +138,8 @@ export const createAppleGlassCardStyles = (isDark: boolean, cardRadius: number) 
       textTransform: 'uppercase',
     },
     balanceVal: {
-      fontSize: 24,
-      lineHeight: 30,
+      fontSize: balanceFontSize,
+      lineHeight: balanceFontSize + 6,
       fontWeight: '800',
       color: isDark ? '#FFFFFF' : '#0F172A',
       letterSpacing: -0.5,
@@ -138,3 +167,4 @@ export const createAppleGlassCardStyles = (isDark: boolean, cardRadius: number) 
       textTransform: 'uppercase',
     },
   });
+};

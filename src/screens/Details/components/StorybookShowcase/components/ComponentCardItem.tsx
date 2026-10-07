@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { ChevronRight } from 'lucide-react-native';
-import { AppText } from '@/components';
+import { AppCard, AppText } from '@/components';
 import type { ThemeColors } from '@/constants/colors';
 import type { RadiusPresetConfig } from '@/constants/theme';
 import type { ComponentMeta } from '../types';
@@ -38,15 +38,6 @@ export const ComponentCardItem: React.FC<ComponentCardItemProps> = React.memo(({
           flexDirection: 'row',
           alignItems: 'center',
           padding: 13,
-          borderRadius: Math.max(6, Math.min(radiusTokens.card, 16) - 2),
-          backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : '#FFFFFF',
-          borderWidth: 1,
-          borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.06)',
-          shadowColor: '#000000',
-          shadowOffset: { width: 0, height: 1 },
-          shadowOpacity: isDark ? 0.2 : 0.04,
-          shadowRadius: 2,
-          elevation: isDark ? 0 : 1,
           gap: 12,
         },
         iconBox: {
@@ -112,8 +103,8 @@ export const ComponentCardItem: React.FC<ComponentCardItemProps> = React.memo(({
   );
 
   return (
-    <TouchableOpacity
-      activeOpacity={0.7}
+    <AppCard
+      padding="none"
       style={styles.card}
       onPress={() => {
         haptics.light();
@@ -138,6 +129,7 @@ export const ComponentCardItem: React.FC<ComponentCardItemProps> = React.memo(({
         <AppText style={styles.demoText}>Demo</AppText>
         <ChevronRight size={13} color={themeColors.textSecondary} strokeWidth={2.5} />
       </View>
-    </TouchableOpacity>
+    </AppCard>
   );
 });
+

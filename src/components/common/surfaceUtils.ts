@@ -243,7 +243,7 @@ export const getControlSurfaceStyle = ({
         } else if (effectiveContrast === 'subtle') {
           resolvedBorderColor = 'transparent';
         } else {
-          resolvedBorderColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)';
+          resolvedBorderColor = isDark ? 'rgba(255, 255, 255, 0.10)' : 'rgba(0, 0, 0, 0.08)';
         }
         break;
 
@@ -253,7 +253,7 @@ export const getControlSurfaceStyle = ({
         } else if (effectiveContrast === 'subtle') {
           resolvedBorderColor = isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.04)';
         } else {
-          resolvedBorderColor = isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.06)';
+          resolvedBorderColor = isDark ? 'rgba(255, 255, 255, 0.14)' : 'rgba(0, 0, 0, 0.08)';
         }
         break;
 
@@ -273,7 +273,7 @@ export const getControlSurfaceStyle = ({
           } else if (effectiveContrast === 'subtle') {
             resolvedBorderColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)';
           } else {
-            resolvedBorderColor = colors.border;
+            resolvedBorderColor = isDark ? 'rgba(255, 255, 255, 0.16)' : 'rgba(0, 0, 0, 0.14)';
           }
         }
         break;

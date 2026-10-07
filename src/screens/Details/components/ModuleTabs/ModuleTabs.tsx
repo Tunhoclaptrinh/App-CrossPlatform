@@ -18,9 +18,11 @@ export const ModuleTabs: React.FC<ModuleTabsProps> = ({
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
+      nestedScrollEnabled
       style={styles.scroll}
       contentContainerStyle={styles.scrollContent}
     >
+
       {tabs.map((tab) => {
         const isActive = activeModule === tab.id;
         const TabIcon = tab.icon;

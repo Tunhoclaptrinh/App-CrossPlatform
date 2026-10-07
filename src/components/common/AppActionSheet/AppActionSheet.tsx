@@ -23,7 +23,9 @@ export const AppActionSheet: React.FC<AppActionSheetProps> = ({
   actions,
   showCancel = true,
   cancelLabel = 'Hủy bỏ',
+  size = 'md',
   contrast,
+  borderRadius,
   style,
 }) => {
   const { theme, radiusTokens, isDark, globalContrast, isGlassTheme } = useThemeMode();
@@ -33,7 +35,9 @@ export const AppActionSheet: React.FC<AppActionSheetProps> = ({
     radiusTokens,
     isDark,
     resolvedContrast,
-    isGlassTheme
+    isGlassTheme,
+    size,
+    borderRadius
   );
 
   const handleAction = (onPress: () => void) => {

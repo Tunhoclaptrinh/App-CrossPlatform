@@ -2,27 +2,49 @@ import { StyleSheet, Platform } from 'react-native';
 import { RadiusPresetConfig } from '@/constants/theme';
 import type { ThemeColors } from '@/constants/colors';
 import type { ControlContrast } from '../surfaceUtils';
+import type { AppActionSheetSize } from './types';
+
+export const ACTION_SHEET_SIZES: Record<
+  AppActionSheetSize,
+  {
+    itemPaddingV: number;
+    itemPaddingH: number;
+    labelSize: number;
+    descSize: number;
+    iconBox: number;
+    cancelPaddingV: number;
+    cancelSize: number;
+  }
+> = {
+  sm: { itemPaddingV: 10, itemPaddingH: 14, labelSize: 14, descSize: 11, iconBox: 24, cancelPaddingV: 12, cancelSize: 14.5 },
+  md: { itemPaddingV: 14, itemPaddingH: 18, labelSize: 15.5, descSize: 11.5, iconBox: 28, cancelPaddingV: 15, cancelSize: 16 },
+  lg: { itemPaddingV: 18, itemPaddingH: 22, labelSize: 17, descSize: 12.5, iconBox: 32, cancelPaddingV: 18, cancelSize: 17.5 },
+};
 
 export const createActionSheetStyles = (
   theme: ThemeColors,
   radius: RadiusPresetConfig,
   isDark: boolean,
   contrast: ControlContrast = 'normal',
-  isGlass: boolean = false
+  isGlass: boolean = false,
+  size: AppActionSheetSize = 'md',
+  borderRadiusOverride?: number
 ) => {
   const isHigh = contrast === 'high';
   const isSubtle = contrast === 'subtle';
+  const sizeConfig = ACTION_SHEET_SIZES[size] || ACTION_SHEET_SIZES.md;
+  const resolvedRadius = borderRadiusOverride !== undefined ? borderRadiusOverride : Math.max(12, Math.min(radius.card, 20));
 
   let borderColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)';
   let borderWidth = 1;
   if (isHigh) {
     borderWidth = 1.5;
-    borderColor = isDark ? 'rgba(255, 255, 255, 0.32)' : 'rgba(0, 0, 0, 0.28)';
+    borderColor = isDark ? 'rgba(255, 255, 255, 0.35)' : 'rgba(0, 0, 0, 0.30)';
   } else if (isSubtle) {
     borderWidth = 0.5;
     borderColor = isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.04)';
   } else if (isGlass) {
-    borderColor = isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.65)';
+    borderColor = isDark ? 'rgba(255, 255, 255, 0.22)' : 'rgba(255, 255, 255, 0.75)';
   }
 
   const surfaceBg = isGlass
@@ -55,7 +77,7 @@ export const createActionSheetStyles = (
       elevation: 10,
     },
     contentBlock: {
-      borderRadius: Math.max(12, Math.min(radius.card, 20)),
+      borderRadius: resolvedRadius,
       overflow: 'hidden',
       backgroundColor: surfaceBg,
       borderWidth,
@@ -91,8 +113,8 @@ export const createActionSheetStyles = (
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      paddingHorizontal: 18,
-      paddingVertical: 14,
+      paddingHorizontal: sizeConfig.itemPaddingH,
+      paddingVertical: sizeConfig.itemPaddingV,
       borderBottomWidth: 1,
       borderBottomColor: isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.05)',
     },
@@ -109,9 +131,9 @@ export const createActionSheetStyles = (
       flex: 1,
     },
     iconContainer: {
-      width: 28,
-      height: 28,
-      borderRadius: 7,
+      width: sizeConfig.iconBox,
+      height: sizeConfig.iconBox,
+      borderRadius: Math.round(sizeConfig.iconBox * 0.25),
       alignItems: 'center',
       justifyContent: 'center',
       backgroundColor: isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.04)',
@@ -123,21 +145,23 @@ export const createActionSheetStyles = (
       flex: 1,
     },
     actionLabel: {
-      fontSize: 15.5,
-      fontWeight: '600',
+      fontSize: sizeConfig.labelSize,
+      fontWeight: isHigh ? '700' : '600',
       color: theme.text,
     },
     actionLabelDestructive: {
       color: '#EF4444',
-      fontWeight: '600',
+      fontWeight: isHigh ? '700' : '600',
     },
     actionDesc: {
-      fontSize: 11.5,
-      color: theme.textSecondary,
+      fontSize: sizeConfig.descSize,
+      color: isHigh
+        ? (isDark ? 'rgba(255, 255, 255, 0.85)' : '#334155')
+        : theme.textSecondary,
       marginTop: 2,
     },
     cancelBlock: {
-      borderRadius: Math.max(12, Math.min(radius.card, 20)),
+      borderRadius: resolvedRadius,
       overflow: 'hidden',
       backgroundColor: surfaceBg,
       borderWidth,
@@ -149,12 +173,12 @@ export const createActionSheetStyles = (
       elevation: 8,
     },
     cancelButton: {
-      paddingVertical: 15,
+      paddingVertical: sizeConfig.cancelPaddingV,
       alignItems: 'center',
       justifyContent: 'center',
     },
     cancelText: {
-      fontSize: 16,
+      fontSize: sizeConfig.cancelSize,
       fontWeight: '700',
       color: theme.primary,
     },

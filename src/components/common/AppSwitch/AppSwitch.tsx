@@ -11,10 +11,24 @@ export const AppSwitch: React.FC<AppSwitchProps> = ({
   label,
   sublabel,
   disabled = false,
+  size = 'md',
+  contrast,
   style,
   ...props
 }) => {
-  const { theme: themeColors, isDark } = useThemeMode();
+  const { theme: themeColors, isDark, globalContrast } = useThemeMode();
+  const resolvedContrast = contrast ?? globalContrast;
+  const isHigh = resolvedContrast === 'high';
+
+  const offTrackColor = isHigh
+    ? isDark ? '#4B5563' : '#9CA3AF'
+    : isDark ? '#374151' : '#D1D5DB';
+
+  const switchScale = size === 'sm' ? 0.82 : size === 'lg' ? 1.15 : 1.0;
+  const switchTransform = React.useMemo(
+    () => (switchScale !== 1.0 ? { transform: [{ scale: switchScale }] } : undefined),
+    [switchScale]
+  );
 
   return (
     <View style={[styles.container, style]}>
@@ -24,7 +38,7 @@ export const AppSwitch: React.FC<AppSwitchProps> = ({
             <AppText
               variant="body"
               color={disabled ? themeColors.textSecondary : themeColors.text}
-              style={styles.label}
+              style={[styles.label, size === 'sm' && styles.labelSm, size === 'lg' && styles.labelLg]}
             >
               {label}
             </AppText>
@@ -42,21 +56,22 @@ export const AppSwitch: React.FC<AppSwitchProps> = ({
       )}
 
       <Switch
+        style={switchTransform}
         value={value}
         onValueChange={onValueChange}
         disabled={disabled}
         trackColor={{
-          false: isDark ? '#374151' : '#E5E7EB',
+          false: offTrackColor,
           true: themeColors.primary,
         }}
         thumbColor={
           Platform.OS === 'android'
             ? value
               ? '#FFFFFF'
-              : '#F3F4F6'
+              : isDark ? '#E5E7EB' : '#FFFFFF'
             : undefined
         }
-        ios_backgroundColor={isDark ? '#374151' : '#E5E7EB'}
+        ios_backgroundColor={offTrackColor}
         {...props}
       />
     </View>

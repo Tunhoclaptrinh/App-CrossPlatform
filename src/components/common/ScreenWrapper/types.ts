@@ -9,4 +9,7 @@ export interface ScreenWrapperProps extends SafeAreaViewProps {
   disableKeyboardDismiss?: boolean;
   backgroundColor?: string;
   disableMeshBackground?: boolean;
+  showsScrollIndicator?: boolean;
+  nestedScrollEnabled?: boolean;
 }
+

@@ -15,16 +15,20 @@ export interface AppHeaderAction {
 export type AppHeaderVariant = 'standard' | 'floating-pill' | 'frosted-capsule';
 export type AppHeaderBackStyle = 'text' | 'circle' | 'glass-capsule';
 export type AppHeaderActionStyle = 'individual' | 'capsule';
+export type AppHeaderSize = 'sm' | 'md' | 'lg';
 
 export interface AppHeaderProps {
-  title: string;
+  title?: string;
   subtitle?: string;
   titleAlign?: HeaderTitleAlign;
+  subtitleAlign?: HeaderTitleAlign;
   titleStyle?: TextStyle;
   subtitleStyle?: TextStyle;
 
   // Header Variant (Standard iOS navbar, Floating Pill with Island Capsule, or Frosted Capsule)
   variant?: AppHeaderVariant;
+  size?: AppHeaderSize;
+  borderRadius?: number;
 
   // Left action / Back button
   showBack?: boolean;

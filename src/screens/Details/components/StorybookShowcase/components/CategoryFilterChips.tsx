@@ -81,9 +81,11 @@ export const CategoryFilterChips: React.FC<CategoryFilterChipsProps> = ({
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
+      nestedScrollEnabled
       style={styles.scroll}
       contentContainerStyle={styles.scrollContent}
     >
+
       {categories.map((cat) => {
         const isActive = activeCategory === cat.id;
         const IconComponent = cat.icon;

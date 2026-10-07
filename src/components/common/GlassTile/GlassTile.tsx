@@ -5,7 +5,7 @@ import { useThemeMode } from '@/hooks/useThemeMode';
 import { haptics } from '@/utils/haptics';
 import { AppText } from '../AppText';
 import type { GlassTileProps } from './types';
-import { createGlassTileStyles } from './styles';
+import { createGlassTileStyles, GLASS_TILE_SIZES } from './styles';
 
 export const GlassTile: React.FC<GlassTileProps> = ({
   icon: IconComponent,
@@ -13,12 +13,17 @@ export const GlassTile: React.FC<GlassTileProps> = ({
   badgeBgColor,
   value,
   label,
+  size = 'md',
+  contrast,
+  borderRadius,
   style,
   onPress,
 }) => {
-  const { isDark, radiusTokens } = useThemeMode();
-  const styles = createGlassTileStyles(isDark, radiusTokens.card);
+  const { isDark, radiusTokens, globalContrast } = useThemeMode();
+  const resolvedContrast = contrast ?? globalContrast;
+  const styles = createGlassTileStyles(isDark, radiusTokens.card, size, resolvedContrast, borderRadius);
   const badgeColor = badgeBgColor || `${iconColor}18`;
+  const iconGlyphSize = (GLASS_TILE_SIZES[size] || GLASS_TILE_SIZES.md).iconSize;
 
   const handlePress = () => {
     if (onPress) {
@@ -43,7 +48,7 @@ export const GlassTile: React.FC<GlassTileProps> = ({
       )}
       <View style={styles.specularHairline} />
       <View style={[styles.iconBadge, { backgroundColor: badgeColor }]}>
-        <IconComponent size={18} color={iconColor} strokeWidth={2.2} />
+        <IconComponent size={iconGlyphSize} color={iconColor} strokeWidth={2.2} />
       </View>
       <AppText style={styles.valueText}>{value}</AppText>
       <AppText style={styles.labelText}>{label}</AppText>

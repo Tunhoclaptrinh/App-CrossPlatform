@@ -4,60 +4,11 @@ import type { RadiusPresetConfig } from '@/constants/theme';
 export const createHeaderCardStyles = (radius: RadiusPresetConfig) =>
   StyleSheet.create({
     card: {
-      borderRadius: Math.min(radius.card, 16),
       padding: 18,
-      borderWidth: 1,
       gap: 12,
       marginBottom: 16,
-      position: 'relative',
-      overflow: 'hidden',
     },
-    cardLight: {
-      backgroundColor: '#FFFFFF',
-      borderColor: '#E2E8F0',
-      shadowColor: '#000000',
-      shadowOpacity: 0.04,
-      shadowRadius: 8,
-      shadowOffset: { width: 0, height: 2 },
-    },
-    cardDark: {
-      backgroundColor: '#111827',
-      borderColor: '#1F2937',
-    },
-    cardGlassLight: {
-      backgroundColor: 'rgba(255, 255, 255, 0.72)',
-      borderColor: 'rgba(255, 255, 255, 0.88)',
-      shadowColor: '#000000',
-      shadowOffset: { width: 0, height: 6 },
-      shadowOpacity: 0.08,
-      shadowRadius: 16,
-      elevation: 0,
-    },
-    cardGlassDark: {
-      backgroundColor: 'rgba(24, 27, 38, 0.70)',
-      borderColor: 'rgba(255, 255, 255, 0.22)',
-      shadowColor: '#000000',
-      shadowOffset: { width: 0, height: 6 },
-      shadowOpacity: 0.35,
-      shadowRadius: 16,
-      elevation: 0,
-    },
-    specularHighlight: {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      height: 1.2,
-      backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    },
-    specularHighlightDark: {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      height: 1.2,
-      backgroundColor: 'rgba(255, 255, 255, 0.38)',
-    },
+
     topRow: {
       flexDirection: 'row',
       alignItems: 'center',

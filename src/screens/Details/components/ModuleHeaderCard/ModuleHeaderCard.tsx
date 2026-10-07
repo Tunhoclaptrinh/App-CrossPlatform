@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import { CheckCircle2, Zap, ShieldCheck } from 'lucide-react-native';
-import { AppText } from '@/components';
+import { AppCard, AppText } from '@/components';
 import type { ModuleHeaderCardProps } from './types';
 import { createHeaderCardStyles } from './styles';
 
@@ -9,29 +9,18 @@ export const ModuleHeaderCard: React.FC<ModuleHeaderCardProps> = ({
   currentTab,
   themeColors,
   radiusTokens,
-  isDark,
+  isDark: _isDark,
   isGlass = false,
 }) => {
+
   const styles = useMemo(() => createHeaderCardStyles(radiusTokens), [radiusTokens]);
   const TabIcon = currentTab.icon;
 
   return (
-    <View
-      style={[
-        styles.card,
-        isGlass
-          ? isDark
-            ? styles.cardGlassDark
-            : styles.cardGlassLight
-          : isDark
-          ? styles.cardDark
-          : styles.cardLight,
-      ]}
+    <AppCard
+      variant={isGlass ? 'glass' : 'elevated'}
+      style={styles.card}
     >
-      {isGlass && (
-        <View style={isDark ? styles.specularHighlightDark : styles.specularHighlight} />
-      )}
-
       {/* Top Meta Row */}
       <View style={styles.topRow}>
         <View
@@ -61,58 +50,26 @@ export const ModuleHeaderCard: React.FC<ModuleHeaderCardProps> = ({
 
       {/* Tags Row */}
       <View style={styles.tagsRow}>
-        <View
-          style={[
-            styles.tagPill,
-            isGlass
-              ? isDark
-                ? styles.tagPillGlassDark
-                : styles.tagPillGlassLight
-              : isDark
-              ? styles.tagPillDark
-              : styles.tagPillLight,
-          ]}
-        >
+        <View style={styles.tagPill}>
           <CheckCircle2 size={12} color="#10B981" strokeWidth={2.4} />
           <AppText style={[styles.tagText, { color: themeColors.textSecondary }]}>
             Native Tested
           </AppText>
         </View>
-        <View
-          style={[
-            styles.tagPill,
-            isGlass
-              ? isDark
-                ? styles.tagPillGlassDark
-                : styles.tagPillGlassLight
-              : isDark
-              ? styles.tagPillDark
-              : styles.tagPillLight,
-          ]}
-        >
+        <View style={styles.tagPill}>
           <Zap size={12} color="#F59E0B" strokeWidth={2.4} />
           <AppText style={[styles.tagText, { color: themeColors.textSecondary }]}>
             Zero Latency
           </AppText>
         </View>
-        <View
-          style={[
-            styles.tagPill,
-            isGlass
-              ? isDark
-                ? styles.tagPillGlassDark
-                : styles.tagPillGlassLight
-              : isDark
-              ? styles.tagPillDark
-              : styles.tagPillLight,
-          ]}
-        >
+        <View style={styles.tagPill}>
           <ShieldCheck size={12} color={themeColors.primary} strokeWidth={2.4} />
           <AppText style={[styles.tagText, { color: themeColors.textSecondary }]}>
             Type Safe (TypeScript)
           </AppText>
         </View>
       </View>
-    </View>
+    </AppCard>
   );
 };
+

@@ -1,4 +1,5 @@
 import { ViewStyle } from 'react-native';
+import type { ControlContrast } from '../surfaceUtils';
 
 export type SkeletonVariant = 'rectangular' | 'circular' | 'text';
 
@@ -7,6 +8,7 @@ export interface SkeletonProps {
   height?: number | string;
   borderRadius?: number;
   variant?: SkeletonVariant;
+  contrast?: ControlContrast;
   style?: ViewStyle;
 }
 

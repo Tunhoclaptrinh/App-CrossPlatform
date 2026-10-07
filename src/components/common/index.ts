@@ -1,9 +1,9 @@
 /**
  * Atomic Design System Component Architecture
  * 
- * 1. ATOMS:      Fundamental primitives (Text, Badge, Logo, Skeleton, IconTile, MeshBackground)
- * 2. MOLECULES:  Interactive unit controls (Button, Input, Select, SearchBar, Switch, Checkbox, EmptyState)
- * 3. ORGANISMS:   Complex feature sections (Card, GlassCard, AppleGlassCard, ConfirmDialog, etc.)
+ * 1. ATOMS:      Fundamental primitives (Text, Badge, Logo, Skeleton, IconTile, MeshBackground, Avatar, Divider, ProgressBar, PaginationDots)
+ * 2. MOLECULES:  Interactive unit controls (Button, Input, Select, SearchBar, Switch, Checkbox, Radio, Chip, OtpInput, Rating, ListItem, EmptyState, SegmentedControl)
+ * 3. ORGANISMS:   Complex feature sections (Card, GlassCard, AppleGlassCard, ConfirmDialog, Accordion, BottomSheet, Toast, ActionSheet, Header, etc.)
  * 4. TEMPLATES:  Screen framing & layout wrappers (ScreenWrapper)
  */
 
@@ -16,6 +16,10 @@ export * from './AppLogo';
 export * from './Skeleton';
 export * from './CupertinoIconTile';
 export * from './AppleMeshBackground';
+export * from './AppAvatar';
+export * from './AppDivider';
+export * from './AppProgressBar';
+export * from './PaginationDots';
 
 import { AppText } from './AppText';
 import { AppBadge } from './AppBadge';
@@ -23,6 +27,10 @@ import { AppLogo } from './AppLogo';
 import { Skeleton } from './Skeleton';
 import { CupertinoIconTile } from './CupertinoIconTile';
 import { AppleMeshBackground } from './AppleMeshBackground';
+import { AppAvatar, AppAvatarGroup } from './AppAvatar';
+import { AppDivider } from './AppDivider';
+import { AppProgressBar } from './AppProgressBar';
+import { PaginationDots } from './PaginationDots';
 
 export const Atoms = {
   AppText,
@@ -31,6 +39,11 @@ export const Atoms = {
   Skeleton,
   CupertinoIconTile,
   AppleMeshBackground,
+  AppAvatar,
+  AppAvatarGroup,
+  AppDivider,
+  AppProgressBar,
+  PaginationDots,
 } as const;
 
 // ============================================================================
@@ -42,6 +55,11 @@ export * from './AppSelect';
 export * from './AppSearchBar';
 export * from './AppSwitch';
 export * from './AppCheckbox';
+export * from './AppRadio';
+export * from './AppChip';
+export * from './AppOtpInput';
+export * from './AppRating';
+export * from './AppListItem';
 export * from './EmptyState';
 export * from './AppSegmentedControl';
 export * from './surfaceUtils';
@@ -52,6 +70,11 @@ import { AppSelect } from './AppSelect';
 import { AppSearchBar } from './AppSearchBar';
 import { AppSwitch } from './AppSwitch';
 import { AppCheckbox } from './AppCheckbox';
+import { AppRadio, AppRadioGroup } from './AppRadio';
+import { AppChip } from './AppChip';
+import { AppOtpInput } from './AppOtpInput';
+import { AppRating } from './AppRating';
+import { AppListItem, AppListGroup } from './AppListItem';
 import { EmptyState } from './EmptyState';
 import { AppSegmentedControl } from './AppSegmentedControl';
 
@@ -62,6 +85,13 @@ export const Molecules = {
   AppSearchBar,
   AppSwitch,
   AppCheckbox,
+  AppRadio,
+  AppRadioGroup,
+  AppChip,
+  AppOtpInput,
+  AppRating,
+  AppListItem,
+  AppListGroup,
   EmptyState,
   AppSegmentedControl,
 } as const;
@@ -70,13 +100,15 @@ export const Molecules = {
 // 3. ORGANISMS (Sinh Vật)
 // ============================================================================
 export * from './AppCard';
-export * from './GlassCard';
 export * from './AppleGlassCard';
 export * from './GlassTile';
 export * from './WidgetCard';
 export * from './GestureCard';
 export * from './AppHeader';
 export * from './ConfirmDialog';
+export * from './AppToast';
+export * from './AppAccordion';
+export * from './AppBottomSheet';
 export * from './LoadingOverlay';
 export * from './OfflineBanner';
 export * from './OptimizedList';
@@ -86,13 +118,15 @@ export * from './ErrorBoundary';
 export * from './AppWebView';
 
 import { AppCard } from './AppCard';
-import { GlassCard } from './GlassCard';
 import { AppleGlassCard } from './AppleGlassCard';
 import { GlassTile } from './GlassTile';
 import { WidgetCard } from './WidgetCard';
 import { GestureCard } from './GestureCard';
 import { AppHeader } from './AppHeader';
 import { ConfirmDialog } from './ConfirmDialog';
+import { AppToast, ToastProvider } from './AppToast';
+import { AppAccordion } from './AppAccordion';
+import { AppBottomSheet } from './AppBottomSheet';
 import { AppActionSheet } from './AppActionSheet';
 import { LoadingOverlay } from './LoadingOverlay';
 import { OfflineBanner } from './OfflineBanner';
@@ -103,13 +137,17 @@ import { AppWebView } from './AppWebView';
 
 export const Organisms = {
   AppCard,
-  GlassCard,
   AppleGlassCard,
   GlassTile,
   WidgetCard,
+
   GestureCard,
   AppHeader,
   ConfirmDialog,
+  AppToast,
+  ToastProvider,
+  AppAccordion,
+  AppBottomSheet,
   AppActionSheet,
   LoadingOverlay,
   OfflineBanner,

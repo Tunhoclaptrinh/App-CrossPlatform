@@ -67,6 +67,11 @@ export const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     justifyContent: 'center',
   },
+  sizeLg: {
+    height: 28,
+    paddingHorizontal: 12,
+    justifyContent: 'center',
+  },
   iconWrapper: {
     marginRight: Spacing.xs,
   },
@@ -82,7 +87,7 @@ export const getBadgeContainerStyle = (
   radius?: RadiusPresetConfig
 ) => [
   styles.badge,
-  size === 'sm' ? styles.sizeSm : styles.sizeMd,
+  size === 'sm' ? styles.sizeSm : size === 'lg' ? styles.sizeLg : styles.sizeMd,
   {
     backgroundColor: bgColor,
     borderRadius: getBadgeRadius(shape, radius),

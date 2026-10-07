@@ -14,13 +14,14 @@ import {
 } from 'lucide-react-native';
 import {
   AppText,
-  GlassCard,
+  AppCard,
   AppleMeshBackground,
   AppleGlassCard,
   GlassTile,
   AppHeader,
   AppSegmentedControl,
 } from '@/components';
+
 import { useAppStore, useToast } from '@/hooks';
 import { haptics } from '@/utils';
 import { createAppleGlassStyles } from './styles';
@@ -101,7 +102,8 @@ export const AppleGlassShowcase: React.FC<AppleGlassShowcaseProps> = ({
   return (
     <View style={styles.container}>
       {/* 1. HERO SHOWCASE CARD */}
-      <GlassCard style={styles.heroCard}>
+      <AppCard variant="glass" style={styles.heroCard}>
+
         <View style={styles.heroContentWrapper}>
           {/* Top Header Row with Apple HIG Tag & Live Pulse Indicator */}
           <View style={styles.heroHeaderRow}>
@@ -190,7 +192,8 @@ export const AppleGlassShowcase: React.FC<AppleGlassShowcaseProps> = ({
             </View>
           </View>
         </View>
-      </GlassCard>
+      </AppCard>
+
 
       {/* 2. BACKDROP MESH OPTICAL LAB */}
       <View style={[styles.meshLabContainer, isDark ? styles.meshLabContainerDark : styles.meshLabContainerLight]}>

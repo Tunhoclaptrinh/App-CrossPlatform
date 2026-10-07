@@ -12,11 +12,15 @@ import { createGestureCardStyles } from './styles';
 export const GestureCard: React.FC<GestureCardProps> = ({
   title,
   description,
+  size = 'md',
+  contrast,
+  borderRadius,
   onSwipeLeft,
   onSwipeRight,
   onDoubleTap,
 }) => {
-  const { theme: themeColors, radiusTokens, isDark } = useThemeMode();
+  const { theme: themeColors, radiusTokens, isDark, globalContrast } = useThemeMode();
+  const resolvedContrast = contrast ?? globalContrast;
   const { themeStyle } = useAppStore();
   const isGlass = themeStyle === 'apple-glass';
   const styles = createGestureCardStyles(themeColors, radiusTokens, isDark);
@@ -33,7 +37,12 @@ export const GestureCard: React.FC<GestureCardProps> = ({
   });
 
   return (
-    <AppCard style={styles.cardContent}>
+    <AppCard
+      size={size}
+      contrast={resolvedContrast}
+      borderRadius={borderRadius}
+      style={styles.cardContent}
+    >
       <View style={styles.titleRow}>
         <View style={styles.iconBox}>
           <Hand size={18} color="#007AFF" strokeWidth={2.4} />

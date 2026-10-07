@@ -4,19 +4,22 @@ import { Check } from 'lucide-react-native';
 import { AppText } from '../AppText';
 import { useThemeMode } from '@/hooks/useThemeMode';
 import type { AppCheckboxProps } from './types';
-import { styles } from './styles';
+import { styles, CHECKBOX_SIZES } from './styles';
 
 export const AppCheckbox: React.FC<AppCheckboxProps> = ({
   checked,
   onChange,
   label,
   disabled = false,
+  size = 'md',
   contrast,
+  borderRadius,
   style,
 }) => {
   const { theme: themeColors, isDark, globalContrast } = useThemeMode();
   const resolvedContrast = contrast ?? globalContrast;
   const isHigh = resolvedContrast === 'high';
+  const sizeConfig = CHECKBOX_SIZES[size];
 
   const handlePress = () => {
     if (!disabled) {
@@ -24,20 +27,34 @@ export const AppCheckbox: React.FC<AppCheckboxProps> = ({
     }
   };
 
-  const boxColors = checked
-    ? {
-        backgroundColor: themeColors.primary,
-        borderColor: themeColors.primary,
-      }
-    : {
-        backgroundColor: 'transparent',
-        borderColor: isHigh
-          ? isDark
-            ? 'rgba(255, 255, 255, 0.45)'
-            : 'rgba(0, 0, 0, 0.45)'
-          : themeColors.border,
-        borderWidth: isHigh ? 2 : 1.5,
-      };
+  const boxStyle = React.useMemo(
+    () => ({
+      width: sizeConfig.box,
+      height: sizeConfig.box,
+      borderRadius: borderRadius !== undefined ? borderRadius : sizeConfig.radius,
+      backgroundColor: checked
+        ? themeColors.primary
+        : isDark
+        ? 'rgba(255, 255, 255, 0.06)'
+        : '#FFFFFF',
+      borderColor: checked
+        ? themeColors.primary
+        : isHigh
+        ? isDark
+          ? 'rgba(255, 255, 255, 0.70)'
+          : 'rgba(0, 0, 0, 0.65)'
+        : isDark
+        ? 'rgba(255, 255, 255, 0.40)'
+        : 'rgba(0, 0, 0, 0.32)',
+      borderWidth: isHigh ? 2 : 1.5,
+    }),
+    [checked, isDark, isHigh, sizeConfig, borderRadius, themeColors.primary]
+  );
+
+  const labelStyle = React.useMemo(
+    () => [styles.label, { fontSize: sizeConfig.fontSize }],
+    [sizeConfig.fontSize]
+  );
 
   return (
     <TouchableOpacity
@@ -46,15 +63,15 @@ export const AppCheckbox: React.FC<AppCheckboxProps> = ({
       disabled={disabled}
       style={[styles.container, disabled && styles.disabled, style]}
     >
-      <View style={[styles.box, boxColors]}>
-        {checked && <Check size={14} color="#FFFFFF" strokeWidth={3} />}
+      <View style={[styles.box, boxStyle]}>
+        {checked && <Check size={sizeConfig.icon} color="#FFFFFF" strokeWidth={3} />}
       </View>
 
       {label ? (
         <AppText
           variant="body"
           color={disabled ? themeColors.textSecondary : themeColors.text}
-          style={styles.label}
+          style={labelStyle}
         >
           {label}
         </AppText>

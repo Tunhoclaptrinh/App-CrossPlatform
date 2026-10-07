@@ -77,7 +77,7 @@ export const createCardVariantStyle = (
           ? dark ? '#64748B' : '#94A3B8'
           : contrast === 'subtle'
           ? dark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)'
-          : colors.border;
+          : dark ? 'rgba(255, 255, 255, 0.18)' : 'rgba(0, 0, 0, 0.12)';
 
       const defaultBorderWidth =
         contrast === 'high' ? 1.5 : contrast === 'subtle' ? 0.8 : 1;
@@ -93,8 +93,8 @@ export const createCardVariantStyle = (
     case 'flat': {
       baseStyle = {
         backgroundColor: colors.surfaceSubtle,
-        borderWidth: contrast === 'high' ? 1 : 0,
-        borderColor: contrast === 'high' ? (dark ? '#334155' : '#E2E8F0') : 'transparent',
+        borderWidth: contrast === 'high' ? 1 : contrast === 'normal' ? 1 : 0,
+        borderColor: contrast === 'high' ? (dark ? '#334155' : '#E2E8F0') : contrast === 'normal' ? (dark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)') : 'transparent',
       };
       break;
     }
@@ -106,7 +106,7 @@ export const createCardVariantStyle = (
           ? dark ? '#475569' : '#CBD5E1'
           : contrast === 'subtle'
           ? dark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.04)'
-          : colors.borderLight;
+          : dark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.08)';
 
       const defaultBorderWidth =
         contrast === 'high' ? 1.5 : 1;

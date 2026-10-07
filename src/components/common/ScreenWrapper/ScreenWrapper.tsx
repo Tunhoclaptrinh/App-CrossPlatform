@@ -22,9 +22,12 @@ export const ScreenWrapper: React.FC<ScreenWrapperProps> = ({
   backgroundColor,
   style,
   edges = ['top', 'bottom', 'left', 'right'],
+  showsScrollIndicator = false,
+  nestedScrollEnabled = true,
   disableMeshBackground = false,
   ...props
 }) => {
+
   const { theme: themeColors } = useThemeMode();
   const { themeStyle } = useAppStore();
   const isGlass = themeStyle === 'apple-glass';
@@ -38,11 +41,14 @@ export const ScreenWrapper: React.FC<ScreenWrapperProps> = ({
     <ScrollView
       contentContainerStyle={[styles.scrollContent, contentContainerStyle]}
       keyboardShouldPersistTaps="handled"
-      showsVerticalScrollIndicator={false}
+      showsVerticalScrollIndicator={showsScrollIndicator}
+      showsHorizontalScrollIndicator={showsScrollIndicator}
+      nestedScrollEnabled={nestedScrollEnabled}
     >
       {children}
     </ScrollView>
   ) : (
+
     <View style={[styles.staticContent, contentContainerStyle]}>{children}</View>
   );
 

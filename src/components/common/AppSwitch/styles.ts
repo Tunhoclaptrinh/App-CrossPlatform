@@ -15,6 +15,12 @@ export const styles = StyleSheet.create({
   label: {
     fontWeight: '500',
   },
+  labelSm: {
+    fontSize: 13.5,
+  },
+  labelLg: {
+    fontSize: 16,
+  },
   sublabel: {
     marginTop: 2,
   },

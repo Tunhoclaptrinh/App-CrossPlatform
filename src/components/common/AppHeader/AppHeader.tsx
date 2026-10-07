@@ -20,6 +20,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
   title,
   subtitle,
   titleAlign = 'center',
+  subtitleAlign,
   titleStyle,
   subtitleStyle,
   variant = 'standard',
@@ -221,16 +222,38 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
           </View>
 
           {/* Island Center: Title & Subtitle */}
-          <View style={[styles.islandCenter, centerContainerStyle]}>
-            <AppText
-              style={[styles.islandTitle, { color: islandTextColor }, titleStyle]}
-              numberOfLines={1}
-            >
-              {title}
-            </AppText>
+          <View
+            style={[
+              styles.islandCenter,
+              titleAlign === 'left' && styles.alignLeft,
+              titleAlign === 'center' && styles.alignCenter,
+              titleAlign === 'right' && styles.alignRight,
+              centerContainerStyle,
+            ]}
+          >
+            {title ? (
+              <AppText
+                style={[
+                  styles.islandTitle,
+                  titleAlign === 'left' && styles.textLeft,
+                  titleAlign === 'right' && styles.textRight,
+                  { color: islandTextColor },
+                  titleStyle,
+                ]}
+                numberOfLines={1}
+              >
+                {title}
+              </AppText>
+            ) : null}
             {subtitle ? (
               <AppText
-                style={[styles.islandSubtitle, { color: islandSubtextColor }, subtitleStyle]}
+                style={[
+                  styles.islandSubtitle,
+                  (subtitleAlign || titleAlign) === 'left' && styles.textLeft,
+                  (subtitleAlign || titleAlign) === 'right' && styles.textRight,
+                  { color: islandSubtextColor },
+                  subtitleStyle,
+                ]}
                 numberOfLines={1}
               >
                 {subtitle}
@@ -363,25 +386,23 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
 
   const leftClearance = showBack
     ? effectiveBackStyle === 'text'
-      ? (backTitle ? 108 : 92)
-      : 52
+      ? (backTitle ? 84 : 70)
+      : 44
     : leftAction
-    ? 52
+    ? 44
     : leftActions?.length
-    ? leftActions.length * 40 + 16
+    ? leftActions.length * 36 + 12
     : 16;
 
   const rightClearance = allRightActionList.length > 0
     ? isCapsuleActions
-      ? allRightActionList.length * 32 + 28
-      : allRightActionList.length * 40 + 16
+      ? allRightActionList.length * 32 + 20
+      : allRightActionList.length * 36 + 12
     : showMore
-    ? 52
+    ? 44
     : rightAction
-    ? 52
+    ? 44
     : 16;
-
-  const titleClearance = Math.max(leftClearance, rightClearance, 72);
 
   return (
     <View
@@ -464,7 +485,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
           isCenterMode
             ? [
               styles.centerAbsolute,
-              getCenterTitlePadding(insets.top, titleClearance),
+              getCenterTitlePadding(insets.top, leftClearance, rightClearance),
             ]
             : styles.centerFlex,
           titleAlign === 'left' && styles.alignLeft,
@@ -474,15 +495,29 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
         ]}
         pointerEvents={isCenterMode ? 'none' : 'auto'}
       >
-        <AppText
-          style={[styles.title, { color: themeColors.text }, titleStyle]}
-          numberOfLines={1}
-        >
-          {title}
-        </AppText>
+        {title ? (
+          <AppText
+            style={[
+              styles.title,
+              titleAlign === 'left' && styles.textLeft,
+              titleAlign === 'right' && styles.textRight,
+              { color: themeColors.text },
+              titleStyle,
+            ]}
+            numberOfLines={1}
+          >
+            {title}
+          </AppText>
+        ) : null}
         {subtitle ? (
           <AppText
-            style={[styles.subtitle, { color: themeColors.textSecondary }, subtitleStyle]}
+            style={[
+              styles.subtitle,
+              (subtitleAlign || titleAlign) === 'left' && styles.textLeft,
+              (subtitleAlign || titleAlign) === 'right' && styles.textRight,
+              { color: themeColors.textSecondary },
+              subtitleStyle,
+            ]}
             numberOfLines={1}
           >
             {subtitle}

@@ -14,12 +14,15 @@ export const AppleGlassCard: React.FC<AppleGlassCardProps> = ({
   cardNumber = '•••• •••• •••• 9248',
   cardHolder = 'UNIVERSAL DEVELOPER',
   brandName = 'Apple Card',
+  size = 'md',
+  contrast,
+  borderRadius,
   style,
   onPress,
 }) => {
-  const { isDark, radiusTokens, theme: themeColors } = useThemeMode();
-  const cardRadius = Math.min(radiusTokens.card, 16);
-  const styles = createAppleGlassCardStyles(isDark, cardRadius);
+  const { isDark, radiusTokens, globalContrast, theme: themeColors } = useThemeMode();
+  const effectiveContrast = contrast ?? globalContrast ?? 'normal';
+  const styles = createAppleGlassCardStyles(isDark, radiusTokens.card, size, effectiveContrast, borderRadius);
 
   const handlePress = () => {
     if (onPress) {

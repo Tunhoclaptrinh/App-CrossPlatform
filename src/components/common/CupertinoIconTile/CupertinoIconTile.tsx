@@ -6,37 +6,66 @@ import { styles } from './styles';
 
 export const CupertinoIconTile: React.FC<CupertinoIconTileProps> = ({
   icon: IconComponent,
-  size = 44,
+  size = 'md',
   iconSize,
+  borderRadius: customRadius,
+  contrast = 'normal',
   gradientColors,
   baseColor = '#007AFF',
   style,
 }) => {
-  const actualIconSize = iconSize ?? Math.round(size * 0.52);
-  const borderRadius = Math.round(size * 0.28); // Standard Apple Continuous Squircle ratio
+  let resolvedSize = 44;
+  if (size === 'sm') resolvedSize = 34;
+  else if (size === 'md') resolvedSize = 44;
+  else if (size === 'lg') resolvedSize = 56;
+  else if (typeof size === 'number') resolvedSize = size;
+
+  const actualIconSize = iconSize ?? Math.round(resolvedSize * 0.52);
+  const borderRadius = customRadius !== undefined
+    ? customRadius
+    : Math.round(resolvedSize * 0.28); // Standard Apple Continuous Squircle ratio
+
+  const isHigh = contrast === 'high';
 
   // Derive subtle gradient if not provided
   const colors: [string, string] = gradientColors || [baseColor, shadeColor(baseColor, -20)];
-  const gradId = `tileGrad_${baseColor.replace(/[^a-zA-Z0-9]/g, '')}_${size}`;
+  const gradId = `tileGrad_${baseColor.replace(/[^a-zA-Z0-9]/g, '')}_${resolvedSize}`;
+
+  const dynamicTileStyle = React.useMemo(
+    () => ({
+      width: resolvedSize,
+      height: resolvedSize,
+      borderRadius,
+      shadowColor: baseColor,
+      borderWidth: isHigh ? 1.5 : 0,
+      borderColor: isHigh ? 'rgba(255, 255, 255, 0.45)' : 'transparent',
+    }),
+    [resolvedSize, borderRadius, baseColor, isHigh]
+  );
+
+  const dynamicSvgStyle = React.useMemo(
+    () => [styles.tileSvg, { borderRadius }],
+    [borderRadius]
+  );
+
+  const dynamicSpecularStyle = React.useMemo(
+    () => [
+      styles.specularLine,
+      {
+        left: Math.round(resolvedSize * 0.18),
+        right: Math.round(resolvedSize * 0.18),
+      },
+    ],
+    [resolvedSize]
+  );
 
   return (
-    <View
-      style={[
-        styles.tile,
-        {
-          width: size,
-          height: size,
-          borderRadius,
-          shadowColor: baseColor,
-        },
-        style,
-      ]}
-    >
+    <View style={[styles.tile, dynamicTileStyle, style]}>
       {/* 1. Rich Vector Gradient Background */}
       <Svg
-        width={size}
-        height={size}
-        style={[styles.tileSvg, { borderRadius }]}
+        width={resolvedSize}
+        height={resolvedSize}
+        style={dynamicSvgStyle}
       >
         <Defs>
           <LinearGradient id={gradId} x1="0%" y1="0%" x2="0%" y2="100%">
@@ -44,19 +73,11 @@ export const CupertinoIconTile: React.FC<CupertinoIconTileProps> = ({
             <Stop offset="100%" stopColor={colors[1]} stopOpacity="1" />
           </LinearGradient>
         </Defs>
-        <Rect width={size} height={size} rx={borderRadius} ry={borderRadius} fill={`url(#${gradId})`} />
+        <Rect width={resolvedSize} height={resolvedSize} rx={borderRadius} ry={borderRadius} fill={`url(#${gradId})`} />
       </Svg>
 
       {/* 2. Top Specular Reflection Highlight Line */}
-      <View
-        style={[
-          styles.specularLine,
-          {
-            left: Math.round(size * 0.18),
-            right: Math.round(size * 0.18),
-          },
-        ]}
-      />
+      <View style={dynamicSpecularStyle} />
 
       {/* 3. Crisp High-Contrast Icon Glyph */}
       <IconComponent size={actualIconSize} color="#FFFFFF" strokeWidth={2.2} />

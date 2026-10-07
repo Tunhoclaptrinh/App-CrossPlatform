@@ -9,22 +9,25 @@ export const Skeleton: React.FC<SkeletonProps> = ({
   height = 20,
   borderRadius,
   variant = 'rectangular',
+  contrast,
   style,
 }) => {
-  const { theme: themeColors } = useThemeMode();
+  const { theme: themeColors, isDark, globalContrast } = useThemeMode();
+  const resolvedContrast = contrast ?? globalContrast;
+  const isHigh = resolvedContrast === 'high';
 
-  const opacity = useRef(new Animated.Value(0.3)).current;
+  const opacity = useRef(new Animated.Value(isHigh ? 0.45 : 0.3)).current;
 
   useEffect(() => {
     const pulseAnimation = Animated.loop(
       Animated.sequence([
         Animated.timing(opacity, {
-          toValue: 0.7,
+          toValue: isHigh ? 0.85 : 0.7,
           duration: 800,
           useNativeDriver: true,
         }),
         Animated.timing(opacity, {
-          toValue: 0.3,
+          toValue: isHigh ? 0.45 : 0.3,
           duration: 800,
           useNativeDriver: true,
         }),
@@ -34,13 +37,17 @@ export const Skeleton: React.FC<SkeletonProps> = ({
     pulseAnimation.start();
 
     return () => pulseAnimation.stop();
-  }, [opacity]);
+  }, [opacity, isHigh]);
+
+  const bgColor = isHigh
+    ? isDark ? 'rgba(255, 255, 255, 0.22)' : 'rgba(0, 0, 0, 0.16)'
+    : themeColors.border;
 
   const baseStyle: ViewStyle = {
     width: width as any,
     height: height as any,
     borderRadius: getSkeletonRadius(variant, borderRadius),
-    backgroundColor: themeColors.border,
+    backgroundColor: bgColor,
   };
 
   return <Animated.View style={[baseStyle, { opacity }, style]} />;

@@ -13,23 +13,54 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   icon,
   actionText,
   onActionPress,
+  size = 'md',
+  contrast,
+  borderRadius,
   style,
 }) => {
-  const { theme: themeColors } = useThemeMode();
+  const { theme: themeColors, isDark, globalContrast } = useThemeMode();
+  const resolvedContrast = contrast ?? globalContrast;
+  const isHigh = resolvedContrast === 'high';
+
+  let iconSize = 60;
+  let containerPadding = 24;
+  let titleVariant: 'h3' | 'subtitle' | 'subtitle2' = 'subtitle';
+  let descVariant: 'body' | 'caption' = 'body';
+  let buttonSize: 'sm' | 'md' = 'sm';
+
+  if (size === 'sm') {
+    iconSize = 36;
+    containerPadding = 14;
+    titleVariant = 'subtitle2';
+    descVariant = 'caption';
+    buttonSize = 'sm';
+  } else if (size === 'lg') {
+    iconSize = 76;
+    containerPadding = 36;
+    titleVariant = 'h3';
+    descVariant = 'body';
+    buttonSize = 'md';
+  }
+
+  const descColor = isHigh
+    ? (isDark ? 'rgba(255, 255, 255, 0.85)' : '#334155')
+    : themeColors.textSecondary;
+
+  const dynamicRadiusStyle = borderRadius !== undefined ? { borderRadius } : null;
 
   return (
-    <View style={[styles.container, style]}>
+    <View style={[styles.container, { padding: containerPadding }, dynamicRadiusStyle, style]}>
       <View style={styles.iconWrapper}>
-        {icon || <Inbox size={64} color={themeColors.textSecondary} strokeWidth={1.2} />}
+        {icon || <Inbox size={iconSize} color={themeColors.textSecondary} strokeWidth={1.2} />}
       </View>
 
-      <AppText variant="subtitle" style={styles.title}>
+      <AppText variant={titleVariant} style={styles.title}>
         {title}
       </AppText>
 
       <AppText
-        variant="body"
-        color={themeColors.textSecondary}
+        variant={descVariant}
+        color={descColor}
         style={styles.description}
       >
         {description}
@@ -38,8 +69,8 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
       {actionText && onActionPress && (
         <AppButton
           title={actionText}
-          variant="tonal"
-          size="sm"
+          variant={isHigh ? 'primary' : 'tonal'}
+          size={buttonSize}
           onPress={onActionPress}
         />
       )}

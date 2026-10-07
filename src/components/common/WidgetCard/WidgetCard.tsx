@@ -1,13 +1,13 @@
 import React from 'react';
 import { View, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { RefreshCw } from 'lucide-react-native';
+import { AppCard } from '@/components/common/AppCard';
 import { AppText } from '@/components/common/AppText';
 import { AppBadge } from '@/components/common/AppBadge';
 import { useThemeMode } from '@/hooks/useThemeMode';
-import { useAppStore } from '@/hooks/useAppStore';
 import { haptics } from '@/utils/haptics';
 import type { WidgetCardProps } from './types';
-import { createWidgetCardStyles } from './styles';
+import { styles } from './styles';
 
 export const WidgetCard: React.FC<WidgetCardProps> = ({
   title,
@@ -15,13 +15,14 @@ export const WidgetCard: React.FC<WidgetCardProps> = ({
   badge,
   icon,
   children,
+  size = 'md',
+  contrast,
+  borderRadius,
+  style,
   onRefresh,
   isRefreshing = false,
 }) => {
-  const { theme: themeColors, isDark } = useThemeMode();
-  const { themeStyle } = useAppStore();
-  const isGlass = themeStyle === 'apple-glass';
-  const styles = createWidgetCardStyles(themeColors);
+  const { theme: themeColors } = useThemeMode();
 
   const handleRefresh = () => {
     if (onRefresh && !isRefreshing) {
@@ -31,10 +32,12 @@ export const WidgetCard: React.FC<WidgetCardProps> = ({
   };
 
   return (
-    <View style={styles.container}>
-      {isGlass && (
-        <View style={isDark ? styles.specularHighlightDark : styles.specularHighlight} />
-      )}
+    <AppCard
+      size={size}
+      contrast={contrast}
+      borderRadius={borderRadius}
+      style={[styles.container, style]}
+    >
       <View style={styles.headerRow}>
         <View style={styles.titleGroup}>
           {icon && <View style={styles.iconWrapper}>{icon}</View>}
@@ -68,6 +71,7 @@ export const WidgetCard: React.FC<WidgetCardProps> = ({
       </View>
 
       {children && <View style={styles.contentArea}>{children}</View>}
-    </View>
+    </AppCard>
   );
 };
+

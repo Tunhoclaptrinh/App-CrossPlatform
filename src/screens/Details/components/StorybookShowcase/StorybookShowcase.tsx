@@ -23,6 +23,7 @@ export const StorybookShowcase: React.FC<StorybookShowcaseProps> = ({
   themeColors,
   radiusTokens,
   isDark,
+  isGlass = false,
 }) => {
   const styles = useMemo(
     () => createStorybookStyles(themeColors, radiusTokens, isDark),
@@ -83,6 +84,7 @@ export const StorybookShowcase: React.FC<StorybookShowcaseProps> = ({
           themeColors={themeColors}
           radiusTokens={radiusTokens}
           isDark={isDark}
+          isGlass={isGlass}
         />
       </View>
     );

@@ -19,6 +19,8 @@ export type ComponentId =
   | 'apple-glass-card'
   | 'glass-card'
   | 'card'
+  | 'widget-card'
+  | 'gesture-card'
   | 'badge'
   | 'switch'
   | 'checkbox'
@@ -27,7 +29,20 @@ export type ComponentId =
   | 'skeleton'
   | 'icon-tile'
   | 'segmented-control'
-  | 'empty-state';
+  | 'empty-state'
+  | 'avatar'
+  | 'divider'
+  | 'progress'
+  | 'pagination'
+  | 'radio'
+  | 'chip'
+  | 'otp'
+  | 'rating'
+  | 'list-item'
+  | 'toast'
+  | 'accordion'
+  | 'bottom-sheet'
+  | 'offline-banner';
 
 export interface ComponentMeta {
   id: ComponentId;
