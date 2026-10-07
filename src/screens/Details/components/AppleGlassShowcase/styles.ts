@@ -400,6 +400,111 @@ export const createAppleGlassStyles = (radius: RadiusPresetConfig) =>
       color: '#007AFF',
       fontWeight: '700',
     },
+    variantDetailBox: {
+      borderRadius: 12,
+      padding: 12,
+      borderWidth: 1,
+      gap: 4,
+    },
+    variantDetailBoxLight: {
+      backgroundColor: 'rgba(0, 122, 255, 0.05)',
+      borderColor: 'rgba(0, 122, 255, 0.15)',
+    },
+    variantDetailBoxDark: {
+      backgroundColor: 'rgba(0, 122, 255, 0.10)',
+      borderColor: 'rgba(0, 122, 255, 0.22)',
+    },
+    variantDetailTitle: {
+      fontSize: 12.5,
+      fontWeight: '700',
+    },
+    variantDetailDesc: {
+      fontSize: 11.5,
+      lineHeight: 16,
+    },
+    actionStyleRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: 8,
+      marginVertical: 4,
+      flexWrap: 'wrap',
+    },
+    actionStyleLabel: {
+      fontSize: 12,
+      fontWeight: '600',
+    },
+    actionStylePillGroup: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+    },
+    actionStylePill: {
+      paddingHorizontal: 10,
+      paddingVertical: 5,
+      borderRadius: Math.min(radius.smControl, 14),
+      backgroundColor: 'rgba(0, 0, 0, 0.05)',
+      borderWidth: 1,
+      borderColor: 'rgba(0, 0, 0, 0.08)',
+    },
+    actionStylePillActive: {
+      backgroundColor: '#007AFF',
+      borderColor: '#007AFF',
+    },
+    actionStylePillText: {
+      fontSize: 11,
+      fontWeight: '600',
+      color: '#64748B',
+    },
+    actionStylePillTextActive: {
+      color: '#FFFFFF',
+    },
+    opacityRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: 8,
+      marginVertical: 4,
+      flexWrap: 'wrap',
+    },
+    opacityLabel: {
+      fontSize: 12,
+      fontWeight: '600',
+    },
+    opacityPillGroup: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+      flexWrap: 'wrap',
+    },
+    opacityPill: {
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      borderRadius: Math.min(radius.smControl, 12),
+      backgroundColor: 'rgba(0, 0, 0, 0.05)',
+      borderWidth: 1,
+      borderColor: 'rgba(0, 0, 0, 0.08)',
+    },
+    opacityPillActive: {
+      backgroundColor: '#8B5CF6',
+      borderColor: '#8B5CF6',
+    },
+    opacityPillText: {
+      fontSize: 10.5,
+      fontWeight: '600',
+      color: '#64748B',
+    },
+    opacityPillTextActive: {
+      color: '#FFFFFF',
+    },
+    customCapsuleBorder: {
+      borderWidth: 1.5,
+      borderColor: '#8B5CF6',
+    },
+    customBackBtnBorder: {
+      borderWidth: 1.5,
+      borderColor: '#8B5CF6',
+    },
     previewStage: {
       height: 195,
       borderRadius: Math.min(radius.card, 14),
@@ -408,6 +513,23 @@ export const createAppleGlassStyles = (radius: RadiusPresetConfig) =>
       justifyContent: 'center',
       alignItems: 'center',
       padding: 12,
+    },
+    previewHeaderStage: {
+      minHeight: 110,
+      borderRadius: 16,
+      overflow: 'hidden',
+      position: 'relative',
+      padding: 0,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    previewHeaderWrapper: {
+      width: '100%',
+      paddingVertical: 12,
+    },
+    previewHeader: {
+      paddingTop: 0,
+      height: 48,
     },
     previewCard: {
       width: '100%',

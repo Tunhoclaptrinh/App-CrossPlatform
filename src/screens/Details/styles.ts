@@ -22,4 +22,11 @@ export const createDetailsStyles = (
       marginBottom: Spacing.lg,
       alignItems: 'center',
     },
+    floatingHeader: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      zIndex: 50,
+    },
   });

@@ -453,7 +453,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                 }}
               >
                 {/* Specular Highlight Hairline */}
-                {isGlass && <View style={styles.itemGlassHighlight} />}
+                {isGlass && <View style={styles.itemGlassHighlight} pointerEvents="none" />}
 
                 <View style={styles.itemLeft}>
                   {/* Clean Flat Icon Badge with soft accent tint */}

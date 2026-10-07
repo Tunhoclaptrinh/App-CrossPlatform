@@ -15,22 +15,23 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderWidth: 1.5,
+    borderWidth: 1,
+    overflow: 'hidden',
   },
   sizeSm: {
     height: ControlSize.sm.height,
     minHeight: ControlSize.sm.height,
-    paddingHorizontal: ControlSize.sm.paddingHorizontal,
+    paddingHorizontal: 10,
   },
   sizeMd: {
     height: ControlSize.md.height,
     minHeight: ControlSize.md.height,
-    paddingHorizontal: ControlSize.md.paddingHorizontal,
+    paddingHorizontal: 12,
   },
   sizeLg: {
     height: ControlSize.lg.height,
     minHeight: ControlSize.lg.height,
-    paddingHorizontal: ControlSize.lg.paddingHorizontal,
+    paddingHorizontal: 16,
   },
   contentRow: {
     flex: 1,
@@ -38,9 +39,12 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   leftIconContainer: {
-    marginRight: Spacing.sm,
+    marginRight: 6,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  triggerText: {
+    flex: 1,
   },
   valueTextSm: {
     fontSize: ControlSize.sm.fontSize,
@@ -60,6 +64,13 @@ export const styles = StyleSheet.create({
   errorText: {
     marginTop: 4,
     fontSize: 11,
+  },
+  chevron: {
+    marginLeft: 4,
+  },
+  chevronRotated: {
+    marginLeft: 4,
+    transform: [{ rotate: '180deg' }],
   },
 
   // Modal Sheet Styles

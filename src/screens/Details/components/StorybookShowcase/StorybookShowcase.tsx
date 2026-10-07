@@ -68,10 +68,10 @@ export const StorybookShowcase: React.FC<StorybookShowcaseProps> = ({
   const [btnLoading, setBtnLoading] = useState(false);
 
   const countryOptions = [
-    { label: 'Việt Nam (VN)', value: 'vn', icon: <Globe size={16} color="#007AFF" />, sublabel: '+84 Quốc gia' },
-    { label: 'United States (US)', value: 'us', icon: <Globe size={16} color="#10B981" />, sublabel: '+1 North America' },
-    { label: 'Japan (JP)', value: 'jp', icon: <Globe size={16} color="#EC4899" />, sublabel: '+81 Asia Pacific' },
-    { label: 'Singapore (SG)', value: 'sg', icon: <Globe size={16} color="#8B5CF6" />, sublabel: '+65 ASEAN Hub' },
+    { label: 'Việt Nam', value: 'vn', icon: <Globe size={15} color="#007AFF" />, sublabel: '+84 Quốc gia' },
+    { label: 'Hoa Kỳ', value: 'us', icon: <Globe size={15} color="#10B981" />, sublabel: '+1 North America' },
+    { label: 'Nhật Bản', value: 'jp', icon: <Globe size={15} color="#EC4899" />, sublabel: '+81 Asia Pacific' },
+    { label: 'Singapore', value: 'sg', icon: <Globe size={15} color="#8B5CF6" />, sublabel: '+65 ASEAN Hub' },
   ];
 
   const currencyOptions = [
@@ -238,17 +238,17 @@ export const StorybookShowcase: React.FC<StorybookShowcaseProps> = ({
             <View style={styles.spacerSm} />
 
             <AppText style={[styles.demoSubheading, { color: themeColors.textSecondary }]}>
-              FORM 3 CỘT (Input + Select + Button)
+              FORM 3 CỘT ĐỒNG BỘ (Input + Select + Button)
             </AppText>
             <View style={styles.sideBySideRow}>
-              <View style={styles.colWide}>
+              <View style={styles.colInput}>
                 <AppInput
                   size={matrixSize}
                   placeholder="Họ và tên..."
                   containerStyle={styles.inputNoMargin}
                 />
               </View>
-              <View style={styles.colMid}>
+              <View style={styles.colSelect}>
                 <AppSelect
                   size={matrixSize}
                   options={countryOptions}
@@ -258,11 +258,11 @@ export const StorybookShowcase: React.FC<StorybookShowcaseProps> = ({
                   sheetTitle="Chọn quốc gia"
                 />
               </View>
-              <View style={styles.colNarrow}>
+              <View style={styles.colButton}>
                 <AppButton
                   size={matrixSize}
                   title="Lưu"
-                  variant="tonal"
+                  variant="primary"
                   onPress={() => haptics.light()}
                 />
               </View>

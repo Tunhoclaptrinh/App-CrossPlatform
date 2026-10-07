@@ -8,6 +8,9 @@ import {
   Eye,
   Palette,
   Layers,
+  Layout,
+  Download,
+  Share2,
 } from 'lucide-react-native';
 import {
   AppText,
@@ -15,7 +18,9 @@ import {
   AppleMeshBackground,
   AppleGlassCard,
   GlassTile,
+  AppHeader,
 } from '@/components';
+import { useAppStore, useToast } from '@/hooks';
 import { haptics } from '@/utils';
 import { createAppleGlassStyles } from './styles';
 import type { AppleGlassShowcaseProps, BackdropTheme } from './types';
@@ -28,8 +33,32 @@ export const AppleGlassShowcase: React.FC<AppleGlassShowcaseProps> = ({
   onToggleThemeStyle,
 }) => {
   const styles = useMemo(() => createAppleGlassStyles(radiusTokens), [radiusTokens]);
+  const headerVariant = useAppStore((state) => state.headerVariant);
+  const setHeaderVariant = useAppStore((state) => state.setHeaderVariant);
+  const activeHeaderVariant = headerVariant || 'frosted-capsule';
+  const toast = useToast();
   const [backdropTheme, setBackdropTheme] = useState<BackdropTheme>('aurora');
   const [compareMode, setCompareMode] = useState<'glass' | 'flat'>('glass');
+  const [headerActionStyle, setHeaderActionStyle] = useState<'capsule' | 'individual'>('capsule');
+  const [bgOpacityPreset, setBgOpacityPreset] = useState<
+    'default' | 'solid' | 'glass' | 'translucent' | 'transparent'
+  >('default');
+  const [enableCustomStyle, setEnableCustomStyle] = useState(false);
+
+  const effectiveBgOpacity = useMemo(() => {
+    switch (bgOpacityPreset) {
+      case 'solid':
+        return 1.0;
+      case 'glass':
+        return 0.82;
+      case 'translucent':
+        return 0.45;
+      case 'transparent':
+        return 0.0;
+      default:
+        return undefined;
+    }
+  }, [bgOpacityPreset]);
 
   const backdropThemeList: {
     key: BackdropTheme;
@@ -308,7 +337,315 @@ export const AppleGlassShowcase: React.FC<AppleGlassShowcaseProps> = ({
         </View>
       </View>
 
-      {/* 3. INTERACTIVE COMPARISON SECTION */}
+      {/* 3. APPLE iOS 18 HEADER & CAPSULE VARIANTS */}
+      <View style={[styles.compareCard, isDark ? styles.compareCardDark : styles.compareCardLight]}>
+        <View style={styles.compareTitleRow}>
+          <Layout size={18} color="#007AFF" strokeWidth={2.4} />
+          <AppText style={[styles.compareTitle, { color: themeColors.text }]}>
+            Apple iOS 18 Frosted Capsule & Navbar
+          </AppText>
+        </View>
+        <AppText style={[styles.compareDesc, { color: themeColors.textSecondary }]}>
+          Bộ Header chuẩn Apple với nút back tròn mờ độc lập, nhóm hành động chung capsule kính mờ có đường phân cách mảnh.
+        </AppText>
+
+        {/* Header Variant Switcher */}
+        <View style={[styles.segmentedBar, isDark ? styles.segmentedBarDark : styles.segmentedBarLight]}>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            style={[
+              styles.segmentItem,
+              activeHeaderVariant === 'frosted-capsule' && (isDark ? styles.segmentItemActiveDark : styles.segmentItemActiveLight),
+            ]}
+            onPress={() => {
+              haptics.light();
+              setHeaderVariant('frosted-capsule');
+              toast.show('success', 'Đã chuyển Header sang Apple iOS 18 Frosted Capsule!');
+            }}
+          >
+            <Sparkles
+              size={14}
+              color={activeHeaderVariant === 'frosted-capsule' ? '#007AFF' : themeColors.textSecondary}
+              strokeWidth={2.2}
+            />
+            <AppText
+              style={[
+                styles.segmentText,
+                activeHeaderVariant === 'frosted-capsule'
+                  ? styles.segmentTextActive
+                  : { color: themeColors.textSecondary },
+              ]}
+            >
+              Frosted Capsule
+            </AppText>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            activeOpacity={0.8}
+            style={[
+              styles.segmentItem,
+              activeHeaderVariant === 'floating-pill' && (isDark ? styles.segmentItemActiveDark : styles.segmentItemActiveLight),
+            ]}
+            onPress={() => {
+              haptics.light();
+              setHeaderVariant('floating-pill');
+              toast.show('success', 'Đã chuyển Header sang Dynamic Island Floating Pill!');
+            }}
+          >
+            <Sparkles
+              size={14}
+              color={activeHeaderVariant === 'floating-pill' ? '#EC4899' : themeColors.textSecondary}
+              strokeWidth={2.2}
+            />
+            <AppText
+              style={[
+                styles.segmentText,
+                activeHeaderVariant === 'floating-pill'
+                  ? styles.segmentTextActive
+                  : { color: themeColors.textSecondary },
+              ]}
+            >
+              Floating Pill
+            </AppText>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            activeOpacity={0.8}
+            style={[
+              styles.segmentItem,
+              activeHeaderVariant === 'standard' && (isDark ? styles.segmentItemActiveDark : styles.segmentItemActiveLight),
+            ]}
+            onPress={() => {
+              haptics.light();
+              setHeaderVariant('standard');
+              toast.show('success', 'Đã chuyển Header sang Standard iOS Navbar!');
+            }}
+          >
+            <Layout
+              size={14}
+              color={activeHeaderVariant === 'standard' ? themeColors.primary : themeColors.textSecondary}
+              strokeWidth={2.2}
+            />
+            <AppText
+              style={[
+                styles.segmentText,
+                activeHeaderVariant === 'standard'
+                  ? styles.segmentTextActive
+                  : { color: themeColors.textSecondary },
+              ]}
+            >
+              Standard iOS
+            </AppText>
+          </TouchableOpacity>
+        </View>
+
+        {/* Dynamic Architectural Detail of Selected Variant */}
+        <View style={[styles.variantDetailBox, isDark ? styles.variantDetailBoxDark : styles.variantDetailBoxLight]}>
+          <AppText style={[styles.variantDetailTitle, { color: themeColors.text }]}>
+            {activeHeaderVariant === 'frosted-capsule' && '✨ Kiểu 1: Apple iOS 18 Split Frosted Capsule'}
+            {activeHeaderVariant === 'floating-pill' && '🏝️ Kiểu 2: Dynamic Island Unified Floating Pill'}
+            {activeHeaderVariant === 'standard' && '🏛️ Kiểu 3: Standard iOS Navigation Bar'}
+          </AppText>
+          <AppText style={[styles.variantDetailDesc, { color: themeColors.textSecondary }]}>
+            {activeHeaderVariant === 'frosted-capsule' &&
+              'Nút back tròn mờ độc lập bên trái + cụm action viên thuốc kính mờ bên phải. Nền trong suốt 100%, nội dung cuộn xuyên thấu.'}
+            {activeHeaderVariant === 'floating-pill' &&
+              'Một đảo Dynamic Island kính mờ liền khối nổi lơ lửng bọc cả Nút Back, Tiêu đề và Thao tác trong 1 pill duy nhất.'}
+            {activeHeaderVariant === 'standard' &&
+              'Thanh Header phẳng đặc màu theme chuẩn UIKit với viền tóc mảnh ngăn cách dưới đáy, không trong suốt.'}
+          </AppText>
+        </View>
+
+        {/* Interactive Action Style Toggle (Capsule vs Individual) */}
+        <View style={styles.actionStyleRow}>
+          <AppText style={[styles.actionStyleLabel, { color: themeColors.textSecondary }]}>
+            Kiểu nút bên phải:
+          </AppText>
+          <View style={styles.actionStylePillGroup}>
+            <TouchableOpacity
+              activeOpacity={0.7}
+              style={[
+                styles.actionStylePill,
+                headerActionStyle === 'capsule' && styles.actionStylePillActive,
+              ]}
+              onPress={() => {
+                haptics.light();
+                setHeaderActionStyle('capsule');
+                toast.show('success', 'Đã chuyển nút phải sang Cụm Viên Thuốc Liền Mạch (Capsule)!');
+              }}
+            >
+              <AppText
+                style={[
+                  styles.actionStylePillText,
+                  headerActionStyle === 'capsule' && styles.actionStylePillTextActive,
+                ]}
+              >
+                💊 Cụm viên thuốc (Capsule)
+              </AppText>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              activeOpacity={0.7}
+              style={[
+                styles.actionStylePill,
+                headerActionStyle === 'individual' && styles.actionStylePillActive,
+              ]}
+              onPress={() => {
+                haptics.light();
+                setHeaderActionStyle('individual');
+                toast.show('info', 'Đã chuyển nút phải sang Nút Rời Rạc (Individual)!');
+              }}
+            >
+              <AppText
+                style={[
+                  styles.actionStylePillText,
+                  headerActionStyle === 'individual' && styles.actionStylePillTextActive,
+                ]}
+              >
+                🔘 Nút rời (Individual)
+              </AppText>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Interactive Background Opacity & Transparency Control */}
+        <View style={styles.opacityRow}>
+          <AppText style={[styles.opacityLabel, { color: themeColors.textSecondary }]}>
+            Độ trong suốt nền:
+          </AppText>
+          <View style={styles.opacityPillGroup}>
+            {[
+              { key: 'default', label: 'Mặc định' },
+              { key: 'solid', label: '100% Đặc' },
+              { key: 'glass', label: '82% Kính' },
+              { key: 'translucent', label: '45% Mờ' },
+              { key: 'transparent', label: '0% Suốt' },
+            ].map((item) => {
+              const isSelected = bgOpacityPreset === item.key;
+              return (
+                <TouchableOpacity
+                  key={item.key}
+                  activeOpacity={0.7}
+                  style={[styles.opacityPill, isSelected && styles.opacityPillActive]}
+                  onPress={() => {
+                    haptics.light();
+                    setBgOpacityPreset(item.key as any);
+                    toast.show(
+                      'info',
+                      `Độ trong suốt nền: ${item.label}${
+                        activeHeaderVariant === 'standard' && item.key === 'default'
+                          ? ' (100% Opaque solid cho Standard)'
+                          : ''
+                      }`
+                    );
+                  }}
+                >
+                  <AppText
+                    style={[
+                      styles.opacityPillText,
+                      isSelected && styles.opacityPillTextActive,
+                    ]}
+                  >
+                    {item.label}
+                  </AppText>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </View>
+
+        {/* External Style Injection Toggle */}
+        <View style={styles.opacityRow}>
+          <AppText style={[styles.opacityLabel, { color: themeColors.textSecondary }]}>
+            Style chèn từ bên ngoài:
+          </AppText>
+          <View style={styles.opacityPillGroup}>
+            <TouchableOpacity
+              activeOpacity={0.7}
+              style={[styles.opacityPill, !enableCustomStyle && styles.opacityPillActive]}
+              onPress={() => {
+                haptics.light();
+                setEnableCustomStyle(false);
+                toast.show('info', 'Sử dụng style hệ thống mặc định');
+              }}
+            >
+              <AppText
+                style={[styles.opacityPillText, !enableCustomStyle && styles.opacityPillTextActive]}
+              >
+                Mặc định
+              </AppText>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              activeOpacity={0.7}
+              style={[styles.opacityPill, enableCustomStyle && styles.opacityPillActive]}
+              onPress={() => {
+                haptics.light();
+                setEnableCustomStyle(true);
+                toast.show('success', 'Đã chèn style: Viền Tím Electric + Tint Accent ngoài!');
+              }}
+            >
+              <AppText
+                style={[styles.opacityPillText, enableCustomStyle && styles.opacityPillTextActive]}
+              >
+                🎨 Custom Tint & Viền
+              </AppText>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Live Stage with Backdrop Preview for Header */}
+        <View style={styles.previewHeaderStage}>
+          <AppleMeshBackground variant="aurora" />
+
+          <View style={styles.previewHeaderWrapper}>
+            <AppHeader
+              title="Secret Lives of Animals"
+              subtitle="Documentary • 4K HDR"
+              variant={activeHeaderVariant}
+              actionStyle={headerActionStyle}
+              backgroundOpacity={effectiveBgOpacity}
+              tintColor={enableCustomStyle ? '#8B5CF6' : undefined}
+              capsuleStyle={enableCustomStyle ? styles.customCapsuleBorder : undefined}
+              backButtonStyle={enableCustomStyle ? styles.customBackBtnBorder : undefined}
+              showBack
+              backStyle={activeHeaderVariant === 'frosted-capsule' ? 'circle' : 'text'}
+              backTitle="Back"
+              onBack={() => haptics.light()}
+              rightActions={[
+                {
+                  id: 'download',
+                  icon: (
+                    <Download
+                      size={17}
+                      color={enableCustomStyle ? '#8B5CF6' : themeColors.text}
+                      strokeWidth={2.2}
+                    />
+                  ),
+                  onPress: () => haptics.light(),
+                  accessibilityLabel: 'Tải về',
+                },
+                {
+                  id: 'share',
+                  icon: (
+                    <Share2
+                      size={17}
+                      color={enableCustomStyle ? '#8B5CF6' : themeColors.text}
+                      strokeWidth={2.2}
+                    />
+                  ),
+                  onPress: () => haptics.light(),
+                  accessibilityLabel: 'Chia sẻ',
+                },
+              ]}
+              showMore
+              style={styles.previewHeader}
+            />
+          </View>
+        </View>
+      </View>
+
+      {/* 4. INTERACTIVE COMPARISON SECTION */}
       <View style={[styles.compareCard, isDark ? styles.compareCardDark : styles.compareCardLight]}>
         <View style={styles.compareTitleRow}>
           <Eye size={18} color="#007AFF" strokeWidth={2.4} />

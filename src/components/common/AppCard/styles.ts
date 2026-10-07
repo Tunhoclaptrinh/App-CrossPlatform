@@ -12,7 +12,7 @@ export const createCardVariantStyle = (
     case 'glass':
       return {
         backgroundColor: isDark ? 'rgba(24, 27, 38, 0.70)' : 'rgba(255, 255, 255, 0.72)',
-        borderWidth: 1.2,
+        borderWidth: 1,
         borderColor: isDark ? 'rgba(255, 255, 255, 0.22)' : 'rgba(255, 255, 255, 0.88)',
         shadowColor: '#000000',
         shadowOffset: { width: 0, height: 6 },

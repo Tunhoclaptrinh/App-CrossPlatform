@@ -8,6 +8,7 @@ import type { RadiusPreset } from '@/constants/theme';
 
 export type ThemeMode = 'system' | 'light' | 'dark';
 export type ThemeStyle = 'default' | 'apple-glass';
+export type HeaderVariant = 'standard' | 'frosted-capsule' | 'floating-pill';
 export type Language = 'vi' | 'en';
 
 export interface AppStoreState {
@@ -18,6 +19,9 @@ export interface AppStoreState {
   themeStyle: ThemeStyle;
   setThemeStyle: (style: ThemeStyle) => void;
   toggleThemeStyle: () => void;
+  headerVariant: HeaderVariant;
+  setHeaderVariant: (variant: HeaderVariant) => void;
+  toggleHeaderVariant: () => void;
 
   // Dynamic UI Customizations
   accentColor: AccentColor;
@@ -62,6 +66,13 @@ export const useAppStore = create<AppStoreState>()(
         set({ themeStyle: current === 'apple-glass' ? 'default' : 'apple-glass' });
       },
 
+      headerVariant: 'standard',
+      setHeaderVariant: (variant: HeaderVariant) => set({ headerVariant: variant }),
+      toggleHeaderVariant: () => {
+        const current = get().headerVariant;
+        set({ headerVariant: current === 'standard' ? 'frosted-capsule' : 'standard' });
+      },
+
       accentColor: 'blue',
       setAccentColor: (accent: AccentColor) => set({ accentColor: accent }),
 
@@ -101,6 +112,7 @@ export const useAppStore = create<AppStoreState>()(
       partialize: (state) => ({
         themeMode: state.themeMode,
         themeStyle: state.themeStyle,
+        headerVariant: state.headerVariant,
         accentColor: state.accentColor,
         radiusPreset: state.radiusPreset,
         hapticsEnabled: state.hapticsEnabled,

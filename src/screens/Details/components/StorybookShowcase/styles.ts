@@ -78,7 +78,7 @@ export const createStorybookStyles = (
     },
     sizeSwitcherBar: {
       flexDirection: 'row',
-      borderRadius: Math.max(4, Math.min(radius.control, 12)),
+      borderRadius: radius.control,
       backgroundColor: isDark ? '#1F2937' : '#F1F5F9',
       padding: 3,
       borderWidth: 1,
@@ -89,7 +89,7 @@ export const createStorybookStyles = (
       alignItems: 'center',
       justifyContent: 'center',
       height: 36,
-      borderRadius: Math.max(4, Math.min(radius.smControl, 8)),
+      borderRadius: Math.max(radius.control - 3, radius.smControl),
     },
     sizeSwitcherItemActive: {
       backgroundColor: isDark ? '#374151' : '#FFFFFF',
@@ -148,26 +148,30 @@ export const createStorybookStyles = (
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
+      gap: 8,
     },
     sectionHeaderLeft: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 8,
+      gap: 7,
       flex: 1,
     },
     sectionTitle: {
-      fontSize: 16,
+      fontSize: 14.5,
       fontWeight: '700',
+      letterSpacing: -0.2,
+      flexShrink: 1,
     },
     sectionDesc: {
       fontSize: 12.5,
       lineHeight: 18,
     },
     parityPill: {
-      paddingHorizontal: 8,
+      paddingHorizontal: 7,
       paddingVertical: 3,
       borderRadius: Math.max(4, Math.min(radius.badge, 12)),
       backgroundColor: isDark ? 'rgba(99, 102, 241, 0.2)' : 'rgba(99, 102, 241, 0.1)',
+      flexShrink: 0,
     },
     parityPillText: {
       fontSize: 9.5,
@@ -192,25 +196,25 @@ export const createStorybookStyles = (
     sideBySideRow: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 8,
+      gap: 6,
     },
     sideColInput: {
       flex: 1,
     },
     sideColButton: {
-      width: 90,
+      width: 78,
     },
     inputNoMargin: {
       marginBottom: 0,
     },
-    colWide: {
-      flex: 1.2,
-    },
-    colMid: {
+    colInput: {
       flex: 1.1,
     },
-    colNarrow: {
-      flex: 0.9,
+    colSelect: {
+      flex: 1.25,
+    },
+    colButton: {
+      width: 60,
     },
     spacerSm: {
       height: 4,

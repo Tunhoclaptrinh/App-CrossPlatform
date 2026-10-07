@@ -77,6 +77,7 @@ export * from './LoadingOverlay';
 export * from './OfflineBanner';
 export * from './OptimizedList';
 export * from './ThemeStudioModal';
+export * from './AppActionSheet';
 export * from './ErrorBoundary';
 export * from './AppWebView';
 
@@ -88,6 +89,7 @@ import { WidgetCard } from './WidgetCard';
 import { GestureCard } from './GestureCard';
 import { AppHeader } from './AppHeader';
 import { ConfirmDialog } from './ConfirmDialog';
+import { AppActionSheet } from './AppActionSheet';
 import { LoadingOverlay } from './LoadingOverlay';
 import { OfflineBanner } from './OfflineBanner';
 import { OptimizedList } from './OptimizedList';
@@ -104,6 +106,7 @@ export const Organisms = {
   GestureCard,
   AppHeader,
   ConfirmDialog,
+  AppActionSheet,
   LoadingOverlay,
   OfflineBanner,
   OptimizedList,

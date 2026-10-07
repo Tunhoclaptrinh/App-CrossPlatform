@@ -1,6 +1,5 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useTranslation } from 'react-i18next';
 import { SplashScreen } from '@/screens/Splash';
 import { HomeScreen } from '@/screens/Home';
 import { DetailsScreen } from '@/screens/Details';
@@ -10,7 +9,6 @@ import { RootStackParamList } from './types';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const AppNavigator: React.FC = () => {
-  const { t } = useTranslation();
   const { theme: themeColors } = useThemeMode();
 
   return (
@@ -48,9 +46,9 @@ export const AppNavigator: React.FC = () => {
       <Stack.Screen
         name="Details"
         component={DetailsScreen}
-        options={({ route }) => ({
-          title: route.params?.title || t('details.screenTitle', 'Chi Tiết Thư Viện'),
-        })}
+        options={{
+          headerShown: false,
+        }}
       />
     </Stack.Navigator>
   );

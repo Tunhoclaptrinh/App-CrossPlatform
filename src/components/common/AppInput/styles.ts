@@ -14,7 +14,8 @@ export const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1.5,
+    borderWidth: 1,
+    overflow: 'hidden',
   },
   sizeSm: {
     height: ControlSize.sm.height,

@@ -50,7 +50,7 @@ export const createButtonStyles = (
     },
     outline: {
       backgroundColor: 'transparent',
-      borderWidth: 1.5,
+      borderWidth: 1,
       borderColor: colors.primary,
     },
     tonal: {
@@ -67,13 +67,13 @@ export const createButtonStyles = (
     },
     glass: {
       backgroundColor: isDark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(255, 255, 255, 0.78)',
-      borderWidth: 1.2,
+      borderWidth: 1,
       borderColor: isDark ? 'rgba(255, 255, 255, 0.22)' : 'rgba(255, 255, 255, 0.90)',
       shadowColor: '#000000',
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: isDark ? 0.35 : 0.08,
       shadowRadius: 10,
-      elevation: 2,
+      elevation: 0,
     },
     // State
     disabled: {

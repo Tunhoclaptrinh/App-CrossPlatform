@@ -19,7 +19,8 @@
     "language": "Language",
     "theme": "Theme",
     "dark": "Dark",
-    "light": "Light"
+    "light": "Light",
+    "moreOptions": "More options"
   },
   "validation": {
     "required": "This field is required",

@@ -59,7 +59,7 @@ export const RadiusPresets: Record<RadiusPreset, RadiusPresetConfig> = {
     smControl: 4,
     badge: 4,
     pill: 6,
-    desc: 'Dứt khoát, góc nhọn sắc sảo',
+    desc: 'Dứt khoát, góc nhọn sắc sảo (6px)',
   },
   compact: {
     id: 'compact',
@@ -68,18 +68,18 @@ export const RadiusPresets: Record<RadiusPreset, RadiusPresetConfig> = {
     control: 8,
     smControl: 6,
     badge: 6,
-    pill: 8,
-    desc: 'Hiện đại, tiết kiệm diện tích',
+    pill: 10,
+    desc: 'Hiện đại, tiết kiệm diện tích (8px)',
   },
   standard: {
     id: 'standard',
     name: 'Chuẩn Mực',
     card: 16,
-    control: 9999,
-    smControl: 9999,
-    badge: 9999,
-    pill: 9999,
-    desc: 'Nút bo tròn Pill, Card 16px',
+    control: 12,
+    smControl: 8,
+    badge: 8,
+    pill: 14,
+    desc: 'Bo góc chuẩn Apple iOS (12px), Card 16px',
   },
   smooth: {
     id: 'smooth',
@@ -89,7 +89,7 @@ export const RadiusPresets: Record<RadiusPreset, RadiusPresetConfig> = {
     smControl: 9999,
     badge: 9999,
     pill: 9999,
-    desc: 'Nút dạng viên thuốc (Pill), Card 16px',
+    desc: 'Nút dạng viên thuốc toàn phần (Pill), Card 16px',
   },
 };
 

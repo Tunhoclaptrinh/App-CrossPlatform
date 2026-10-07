@@ -8,7 +8,7 @@ export const createAppleGlassCardStyles = (isDark: boolean, cardRadius: number) 
       borderRadius: Math.min(cardRadius, 16),
       padding: Spacing.lg,
       justifyContent: 'space-between',
-      borderWidth: 1.2,
+      borderWidth: 1,
       borderColor: isDark ? 'rgba(255, 255, 255, 0.25)' : 'rgba(255, 255, 255, 0.88)',
       backgroundColor: isDark ? 'rgba(24, 27, 38, 0.68)' : 'rgba(255, 255, 255, 0.64)',
       shadowColor: '#000000',

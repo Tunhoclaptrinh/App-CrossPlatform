@@ -20,7 +20,8 @@ export const createModuleTabsStyles = (radius: RadiusPresetConfig) =>
       paddingHorizontal: 16,
       height: 38,
       borderRadius: radius.pill,
-      borderWidth: 1.2,
+      borderWidth: 1,
+      overflow: 'hidden',
       flexShrink: 0,
     },
     tabChipLight: {

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   Sparkles,
   Radio,
@@ -11,6 +12,8 @@ import {
   SlidersHorizontal,
   ArrowLeft,
   BookOpen,
+  Layout,
+  Share2,
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import {
@@ -18,6 +21,7 @@ import {
   ConfirmDialog,
   ThemeStudioModal,
   AppButton,
+  AppHeader,
 } from '@/components';
 import { useAppStore, useToast, useShakeDetection, useThemeMode } from '@/hooks';
 import { appStorage, STORAGE_KEYS } from '@/services/storage';
@@ -45,7 +49,7 @@ import {
 
 export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation }) => {
   const resolveModuleId = (id?: string) => {
-    if (!id) return 'apple';
+    if (!id) return 'storybook';
     if (id === 'store') return 'sqlite';
     if (id === 'i18n') return 'utils';
     if (id === 'core') return 'paper';
@@ -89,6 +93,8 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
     themeStyle,
     toggleThemeStyle,
     language,
+    headerVariant,
+    setHeaderVariant,
   } = useAppStore();
   const toast = useToast();
 
@@ -153,6 +159,14 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
   // Module Definitions with full metadata
   const moduleTabs: ModuleTabItem[] = [
     {
+      id: 'storybook',
+      label: 'Storybook UI',
+      fullTitle: 'Design System & Storybook Catalog',
+      desc: 'Ma trận đồng bộ kích thước chuẩn Button, Input, Select, Badge, Card (sm, md, lg)',
+      icon: BookOpen,
+      color: '#6366F1',
+    },
+    {
       id: 'theme-studio',
       label: 'Theme & Bo Góc',
       fullTitle: 'Studio Tinh Chỉnh Giao Diện',
@@ -167,14 +181,6 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
       desc: 'Cupertino frosted glassmorphism, specular borders & continuous squircles.',
       icon: Sparkles,
       color: '#007AFF',
-    },
-    {
-      id: 'storybook',
-      label: 'Storybook UI',
-      fullTitle: 'Design System & Storybook Catalog',
-      desc: 'Ma trận đồng bộ kích thước chuẩn Button, Input, Select, Badge, Card (sm, md, lg)',
-      icon: BookOpen,
-      color: '#6366F1',
     },
 
     {
@@ -234,6 +240,70 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
       title: currentTab.label,
     });
   }, [currentTab.label, navigation]);
+
+  const detailsDemoActions = useMemo(
+    () => [
+      {
+        id: 'demo-frosted-capsule',
+        label: 'Kiểu 1: Apple iOS 18 Frosted Capsule',
+        description: 'Nút tròn mờ độc lập & cụm actions capsule trong suốt',
+        icon: <Sparkles size={18} color="#8B5CF6" />,
+        onPress: () => {
+          setHeaderVariant('frosted-capsule');
+          toast.show('success', 'Đã chuyển Header sang Apple Frosted Capsule!');
+        },
+      },
+      {
+        id: 'demo-floating-pill',
+        label: 'Kiểu 2: Dynamic Island Floating Pill',
+        description: 'Đảo Dynamic Island nổi liền khối giữa màn hình',
+        icon: <Sparkles size={18} color="#EC4899" />,
+        onPress: () => {
+          setHeaderVariant('floating-pill');
+          toast.show('success', 'Đã chuyển Header sang Dynamic Island Floating Pill!');
+        },
+      },
+      {
+        id: 'demo-standard',
+        label: 'Kiểu 3: Standard iOS Navbar',
+        description: 'Thanh Header đặc chuẩn Apple iOS có viền phân cách',
+        icon: <Layout size={18} color="#007AFF" />,
+        onPress: () => {
+          setHeaderVariant('standard');
+          toast.show('success', 'Đã chuyển Header sang Standard iOS Navbar!');
+        },
+      },
+      {
+        id: 'demo-toggle-theme',
+        label: isDark ? 'Chuyển sang Giao diện Sáng' : 'Chuyển sang Giao diện Tối',
+        description: 'Thay đổi chế độ màu sắc hiển thị',
+        icon: <SlidersHorizontal size={18} color="#10B981" />,
+        onPress: () => {
+          toggleTheme();
+          toast.show('info', isDark ? 'Đã bật chế độ Sáng' : 'Đã bật chế độ Tối');
+        },
+      },
+      {
+        id: 'demo-open-studio',
+        label: 'Mở Studio Theme & Bo Góc',
+        description: 'Tinh chỉnh màu sắc và độ bo góc Squircle',
+        icon: <Palette size={18} color={themeColors.primary} />,
+        onPress: () => {
+          setIsStudioOpen(true);
+        },
+      },
+      {
+        id: 'demo-share',
+        label: 'Chia sẻ Màn hình',
+        description: 'Sao chép liên kết chia sẻ màn hình chi tiết',
+        icon: <Share2 size={18} color="#6366F1" />,
+        onPress: () => {
+          toast.show('success', `Đã tạo liên kết chia sẻ cho module ${currentTab.label}!`, 'Share Sheet');
+        },
+      },
+    ],
+    [setHeaderVariant, toast, isDark, toggleTheme, themeColors.primary, currentTab.label]
+  );
 
   // Handlers for Demos
   const handleSaveStorage = async () => {
@@ -347,14 +417,17 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
     }
   };
 
+  const insets = useSafeAreaInsets();
   const isGlass = themeStyle === 'apple-glass';
+  const effectiveVariant = headerVariant || 'frosted-capsule';
 
   return (
-    <ScreenWrapper
-      scrollable
-      edges={['bottom', 'left', 'right']}
-      contentContainerStyle={styles.content}
-    >
+    <View style={styles.container}>
+      <ScreenWrapper
+        scrollable
+        edges={['bottom', 'left', 'right']}
+        contentContainerStyle={[styles.content, { paddingTop: insets.top + 48 + 12 }]}
+      >
         {/* 1. Horizontal Module Navigation Tabs */}
         <ModuleTabs
           tabs={moduleTabs}
@@ -546,6 +619,23 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
           onClose={() => setIsStudioOpen(false)}
         />
       </ScreenWrapper>
+
+      {/* Real Application Header for Details Screen - Placed after ScreenWrapper to guarantee touch responder priority & elevation */}
+      <AppHeader
+        title={currentTab.label}
+        subtitle={currentTab.fullTitle}
+        variant={effectiveVariant}
+        showBack
+        backTitle={t('common.back', 'Quay lại')}
+        backStyle={effectiveVariant === 'frosted-capsule' ? 'circle' : 'text'}
+        onBack={() => navigation.goBack()}
+        showMore
+        moreTitle="Tùy Chọn Màn Hình Chi Tiết"
+        moreMessage="Chuyển đổi kiểu dáng Header & Thiết lập giao diện"
+        moreActions={detailsDemoActions}
+        style={styles.floatingHeader}
+      />
+    </View>
   );
 };
 

@@ -86,18 +86,20 @@ export function AppSelect<T = string | number>({
           <AppText
             style={[
               sizeTextStyle,
+              styles.triggerText,
               { color: selectedOption ? themeColors.text : themeColors.textSecondary },
             ]}
             numberOfLines={1}
+            ellipsizeMode="tail"
           >
             {selectedOption ? selectedOption.label : placeholder}
           </AppText>
         </View>
 
         <ChevronDown
-          size={iconSize}
+          size={Math.min(iconSize, 16)}
           color={themeColors.textSecondary}
-          style={{ transform: [{ rotate: isOpen ? '180deg' : '0deg' }] }}
+          style={isOpen ? styles.chevronRotated : styles.chevron}
         />
       </TouchableOpacity>
 

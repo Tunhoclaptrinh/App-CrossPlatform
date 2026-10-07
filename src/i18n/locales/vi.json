@@ -19,7 +19,8 @@
     "language": "Ngôn ngữ",
     "theme": "Giao diện",
     "dark": "Tối",
-    "light": "Sáng"
+    "light": "Sáng",
+    "moreOptions": "Tùy chọn khác"
   },
   "validation": {
     "required": "Trường này không được để trống",

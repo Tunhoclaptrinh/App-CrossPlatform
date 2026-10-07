@@ -46,7 +46,7 @@ export const ScreenWrapper: React.FC<ScreenWrapperProps> = ({
     <View style={[styles.staticContent, contentContainerStyle]}>{children}</View>
   );
 
-  const wrappedWithKeyboard = disableKeyboardDismiss ? (
+  const wrappedWithKeyboard = disableKeyboardDismiss || scrollable ? (
     content
   ) : (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
