@@ -29,8 +29,22 @@ export const AppSearchBar: React.FC<AppSearchBarProps> = ({
   onFilterPress,
   onClear,
   style,
+  variant,
+  contrast,
+  shadow,
+  borderRadius,
+  borderWidth,
+  borderColor,
+  backgroundColor,
 }) => {
-  const { theme: themeColors, isDark, radiusTokens } = useThemeMode();
+  const {
+    theme: themeColors,
+    isDark,
+    radiusTokens,
+    globalContrast,
+    globalShadow,
+    globalControlVariant,
+  } = useThemeMode();
   const { themeStyle } = useAppStore();
   const isGlass = themeStyle === 'apple-glass';
   const iconSize = ControlSize[size].iconSize;
@@ -63,12 +77,29 @@ export const AppSearchBar: React.FC<AppSearchBarProps> = ({
     if (onClear) onClear();
   };
 
+  const containerSurfaceStyle = getSearchBarThemedContainer({
+    colors: themeColors,
+    isDark,
+    isGlassMode: isGlass,
+    radiusTokens,
+    globalContrast,
+    globalShadow,
+    globalControlVariant,
+    variant,
+    contrast,
+    shadow,
+    borderRadius,
+    borderWidth,
+    borderColor,
+    backgroundColor,
+  });
+
   return (
     <View
       style={[
         styles.container,
         getSearchBarSizeStyle(size),
-        getSearchBarThemedContainer(themeColors, radiusTokens, isGlass, isDark),
+        containerSurfaceStyle,
         style,
       ]}
     >

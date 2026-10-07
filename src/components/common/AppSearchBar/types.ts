@@ -1,7 +1,8 @@
 import { ViewStyle } from 'react-native';
 import type { ControlSizeKey } from '@/constants/theme';
+import type { SurfaceControlProps } from '../surfaceUtils';
 
-export interface AppSearchBarProps {
+export interface AppSearchBarProps extends SurfaceControlProps {
   value?: string;
   onChangeText?: (text: string) => void;
   onDebounceChange?: (text: string) => void;
@@ -12,4 +13,3 @@ export interface AppSearchBarProps {
   onClear?: () => void;
   style?: ViewStyle;
 }
-

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Modal,
   View,
@@ -21,11 +21,19 @@ import {
   RotateCcw,
   Sliders,
   Zap,
+  Contrast,
+  SunMedium,
+  Box,
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { AppText } from '@/components/common/AppText';
 import { AppButton } from '@/components/common/AppButton';
 import { AppSwitch } from '@/components/common/AppSwitch';
+import { AppInput } from '@/components/common/AppInput';
+import { AppBadge } from '@/components/common/AppBadge';
+import { AppCheckbox } from '@/components/common/AppCheckbox';
+import { AppSegmentedControl } from '@/components/common/AppSegmentedControl';
+import type { ControlContrast, ControlShadow, ControlVariant } from '@/components/common/surfaceUtils';
 import { useThemeMode } from '@/hooks/useThemeMode';
 import { AccentPalettes, AccentColor } from '@/constants/colors';
 import { RadiusPresets, RadiusPreset } from '@/constants/theme';
@@ -49,6 +57,12 @@ export const ThemeStudioModal: React.FC<ThemeStudioModalProps> = ({
     radiusTokens,
     themeStyle,
     setThemeStyle,
+    globalContrast,
+    setGlobalContrast,
+    globalShadow,
+    setGlobalShadow,
+    globalControlVariant,
+    setGlobalControlVariant,
     hapticsEnabled,
     setHapticsEnabled,
     resetThemeSettings,
@@ -56,6 +70,30 @@ export const ThemeStudioModal: React.FC<ThemeStudioModalProps> = ({
   } = useThemeMode();
 
   const styles = createThemeStudioStyles(theme, radiusTokens, isDark);
+
+  const [sampleTab, setSampleTab] = useState('1');
+  const [sampleChecked, setSampleChecked] = useState(true);
+
+  const contrastOptions = [
+    { label: 'Dịu Nhẹ', value: 'subtle' as ControlContrast },
+    { label: 'Chuẩn', value: 'normal' as ControlContrast },
+    { label: 'Đậm Nét', value: 'high' as ControlContrast },
+  ];
+
+  const shadowOptions = [
+    { label: 'Tắt (Flat)', value: 'none' as ControlShadow },
+    { label: 'Nhẹ (Sm)', value: 'sm' as ControlShadow },
+    { label: 'Vừa (Md)', value: 'md' as ControlShadow },
+    { label: 'Nổi (Lg)', value: 'lg' as ControlShadow },
+  ];
+
+  const surfaceVariantOptions = [
+    { label: 'Standard', value: 'standard' as ControlVariant },
+    { label: 'Filled', value: 'filled' as ControlVariant },
+    { label: 'Glass', value: 'glass' as ControlVariant },
+    { label: 'Elevated', value: 'elevated' as ControlVariant },
+    { label: 'Outline', value: 'outline' as ControlVariant },
+  ];
 
   const accentList = Object.values(AccentPalettes);
   const radiusList = Object.values(RadiusPresets);
@@ -419,7 +457,85 @@ export const ThemeStudioModal: React.FC<ThemeStudioModalProps> = ({
                   </View>
                 </View>
 
-                {/* 5. Tactile Feedback Haptics */}
+                {/* 5. System Contrast Level */}
+                <View style={styles.section}>
+                  <View style={styles.sectionHeader}>
+                    <View style={styles.sectionTitleRow}>
+                      <Contrast size={15} color={theme.primary} />
+                      <AppText style={styles.sectionTitle}>
+                        5. Mức Độ Tương Phản (System Contrast)
+                      </AppText>
+                    </View>
+                    <View style={styles.sectionBadge}>
+                      <AppText style={styles.sectionBadgeText}>
+                        {globalContrast === 'high' ? 'Đậm Nét' : globalContrast === 'subtle' ? 'Dịu Nhẹ' : 'Chuẩn'}
+                      </AppText>
+                    </View>
+                  </View>
+                  <AppSegmentedControl<ControlContrast>
+                    size="sm"
+                    options={contrastOptions}
+                    value={globalContrast}
+                    onChange={(val) => {
+                      haptics.light();
+                      setGlobalContrast(val);
+                    }}
+                  />
+                </View>
+
+                {/* 6. Global Surface Shadow */}
+                <View style={styles.section}>
+                  <View style={styles.sectionHeader}>
+                    <View style={styles.sectionTitleRow}>
+                      <SunMedium size={15} color={theme.primary} />
+                      <AppText style={styles.sectionTitle}>
+                        6. Bóng Đổ Khối Nổi (Global Shadows)
+                      </AppText>
+                    </View>
+                    <View style={styles.sectionBadge}>
+                      <AppText style={styles.sectionBadgeText}>
+                        {String(globalShadow || 'none').toUpperCase()}
+                      </AppText>
+                    </View>
+                  </View>
+                  <AppSegmentedControl<any>
+                    size="sm"
+                    options={shadowOptions}
+                    value={globalShadow}
+                    onChange={(val) => {
+                      haptics.light();
+                      setGlobalShadow(val);
+                    }}
+                  />
+                </View>
+
+                {/* 7. Default Form Surface Variant */}
+                <View style={styles.section}>
+                  <View style={styles.sectionHeader}>
+                    <View style={styles.sectionTitleRow}>
+                      <Box size={15} color={theme.primary} />
+                      <AppText style={styles.sectionTitle}>
+                        7. Kiểu Bề Mặt Mặc Định (Default Variant)
+                      </AppText>
+                    </View>
+                    <View style={styles.sectionBadge}>
+                      <AppText style={styles.sectionBadgeText}>
+                        {globalControlVariant.toUpperCase()}
+                      </AppText>
+                    </View>
+                  </View>
+                  <AppSegmentedControl<ControlVariant>
+                    size="sm"
+                    options={surfaceVariantOptions}
+                    value={globalControlVariant}
+                    onChange={(val) => {
+                      haptics.light();
+                      setGlobalControlVariant(val);
+                    }}
+                  />
+                </View>
+
+                {/* 8. Tactile Feedback Haptics */}
                 <View style={styles.switchRow}>
                   <View style={styles.switchLabelGroup}>
                     <AppText style={styles.switchTitle}>
@@ -435,11 +551,11 @@ export const ThemeStudioModal: React.FC<ThemeStudioModalProps> = ({
                   />
                 </View>
 
-                {/* 6. Live Interactive Sandbox Preview */}
+                {/* 9. Live Interactive Sandbox Preview */}
                 <View style={styles.sandboxCard}>
                   <View style={styles.sandboxHeader}>
                     <AppText style={styles.sandboxTitle} numberOfLines={1}>
-                      Xem Trước Trực Quan
+                      Xem Trước Trực Quan Toàn Bộ Control Base
                     </AppText>
                     <View style={styles.sandboxTag}>
                       <AppText style={styles.sandboxTagText}>
@@ -449,6 +565,41 @@ export const ThemeStudioModal: React.FC<ThemeStudioModalProps> = ({
                   </View>
 
                   <View style={styles.sandboxControls}>
+                    <AppInput
+                      size="sm"
+                      placeholder="Nhập kiểm tra ô input..."
+                      defaultValue="Nguyễn Văn A"
+                    />
+
+                    <AppSegmentedControl<string>
+                      size="sm"
+                      options={[
+                        { label: 'Tổng quan', value: '1' },
+                        { label: 'Chi tiết', value: '2' },
+                        { label: 'Báo cáo', value: '3' },
+                      ]}
+                      value={sampleTab}
+                      onChange={(val) => {
+                        haptics.light();
+                        setSampleTab(val);
+                      }}
+                    />
+
+                    <View style={styles.sandboxInlineRow}>
+                      <AppCheckbox
+                        checked={sampleChecked}
+                        onChange={(c) => {
+                          haptics.light();
+                          setSampleChecked(c);
+                        }}
+                        label="Áp dụng toàn app"
+                      />
+                      <View style={styles.sandboxBadges}>
+                        <AppBadge label="Active" variant="success" size="sm" />
+                        <AppBadge label={globalControlVariant.toUpperCase()} variant="primary" size="sm" />
+                      </View>
+                    </View>
+
                     <AppButton
                       title="Nút Thử Nghiệm Live (Primary)"
                       variant="primary"

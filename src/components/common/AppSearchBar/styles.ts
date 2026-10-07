@@ -1,14 +1,12 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, ViewStyle } from 'react-native';
 import { Spacing, RadiusPresetConfig, ControlSize, ControlSizeKey } from '@/constants/theme';
 import type { ThemeColors } from '@/constants/colors';
-
-
+import { getControlSurfaceStyle, type GetControlSurfaceOptions } from '../surfaceUtils';
 
 export const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
   },
   sizeSm: {
     height: ControlSize.sm.height,
@@ -76,26 +74,22 @@ export const getSearchBarInputSizeStyle = (size: ControlSizeKey = 'md') => {
   }
 };
 
-
-export const getSearchBarThemedContainer = (
-  colors: ThemeColors,
+export function getSearchBarThemedContainer(
+  colorsOrOptions: ThemeColors | GetControlSurfaceOptions,
   radius?: RadiusPresetConfig,
   isGlass: boolean = false,
   isDark: boolean = false
-) => ({
-  backgroundColor: isGlass
-    ? isDark
-      ? 'rgba(30, 41, 59, 0.65)'
-      : 'rgba(255, 255, 255, 0.75)'
-    : colors.card,
-  borderColor: isGlass
-    ? isDark
-      ? 'rgba(255, 255, 255, 0.20)'
-      : 'rgba(255, 255, 255, 0.88)'
-    : colors.border,
-  borderRadius: radius ? radius.control : 12,
-});
-
+): ViewStyle {
+  if (typeof colorsOrOptions === 'object' && 'colors' in colorsOrOptions) {
+    return getControlSurfaceStyle(colorsOrOptions as GetControlSurfaceOptions);
+  }
+  return getControlSurfaceStyle({
+    colors: colorsOrOptions as ThemeColors,
+    radiusTokens: radius,
+    isGlassMode: isGlass,
+    isDark,
+  });
+}
 
 export const getFilterButtonThemedStyle = (colors: ThemeColors) => ({
   borderLeftColor: colors.border,

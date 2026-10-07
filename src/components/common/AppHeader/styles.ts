@@ -22,6 +22,14 @@ export const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: 'rgba(255, 255, 255, 0.14)',
   },
+  borderBottomHighLight: {
+    borderBottomWidth: 1.5,
+    borderBottomColor: 'rgba(0, 0, 0, 0.28)',
+  },
+  borderBottomHighDark: {
+    borderBottomWidth: 1.5,
+    borderBottomColor: 'rgba(255, 255, 255, 0.32)',
+  },
   standardBgLight: {
     backgroundColor: '#FFFFFF',
   },

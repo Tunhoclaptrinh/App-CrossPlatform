@@ -58,6 +58,7 @@ export interface AppHeaderProps {
   backgroundOpacity?: number;      // Tinh chỉnh độ trong suốt của nền (0.0 -> 1.0) không làm mờ chữ/nút
   glass?: boolean;
   borderBottom?: boolean;
+  contrast?: import('../surfaceUtils').ControlContrast;
   tintColor?: string;              // Màu nhấn chủ đạo cho back / action text
 
   // Granular Sub-Element Style Overrides (Cho phép chèn style tùy chỉnh từ bên ngoài)

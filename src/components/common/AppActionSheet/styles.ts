@@ -1,13 +1,39 @@
 import { StyleSheet, Platform } from 'react-native';
 import { RadiusPresetConfig } from '@/constants/theme';
 import type { ThemeColors } from '@/constants/colors';
+import type { ControlContrast } from '../surfaceUtils';
 
 export const createActionSheetStyles = (
   theme: ThemeColors,
   radius: RadiusPresetConfig,
-  isDark: boolean
-) =>
-  StyleSheet.create({
+  isDark: boolean,
+  contrast: ControlContrast = 'normal',
+  isGlass: boolean = false
+) => {
+  const isHigh = contrast === 'high';
+  const isSubtle = contrast === 'subtle';
+
+  let borderColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)';
+  let borderWidth = 1;
+  if (isHigh) {
+    borderWidth = 1.5;
+    borderColor = isDark ? 'rgba(255, 255, 255, 0.32)' : 'rgba(0, 0, 0, 0.28)';
+  } else if (isSubtle) {
+    borderWidth = 0.5;
+    borderColor = isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.04)';
+  } else if (isGlass) {
+    borderColor = isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.65)';
+  }
+
+  const surfaceBg = isGlass
+    ? isDark
+      ? 'rgba(26, 34, 52, 0.92)'
+      : 'rgba(255, 255, 255, 0.94)'
+    : isDark
+      ? '#1E2433'
+      : '#FFFFFF';
+
+  return StyleSheet.create({
     modalRoot: {
       flex: 1,
       justifyContent: 'flex-end',
@@ -31,12 +57,12 @@ export const createActionSheetStyles = (
     contentBlock: {
       borderRadius: Math.max(12, Math.min(radius.card, 20)),
       overflow: 'hidden',
-      backgroundColor: isDark ? '#1E2433' : '#FFFFFF',
-      borderWidth: 1,
-      borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)',
+      backgroundColor: surfaceBg,
+      borderWidth,
+      borderColor,
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.18,
+      shadowOpacity: isHigh ? 0.28 : isSubtle ? 0.1 : 0.18,
       shadowRadius: 14,
       elevation: 8,
     },
@@ -113,9 +139,14 @@ export const createActionSheetStyles = (
     cancelBlock: {
       borderRadius: Math.max(12, Math.min(radius.card, 20)),
       overflow: 'hidden',
-      backgroundColor: isDark ? '#1E2433' : '#FFFFFF',
-      borderWidth: 1,
-      borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)',
+      backgroundColor: surfaceBg,
+      borderWidth,
+      borderColor,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: isHigh ? 0.28 : isSubtle ? 0.1 : 0.18,
+      shadowRadius: 14,
+      elevation: 8,
     },
     cancelButton: {
       paddingVertical: 15,
@@ -128,3 +159,4 @@ export const createActionSheetStyles = (
       color: theme.primary,
     },
   });
+};

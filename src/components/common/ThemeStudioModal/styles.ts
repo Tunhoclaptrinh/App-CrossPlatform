@@ -318,6 +318,17 @@ export const createThemeStudioStyles = (
     sandboxControls: {
       gap: 10,
     },
+    sandboxInlineRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: 8,
+    },
+    sandboxBadges: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+    },
     sandboxTagRow: {
       flexDirection: 'row',
       gap: 6,

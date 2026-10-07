@@ -15,23 +15,53 @@ export const AppCard: React.FC<AppCardProps> = ({
   variant = 'elevated',
   radius,
   padding = 'base',
+  contrast,
+  shadow,
+  borderWidth,
+  borderColor,
+  backgroundColor,
+  borderRadius,
   onPress,
   style,
 }) => {
-  const { theme: themeColors, radiusTokens, isDark } = useThemeMode();
+  const {
+    theme: themeColors,
+    radiusTokens,
+    isDark,
+    globalContrast,
+    globalShadow,
+  } = useThemeMode();
   const { themeStyle } = useAppStore();
   const isGlassTheme = themeStyle === 'apple-glass';
 
   // In Apple Glass mode, all cards automatically adopt the Liquid Glass specular highlight
   const isGlassCard = isGlassTheme || variant === 'glass';
   const effectiveVariant = isGlassTheme ? 'glass' : variant;
+  const effectiveContrast = contrast ?? globalContrast ?? 'normal';
+  const effectiveShadow = shadow ?? (globalShadow !== 'none' ? globalShadow : undefined);
 
-  const cardRadius = radius ? BorderRadius[radius] : Math.min(radiusTokens.card, 16);
+  const cardRadius =
+    borderRadius !== undefined
+      ? borderRadius
+      : radius
+      ? BorderRadius[radius]
+      : Math.min(radiusTokens.card, 16);
+
+  const cardVariantStyle = createCardVariantStyle({
+    variant: effectiveVariant,
+    themeColors,
+    isDark,
+    contrast: effectiveContrast,
+    shadow: effectiveShadow,
+    borderWidth,
+    borderColor,
+    backgroundColor,
+  });
 
   const cardStyle: ViewStyle = {
     borderRadius: cardRadius,
     padding: Spacing[padding],
-    ...createCardVariantStyle(effectiveVariant, themeColors, isDark),
+    ...cardVariantStyle,
   };
 
   const highlightElement = isGlassCard ? (

@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { ViewStyle } from 'react-native';
 import type { ControlSizeKey } from '@/constants/theme';
+import type { SurfaceControlProps } from '../surfaceUtils';
 
 export interface AppSelectOption<T = string | number> {
   label: string;
@@ -12,7 +13,7 @@ export interface AppSelectOption<T = string | number> {
 
 export type AppSelectSize = ControlSizeKey;
 
-export interface AppSelectProps<T = string | number> {
+export interface AppSelectProps<T = string | number> extends SurfaceControlProps {
   options: AppSelectOption<T>[];
   value?: T;
   onSelect: (value: T) => void;

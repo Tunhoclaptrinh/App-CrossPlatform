@@ -4,9 +4,11 @@ import { Sliders, CheckCircle2 } from 'lucide-react-native';
 import { AppText, AppButton, AppCard } from '@/components';
 import { AccentPalettes } from '@/constants/colors';
 import { RadiusPresets } from '@/constants/theme';
+import { useAppStore } from '@/hooks/useAppStore';
 import { haptics } from '@/utils';
 import { createThemeStudioStyles } from './styles';
 import type { ThemeStudioShowcaseProps } from './types';
+
 
 export const ThemeStudioShowcase: React.FC<ThemeStudioShowcaseProps> = ({
   themeColors,
@@ -23,6 +25,8 @@ export const ThemeStudioShowcase: React.FC<ThemeStudioShowcaseProps> = ({
 }) => {
   const styles = useMemo(() => createThemeStudioStyles(radiusTokens), [radiusTokens]);
   const isGlass = themeStyle === 'apple-glass';
+
+  const { globalContrast, globalShadow, globalControlVariant } = useAppStore();
 
   return (
     <AppCard style={styles.cardContent}>
@@ -192,6 +196,12 @@ export const ThemeStudioShowcase: React.FC<ThemeStudioShowcaseProps> = ({
           <CheckCircle2 size={15} color={themeColors.primary} strokeWidth={2.4} />
           <AppText style={[styles.summaryText, { color: themeColors.text }]}>
             Màu chủ đạo: {AccentPalettes[accentColor]?.nameVi} ({themeColors.primary})
+          </AppText>
+        </View>
+        <View style={styles.summaryRow}>
+          <CheckCircle2 size={15} color={themeColors.primary} strokeWidth={2.4} />
+          <AppText style={[styles.summaryText, { color: themeColors.text }]}>
+            Bề mặt & Tương phản: {globalControlVariant.toUpperCase()} • {globalContrast === 'high' ? 'Đậm Nét' : globalContrast === 'subtle' ? 'Dịu Nhẹ' : 'Chuẩn'} (Shadow: {String(globalShadow || 'none').toUpperCase()})
           </AppText>
         </View>
       </View>

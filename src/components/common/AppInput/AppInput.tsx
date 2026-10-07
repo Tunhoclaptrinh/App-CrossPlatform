@@ -6,6 +6,7 @@ import {
 } from 'react-native';
 import { Eye, EyeOff } from 'lucide-react-native';
 import { useThemeMode } from '@/hooks/useThemeMode';
+import { useAppStore } from '@/hooks/useAppStore';
 import { ControlSize } from '@/constants/theme';
 import { AppText } from '../AppText';
 import type { AppInputProps } from './types';
@@ -27,14 +28,48 @@ export const AppInput: React.FC<AppInputProps> = ({
   isPassword = false,
   style,
   editable,
+  variant,
+  contrast,
+  shadow,
+  borderRadius,
+  borderWidth,
+  borderColor,
+  backgroundColor,
   ...props
 }) => {
-  const { theme: themeColors, radiusTokens } = useThemeMode();
+  const {
+    theme: themeColors,
+    isDark,
+    radiusTokens,
+    globalContrast,
+    globalShadow,
+    globalControlVariant,
+  } = useThemeMode();
+  const { themeStyle } = useAppStore();
+  const isGlassMode = themeStyle === 'apple-glass';
 
   const [isFocused, setIsFocused] = useState(false);
   const [showPassword, setShowPassword] = useState(!isPassword);
 
-  const stateStyle = getInputStateStyle(themeColors, isFocused, !!error, radiusTokens);
+  const stateStyle = getInputStateStyle({
+    colors: themeColors,
+    isDark,
+    isGlassMode,
+    isFocused,
+    hasError: !!error,
+    radiusTokens,
+    globalContrast,
+    globalShadow,
+    globalControlVariant,
+    variant,
+    contrast,
+    shadow,
+    borderRadius,
+    borderWidth,
+    borderColor,
+    backgroundColor,
+  });
+
   const sizeContainerStyle = getInputSizeStyle(size);
   const sizeInputStyle = getInputTextSizeStyle(size);
   const iconSize = ControlSize[size].iconSize;
@@ -92,4 +127,3 @@ export const AppInput: React.FC<AppInputProps> = ({
     </View>
   );
 };
-

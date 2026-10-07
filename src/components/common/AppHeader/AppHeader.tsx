@@ -42,6 +42,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
   backgroundOpacity,
   glass: _glass,
   borderBottom,
+  contrast,
   tintColor,
   style,
   containerStyle,
@@ -53,7 +54,9 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
   islandStyle,
 }) => {
   const insets = useSafeAreaInsets();
-  const { theme: themeColors, radiusTokens, isDark } = useThemeMode();
+  const { theme: themeColors, radiusTokens, isDark, globalContrast } = useThemeMode();
+  const resolvedContrast = contrast ?? globalContrast;
+  const isHighContrast = resolvedContrast === 'high';
   const { t } = useTranslation();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
@@ -386,7 +389,15 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
         styles.container,
         getContainerHeight(insets.top),
         isCapsuleVariant || transparent ? styles.floatingContainer : null,
-        showBorderBottom ? (isDark ? styles.borderBottomDark : styles.borderBottomLight) : null,
+        showBorderBottom
+          ? isHighContrast
+            ? isDark
+              ? styles.borderBottomHighDark
+              : styles.borderBottomHighLight
+            : isDark
+              ? styles.borderBottomDark
+              : styles.borderBottomLight
+          : null,
         style,
         containerStyle,
       ]}
@@ -556,6 +567,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
           onClose={() => setIsSheetOpen(false)}
           title={moreTitle || title}
           message={moreMessage}
+          contrast={resolvedContrast}
           actions={moreActions}
         />
       )}

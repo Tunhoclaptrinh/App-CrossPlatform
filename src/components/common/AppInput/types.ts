@@ -1,9 +1,10 @@
 import React from 'react';
 import { TextInputProps, ViewStyle } from 'react-native';
+import type { SurfaceControlProps } from '../surfaceUtils';
 
 export type AppInputSize = 'sm' | 'md' | 'lg';
 
-export interface AppInputProps extends TextInputProps {
+export interface AppInputProps extends TextInputProps, SurfaceControlProps {
   label?: string;
   error?: string;
   size?: AppInputSize;
@@ -13,5 +14,3 @@ export interface AppInputProps extends TextInputProps {
   isPassword?: boolean;
   disabled?: boolean;
 }
-
-

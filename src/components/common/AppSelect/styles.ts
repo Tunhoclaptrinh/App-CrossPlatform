@@ -1,6 +1,7 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, ViewStyle } from 'react-native';
 import { Spacing, RadiusPresetConfig, ControlSize } from '@/constants/theme';
 import type { ThemeColors } from '@/constants/colors';
+import { getControlSurfaceStyle, type GetControlSurfaceOptions } from '../surfaceUtils';
 import type { AppSelectSize } from './types';
 
 export const styles = StyleSheet.create({
@@ -15,8 +16,6 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderWidth: 1,
-    overflow: 'hidden',
   },
   sizeSm: {
     height: ControlSize.sm.height,
@@ -200,24 +199,20 @@ export const getSelectTextSizeStyle = (size: AppSelectSize = 'md') => {
   }
 };
 
-export const getSelectTriggerStyle = (
-  colors: ThemeColors,
-  isOpen: boolean,
-  hasError: boolean,
+export function getSelectTriggerStyle(
+  colorsOrOptions: ThemeColors | GetControlSurfaceOptions,
+  isOpen?: boolean,
+  hasError?: boolean,
   radius?: RadiusPresetConfig
-) => {
-  const bg = colors.surface;
-
-  const borderColor = hasError
-    ? colors.error
-    : isOpen
-    ? colors.primary
-    : colors.border;
-
-  return {
-    backgroundColor: bg,
-    borderRadius: radius ? radius.control : 12,
-    borderColor,
-  };
-};
+): ViewStyle {
+  if (typeof colorsOrOptions === 'object' && 'colors' in colorsOrOptions) {
+    return getControlSurfaceStyle(colorsOrOptions as GetControlSurfaceOptions);
+  }
+  return getControlSurfaceStyle({
+    colors: colorsOrOptions as ThemeColors,
+    isFocused: !!isOpen,
+    hasError: !!hasError,
+    radiusTokens: radius,
+  });
+}
 

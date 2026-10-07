@@ -11,6 +11,7 @@ import { AlertCircle, Trash2 } from 'lucide-react-native';
 import { AppText } from '../AppText';
 import { AppButton } from '../AppButton';
 import { useThemeMode } from '@/hooks/useThemeMode';
+import { useAppStore } from '@/hooks/useAppStore';
 import type { ConfirmDialogProps } from './types';
 import { styles, getDialogContainerThemedStyle, getDialogIconThemedStyle } from './styles';
 
@@ -25,9 +26,13 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   destructive = false,
   loading = false,
   icon,
+  contrast,
   style,
 }) => {
-  const { theme: themeColors, isDark, radiusTokens } = useThemeMode();
+  const { theme: themeColors, isDark, radiusTokens, globalContrast } = useThemeMode();
+  const { themeStyle } = useAppStore();
+  const isGlassTheme = themeStyle === 'apple-glass';
+  const effectiveContrast = contrast ?? globalContrast ?? 'normal';
 
   const defaultIcon = destructive ? (
     <Trash2 size={28} color={themeColors.error} />
@@ -61,7 +66,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
             <View
               style={[
                 styles.dialogContainer,
-                getDialogContainerThemedStyle(isDark, radiusTokens),
+                getDialogContainerThemedStyle(isDark, radiusTokens, isGlassTheme, effectiveContrast),
                 style,
               ]}
             >

@@ -8,4 +8,35 @@ export interface StorybookShowcaseProps {
   isGlass?: boolean;
 }
 
-export type StoryCategory = 'parity' | 'buttons' | 'inputs' | 'selects' | 'badges' | 'surfaces';
+export type StoryCategory = 'all' | 'molecules' | 'organisms' | 'atoms' | 'parity';
+
+export type ComponentId =
+  | 'button'
+  | 'input'
+  | 'select'
+  | 'searchbar'
+  | 'header'
+  | 'apple-glass-card'
+  | 'glass-card'
+  | 'card'
+  | 'badge'
+  | 'switch'
+  | 'checkbox'
+  | 'confirm-dialog'
+  | 'action-sheet'
+  | 'skeleton'
+  | 'icon-tile'
+  | 'segmented-control'
+  | 'empty-state';
+
+export interface ComponentMeta {
+  id: ComponentId;
+  name: string;
+  category: 'molecules' | 'organisms' | 'atoms';
+  description: string;
+  tags: string[];
+  icon: any;
+  hasParity?: boolean;
+}
+
+export type PreviewCanvasBackground = 'default' | 'card' | 'contrast' | 'mesh';

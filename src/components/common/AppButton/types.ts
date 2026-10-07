@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
-import { TouchableOpacityProps, TextStyle } from 'react-native';
+import { TouchableOpacityProps, TextStyle, StyleProp } from 'react-native';
+import type { ControlContrast, ControlShadow } from '../surfaceUtils';
 
 export type AppButtonVariant =
   | 'primary'
@@ -20,7 +21,13 @@ export interface AppButtonProps extends TouchableOpacityProps {
   disabled?: boolean;
   leftIcon?: ReactNode;
   rightIcon?: ReactNode;
-  textStyle?: TextStyle;
+  textStyle?: StyleProp<TextStyle>;
   haptic?: boolean;
+  fullWidth?: boolean;
+  contrast?: ControlContrast;
+  shadow?: ControlShadow;
+  borderRadius?: number;
+  borderWidth?: number;
+  borderColor?: string;
+  backgroundColor?: string;
 }
-

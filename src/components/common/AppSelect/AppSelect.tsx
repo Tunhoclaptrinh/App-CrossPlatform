@@ -11,6 +11,7 @@ import {
 import { BlurView } from '@react-native-community/blur';
 import { ChevronDown, Check, X } from 'lucide-react-native';
 import { useThemeMode } from '@/hooks/useThemeMode';
+import { useAppStore } from '@/hooks/useAppStore';
 import { ControlSize } from '@/constants/theme';
 import { haptics } from '@/utils/haptics';
 import { AppText } from '../AppText';
@@ -34,15 +35,48 @@ export function AppSelect<T = string | number>({
   leftIcon,
   containerStyle,
   sheetTitle,
+  variant,
+  contrast,
+  shadow,
+  borderRadius,
+  borderWidth,
+  borderColor,
+  backgroundColor,
 }: AppSelectProps<T>) {
-  const { theme: themeColors, isDark, radiusTokens } = useThemeMode();
+  const {
+    theme: themeColors,
+    isDark,
+    radiusTokens,
+    globalContrast,
+    globalShadow,
+    globalControlVariant,
+  } = useThemeMode();
+  const { themeStyle } = useAppStore();
+  const isGlassMode = themeStyle === 'apple-glass';
   const [isOpen, setIsOpen] = useState(false);
 
   const selectedOption = options.find((opt) => opt.value === value);
   const sizeContainerStyle = getSelectSizeStyle(size);
   const sizeTextStyle = getSelectTextSizeStyle(size);
   const iconSize = ControlSize[size].iconSize;
-  const triggerStateStyle = getSelectTriggerStyle(themeColors, isOpen, !!error, radiusTokens);
+  const triggerStateStyle = getSelectTriggerStyle({
+    colors: themeColors,
+    isDark,
+    isGlassMode,
+    isFocused: isOpen,
+    hasError: !!error,
+    radiusTokens,
+    globalContrast,
+    globalShadow,
+    globalControlVariant,
+    variant,
+    contrast,
+    shadow,
+    borderRadius,
+    borderWidth,
+    borderColor,
+    backgroundColor,
+  });
 
   const handleOpen = () => {
     if (!disabled) {

@@ -23,10 +23,18 @@ export const AppActionSheet: React.FC<AppActionSheetProps> = ({
   actions,
   showCancel = true,
   cancelLabel = 'Hủy bỏ',
+  contrast,
   style,
 }) => {
-  const { theme, radiusTokens, isDark } = useThemeMode();
-  const styles = createActionSheetStyles(theme, radiusTokens, isDark);
+  const { theme, radiusTokens, isDark, globalContrast, isGlassTheme } = useThemeMode();
+  const resolvedContrast = contrast ?? globalContrast;
+  const styles = createActionSheetStyles(
+    theme,
+    radiusTokens,
+    isDark,
+    resolvedContrast,
+    isGlassTheme
+  );
 
   const handleAction = (onPress: () => void) => {
     haptics.light();

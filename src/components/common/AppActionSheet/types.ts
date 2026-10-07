@@ -1,5 +1,6 @@
 import React from 'react';
 import { ViewStyle } from 'react-native';
+import type { ControlContrast } from '../surfaceUtils';
 
 export interface AppActionSheetItem {
   id: string;
@@ -19,5 +20,7 @@ export interface AppActionSheetProps {
   actions: AppActionSheetItem[];
   showCancel?: boolean;
   cancelLabel?: string;
+  contrast?: ControlContrast;
   style?: ViewStyle;
 }
+

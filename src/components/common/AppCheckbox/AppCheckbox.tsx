@@ -11,9 +11,12 @@ export const AppCheckbox: React.FC<AppCheckboxProps> = ({
   onChange,
   label,
   disabled = false,
+  contrast,
   style,
 }) => {
-  const { theme: themeColors } = useThemeMode();
+  const { theme: themeColors, isDark, globalContrast } = useThemeMode();
+  const resolvedContrast = contrast ?? globalContrast;
+  const isHigh = resolvedContrast === 'high';
 
   const handlePress = () => {
     if (!disabled) {
@@ -28,7 +31,12 @@ export const AppCheckbox: React.FC<AppCheckboxProps> = ({
       }
     : {
         backgroundColor: 'transparent',
-        borderColor: themeColors.border,
+        borderColor: isHigh
+          ? isDark
+            ? 'rgba(255, 255, 255, 0.45)'
+            : 'rgba(0, 0, 0, 0.45)'
+          : themeColors.border,
+        borderWidth: isHigh ? 2 : 1.5,
       };
 
   return (

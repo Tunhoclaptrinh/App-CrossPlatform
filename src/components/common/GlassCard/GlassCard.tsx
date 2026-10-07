@@ -9,11 +9,13 @@ export const GlassCard: React.FC<GlassCardProps> = ({
   children,
   style,
   accentColor,
+  contrast,
   onPress,
 }) => {
-  const { isDark, radiusTokens } = useThemeMode();
+  const { isDark, radiusTokens, globalContrast } = useThemeMode();
   const cardRadius = Math.min(radiusTokens.card, 16);
-  const styles = createGlassCardStyles(isDark, accentColor, cardRadius);
+  const effectiveContrast = contrast ?? globalContrast ?? 'normal';
+  const styles = createGlassCardStyles(isDark, accentColor, cardRadius, effectiveContrast);
 
   const handlePress = () => {
     if (onPress) {

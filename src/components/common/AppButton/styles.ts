@@ -17,6 +17,9 @@ export const createButtonStyles = (
       overflow: 'hidden',
       position: 'relative',
     },
+    fullWidth: {
+      width: '100%',
+    },
     // Sizes - Standardized via ControlSize Tokens
     sizeSm: {
       paddingVertical: Spacing.xs + 2,
@@ -115,7 +118,31 @@ export const createButtonStyles = (
       marginRight: 0,
       marginLeft: 0,
     },
+    iconOnlySm: {
+      width: ControlSize.sm.height,
+    },
+    iconOnlyMd: {
+      width: ControlSize.md.height,
+    },
+    iconOnlyLg: {
+      width: ControlSize.lg.height,
+    },
   });
+
+export const getIconOnlySizeStyle = (
+  size: AppButtonSize,
+  styles: ReturnType<typeof createButtonStyles>
+) => {
+  switch (size) {
+    case 'sm':
+      return styles.iconOnlySm;
+    case 'lg':
+      return styles.iconOnlyLg;
+    case 'md':
+    default:
+      return styles.iconOnlyMd;
+  }
+};
 
 export const getButtonTextColor = (variant: AppButtonVariant, colors: ThemeColors): string => {
   switch (variant) {

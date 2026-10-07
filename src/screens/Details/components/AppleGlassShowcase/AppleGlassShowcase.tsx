@@ -19,6 +19,7 @@ import {
   AppleGlassCard,
   GlassTile,
   AppHeader,
+  AppSegmentedControl,
 } from '@/components';
 import { useAppStore, useToast } from '@/hooks';
 import { haptics } from '@/utils';
@@ -126,68 +127,29 @@ export const AppleGlassShowcase: React.FC<AppleGlassShowcaseProps> = ({
             </AppText>
           </View>
 
-          {/* Cupertino Interactive Segmented Control */}
-          <View style={[styles.heroSegmentBar, isDark ? styles.heroSegmentBarDark : styles.heroSegmentBarLight]}>
-            <TouchableOpacity
-              activeOpacity={0.8}
-              style={[
-                styles.heroSegmentItem,
-                themeStyle === 'apple-glass' && (isDark ? styles.heroSegmentActiveDark : styles.heroSegmentActiveLight),
-              ]}
-              onPress={() => {
-                if (themeStyle !== 'apple-glass') {
-                  haptics.light();
-                  onToggleThemeStyle();
-                }
-              }}
-            >
-              <Sparkles
-                size={14}
-                color={themeStyle === 'apple-glass' ? '#007AFF' : themeColors.textSecondary}
-                strokeWidth={2.4}
-              />
-              <AppText
-                style={[
-                  styles.heroSegmentText,
-                  themeStyle === 'apple-glass'
-                    ? styles.heroSegmentTextActive
-                    : { color: themeColors.textSecondary },
-                ]}
-              >
-                Apple Liquid Glass
-              </AppText>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              activeOpacity={0.8}
-              style={[
-                styles.heroSegmentItem,
-                themeStyle === 'default' && (isDark ? styles.heroSegmentActiveDark : styles.heroSegmentActiveLight),
-              ]}
-              onPress={() => {
-                if (themeStyle !== 'default') {
-                  haptics.light();
-                  onToggleThemeStyle();
-                }
-              }}
-            >
-              <Palette
-                size={14}
-                color={themeStyle === 'default' ? themeColors.primary : themeColors.textSecondary}
-                strokeWidth={2.2}
-              />
-              <AppText
-                style={[
-                  styles.heroSegmentText,
-                  themeStyle === 'default'
-                    ? styles.heroSegmentTextActive
-                    : { color: themeColors.textSecondary },
-                ]}
-              >
-                Giao Diện Flat UI
-              </AppText>
-            </TouchableOpacity>
-          </View>
+          {/* Cupertino Interactive Segmented Control (Standardized via AppSegmentedControl) */}
+          <AppSegmentedControl
+            variant="pill"
+            size="md"
+            options={[
+              {
+                label: 'Apple Liquid Glass',
+                value: 'apple-glass',
+                icon: <Sparkles size={14} strokeWidth={2.4} />,
+              },
+              {
+                label: 'Giao Diện Flat UI',
+                value: 'default',
+                icon: <Palette size={14} strokeWidth={2.2} />,
+              },
+            ]}
+            value={themeStyle}
+            onChange={(val) => {
+              if (val !== themeStyle) {
+                onToggleThemeStyle();
+              }
+            }}
+          />
 
           {/* 3-Column Unified Spec Strip with Hairline Dividers */}
           <View style={[styles.specBar, isDark ? styles.specBarDark : styles.specBarLight]}>
@@ -349,95 +311,39 @@ export const AppleGlassShowcase: React.FC<AppleGlassShowcaseProps> = ({
           Bộ Header chuẩn Apple với nút back tròn mờ độc lập, nhóm hành động chung capsule kính mờ có đường phân cách mảnh.
         </AppText>
 
-        {/* Header Variant Switcher */}
-        <View style={[styles.segmentedBar, isDark ? styles.segmentedBarDark : styles.segmentedBarLight]}>
-          <TouchableOpacity
-            activeOpacity={0.8}
-            style={[
-              styles.segmentItem,
-              activeHeaderVariant === 'frosted-capsule' && (isDark ? styles.segmentItemActiveDark : styles.segmentItemActiveLight),
-            ]}
-            onPress={() => {
-              haptics.light();
-              setHeaderVariant('frosted-capsule');
-              toast.show('success', 'Đã chuyển Header sang Apple iOS 18 Frosted Capsule!');
-            }}
-          >
-            <Sparkles
-              size={14}
-              color={activeHeaderVariant === 'frosted-capsule' ? '#007AFF' : themeColors.textSecondary}
-              strokeWidth={2.2}
-            />
-            <AppText
-              style={[
-                styles.segmentText,
-                activeHeaderVariant === 'frosted-capsule'
-                  ? styles.segmentTextActive
-                  : { color: themeColors.textSecondary },
-              ]}
-            >
-              Frosted Capsule
-            </AppText>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            activeOpacity={0.8}
-            style={[
-              styles.segmentItem,
-              activeHeaderVariant === 'floating-pill' && (isDark ? styles.segmentItemActiveDark : styles.segmentItemActiveLight),
-            ]}
-            onPress={() => {
-              haptics.light();
-              setHeaderVariant('floating-pill');
-              toast.show('success', 'Đã chuyển Header sang Dynamic Island Floating Pill!');
-            }}
-          >
-            <Sparkles
-              size={14}
-              color={activeHeaderVariant === 'floating-pill' ? '#EC4899' : themeColors.textSecondary}
-              strokeWidth={2.2}
-            />
-            <AppText
-              style={[
-                styles.segmentText,
-                activeHeaderVariant === 'floating-pill'
-                  ? styles.segmentTextActive
-                  : { color: themeColors.textSecondary },
-              ]}
-            >
-              Floating Pill
-            </AppText>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            activeOpacity={0.8}
-            style={[
-              styles.segmentItem,
-              activeHeaderVariant === 'standard' && (isDark ? styles.segmentItemActiveDark : styles.segmentItemActiveLight),
-            ]}
-            onPress={() => {
-              haptics.light();
-              setHeaderVariant('standard');
-              toast.show('success', 'Đã chuyển Header sang Standard iOS Navbar!');
-            }}
-          >
-            <Layout
-              size={14}
-              color={activeHeaderVariant === 'standard' ? themeColors.primary : themeColors.textSecondary}
-              strokeWidth={2.2}
-            />
-            <AppText
-              style={[
-                styles.segmentText,
-                activeHeaderVariant === 'standard'
-                  ? styles.segmentTextActive
-                  : { color: themeColors.textSecondary },
-              ]}
-            >
-              Standard iOS
-            </AppText>
-          </TouchableOpacity>
-        </View>
+        {/* Header Variant Switcher (Standardized via AppSegmentedControl) */}
+        <AppSegmentedControl
+          variant="glass"
+          size="sm"
+          options={[
+            {
+              label: 'Frosted Capsule',
+              value: 'frosted-capsule',
+              icon: <Sparkles size={13} strokeWidth={2.2} />,
+            },
+            {
+              label: 'Floating Pill',
+              value: 'floating-pill',
+              icon: <Sparkles size={13} strokeWidth={2.2} />,
+            },
+            {
+              label: 'Standard iOS',
+              value: 'standard',
+              icon: <Layout size={13} strokeWidth={2.2} />,
+            },
+          ]}
+          value={activeHeaderVariant}
+          onChange={(val: any) => {
+            setHeaderVariant(val);
+            const msg =
+              val === 'frosted-capsule'
+                ? 'Đã chuyển Header sang Apple iOS 18 Frosted Capsule!'
+                : val === 'floating-pill'
+                ? 'Đã chuyển Header sang Dynamic Island Floating Pill!'
+                : 'Đã chuyển Header sang Standard iOS Navbar!';
+            toast.show('success', msg);
+          }}
+        />
 
         {/* Dynamic Architectural Detail of Selected Variant */}
         <View style={[styles.variantDetailBox, isDark ? styles.variantDetailBoxDark : styles.variantDetailBoxLight]}>
@@ -657,64 +563,25 @@ export const AppleGlassShowcase: React.FC<AppleGlassShowcaseProps> = ({
           Chuyển đổi giữa 2 chế độ hiển thị để cảm nhận rõ rệt sự khác biệt về chiều sâu, viền phản xạ ánh sáng và độ nổi khối.
         </AppText>
 
-        {/* Segmented Switcher */}
-        <View style={[styles.segmentedBar, isDark ? styles.segmentedBarDark : styles.segmentedBarLight]}>
-          <TouchableOpacity
-            activeOpacity={0.8}
-            style={[
-              styles.segmentItem,
-              compareMode === 'glass' && (isDark ? styles.segmentItemActiveDark : styles.segmentItemActiveLight),
-            ]}
-            onPress={() => {
-              haptics.light();
-              setCompareMode('glass');
-            }}
-          >
-            <Sparkles
-              size={14}
-              color={compareMode === 'glass' ? '#007AFF' : themeColors.textSecondary}
-              strokeWidth={2.2}
-            />
-            <AppText
-              style={[
-                styles.segmentText,
-                compareMode === 'glass'
-                  ? styles.segmentTextActive
-                  : { color: themeColors.textSecondary },
-              ]}
-            >
-              Apple Liquid Glass
-            </AppText>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            activeOpacity={0.8}
-            style={[
-              styles.segmentItem,
-              compareMode === 'flat' && (isDark ? styles.segmentItemActiveDark : styles.segmentItemActiveLight),
-            ]}
-            onPress={() => {
-              haptics.light();
-              setCompareMode('flat');
-            }}
-          >
-            <Palette
-              size={14}
-              color={compareMode === 'flat' ? themeColors.primary : themeColors.textSecondary}
-              strokeWidth={2.2}
-            />
-            <AppText
-              style={[
-                styles.segmentText,
-                compareMode === 'flat'
-                  ? styles.segmentTextActive
-                  : { color: themeColors.textSecondary },
-              ]}
-            >
-              Giao Diện Flat UI
-            </AppText>
-          </TouchableOpacity>
-        </View>
+        {/* Segmented Switcher (Standardized via AppSegmentedControl) */}
+        <AppSegmentedControl<'glass' | 'flat'>
+          variant="pill"
+          size="sm"
+          options={[
+            {
+              label: 'Apple Liquid Glass',
+              value: 'glass',
+              icon: <Sparkles size={13} strokeWidth={2.2} />,
+            },
+            {
+              label: 'Giao Diện Flat UI',
+              value: 'flat',
+              icon: <Palette size={13} strokeWidth={2.2} />,
+            },
+          ]}
+          value={compareMode}
+          onChange={setCompareMode}
+        />
 
         {/* Live Stage with Backdrop Preview */}
         <View style={styles.previewStage}>

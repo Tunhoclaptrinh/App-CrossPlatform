@@ -33,6 +33,13 @@ export interface ThemeState {
   themeStyle: ThemeStyle;
   setThemeStyle: (style: ThemeStyle) => void;
   toggleThemeStyle: () => void;
+  isGlassTheme: boolean;
+  globalContrast: import('@/components/common/surfaceUtils').ControlContrast;
+  setGlobalContrast: (contrast: import('@/components/common/surfaceUtils').ControlContrast) => void;
+  globalShadow: import('@/components/common/surfaceUtils').ControlShadow;
+  setGlobalShadow: (shadow: import('@/components/common/surfaceUtils').ControlShadow) => void;
+  globalControlVariant: import('@/components/common/surfaceUtils').ControlVariant;
+  setGlobalControlVariant: (variant: import('@/components/common/surfaceUtils').ControlVariant) => void;
   hapticsEnabled: boolean;
   setHapticsEnabled: (enabled: boolean) => void;
   resetThemeSettings: () => void;
@@ -55,6 +62,12 @@ export function useThemeMode(): ThemeState {
     themeStyle,
     setThemeStyle,
     toggleThemeStyle,
+    globalContrast,
+    setGlobalContrast,
+    globalShadow,
+    setGlobalShadow,
+    globalControlVariant,
+    setGlobalControlVariant,
     hapticsEnabled,
     setHapticsEnabled,
     resetThemeSettings,
@@ -107,6 +120,13 @@ export function useThemeMode(): ThemeState {
     themeStyle,
     setThemeStyle,
     toggleThemeStyle,
+    isGlassTheme: themeStyle === 'apple-glass',
+    globalContrast,
+    setGlobalContrast,
+    globalShadow,
+    setGlobalShadow,
+    globalControlVariant,
+    setGlobalControlVariant,
     hapticsEnabled,
     setHapticsEnabled,
     resetThemeSettings,

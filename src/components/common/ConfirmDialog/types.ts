@@ -1,5 +1,5 @@
-import React from 'react';
-import { ViewStyle } from 'react-native';
+import type { ViewStyle } from 'react-native';
+import type { ControlContrast } from '../surfaceUtils';
 
 export interface ConfirmDialogProps {
   visible: boolean;
@@ -12,5 +12,6 @@ export interface ConfirmDialogProps {
   destructive?: boolean;
   loading?: boolean;
   icon?: React.ReactNode;
+  contrast?: ControlContrast;
   style?: ViewStyle;
 }

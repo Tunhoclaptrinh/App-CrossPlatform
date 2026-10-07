@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { Spacing, BorderRadius, RadiusPresetConfig } from '@/constants/theme';
 import type { ThemeColors } from '@/constants/colors';
+import type { ControlContrast } from '../surfaceUtils';
 
 export const styles = StyleSheet.create({
   backdrop: {
@@ -59,15 +60,36 @@ export const styles = StyleSheet.create({
 
 export const getDialogContainerThemedStyle = (
   isDark: boolean,
-  radius?: RadiusPresetConfig
-) => ({
-  backgroundColor: isDark ? '#1E2433' : '#FFFFFF',
-  borderColor: isDark ? '#334155' : '#E2E8F0',
-  borderWidth: 1,
-  borderRadius: Math.min(radius ? radius.card : 16, 16),
-  position: 'relative' as const,
-  overflow: 'hidden' as const,
-});
+  radius?: RadiusPresetConfig,
+  isGlass: boolean = false,
+  contrast: ControlContrast = 'normal'
+) => {
+  const borderWidth = contrast === 'high' ? 1.5 : contrast === 'subtle' ? 0.8 : 1;
+  const borderColor = isGlass
+    ? contrast === 'high'
+      ? isDark ? 'rgba(255, 255, 255, 0.45)' : 'rgba(255, 255, 255, 0.98)'
+      : contrast === 'subtle'
+      ? isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.45)'
+      : isDark ? 'rgba(255, 255, 255, 0.25)' : 'rgba(255, 255, 255, 0.88)'
+    : contrast === 'high'
+    ? isDark ? '#64748B' : '#94A3B8'
+    : contrast === 'subtle'
+    ? isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)'
+    : isDark ? '#334155' : '#E2E8F0';
+
+  const backgroundColor = isGlass
+    ? isDark ? 'rgba(30, 41, 59, 0.85)' : 'rgba(255, 255, 255, 0.85)'
+    : isDark ? '#1E2433' : '#FFFFFF';
+
+  return {
+    backgroundColor,
+    borderColor,
+    borderWidth,
+    borderRadius: Math.min(radius ? radius.card : 16, 16),
+    position: 'relative' as const,
+    overflow: 'hidden' as const,
+  };
+};
 
 export const getDialogIconThemedStyle = (colors: ThemeColors, destructive: boolean) => ({
   backgroundColor: destructive ? colors.errorLight : colors.primaryLight,

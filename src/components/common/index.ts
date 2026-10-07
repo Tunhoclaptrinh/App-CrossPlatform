@@ -43,6 +43,8 @@ export * from './AppSearchBar';
 export * from './AppSwitch';
 export * from './AppCheckbox';
 export * from './EmptyState';
+export * from './AppSegmentedControl';
+export * from './surfaceUtils';
 
 import { AppButton } from './AppButton';
 import { AppInput } from './AppInput';
@@ -51,6 +53,7 @@ import { AppSearchBar } from './AppSearchBar';
 import { AppSwitch } from './AppSwitch';
 import { AppCheckbox } from './AppCheckbox';
 import { EmptyState } from './EmptyState';
+import { AppSegmentedControl } from './AppSegmentedControl';
 
 export const Molecules = {
   AppButton,
@@ -60,6 +63,7 @@ export const Molecules = {
   AppSwitch,
   AppCheckbox,
   EmptyState,
+  AppSegmentedControl,
 } as const;
 
 // ============================================================================

@@ -5,6 +5,11 @@ import { changeLanguage } from '@/i18n';
 import type { User } from '@/types';
 import type { AccentColor } from '@/constants/colors';
 import type { RadiusPreset } from '@/constants/theme';
+import type {
+  ControlContrast,
+  ControlShadow,
+  ControlVariant,
+} from '@/components/common/surfaceUtils';
 
 export type ThemeMode = 'system' | 'light' | 'dark';
 export type ThemeStyle = 'default' | 'apple-glass';
@@ -22,6 +27,14 @@ export interface AppStoreState {
   headerVariant: HeaderVariant;
   setHeaderVariant: (variant: HeaderVariant) => void;
   toggleHeaderVariant: () => void;
+
+  // Surface & Contrast Engine Controls
+  globalContrast: ControlContrast;
+  setGlobalContrast: (contrast: ControlContrast) => void;
+  globalShadow: ControlShadow;
+  setGlobalShadow: (shadow: ControlShadow) => void;
+  globalControlVariant: ControlVariant;
+  setGlobalControlVariant: (variant: ControlVariant) => void;
 
   // Dynamic UI Customizations
   accentColor: AccentColor;
@@ -73,6 +86,15 @@ export const useAppStore = create<AppStoreState>()(
         set({ headerVariant: current === 'standard' ? 'frosted-capsule' : 'standard' });
       },
 
+      globalContrast: 'normal',
+      setGlobalContrast: (contrast: ControlContrast) => set({ globalContrast: contrast }),
+
+      globalShadow: 'none',
+      setGlobalShadow: (shadow: ControlShadow) => set({ globalShadow: shadow }),
+
+      globalControlVariant: 'standard',
+      setGlobalControlVariant: (variant: ControlVariant) => set({ globalControlVariant: variant }),
+
       accentColor: 'blue',
       setAccentColor: (accent: AccentColor) => set({ accentColor: accent }),
 
@@ -88,6 +110,9 @@ export const useAppStore = create<AppStoreState>()(
           radiusPreset: 'standard',
           themeStyle: 'apple-glass',
           themeMode: 'light',
+          globalContrast: 'normal',
+          globalShadow: 'none',
+          globalControlVariant: 'standard',
           hapticsEnabled: true,
         }),
 
