@@ -8,4 +8,5 @@ export interface ScreenWrapperProps extends SafeAreaViewProps {
   contentContainerStyle?: ViewStyle;
   disableKeyboardDismiss?: boolean;
   backgroundColor?: string;
+  disableMeshBackground?: boolean;
 }

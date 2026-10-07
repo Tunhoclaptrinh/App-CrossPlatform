@@ -4,6 +4,7 @@ import { RefreshCw } from 'lucide-react-native';
 import { AppText } from '@/components/common/AppText';
 import { AppBadge } from '@/components/common/AppBadge';
 import { useThemeMode } from '@/hooks/useThemeMode';
+import { useAppStore } from '@/hooks/useAppStore';
 import { haptics } from '@/utils/haptics';
 import type { WidgetCardProps } from './types';
 import { createWidgetCardStyles } from './styles';
@@ -17,7 +18,9 @@ export const WidgetCard: React.FC<WidgetCardProps> = ({
   onRefresh,
   isRefreshing = false,
 }) => {
-  const { theme: themeColors } = useThemeMode();
+  const { theme: themeColors, isDark } = useThemeMode();
+  const { themeStyle } = useAppStore();
+  const isGlass = themeStyle === 'apple-glass';
   const styles = createWidgetCardStyles(themeColors);
 
   const handleRefresh = () => {
@@ -29,6 +32,9 @@ export const WidgetCard: React.FC<WidgetCardProps> = ({
 
   return (
     <View style={styles.container}>
+      {isGlass && (
+        <View style={isDark ? styles.specularHighlightDark : styles.specularHighlight} />
+      )}
       <View style={styles.headerRow}>
         <View style={styles.titleGroup}>
           {icon && <View style={styles.iconWrapper}>{icon}</View>}

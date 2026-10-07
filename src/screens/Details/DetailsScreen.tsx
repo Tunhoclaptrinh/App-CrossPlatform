@@ -18,7 +18,6 @@ import {
   ConfirmDialog,
   ThemeStudioModal,
   AppButton,
-  AppleMeshBackground,
 } from '@/components';
 import { useAppStore, useToast, useShakeDetection, useThemeMode } from '@/hooks';
 import { appStorage, STORAGE_KEYS } from '@/services/storage';
@@ -32,7 +31,6 @@ import type { DetailsScreenProps } from '@/navigation/types';
 import { createDetailsStyles } from './styles';
 import {
   ModuleTabs,
-  ModuleHeaderCard,
   AppleGlassShowcase,
   ThemeStudioShowcase,
   RealtimeShowcase,
@@ -352,16 +350,11 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
   const isGlass = themeStyle === 'apple-glass';
 
   return (
-    <View style={styles.container}>
-      {/* Full-bleed Apple Mesh Wallpaper behind the entire screen */}
-      {isGlass && <AppleMeshBackground variant="aurora" />}
-
-      <ScreenWrapper
-        scrollable
-        edges={['bottom', 'left', 'right']}
-        backgroundColor={isGlass ? 'transparent' : undefined}
-        contentContainerStyle={styles.content}
-      >
+    <ScreenWrapper
+      scrollable
+      edges={['bottom', 'left', 'right']}
+      contentContainerStyle={styles.content}
+    >
         {/* 1. Horizontal Module Navigation Tabs */}
         <ModuleTabs
           tabs={moduleTabs}
@@ -372,18 +365,7 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
           isGlass={isGlass}
         />
 
-        {/* 2. Top Header Overview Card (for non-apple tabs) */}
-        {activeModule !== 'apple' && (
-          <ModuleHeaderCard
-            currentTab={currentTab}
-            themeColors={themeColors}
-            radiusTokens={radiusTokens}
-            isDark={isDark}
-            isGlass={isGlass}
-          />
-        )}
-
-        {/* 3. Dedicated Modules Showcase */}
+        {/* 2. Dedicated Modules Showcase */}
         {activeModule === 'apple' && (
           <AppleGlassShowcase
             themeColors={themeColors}
@@ -564,7 +546,6 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
           onClose={() => setIsStudioOpen(false)}
         />
       </ScreenWrapper>
-    </View>
   );
 };
 

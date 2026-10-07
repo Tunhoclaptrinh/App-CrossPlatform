@@ -26,7 +26,6 @@ import {
   AppSearchBar,
   EmptyState,
   ThemeStudioModal,
-  AppleMeshBackground,
 } from '@/components';
 import { useAppStore, useThemeMode, useDoubleBackExit } from '@/hooks';
 import { removeVietnameseTones, haptics } from '@/utils';
@@ -217,15 +216,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const isGlass = themeStyle === 'apple-glass';
 
   return (
-    <View style={styles.container}>
-      {/* Full-bleed Apple Mesh Wallpaper behind the entire screen */}
-      {isGlass && <AppleMeshBackground variant="aurora" />}
-
-      <ScreenWrapper
-        scrollable
-        backgroundColor={isGlass ? 'transparent' : undefined}
-        contentContainerStyle={styles.content}
-      >
+    <ScreenWrapper
+      scrollable
+      contentContainerStyle={styles.content}
+    >
 
       {/* 1. Header Top Bar */}
       <View style={styles.topBar}>
@@ -505,6 +499,5 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         onClose={() => setIsStudioOpen(false)}
       />
     </ScreenWrapper>
-  </View>
   );
 };

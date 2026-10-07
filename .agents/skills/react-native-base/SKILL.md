@@ -39,7 +39,7 @@ This skill documents the conventions, directory structure, state protocols, and 
     - `GestureCard/`: `GestureCard.tsx`, `styles.ts`, `types.ts`, `index.ts`.
     - `AppWebView/`: `AppWebView.tsx`, `styles.ts`, `types.ts`, `index.ts`.
     - `GlassCard/`: `GlassCard.tsx`, `styles.ts`, `types.ts`, `index.ts` (Apple Cupertino Liquid Glass UI).
-  - `toast/`: In-app spring notification system (`ToastProvider`, `useToast`).
+  - `toast/`: In-app spring notification system (`ToastProvider.tsx`, `styles.ts`, `types.ts`, `index.ts`, `useToast`).
 - `src/services/`:
   - `api/`: `apiClient.ts` for universal REST APIs & AI endpoints (`get`, `post`, `put`, `patch`, `delete`, `upload` multipart/form-data).
   - `realtime/`: `socketService.ts` for universal WebSocket connection, auto-reconnect, offline queue, and pub/sub.

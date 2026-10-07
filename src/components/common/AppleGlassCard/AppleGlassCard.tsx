@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity, Platform } from 'react-native';
+import { BlurView } from '@react-native-community/blur';
 import { Sparkles, Radio, ShieldCheck } from 'lucide-react-native';
 import { useThemeMode } from '@/hooks/useThemeMode';
 import { haptics } from '@/utils/haptics';
@@ -17,7 +18,8 @@ export const AppleGlassCard: React.FC<AppleGlassCardProps> = ({
   onPress,
 }) => {
   const { isDark, radiusTokens, theme: themeColors } = useThemeMode();
-  const styles = createAppleGlassCardStyles(isDark, radiusTokens.card);
+  const cardRadius = Math.min(radiusTokens.card, 16);
+  const styles = createAppleGlassCardStyles(isDark, cardRadius);
 
   const handlePress = () => {
     if (onPress) {
@@ -28,6 +30,20 @@ export const AppleGlassCard: React.FC<AppleGlassCardProps> = ({
 
   const CardContent = (
     <View style={[styles.container, style]}>
+      {/* Hardware-Accelerated Blur Backdrop on iOS / Translucent Surface on Android */}
+      {Platform.OS === 'ios' ? (
+        <BlurView
+          style={styles.blurBackdrop}
+          blurType={isDark ? 'dark' : 'light'}
+          blurAmount={30}
+          reducedTransparencyFallbackColor={themeColors.card}
+        />
+      ) : (
+        <View
+          style={isDark ? styles.androidBackdropDark : styles.androidBackdropLight}
+        />
+      )}
+
       {/* Specular hairline top reflection */}
       <View style={styles.specularHighlight} />
 

@@ -67,13 +67,28 @@ export function useThemeMode(): ThemeState {
     const activeAccent = AccentPalettes[accentColor] || AccentPalettes.blue;
     const accentMode = isDark ? activeAccent.dark : activeAccent.light;
 
-    return {
+    const colors: ThemeColors = {
       ...baseColors,
       primary: accentMode.primary,
       primaryLight: accentMode.primaryLight,
       primaryDark: accentMode.primaryDark,
     };
-  }, [isDark, accentColor]);
+
+    if (themeStyle === 'apple-glass') {
+      return {
+        ...colors,
+        background: 'transparent',
+        card: isDark ? 'rgba(24, 27, 38, 0.72)' : 'rgba(255, 255, 255, 0.72)',
+        surface: isDark ? 'rgba(30, 35, 48, 0.65)' : 'rgba(255, 255, 255, 0.65)',
+        surfaceSubtle: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.45)',
+        border: isDark ? 'rgba(255, 255, 255, 0.18)' : 'rgba(255, 255, 255, 0.82)',
+        borderLight: isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.90)',
+        borderStrong: isDark ? 'rgba(255, 255, 255, 0.28)' : 'rgba(226, 232, 240, 0.90)',
+      };
+    }
+
+    return colors;
+  }, [isDark, accentColor, themeStyle]);
 
   const radiusTokens = RadiusPresets[radiusPreset] || RadiusPresets.standard;
 

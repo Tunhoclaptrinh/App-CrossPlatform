@@ -1,23 +1,30 @@
 import { StyleSheet } from 'react-native';
-import { Spacing, BorderRadius, Shadows, RadiusPresetConfig } from '@/constants/theme';
+import { Spacing, BorderRadius, RadiusPresetConfig } from '@/constants/theme';
 import type { ThemeColors } from '@/constants/colors';
 
 export const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.55)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: Spacing.xl,
+  },
+  backdropLight: {
+    backgroundColor: 'rgba(15, 23, 42, 0.55)',
+  },
+  backdropDark: {
+    backgroundColor: 'rgba(0, 0, 0, 0.75)',
   },
   dialogContainer: {
     width: '100%',
     maxWidth: 340,
     borderRadius: BorderRadius.lg,
-    borderWidth: 1,
     padding: Spacing.xl,
-    alignItems: 'center',
-    ...Shadows.lg,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.30,
+    shadowRadius: 24,
+    elevation: 10,
   },
   iconWrapper: {
     width: 56,
@@ -26,15 +33,19 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Spacing.md,
+    alignSelf: 'center',
   },
   title: {
     textAlign: 'center',
     marginBottom: Spacing.xs,
+    fontSize: 18,
+    fontWeight: '700',
   },
   message: {
     textAlign: 'center',
-    lineHeight: 20,
+    lineHeight: 21,
     marginBottom: Spacing.xl,
+    fontSize: 13.5,
   },
   actionsRow: {
     flexDirection: 'row',
@@ -47,14 +58,18 @@ export const styles = StyleSheet.create({
 });
 
 export const getDialogContainerThemedStyle = (
-  colors: ThemeColors,
+  isDark: boolean,
   radius?: RadiusPresetConfig
 ) => ({
-  backgroundColor: colors.card,
-  borderColor: colors.border,
+  backgroundColor: isDark ? '#1E2433' : '#FFFFFF',
+  borderColor: isDark ? '#334155' : '#E2E8F0',
+  borderWidth: 1,
   borderRadius: Math.min(radius ? radius.card : 16, 16),
+  position: 'relative' as const,
+  overflow: 'hidden' as const,
 });
 
 export const getDialogIconThemedStyle = (colors: ThemeColors, destructive: boolean) => ({
   backgroundColor: destructive ? colors.errorLight : colors.primaryLight,
 });
+

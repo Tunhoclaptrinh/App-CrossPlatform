@@ -19,6 +19,20 @@ export const createGlassTileStyles = (isDark: boolean, cardRadius: number) =>
       position: 'relative',
       overflow: 'hidden',
     },
+    blurBackdrop: {
+      ...StyleSheet.absoluteFill,
+      borderRadius: Math.min(cardRadius, 14),
+    },
+    androidBackdropDark: {
+      ...StyleSheet.absoluteFill,
+      borderRadius: Math.min(cardRadius, 14),
+      backgroundColor: 'rgba(30, 41, 59, 0.72)',
+    },
+    androidBackdropLight: {
+      ...StyleSheet.absoluteFill,
+      borderRadius: Math.min(cardRadius, 14),
+      backgroundColor: 'rgba(255, 255, 255, 0.78)',
+    },
     specularHairline: {
       position: 'absolute',
       top: 0,

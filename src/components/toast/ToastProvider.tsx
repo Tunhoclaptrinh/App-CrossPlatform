@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useRef, useCallback } from 'react';
 import {
   Animated,
-  StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -9,26 +8,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CheckCircle2, AlertCircle, AlertTriangle, Info, X } from 'lucide-react-native';
 import { AppText } from '@/components/common/AppText';
 import { useThemeMode } from '@/hooks/useThemeMode';
-import { BorderRadius, Spacing, Shadows } from '@/constants/theme';
-
-export type ToastType = 'success' | 'error' | 'warning' | 'info';
-
-export interface ToastOptions {
-  type?: ToastType;
-  title?: string;
-  message: string;
-  duration?: number;
-}
-
-interface ToastContextType {
-  show: (typeOrOptions: ToastType | ToastOptions, message?: string, title?: string) => void;
-  hide: () => void;
-}
+import { ToastType, ToastOptions, ToastContextType } from './types';
+import { styles } from './styles';
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { theme: themeColors } = useThemeMode();
+  const { theme: themeColors, isDark } = useThemeMode();
   const insets = useSafeAreaInsets();
 
   const [toast, setToast] = useState<ToastOptions | null>(null);
@@ -61,9 +47,9 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       setToast(opts);
 
       Animated.spring(translateY, {
-        toValue: insets.top + 10,
-        friction: 7,
-        tension: 50,
+        toValue: insets.top + 58,
+        friction: 8,
+        tension: 45,
         useNativeDriver: true,
       }).start();
 
@@ -77,28 +63,28 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     switch (type) {
       case 'success':
         return {
-          icon: <CheckCircle2 size={20} color={themeColors.success} />,
-          border: themeColors.success,
-          bg: themeColors.card,
+          icon: <CheckCircle2 size={20} color={isDark ? '#34D399' : '#059669'} />,
+          border: isDark ? '#10B981' : '#10B981',
+          bg: isDark ? '#132A20' : '#FFFFFF',
         };
       case 'error':
         return {
-          icon: <AlertCircle size={20} color={themeColors.error} />,
-          border: themeColors.error,
-          bg: themeColors.card,
+          icon: <AlertCircle size={20} color={isDark ? '#F87171' : '#DC2626'} />,
+          border: isDark ? '#EF4444' : '#EF4444',
+          bg: isDark ? '#2C151B' : '#FFFFFF',
         };
       case 'warning':
         return {
-          icon: <AlertTriangle size={20} color={themeColors.warning} />,
-          border: themeColors.warning,
-          bg: themeColors.card,
+          icon: <AlertTriangle size={20} color={isDark ? '#FBBF24' : '#D97706'} />,
+          border: isDark ? '#F59E0B' : '#F59E0B',
+          bg: isDark ? '#2B1E11' : '#FFFFFF',
         };
       case 'info':
       default:
         return {
-          icon: <Info size={20} color={themeColors.info} />,
-          border: themeColors.info,
-          bg: themeColors.card,
+          icon: <Info size={20} color={isDark ? '#60A5FA' : '#007AFF'} />,
+          border: isDark ? '#3B82F6' : '#007AFF',
+          bg: isDark ? '#152238' : '#FFFFFF',
         };
     }
   };
@@ -148,33 +134,3 @@ export const useToast = (): ToastContextType => {
   }
   return context;
 };
-
-const styles = StyleSheet.create({
-  toastContainer: {
-    position: 'absolute',
-    left: Spacing.base,
-    right: Spacing.base,
-    top: 0,
-    zIndex: 99999,
-    borderRadius: BorderRadius.md,
-    borderWidth: 1.5,
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.base,
-    ...Shadows.lg,
-  },
-  contentRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  iconContainer: {
-    marginRight: Spacing.md,
-  },
-  textContainer: {
-    flex: 1,
-    marginRight: Spacing.sm,
-  },
-  title: {
-    fontWeight: '700',
-    marginBottom: 2,
-  },
-});

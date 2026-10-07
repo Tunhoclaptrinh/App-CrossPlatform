@@ -5,7 +5,10 @@ import {
   Modal,
   ScrollView,
   Pressable,
+  StyleSheet,
+  Platform,
 } from 'react-native';
+import { BlurView } from '@react-native-community/blur';
 import { ChevronDown, Check, X } from 'lucide-react-native';
 import { useThemeMode } from '@/hooks/useThemeMode';
 import { ControlSize } from '@/constants/theme';
@@ -111,10 +114,27 @@ export function AppSelect<T = string | number>({
         animationType="fade"
         onRequestClose={handleClose}
       >
-        <Pressable style={styles.modalOverlay} onPress={handleClose}>
+        <Pressable
+          style={[
+            styles.modalOverlay,
+            isDark ? styles.modalOverlayDark : styles.modalOverlayLight,
+          ]}
+          onPress={handleClose}
+        >
+          {Platform.OS === 'ios' && (
+            <BlurView
+              style={StyleSheet.absoluteFill}
+              blurType={isDark ? 'dark' : 'light'}
+              blurAmount={25}
+              reducedTransparencyFallbackColor={isDark ? 'rgba(0, 0, 0, 0.7)' : 'rgba(0, 0, 0, 0.4)'}
+            />
+          )}
           <Pressable
-            style={[styles.sheetContainer, { backgroundColor: themeColors.card }]}
-            onPress={(e) => e.stopPropagation()}
+            style={[
+              styles.sheetContainer,
+              isDark ? styles.sheetContainerDark : styles.sheetContainerLight,
+            ]}
+            onPress={() => {}}
           >
             {/* Grab Handle */}
             <View

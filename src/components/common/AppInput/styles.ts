@@ -95,13 +95,20 @@ export const getInputStateStyle = (
   isFocused: boolean,
   hasError: boolean,
   radius?: RadiusPresetConfig
-) => ({
-  backgroundColor: colors.card,
-  borderRadius: radius ? radius.control : 12,
-  borderColor: hasError
+) => {
+  const bg = colors.surface;
+
+  const borderColor = hasError
     ? colors.error
     : isFocused
     ? colors.primary
-    : colors.border,
-});
+    : colors.border;
+
+  return {
+    backgroundColor: bg,
+    borderRadius: radius ? radius.control : 12,
+    borderColor,
+  };
+};
+
 

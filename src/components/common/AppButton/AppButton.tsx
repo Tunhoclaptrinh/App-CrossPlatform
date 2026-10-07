@@ -62,7 +62,6 @@ export const AppButton: React.FC<AppButtonProps> = ({
       onPress={handlePress}
       {...props}
     >
-      {variant === 'glass' && <View style={styles.specularHighlight} />}
       {loading ? (
         <ActivityIndicator color={textColor} size="small" />
       ) : (
@@ -87,4 +86,3 @@ export const AppButton: React.FC<AppButtonProps> = ({
     </TouchableOpacity>
   );
 };
-

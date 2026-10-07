@@ -7,27 +7,35 @@ const { height: WINDOW_HEIGHT } = Dimensions.get('window');
 
 export const createThemeStudioStyles = (
   colors: ThemeColors,
-  radius: RadiusPresetConfig
+  radius: RadiusPresetConfig,
+  isDark: boolean = false
 ) =>
   StyleSheet.create({
     backdrop: {
       flex: 1,
-      backgroundColor: 'rgba(0, 0, 0, 0.55)',
       justifyContent: 'flex-end',
     },
+    backdropLight: {
+      backgroundColor: 'rgba(15, 23, 42, 0.55)',
+    },
+    backdropDark: {
+      backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    },
     sheetContainer: {
-      backgroundColor: colors.card,
+      backgroundColor: isDark ? '#181C28' : '#FFFFFF',
       // Sheet top corners: capped at 16px (large pill radius would look odd on bottom sheet)
       borderTopLeftRadius: Math.min(radius.card, 16),
       borderTopRightRadius: Math.min(radius.card, 16),
       borderWidth: 1,
-      borderColor: colors.border,
+      borderColor: isDark ? '#334155' : '#E2E8F0',
       maxHeight: WINDOW_HEIGHT * 0.88,
       shadowColor: '#000000',
       shadowOffset: { width: 0, height: -4 },
-      shadowOpacity: 0.15,
-      shadowRadius: 16,
-      elevation: 10,
+      shadowOpacity: 0.25,
+      shadowRadius: 20,
+      elevation: 16,
+      position: 'relative',
+      overflow: 'hidden',
     },
     dragHandleArea: {
       alignItems: 'center',
@@ -292,7 +300,7 @@ export const createThemeStudioStyles = (
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.05,
       shadowRadius: 6,
-      elevation: 2,
+      elevation: 0,
     },
     sandboxHeader: {
       flexDirection: 'row',

@@ -65,16 +65,38 @@ export const styles = StyleSheet.create({
   // Modal Sheet Styles
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'flex-end',
   },
+  modalOverlayLight: {
+    backgroundColor: 'rgba(15, 23, 42, 0.55)',
+  },
+  modalOverlayDark: {
+    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+  },
   sheetContainer: {
+    position: 'relative',
+    overflow: 'hidden',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     paddingTop: Spacing.md,
     paddingBottom: Spacing.xxl,
     paddingHorizontal: Spacing.base,
     maxHeight: '70%',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 16,
+    elevation: 12,
+  },
+  sheetContainerLight: {
+    backgroundColor: '#FFFFFF',
+    borderTopColor: '#E2E8F0',
+    borderTopWidth: 1,
+  },
+  sheetContainerDark: {
+    backgroundColor: '#1E2433',
+    borderTopColor: '#334155',
+    borderTopWidth: 1,
   },
   sheetHandle: {
     width: 36,
@@ -172,12 +194,19 @@ export const getSelectTriggerStyle = (
   isOpen: boolean,
   hasError: boolean,
   radius?: RadiusPresetConfig
-) => ({
-  backgroundColor: colors.card,
-  borderRadius: radius ? radius.control : 12,
-  borderColor: hasError
+) => {
+  const bg = colors.surface;
+
+  const borderColor = hasError
     ? colors.error
     : isOpen
     ? colors.primary
-    : colors.border,
-});
+    : colors.border;
+
+  return {
+    backgroundColor: bg,
+    borderRadius: radius ? radius.control : 12,
+    borderColor,
+  };
+};
+

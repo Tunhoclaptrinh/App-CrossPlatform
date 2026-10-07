@@ -79,12 +79,23 @@ export const getSearchBarInputSizeStyle = (size: ControlSizeKey = 'md') => {
 
 export const getSearchBarThemedContainer = (
   colors: ThemeColors,
-  radius?: RadiusPresetConfig
+  radius?: RadiusPresetConfig,
+  isGlass: boolean = false,
+  isDark: boolean = false
 ) => ({
-  backgroundColor: colors.card,
-  borderColor: colors.border,
+  backgroundColor: isGlass
+    ? isDark
+      ? 'rgba(30, 41, 59, 0.65)'
+      : 'rgba(255, 255, 255, 0.75)'
+    : colors.card,
+  borderColor: isGlass
+    ? isDark
+      ? 'rgba(255, 255, 255, 0.20)'
+      : 'rgba(255, 255, 255, 0.88)'
+    : colors.border,
   borderRadius: radius ? radius.control : 12,
 });
+
 
 export const getFilterButtonThemedStyle = (colors: ThemeColors) => ({
   borderLeftColor: colors.border,

@@ -7,6 +7,7 @@ import {
 import { Search, X, SlidersHorizontal } from 'lucide-react-native';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useThemeMode } from '@/hooks/useThemeMode';
+import { useAppStore } from '@/hooks/useAppStore';
 import type { AppSearchBarProps } from './types';
 import { DEFAULT_SEARCH_DEBOUNCE_MS, DEFAULT_SEARCH_PLACEHOLDER } from './constants';
 import {
@@ -29,7 +30,9 @@ export const AppSearchBar: React.FC<AppSearchBarProps> = ({
   onClear,
   style,
 }) => {
-  const { theme: themeColors, radiusTokens } = useThemeMode();
+  const { theme: themeColors, isDark, radiusTokens } = useThemeMode();
+  const { themeStyle } = useAppStore();
+  const isGlass = themeStyle === 'apple-glass';
   const iconSize = ControlSize[size].iconSize;
 
   const [text, setText] = useState(controlledValue || '');
@@ -65,7 +68,7 @@ export const AppSearchBar: React.FC<AppSearchBarProps> = ({
       style={[
         styles.container,
         getSearchBarSizeStyle(size),
-        getSearchBarThemedContainer(themeColors, radiusTokens),
+        getSearchBarThemedContainer(themeColors, radiusTokens, isGlass, isDark),
         style,
       ]}
     >

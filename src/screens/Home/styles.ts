@@ -212,7 +212,6 @@ export const createHomeStyles = (
       lineHeight: 40,
       fontWeight: '800',
       color: colors.primary,
-      fontVariant: ['tabular-nums'],
       letterSpacing: -0.5,
       paddingVertical: 2,
     },
@@ -240,7 +239,7 @@ export const createHomeStyles = (
       shadowOffset: { width: 0, height: 1 },
       shadowOpacity: isDark ? 0.2 : 0.06,
       shadowRadius: 2,
-      elevation: 1,
+      elevation: 0,
     },
     stepperBtnPrimary: {
       backgroundColor: colors.primary,
@@ -278,7 +277,7 @@ export const createHomeStyles = (
       shadowOffset: { width: 0, height: 3 },
       shadowOpacity: 0.25,
       shadowRadius: 6,
-      elevation: 3,
+      elevation: 0,
     },
     filterPillText: {
       fontSize: 13,
@@ -342,7 +341,7 @@ export const createHomeStyles = (
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.03,
       shadowRadius: 6,
-      elevation: 1,
+      elevation: 0,
     },
     itemCardGlass: {
       backgroundColor: isDark ? 'rgba(30, 34, 48, 0.65)' : 'rgba(255, 255, 255, 0.60)',

@@ -87,13 +87,19 @@ export const AppleMeshBackground: React.FC<AppleMeshBackgroundProps> = ({
   };
 
   const current = getGradients();
+  const rawId = React.useId();
+  const uniqueId = rawId.replace(/[^a-zA-Z0-9]/g, '_');
+  const linearGradId = `meshLinearGrad_${uniqueId}`;
+  const radial1Id = `meshRadial1_${uniqueId}`;
+  const radial2Id = `meshRadial2_${uniqueId}`;
+  const radial3Id = `meshRadial3_${uniqueId}`;
 
   return (
     <View style={[styles.container, { backgroundColor: current.base }, style]} pointerEvents="none">
       <Svg width="100%" height="100%" style={styles.svg}>
         <Defs>
           {/* Base Atmospheric Linear Gradient */}
-          <LinearGradient id="meshLinearGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <LinearGradient id={linearGradId} x1="0%" y1="0%" x2="100%" y2="100%">
             <Stop offset="0%" stopColor={current.linear[0]} stopOpacity="1" />
             <Stop offset="50%" stopColor={current.linear[1]} stopOpacity="1" />
             <Stop offset="100%" stopColor={current.linear[2]} stopOpacity="1" />
@@ -101,7 +107,7 @@ export const AppleMeshBackground: React.FC<AppleMeshBackgroundProps> = ({
 
           {/* Radial Plasma Light Emitters */}
           <RadialGradient
-            id="meshRadial1"
+            id={radial1Id}
             cx={current.radial1.cx}
             cy={current.radial1.cy}
             r={current.radial1.r}
@@ -113,7 +119,7 @@ export const AppleMeshBackground: React.FC<AppleMeshBackgroundProps> = ({
           </RadialGradient>
 
           <RadialGradient
-            id="meshRadial2"
+            id={radial2Id}
             cx={current.radial2.cx}
             cy={current.radial2.cy}
             r={current.radial2.r}
@@ -125,7 +131,7 @@ export const AppleMeshBackground: React.FC<AppleMeshBackgroundProps> = ({
           </RadialGradient>
 
           <RadialGradient
-            id="meshRadial3"
+            id={radial3Id}
             cx={current.radial3.cx}
             cy={current.radial3.cy}
             r={current.radial3.r}
@@ -138,12 +144,12 @@ export const AppleMeshBackground: React.FC<AppleMeshBackgroundProps> = ({
         </Defs>
 
         {/* 1. Base Gradient Canvas */}
-        <Rect width="100%" height="100%" fill="url(#meshLinearGrad)" />
+        <Rect width="100%" height="100%" fill={`url(#${linearGradId})`} />
 
         {/* 2. Overlapping Fluid Color Centers without harsh edges */}
-        <Rect width="100%" height="100%" fill="url(#meshRadial1)" />
-        <Rect width="100%" height="100%" fill="url(#meshRadial2)" />
-        <Rect width="100%" height="100%" fill="url(#meshRadial3)" />
+        <Rect width="100%" height="100%" fill={`url(#${radial1Id})`} />
+        <Rect width="100%" height="100%" fill={`url(#${radial2Id})`} />
+        <Rect width="100%" height="100%" fill={`url(#${radial3Id})`} />
       </Svg>
       {children}
     </View>

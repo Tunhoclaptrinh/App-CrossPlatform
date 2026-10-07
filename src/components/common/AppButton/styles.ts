@@ -75,14 +75,6 @@ export const createButtonStyles = (
       shadowRadius: 10,
       elevation: 2,
     },
-    specularHighlight: {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      height: 1.2,
-      backgroundColor: isDark ? 'rgba(255, 255, 255, 0.40)' : 'rgba(255, 255, 255, 0.98)',
-    },
     // State
     disabled: {
       opacity: 0.45,

@@ -1,5 +1,6 @@
 import React from 'react';
-import { ActivityIndicator, View, ViewStyle } from 'react-native';
+import { ActivityIndicator, View, ViewStyle, StyleSheet, Platform } from 'react-native';
+import { BlurView } from '@react-native-community/blur';
 import { AppText } from '../AppText';
 import { useThemeMode } from '@/hooks/useThemeMode';
 import type { LoadingOverlayProps } from './types';
@@ -11,12 +12,13 @@ export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
   fullscreen = false,
   style,
 }) => {
-  const { theme: themeColors } = useThemeMode();
+  const { theme: themeColors, isDark, themeStyle } = useThemeMode();
+  const isGlass = themeStyle === 'apple-glass';
 
   if (!visible) return null;
 
   const bgStyle: ViewStyle = {
-    backgroundColor: fullscreen ? themeColors.overlay : 'transparent',
+    backgroundColor: fullscreen && !isGlass ? themeColors.overlay : 'transparent',
   };
 
   const boxStyle: ViewStyle = {
@@ -32,7 +34,23 @@ export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
         style,
       ]}
     >
+      {fullscreen && Platform.OS === 'ios' && (
+        <BlurView
+          style={StyleSheet.absoluteFill}
+          blurType={isDark ? 'dark' : 'light'}
+          blurAmount={isGlass ? 15 : 5}
+          reducedTransparencyFallbackColor={themeColors.overlay}
+        />
+      )}
       <View style={[styles.box, boxStyle]}>
+        {isGlass && Platform.OS === 'ios' && (
+          <BlurView
+            style={styles.boxGlassBlur}
+            blurType={isDark ? 'dark' : 'light'}
+            blurAmount={25}
+            reducedTransparencyFallbackColor={themeColors.card}
+          />
+        )}
         <ActivityIndicator size="large" color={themeColors.primary} />
         {message ? (
           <AppText variant="subtitle" color={themeColors.text} style={styles.message}>

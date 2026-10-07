@@ -23,18 +23,23 @@ Mỗi khi thêm mới tính năng, sửa đổi hoặc tái cấu trúc (refacto
 
 ---
 
-## 2. Quy Chuẩn Tách Thư Mục Cho Component (Component Folder Isolation)
+## 2. Quy Chuẩn Tách Thư Mục Cho Component (1 Component - 1 Thư Mục Chuẩn Chỉ)
 
-Mỗi component trong `src/components/common/` **BẮT BUỘC** phải nằm trong một thư mục riêng biệt mang tên component đó theo mẫu:
+Mỗi component trong toàn bộ ứng dụng (kể cả trong `src/components/common/`, `src/components/toast/`, hay component con của màn hình `src/screens/<ScreenName>/components/`) **BẮT BUỘC** phải nằm trong một thư mục riêng mang tên component đó theo cấu trúc:
 
 ```text
-src/components/common/ComponentName/
+ComponentName/
 ├── ComponentName.tsx    # Chỉ chứa logic render và state nội bộ của component
-├── styles.ts            # Chỉ chứa StyleSheet.create() và style generators, CẤM inline styles
+├── styles.ts            # Chỉ chứa StyleSheet.create() và style generators, CẤM inline styles hay inline StyleSheet
 ├── types.ts             # Chứa toàn bộ Props, Interfaces, Enums liên quan đến component
 ├── constants.ts         # (Tùy chọn) Chứa giá trị mặc định, thời gian animation...
-└── index.ts             # Re-export sạch sẽ ComponentName và types
+└── index.ts             # Re-export sạch sẽ ComponentName, types và styles
 ```
+
+### Quy tắc kế thừa hiệu ứng Kính Mờ (Liquid Glass Inheritance):
+1. **Nền Mesh Background tập trung tại Base Template (`ScreenWrapper`)**: Toàn bộ ứng dụng dùng chung nền `ScreenWrapper`. Khi `themeStyle === 'apple-glass'`, `ScreenWrapper` tự động hiển thị `AppleMeshBackground` và đặt nền màn hình trong suốt (`transparent`). Tuyệt đối không chèn `AppleMeshBackground` thủ công ở từng màn hình đơn lẻ.
+2. **Component Base tự động thích ứng Glass**: Các Base components (`AppCard`, `AppInput`, `AppSelect`, `AppSearchBar`, `ConfirmDialog`, `ThemeStudioModal`) tự động phát hiện `themeStyle === 'apple-glass'` qua store và chuyển đổi phong cách sang hiệu ứng kính mờ (semi-translucent background, specular highlight reflection border) mà không cần can thiệp code thủ công ở từng trang con.
+
 
 ---
 
@@ -291,7 +296,7 @@ Toàn bộ hệ thống giao diện trong `src/components/` phân định rõ 4 
 * **CẤM viết inline `StyleSheet.create` bên trong file component `.tsx`**.
 * Mọi component (kể cả showcase component trong màn hình) bắt buộc tách styles sang file riêng:
   * Component độc lập: `src/components/common/<ComponentName>/styles.ts`
-  * Component con của màn hình: `src/screens/<ScreenName>/components/<ComponentName>.styles.ts`
+  * Component con của màn hình: `src/screens/<ScreenName>/components/<ComponentName>/styles.ts`
 * Luôn sử dụng hàm sinh style động nhận `(themeColors, radiusTokens, isDark)` để đảm bảo khả năng đáp ứng tức thì với các chế độ giao diện.
 
 ---

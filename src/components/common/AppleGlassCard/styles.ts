@@ -19,6 +19,20 @@ export const createAppleGlassCardStyles = (isDark: boolean, cardRadius: number) 
       overflow: 'hidden',
       position: 'relative',
     },
+    blurBackdrop: {
+      ...StyleSheet.absoluteFill,
+      borderRadius: Math.min(cardRadius, 16),
+    },
+    androidBackdropDark: {
+      ...StyleSheet.absoluteFill,
+      borderRadius: Math.min(cardRadius, 16),
+      backgroundColor: 'rgba(24, 27, 38, 0.88)',
+    },
+    androidBackdropLight: {
+      ...StyleSheet.absoluteFill,
+      borderRadius: Math.min(cardRadius, 16),
+      backgroundColor: 'rgba(255, 255, 255, 0.82)',
+    },
     specularHighlight: {
       position: 'absolute',
       top: 0,
@@ -99,7 +113,6 @@ export const createAppleGlassCardStyles = (isDark: boolean, cardRadius: number) 
       lineHeight: 30,
       fontWeight: '800',
       color: isDark ? '#FFFFFF' : '#0F172A',
-      fontVariant: ['tabular-nums'],
       letterSpacing: -0.5,
     },
     bottomRow: {

@@ -5,7 +5,10 @@ import {
   ScrollView,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  StyleSheet,
+  Platform,
 } from 'react-native';
+import { BlurView } from '@react-native-community/blur';
 import {
   X,
   Sun,
@@ -49,9 +52,10 @@ export const ThemeStudioModal: React.FC<ThemeStudioModalProps> = ({
     hapticsEnabled,
     setHapticsEnabled,
     resetThemeSettings,
+    isDark,
   } = useThemeMode();
 
-  const styles = createThemeStudioStyles(theme, radiusTokens);
+  const styles = createThemeStudioStyles(theme, radiusTokens, isDark);
 
   const accentList = Object.values(AccentPalettes);
   const radiusList = Object.values(RadiusPresets);
@@ -94,8 +98,21 @@ export const ThemeStudioModal: React.FC<ThemeStudioModalProps> = ({
       onRequestClose={onClose}
     >
       <TouchableWithoutFeedback onPress={onClose}>
-        <View style={styles.backdrop}>
-          <TouchableWithoutFeedback onPress={(e) => e.stopPropagation()}>
+        <View
+          style={[
+            styles.backdrop,
+            isDark ? styles.backdropDark : styles.backdropLight,
+          ]}
+        >
+          {Platform.OS === 'ios' && (
+            <BlurView
+              style={StyleSheet.absoluteFill}
+              blurType={isDark ? 'dark' : 'light'}
+              blurAmount={25}
+              reducedTransparencyFallbackColor={isDark ? 'rgba(0, 0, 0, 0.7)' : 'rgba(0, 0, 0, 0.4)'}
+            />
+          )}
+          <TouchableWithoutFeedback onPress={() => {}}>
             <View style={styles.sheetContainer}>
               {/* Drag Handle */}
               <View style={styles.dragHandleArea}>

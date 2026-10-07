@@ -23,6 +23,8 @@ export const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xxl,
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
+    overflow: 'hidden',
+    position: 'relative',
     alignItems: 'center',
     justifyContent: 'center',
     minWidth: 160,
@@ -31,6 +33,10 @@ export const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 12,
     elevation: 4,
+  },
+  boxGlassBlur: {
+    ...StyleSheet.absoluteFill,
+    borderRadius: BorderRadius.lg,
   },
   message: {
     marginTop: Spacing.md,

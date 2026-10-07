@@ -3,7 +3,10 @@ import {
   Modal,
   View,
   TouchableWithoutFeedback,
+  StyleSheet,
+  Platform,
 } from 'react-native';
+import { BlurView } from '@react-native-community/blur';
 import { AlertCircle, Trash2 } from 'lucide-react-native';
 import { AppText } from '../AppText';
 import { AppButton } from '../AppButton';
@@ -24,7 +27,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   icon,
   style,
 }) => {
-  const { theme: themeColors, radiusTokens } = useThemeMode();
+  const { theme: themeColors, isDark, radiusTokens } = useThemeMode();
 
   const defaultIcon = destructive ? (
     <Trash2 size={28} color={themeColors.error} />
@@ -40,12 +43,25 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
       onRequestClose={onCancel}
     >
       <TouchableWithoutFeedback onPress={onCancel}>
-        <View style={styles.backdrop}>
+        <View
+          style={[
+            styles.backdrop,
+            isDark ? styles.backdropDark : styles.backdropLight,
+          ]}
+        >
+          {Platform.OS === 'ios' && (
+            <BlurView
+              style={StyleSheet.absoluteFill}
+              blurType={isDark ? 'dark' : 'light'}
+              blurAmount={25}
+              reducedTransparencyFallbackColor={isDark ? 'rgba(0, 0, 0, 0.7)' : 'rgba(0, 0, 0, 0.4)'}
+            />
+          )}
           <TouchableWithoutFeedback>
             <View
               style={[
                 styles.dialogContainer,
-                getDialogContainerThemedStyle(themeColors, radiusTokens),
+                getDialogContainerThemedStyle(isDark, radiusTokens),
                 style,
               ]}
             >

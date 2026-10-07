@@ -7,20 +7,31 @@ export const createGlassCardStyles = (
   _accentColor?: string,
   radius?: number
 ) => {
-  const borderColor = isDark ? 'rgba(255, 255, 255, 0.16)' : 'rgba(255, 255, 255, 0.85)';
   const shadow = isDark ? AppleGlassTokens.shadows.dark : AppleGlassTokens.shadows.light;
   const cardRadius = Math.min(radius ?? AppleGlassTokens.borderRadius, 16);
 
   return StyleSheet.create({
     container: {
       borderRadius: cardRadius,
-      borderWidth: AppleGlassTokens.borderWidth,
-      borderColor: borderColor,
+      borderWidth: 0,
       padding: Spacing.lg,
-      marginVertical: Spacing.sm,
       overflow: 'hidden',
       position: 'relative',
       ...shadow,
+    },
+    blurBackdrop: {
+      ...StyleSheet.absoluteFill,
+      borderRadius: cardRadius,
+    },
+    androidBackdropDark: {
+      ...StyleSheet.absoluteFill,
+      borderRadius: cardRadius,
+      backgroundColor: 'rgba(18, 22, 36, 0.72)',
+    },
+    androidBackdropLight: {
+      ...StyleSheet.absoluteFill,
+      borderRadius: cardRadius,
+      backgroundColor: 'rgba(255, 255, 255, 0.58)',
     },
     gradientSurface: {
       position: 'absolute',
@@ -29,16 +40,6 @@ export const createGlassCardStyles = (
       right: 0,
       bottom: 0,
       borderRadius: cardRadius,
-    },
-    specularHighlight: {
-      position: 'absolute',
-      top: 0,
-      left: 14,
-      right: 14,
-      height: 1.2,
-      backgroundColor: isDark ? 'rgba(255, 255, 255, 0.28)' : 'rgba(255, 255, 255, 0.95)',
-      borderRadius: 1,
-      zIndex: 2,
     },
     content: {
       zIndex: 3,

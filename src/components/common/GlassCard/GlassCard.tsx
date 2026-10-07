@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity, Platform } from 'react-native';
+import { BlurView } from '@react-native-community/blur';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 import { useThemeMode } from '@/hooks/useThemeMode';
 import { haptics } from '@/utils/haptics';
@@ -23,8 +24,26 @@ export const GlassCard: React.FC<GlassCardProps> = ({
     }
   };
 
+  const rawId = React.useId();
+  const uniqueId = rawId.replace(/[^a-zA-Z0-9]/g, '_');
+  const glassGradId = `glassSurfaceGrad_${uniqueId}`;
+
   const CardContent = (
     <View style={[styles.container, style]}>
+      {/* 0. Hardware-Accelerated Blur Backdrop on iOS / Translucent Surface on Android */}
+      {Platform.OS === 'ios' ? (
+        <BlurView
+          style={styles.blurBackdrop}
+          blurType={isDark ? 'dark' : 'light'}
+          blurAmount={25}
+          reducedTransparencyFallbackColor={isDark ? '#151722' : '#F8FAFC'}
+        />
+      ) : (
+        <View
+          style={isDark ? styles.androidBackdropDark : styles.androidBackdropLight}
+        />
+      )}
+
       {/* 1. Seamless Vertical Translucent Glass Gradient */}
       <Svg
         width="100%"
@@ -33,7 +52,7 @@ export const GlassCard: React.FC<GlassCardProps> = ({
         preserveAspectRatio="none"
       >
         <Defs>
-          <LinearGradient id="glassSurfaceGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <LinearGradient id={glassGradId} x1="0%" y1="0%" x2="0%" y2="100%">
             <Stop
               offset="0%"
               stopColor={isDark ? '#282C3C' : '#FFFFFF'}
@@ -46,13 +65,10 @@ export const GlassCard: React.FC<GlassCardProps> = ({
             />
           </LinearGradient>
         </Defs>
-        <Rect width="100%" height="100%" rx={cardRadius} ry={cardRadius} fill="url(#glassSurfaceGrad)" />
+        <Rect width="100%" height="100%" rx={cardRadius} ry={cardRadius} fill={`url(#${glassGradId})`} />
       </Svg>
 
-      {/* 2. Apple Specular Top Reflection Highlight */}
-      <View style={styles.specularHighlight} />
-
-      {/* 3. Card Content */}
+      {/* 2. Card Content */}
       <View style={styles.content}>{children}</View>
     </View>
   );
