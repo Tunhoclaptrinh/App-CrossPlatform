@@ -10,10 +10,8 @@ export const createAppleGlassStyles = (radius: RadiusPresetConfig) =>
 
     // 1. HERO CARD
     heroCard: {
-      padding: 18,
       borderRadius: radius.card,
       position: 'relative',
-      overflow: 'hidden',
     },
     heroContentWrapper: {
       gap: 16,

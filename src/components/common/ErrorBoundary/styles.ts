@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { Spacing, BorderRadius, Shadows } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
 import type { ThemeColors } from '@/constants/colors';
 
 export const styles = StyleSheet.create({
@@ -9,30 +9,47 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: Spacing.xl,
   },
+  containerLight: {
+    backgroundColor: '#F1F5F9',
+  },
+  containerDark: {
+    backgroundColor: '#0B0F19',
+  },
   card: {
     width: '100%',
-    padding: Spacing.xl,
-    borderRadius: BorderRadius.lg,
-    borderWidth: 1,
+    maxWidth: 380,
     alignItems: 'center',
-    ...Shadows.md,
   },
   iconWrapper: {
-    width: 72,
-    height: 72,
-    borderRadius: BorderRadius.full,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: Spacing.base,
+    marginBottom: 16,
+  },
+  iconWrapperLight: {
+    backgroundColor: 'rgba(239, 68, 68, 0.10)',
+    borderColor: 'rgba(239, 68, 68, 0.22)',
+  },
+  iconWrapperDark: {
+    backgroundColor: 'rgba(239, 68, 68, 0.16)',
+    borderColor: 'rgba(239, 68, 68, 0.35)',
   },
   title: {
+    fontSize: 18,
+    fontWeight: '800',
+    letterSpacing: -0.3,
     textAlign: 'center',
-    marginBottom: Spacing.xs,
+    marginBottom: 8,
   },
   message: {
+    fontSize: 13,
+    lineHeight: 19,
     textAlign: 'center',
-    lineHeight: 20,
-    marginBottom: Spacing.xl,
+    marginBottom: 22,
+    paddingHorizontal: 8,
   },
   resetButton: {
     minWidth: 160,

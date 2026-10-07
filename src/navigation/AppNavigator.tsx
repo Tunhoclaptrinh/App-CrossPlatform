@@ -18,11 +18,13 @@ export const AppNavigator: React.FC = () => {
       initialRouteName="Splash"
       screenOptions={{
         headerStyle: {
-          backgroundColor: themeColors.card,
+          backgroundColor: themeColors.background,
         },
+        headerShadowVisible: false,
         headerTintColor: themeColors.text,
         headerTitleStyle: {
-          fontWeight: '600',
+          fontWeight: '700',
+          fontSize: 17,
         },
         contentStyle: {
           backgroundColor: themeColors.background,

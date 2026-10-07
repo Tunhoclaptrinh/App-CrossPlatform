@@ -15,7 +15,7 @@ export const createThemeStudioStyles = (radius: RadiusPresetConfig) =>
     iconBox: {
       width: 38,
       height: 38,
-      borderRadius: Math.max(4, Math.min(radius.smControl * 1.5, 12)),
+      borderRadius: Math.min(radius.control, 12),
       alignItems: 'center',
       justifyContent: 'center',
     },
@@ -58,7 +58,7 @@ export const createThemeStudioStyles = (radius: RadiusPresetConfig) =>
       gap: 7,
       height: 38,
       paddingHorizontal: 10,
-      borderRadius: Math.max(4, Math.min(radius.smControl, 10)),
+      borderRadius: radius.pill,
       borderWidth: 1.4,
     },
     accentBtnLight: {
@@ -99,7 +99,6 @@ export const createThemeStudioStyles = (radius: RadiusPresetConfig) =>
       paddingVertical: 10,
       paddingHorizontal: 4,
       alignItems: 'center',
-      borderRadius: Math.max(4, Math.min(radius.card, 16) - 4),
       borderWidth: 1.4,
       gap: 5,
     },
@@ -154,7 +153,7 @@ export const createThemeStudioStyles = (radius: RadiusPresetConfig) =>
       fontSize: 9.5,
     },
     summaryBox: {
-      borderRadius: Math.max(4, Math.min(radius.card, 16) - 4),
+      borderRadius: radius.card,
       padding: 12,
       gap: 8,
       borderWidth: 1,

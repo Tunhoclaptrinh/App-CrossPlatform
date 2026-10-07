@@ -122,6 +122,7 @@ export const ThemeStudioShowcase: React.FC<ThemeStudioShowcaseProps> = ({
               key={preset.id}
               style={[
                 styles.radiusCard,
+                { borderRadius: preset.card },
                 isGlass
                   ? isDark
                     ? styles.radiusCardGlassDark

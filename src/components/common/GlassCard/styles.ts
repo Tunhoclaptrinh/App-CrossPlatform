@@ -9,40 +9,23 @@ export const createGlassCardStyles = (
 ) => {
   const shadow = isDark ? AppleGlassTokens.shadows.dark : AppleGlassTokens.shadows.light;
   const cardRadius = Math.min(radius ?? AppleGlassTokens.borderRadius, 16);
+  const bgColor = isDark
+    ? 'rgba(16, 20, 38, 0.62)'
+    : 'rgba(255, 255, 255, 0.52)';
 
   return StyleSheet.create({
     container: {
       borderRadius: cardRadius,
-      borderWidth: 0,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.65)',
+      backgroundColor: bgColor,
       padding: Spacing.lg,
       overflow: 'hidden',
       position: 'relative',
       ...shadow,
     },
-    blurBackdrop: {
-      ...StyleSheet.absoluteFill,
-      borderRadius: cardRadius,
-    },
-    androidBackdropDark: {
-      ...StyleSheet.absoluteFill,
-      borderRadius: cardRadius,
-      backgroundColor: 'rgba(18, 22, 36, 0.72)',
-    },
-    androidBackdropLight: {
-      ...StyleSheet.absoluteFill,
-      borderRadius: cardRadius,
-      backgroundColor: 'rgba(255, 255, 255, 0.58)',
-    },
-    gradientSurface: {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      borderRadius: cardRadius,
-    },
     content: {
-      zIndex: 3,
+      zIndex: 1,
     },
   });
 };

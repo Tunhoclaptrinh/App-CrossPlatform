@@ -3,9 +3,10 @@ import { View } from 'react-native';
 import { AlertTriangle, RotateCcw } from 'lucide-react-native';
 import { AppText } from '../AppText';
 import { AppButton } from '../AppButton';
+import { AppCard } from '../AppCard';
 import { useThemeMode } from '@/hooks/useThemeMode';
 import type { ErrorBoundaryProps, ErrorBoundaryState, ErrorBoundaryFallbackProps } from './types';
-import { styles, getErrorBoundaryThemedStyles } from './styles';
+import { styles } from './styles';
 
 export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
@@ -52,32 +53,42 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 }
 
 const ErrorBoundaryFallback: React.FC<ErrorBoundaryFallbackProps> = ({ error, onReset }) => {
-  const { theme: themeColors } = useThemeMode();
-  const themed = getErrorBoundaryThemedStyles(themeColors);
+  const { theme: themeColors, isDark } = useThemeMode();
 
   return (
-    <View style={[styles.container, themed.container]}>
-      <View style={[styles.card, themed.card]}>
-        <View style={[styles.iconWrapper, themed.iconWrapper]}>
-          <AlertTriangle size={36} color={themeColors.error} />
+    <View style={[styles.container, isDark ? styles.containerDark : styles.containerLight]}>
+      <AppCard style={styles.card} padding="lg">
+        <View style={[styles.iconWrapper, isDark ? styles.iconWrapperDark : styles.iconWrapperLight]}>
+          <AlertTriangle size={32} color="#EF4444" strokeWidth={2.2} />
         </View>
 
-        <AppText variant="title" color={themeColors.text} style={styles.title}>
+        <AppText
+          style={[
+            styles.title,
+            { color: themeColors.text },
+          ]}
+        >
           Đã Có Sự Cố Xảy Ra
         </AppText>
 
-        <AppText variant="body" color={themeColors.textSecondary} style={styles.message}>
-          {error?.message || 'Ứng dụng gặp lỗi không mong muốn trong quá trình xử lý giao diện.'}
+        <AppText
+          style={[
+            styles.message,
+            { color: themeColors.textSecondary },
+          ]}
+        >
+          {error?.message || 'Ứng dụng gặp sự cố không mong muốn trong quá trình kết xuất giao diện.'}
         </AppText>
 
         <AppButton
           title="Thử Lại"
           variant="primary"
-          leftIcon={<RotateCcw size={18} color="#FFFFFF" />}
+          size="md"
+          leftIcon={<RotateCcw size={16} color="#FFFFFF" strokeWidth={2.2} />}
           onPress={onReset}
           style={styles.resetButton}
         />
-      </View>
+      </AppCard>
     </View>
   );
 };

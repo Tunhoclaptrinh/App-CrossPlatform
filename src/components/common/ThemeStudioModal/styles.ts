@@ -181,8 +181,7 @@ export const createThemeStudioStyles = (
       gap: 8,
       paddingVertical: 8,
       paddingHorizontal: 10,
-      // smControl: prevents ugly pill distortion on percentage-width swatch cards
-      borderRadius: radius.smControl,
+      borderRadius: radius.pill,
       backgroundColor: colors.surfaceSubtle,
       borderWidth: 1.5,
       borderColor: colors.border,
