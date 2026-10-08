@@ -233,6 +233,15 @@ export const COMPONENTS_CATALOG: ComponentMeta[] = [
     icon: SheetIcon,
     hasParity: true,
   },
+  {
+    id: 'loading-overlay',
+    name: 'LoadingOverlay & AppLoading',
+    category: 'organisms',
+    description: 'Bộ chỉ báo tải đa năng: Căn giữa, Đỉnh đầu (HUD Pill), Đáy màn hình, Toàn màn hình với hiệu ứng Glass, Card, Pill, Spinner, Pulse và Dots.',
+    tags: ['loading', 'spinner', 'overlay', 'hud', 'pill', 'glass', 'pulse', 'dots', 'animation', 'motion', 'parity'],
+    icon: Loader2,
+    hasParity: true,
+  },
 
   // 3. ATOMS (Primitives & Indicators)
   {

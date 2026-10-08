@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { View, ScrollView, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import {
   Sparkles,
   CheckCircle2,
@@ -20,6 +20,7 @@ import {
   GlassTile,
   AppHeader,
   AppSegmentedControl,
+  AppScrollView,
 } from '@/components';
 
 import { useAppStore, useToast } from '@/hooks';
@@ -217,9 +218,12 @@ export const AppleGlassShowcase: React.FC<AppleGlassShowcaseProps> = ({
         </View>
 
         {/* Filter Pills with Harmonious Theme Tints */}
-        <ScrollView
+        <AppScrollView
           horizontal
-          showsHorizontalScrollIndicator={false}
+          indicatorVisible={true}
+          indicatorThickness={2.5}
+          indicatorLength={34}
+          indicatorInsets={{ left: 12, right: 12, bottom: 1 }}
           nestedScrollEnabled={true}
           contentContainerStyle={styles.themeSelectorContent}
           style={styles.themeSelectorScroll}
@@ -257,7 +261,7 @@ export const AppleGlassShowcase: React.FC<AppleGlassShowcaseProps> = ({
               </TouchableOpacity>
             );
           })}
-        </ScrollView>
+        </AppScrollView>
 
         {/* Apple Glass Titanium Card */}
         <View style={styles.cardWrapper}>

@@ -2,7 +2,6 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import {
   View,
   TouchableOpacity,
-  ScrollView,
   StyleSheet,
 } from 'react-native';
 import {
@@ -64,6 +63,11 @@ import {
   WidgetCard,
   GestureCard,
   OfflineBanner,
+  LoadingOverlay,
+  AppScrollView,
+  type LoadingPosition,
+  type LoadingVariant,
+  type LoadingAnimationType,
   type AppSelectOption,
   type SegmentOption,
   type ControlVariant,
@@ -82,7 +86,6 @@ import type { ThemeColors } from '@/constants/colors';
 import type { ComponentId, ComponentMeta, PreviewCanvasBackground } from '../types';
 import { haptics } from '@/utils';
 import { InteractiveScrubber } from './InteractiveScrubber';
-import { ComponentMotionInspector } from './ComponentMotionInspector';
 
 interface ComponentPreviewStageProps {
   component: ComponentMeta;
@@ -93,6 +96,7 @@ interface ComponentPreviewStageProps {
   radiusTokens: RadiusPresetConfig;
   isDark: boolean;
   isGlass?: boolean;
+  onResetScroll?: () => void;
 }
 
 export const ComponentPreviewStage: React.FC<ComponentPreviewStageProps> = ({
@@ -104,7 +108,23 @@ export const ComponentPreviewStage: React.FC<ComponentPreviewStageProps> = ({
   radiusTokens,
   isDark,
   isGlass = false,
+  onResetScroll,
 }) => {
+  // Reset scroll to top immediately on mount and after layout pass
+  React.useEffect(() => {
+    onResetScroll?.();
+    const frame = requestAnimationFrame(() => {
+      onResetScroll?.();
+    });
+    const timer = setTimeout(() => {
+      onResetScroll?.();
+    }, 60);
+    return () => {
+      cancelAnimationFrame(frame);
+      clearTimeout(timer);
+    };
+  }, [component.id, onResetScroll]);
+
   // Navigation between components
   const currentIndex = allComponents.findIndex((c) => c.id === component.id);
   const prevComponent = currentIndex > 0 ? allComponents[currentIndex - 1] : null;
@@ -198,6 +218,14 @@ export const ComponentPreviewStage: React.FC<ComponentPreviewStageProps> = ({
     setIsGlassPreview(isGlass);
   }, [isGlass]);
 
+  // Loading Overlay states
+  const [loadingPosition, setLoadingPosition] = useState<LoadingPosition>('center');
+  const [loadingVariant, setLoadingVariant] = useState<LoadingVariant>(isGlass ? 'glass' : 'card');
+  const [loadingAnimType, setLoadingAnimType] = useState<LoadingAnimationType>('spinner');
+  const [loadingShowProgress, setLoadingShowProgress] = useState(true);
+  const [loadingProgressVal, setLoadingProgressVal] = useState<number>(68);
+  const [isFullscreenLoading, setIsFullscreenLoading] = useState(false);
+
   // Canvas background
   const [canvasBg, setCanvasBg] = useState<PreviewCanvasBackground>('default');
 
@@ -206,44 +234,6 @@ export const ComponentPreviewStage: React.FC<ComponentPreviewStageProps> = ({
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
-
-  const handleMotionAction = useCallback((actionId: string) => {
-    haptics.light();
-    switch (actionId) {
-      case 'press-test':
-        setIsLoading(true);
-        setTimeout(() => setIsLoading(false), 800);
-        break;
-      case 'cycle-tab':
-        setSegmentedVal((prev) => (prev === 'all' ? 'pending' : prev === 'pending' ? 'completed' : 'all'));
-        break;
-      case 'open-dialog':
-        setIsDialogOpen(true);
-        break;
-      case 'toggle-skeleton':
-        break;
-      case 'toggle-accordion':
-        setAccordionExpanded((prev) => !prev);
-        break;
-      case 'simulate-progress':
-        setProgressVal(0);
-        setTimeout(() => setProgressVal(35), 250);
-        setTimeout(() => setProgressVal(75), 550);
-        setTimeout(() => setProgressVal(100), 850);
-        break;
-      case 'trigger-toast':
-        setIsToastOpen(true);
-        break;
-      case 'open-sheet':
-        setIsSheetOpen(true);
-        break;
-      case 'open-bottom-sheet':
-        setIsBottomSheetOpen(true);
-        break;
-      default:
-        break;
-    }
-  }, []);
 
   // Sample options for live testing
   const sampleSelectOptions: AppSelectOption<string>[] = [
@@ -327,6 +317,25 @@ export const ComponentPreviewStage: React.FC<ComponentPreviewStageProps> = ({
     { label: 'Chuẩn', value: 'default' },
     { label: 'Thẻ', value: 'card' },
     { label: 'Đậm', value: 'contrast' },
+  ];
+
+  const loadingPositionOptions: SegmentOption<LoadingPosition>[] = [
+    { label: 'Giữa (Center)', value: 'center' },
+    { label: 'Đỉnh (Top)', value: 'top' },
+    { label: 'Đáy (Bottom)', value: 'bottom' },
+  ];
+
+  const loadingVariantOptions: SegmentOption<LoadingVariant>[] = [
+    { label: 'Card', value: 'card' },
+    { label: 'Glass', value: 'glass' },
+    { label: 'Pill', value: 'pill' },
+    { label: 'Minimal', value: 'minimal' },
+  ];
+
+  const loadingAnimOptions: SegmentOption<LoadingAnimationType>[] = [
+    { label: 'Spinner', value: 'spinner' },
+    { label: 'Pulse', value: 'pulse' },
+    { label: 'Dots', value: 'dots' },
   ];
 
   const currentHeight = ControlSize[controlSize].height;
@@ -440,6 +449,8 @@ export const ComponentPreviewStage: React.FC<ComponentPreviewStageProps> = ({
         return `<GestureCard${sizeSnippet}${contrastSnippet}\n  title="Bàn Di Cảm Ứng Đa Điểm"\n  description="${gestureAction}"\n  onSwipeLeft={() => setAction('Vuốt trái')}\n  onSwipeRight={() => setAction('Vuốt phải')}\n  onDoubleTap={() => setAction('Chạm đúp')}\n/>`;
       case 'offline-banner':
         return `<OfflineBanner${sizeSnippet}${contrastSnippet}\n  message="Không có kết nối mạng Internet. Đang sử dụng SQLite cục bộ."\n  onRetry={() => retryConnection()}\n/>`;
+      case 'loading-overlay':
+        return `<LoadingOverlay\n  visible={true}\n  message="Đang đồng bộ dữ liệu..."\n  subMessage="Đang xử lý qua New Architecture JSI"\n  position="${loadingPosition}"\n  variant="${loadingVariant}"\n  animationType="${loadingAnimType}"\n  borderRadius={${activeRadiusTokens.card}}${loadingShowProgress ? `\n  progress={${loadingProgressVal}}` : ''}\n/>`;
       default:
         return `<${component.name} />`;
     }
@@ -836,6 +847,17 @@ export const ComponentPreviewStage: React.FC<ComponentPreviewStageProps> = ({
         toastBox: {
           alignItems: 'center',
           gap: 12,
+        },
+        loadingPreviewBox: {
+          width: '100%',
+          minHeight: 280,
+          alignItems: 'center',
+          justifyContent: 'center',
+          paddingVertical: 16,
+          gap: 14,
+        },
+        fullscreenTestBtn: {
+          marginBottom: 4,
         },
         accordionBox: {
           width: '100%',
@@ -1699,18 +1721,53 @@ export const ComponentPreviewStage: React.FC<ComponentPreviewStageProps> = ({
                 )}
               </View>
             )}
+
+            {component.id === 'loading-overlay' && (
+              <View style={styles.loadingPreviewBox}>
+                <AppButton
+                  title={isFullscreenLoading ? 'Đang bật HUD Toàn Màn Hình...' : 'Bật Thử Nghiệm Loading Toàn Màn Hình'}
+                  variant="primary"
+                  size="sm"
+                  contrast={controlContrast}
+                  leftIcon={<Sparkles size={14} color="#FFFFFF" />}
+                  onPress={() => {
+                    haptics.light();
+                    setIsFullscreenLoading(true);
+                    setTimeout(() => setIsFullscreenLoading(false), 2400);
+                  }}
+                  style={styles.fullscreenTestBtn}
+                />
+                <LoadingOverlay
+                  visible={true}
+                  message="Đang đồng bộ dữ liệu..."
+                  subMessage="Đang xử lý qua New Architecture JSI"
+                  position={loadingPosition}
+                  variant={loadingVariant}
+                  animationType={loadingAnimType}
+                  borderRadius={activeRadiusTokens.card}
+                  contrast={controlContrast}
+                  progress={loadingShowProgress ? loadingProgressVal : undefined}
+                />
+                {isFullscreenLoading && (
+                  <LoadingOverlay
+                    visible={true}
+                    fullscreen
+                    position="center"
+                    variant={loadingVariant}
+                    animationType={loadingAnimType}
+                    borderRadius={activeRadiusTokens.card}
+                    contrast={controlContrast}
+                    message="Đang đồng bộ dữ liệu..."
+                    subMessage="Đang xử lý qua New Architecture JSI"
+                    progress={loadingShowProgress ? loadingProgressVal : undefined}
+                    onDismiss={() => setIsFullscreenLoading(false)}
+                  />
+                )}
+              </View>
+            )}
           </View>
         </View>
       </AppCard>
-
-      {/* 3.5. DEDICATED COMPONENT MOTION & ANIMATION INSPECTOR */}
-      <ComponentMotionInspector
-        componentId={component.id}
-        themeColors={themeColors}
-        radiusTokens={activeRadiusTokens}
-        isDark={isDark}
-        onTriggerAction={handleMotionAction}
-      />
 
       {/* 4. INTERACTIVE PROPS CONTROLS PANEL */}
       <AppCard style={styles.controlsCard}>
@@ -2143,12 +2200,84 @@ export const ComponentPreviewStage: React.FC<ComponentPreviewStageProps> = ({
           </View>
         )}
 
+        {/* Loading Overlay Controls */}
+        {component.id === 'loading-overlay' && (
+          <>
+            <View style={styles.controlGroup}>
+              <AppText style={[styles.specTileLabel, { color: themeColors.textSecondary }]}>
+                VỊ TRÍ HIỂN THỊ (POSITION)
+              </AppText>
+              <AppSegmentedControl<LoadingPosition>
+                size="md"
+                options={loadingPositionOptions}
+                value={loadingPosition}
+                onChange={setLoadingPosition}
+              />
+            </View>
+
+            <View style={styles.controlGroup}>
+              <AppText style={[styles.specTileLabel, { color: themeColors.textSecondary }]}>
+                PHONG CÁCH BỀ MẶT (VARIANT)
+              </AppText>
+              <AppSegmentedControl<LoadingVariant>
+                size="md"
+                options={loadingVariantOptions}
+                value={loadingVariant}
+                onChange={setLoadingVariant}
+              />
+            </View>
+
+            <View style={styles.controlGroup}>
+              <AppText style={[styles.specTileLabel, { color: themeColors.textSecondary }]}>
+                KIỂU HOẠT CẢNH (ANIMATION TYPE)
+              </AppText>
+              <AppSegmentedControl<LoadingAnimationType>
+                size="md"
+                options={loadingAnimOptions}
+                value={loadingAnimType}
+                onChange={setLoadingAnimType}
+              />
+            </View>
+
+            {loadingShowProgress && (
+              <View style={styles.controlGroup}>
+                <AppText style={[styles.specTileLabel, { color: themeColors.textSecondary }]}>
+                  MỨC TIẾN ĐỘ THỬ NGHIỆM ({loadingProgressVal}%)
+                </AppText>
+                <AppSegmentedControl<string>
+                  size="sm"
+                  options={[
+                    { label: '25%', value: '25' },
+                    { label: '50%', value: '50' },
+                    { label: '68%', value: '68' },
+                    { label: '85%', value: '85' },
+                    { label: '100%', value: '100' },
+                  ]}
+                  value={String(loadingProgressVal)}
+                  onChange={(val) => setLoadingProgressVal(Number(val))}
+                />
+              </View>
+            )}
+          </>
+        )}
+
         {/* Standardized Interactive States via AppSwitch (Chuẩn hóa toàn diện phong cách Apple Settings) */}
         <View style={styles.controlGroup}>
           <AppText style={[styles.specTileLabel, { color: themeColors.textSecondary }]}>
             TRẠNG THÁI TƯƠNG TÁC (INTERACTIVE STATES)
           </AppText>
           <View style={styles.statesGroup}>
+            {component.id === 'loading-overlay' && (
+              <>
+                <AppSwitch
+                  label="Hiển Thị Tiến Độ % (Progress)"
+                  sublabel="Hiện chỉ số phần trăm tiến độ đang tải"
+                  value={loadingShowProgress}
+                  onValueChange={setLoadingShowProgress}
+                />
+                <View style={styles.divider} />
+              </>
+            )}
             {component.id === 'otp' && (
               <>
                 <AppSwitch
@@ -2308,14 +2437,17 @@ export const ComponentPreviewStage: React.FC<ComponentPreviewStageProps> = ({
               )}
             </TouchableOpacity>
           </View>
-          <ScrollView
+          <AppScrollView
             horizontal
-            showsHorizontalScrollIndicator={false}
+            indicatorVisible={true}
+            indicatorThickness={2.5}
+            indicatorLength={34}
+            indicatorInsets={{ left: 8, right: 8, bottom: 2 }}
             nestedScrollEnabled
             contentContainerStyle={styles.codeScrollContent}
           >
             <AppText style={styles.codeText}>{generateSnippet()}</AppText>
-          </ScrollView>
+          </AppScrollView>
 
         </View>
       </AppCard>

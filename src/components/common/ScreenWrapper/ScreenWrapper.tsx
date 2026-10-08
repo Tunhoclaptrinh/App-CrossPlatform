@@ -3,18 +3,19 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
-  ScrollView,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import type { ScrollViewInstance } from 'react-native';
 import { useThemeMode } from '@/hooks/useThemeMode';
 import { useAppStore } from '@/hooks/useAppStore';
 import { AppleMeshBackground } from '../AppleMeshBackground';
+import { AppScrollView } from '../AppScrollView';
 import type { ScreenWrapperProps } from './types';
 import { styles } from './styles';
 
-export const ScreenWrapper: React.FC<ScreenWrapperProps> = ({
+export const ScreenWrapper = React.forwardRef<ScrollViewInstance, ScreenWrapperProps>(({
   children,
   scrollable = false,
   contentContainerStyle,
@@ -22,11 +23,27 @@ export const ScreenWrapper: React.FC<ScreenWrapperProps> = ({
   backgroundColor,
   style,
   edges = ['top', 'bottom', 'left', 'right'],
-  showsScrollIndicator = false,
+  showsScrollIndicator = true,
   nestedScrollEnabled = true,
   disableMeshBackground = false,
+  scrollRef,
+  indicatorMode,
+  indicatorThickness,
+  indicatorLength,
+  minIndicatorLength,
+  maxIndicatorLength,
+  indicatorColor,
+  indicatorInsets,
+  idleOpacity,
+  activeOpacity,
+  showTrack,
+  draggableIndicator,
+  dragHitSlop,
+  enableGrabFeedback,
+  onDragStart,
+  onDragEnd,
   ...props
-}) => {
+}, ref) => {
 
   const { theme: themeColors } = useThemeMode();
   const { themeStyle } = useAppStore();
@@ -37,16 +54,33 @@ export const ScreenWrapper: React.FC<ScreenWrapperProps> = ({
   const defaultBg = shouldRenderMesh ? 'transparent' : themeColors.background;
   const resolvedBgColor = backgroundColor !== undefined ? backgroundColor : defaultBg;
 
+  const resolvedScrollRef = (ref || scrollRef) as React.Ref<ScrollViewInstance> | undefined;
+
   const content = scrollable ? (
-    <ScrollView
+    <AppScrollView
+      ref={resolvedScrollRef}
       contentContainerStyle={[styles.scrollContent, contentContainerStyle]}
       keyboardShouldPersistTaps="handled"
-      showsVerticalScrollIndicator={showsScrollIndicator}
-      showsHorizontalScrollIndicator={showsScrollIndicator}
+      indicatorVisible={showsScrollIndicator}
+      indicatorMode={indicatorMode ?? (showsScrollIndicator ? 'faint-to-bright' : 'hidden')}
+      indicatorThickness={indicatorThickness ?? 4.5}
+      indicatorLength={indicatorLength}
+      minIndicatorLength={minIndicatorLength ?? 52}
+      maxIndicatorLength={maxIndicatorLength ?? 82}
+      indicatorColor={indicatorColor}
+      indicatorInsets={indicatorInsets ?? { top: 8, bottom: 8, right: 1.5 }}
+      idleOpacity={idleOpacity ?? 0.25}
+      activeOpacity={activeOpacity ?? 0.90}
+      showTrack={showTrack}
       nestedScrollEnabled={nestedScrollEnabled}
+      draggableIndicator={draggableIndicator}
+      dragHitSlop={dragHitSlop}
+      enableGrabFeedback={enableGrabFeedback}
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
     >
       {children}
-    </ScrollView>
+    </AppScrollView>
   ) : (
 
     <View style={[styles.staticContent, contentContainerStyle]}>{children}</View>
@@ -77,4 +111,6 @@ export const ScreenWrapper: React.FC<ScreenWrapperProps> = ({
       </SafeAreaView>
     </View>
   );
-};
+});
+
+ScreenWrapper.displayName = 'ScreenWrapper';

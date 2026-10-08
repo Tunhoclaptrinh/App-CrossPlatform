@@ -116,7 +116,10 @@ export function useThemeMode(): ThemeState {
     return colors;
   }, [isDark, accentColor, themeStyle]);
 
-  const radiusTokens = RadiusPresets[radiusPreset] || RadiusPresets.standard;
+  const radiusTokens = useMemo(
+    () => RadiusPresets[radiusPreset] || RadiusPresets.standard,
+    [radiusPreset]
+  );
 
   return {
     theme,

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity, ScrollView } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import {
   Compass,
   Palette,
@@ -23,6 +23,7 @@ import {
 import {
   AppText,
   ScreenWrapper,
+  AppScrollView,
   AppSearchBar,
   EmptyState,
   ThemeStudioModal,
@@ -37,7 +38,10 @@ type CategoryFilter = 'all' | 'ui' | 'realtime' | 'security' | 'storage';
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const { theme: themeColors, isDark, toggleTheme, radiusTokens } = useThemeMode();
-  const styles = createHomeStyles(themeColors, radiusTokens, isDark);
+  const styles = React.useMemo(
+    () => createHomeStyles(themeColors, radiusTokens, isDark),
+    [themeColors, radiusTokens, isDark]
+  );
   const [isStudioOpen, setIsStudioOpen] = useState(false);
 
   // Bảo vệ không bị vô tình thoát app khi nhấn Back ở màn hình chính
@@ -58,160 +62,167 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>('all');
 
-  const toggleLanguage = () => {
+  const toggleLanguage = React.useCallback(() => {
     haptics.light();
     const nextLang = language === 'vi' ? 'en' : 'vi';
     setLanguage(nextLang);
-  };
+  }, [language, setLanguage]);
 
-  const handleToggleThemeStyle = () => {
+  const handleToggleThemeStyle = React.useCallback(() => {
     haptics.light();
     toggleThemeStyle();
-  };
+  }, [toggleThemeStyle]);
 
-  const handleToggleTheme = () => {
+  const handleToggleTheme = React.useCallback(() => {
     haptics.light();
     toggleTheme();
-  };
+  }, [toggleTheme]);
 
-  const categories = [
-    { id: 'all', label: language === 'vi' ? 'Tất cả' : 'All', icon: Layers },
-    { id: 'ui', label: language === 'vi' ? 'Giao diện & UI' : 'UI & Glass', icon: Palette },
-    { id: 'realtime', label: language === 'vi' ? 'Kết nối & Mạng' : 'Network', icon: Radio },
-    { id: 'security', label: language === 'vi' ? 'Bảo mật & Cảm biến' : 'Security', icon: ShieldCheck },
-    { id: 'storage', label: language === 'vi' ? 'Dữ liệu & Lưu trữ' : 'Storage', icon: Database },
-  ] as const;
+  const categories = React.useMemo(
+    () => [
+      { id: 'all', label: language === 'vi' ? 'Tất cả' : 'All', icon: Layers },
+      { id: 'ui', label: language === 'vi' ? 'Giao diện & UI' : 'UI & Glass', icon: Palette },
+      { id: 'realtime', label: language === 'vi' ? 'Kết nối & Mạng' : 'Network', icon: Radio },
+      { id: 'security', label: language === 'vi' ? 'Bảo mật & Cảm biến' : 'Security', icon: ShieldCheck },
+      { id: 'storage', label: language === 'vi' ? 'Dữ liệu & Lưu trữ' : 'Storage', icon: Database },
+    ] as const,
+    [language]
+  );
 
-  const modules = [
-    {
-      id: 'theme-studio',
-      category: 'ui' as const,
-      tag: 'Studio',
-      title: 'Studio Theme & Bo Góc',
-      desc: 'Bộ tinh chỉnh màu sắc chủ đạo, 4 cấp độ bo góc, phản hồi rung và kính Apple Glass',
-      icon: SlidersHorizontal,
-      color: themeColors.primary,
-    },
-    {
-      id: 'apple',
-      category: 'ui' as const,
-      tag: 'Cupertino',
-      title: 'Apple iOS 18 Liquid Glass',
-      desc: 'Cupertino frosted glassmorphism, specular borders & squircles',
-      icon: Sparkles,
-      color: '#007AFF',
-    },
-    {
-      id: 'storybook',
-      category: 'ui' as const,
-      tag: 'Design System',
-      title: 'Storybook & Component Catalog',
-      desc: 'Chuẩn hóa tỷ lệ kích thước Button, Input, Select, Badge, Card (sm, md, lg)',
-      icon: BookOpen,
-      color: '#6366F1',
-    },
+  const modules = React.useMemo(
+    () => [
+      {
+        id: 'theme-studio',
+        category: 'ui' as const,
+        tag: 'Studio',
+        title: 'Studio Theme & Bo Góc',
+        desc: 'Bộ tinh chỉnh màu sắc chủ đạo, 4 cấp độ bo góc, phản hồi rung và kính Apple Glass',
+        icon: SlidersHorizontal,
+        color: themeColors.primary,
+      },
+      {
+        id: 'apple',
+        category: 'ui' as const,
+        tag: 'Cupertino',
+        title: 'Apple iOS 18 Liquid Glass',
+        desc: 'Cupertino frosted glassmorphism, specular borders & squircles',
+        icon: Sparkles,
+        color: '#007AFF',
+      },
+      {
+        id: 'storybook',
+        category: 'ui' as const,
+        tag: 'Design System',
+        title: 'Storybook & Component Catalog',
+        desc: 'Chuẩn hóa tỷ lệ kích thước Button, Input, Select, Badge, Card (sm, md, lg)',
+        icon: BookOpen,
+        color: '#6366F1',
+      },
+      {
+        id: 'realtime',
+        category: 'realtime' as const,
+        tag: 'WebSocket',
+        title: 'Universal Real-Time WebSocket',
+        desc: 'Auto-reconnect, offline message queue, heartbeat ping/pong & pub/sub',
+        icon: Radio,
+        color: '#10B981',
+      },
+      {
+        id: 'gestures',
+        category: 'security' as const,
+        tag: 'Motion & Haptics',
+        title: 'Smart Gestures & Shake Motion',
+        desc: 'Swipe 4 directions, double tap & phone shake sensor with Haptics',
+        icon: Smartphone,
+        color: '#F59E0B',
+      },
+      {
+        id: 'crypto',
+        category: 'security' as const,
+        tag: 'AES-256-GCM',
+        title: 'Server AES-256 & Security',
+        desc: 'Cross-platform cryptography & biometric FaceID/Fingerprint auth',
+        icon: ShieldCheck,
+        color: '#8B5CF6',
+      },
+      {
+        id: 'paper',
+        category: 'ui' as const,
+        tag: 'Material 3',
+        title: 'React Native Paper & UI Kit',
+        desc: 'Material Design 3 tokens, component studio, accessibility & themes',
+        icon: Palette,
+        color: '#2563EB',
+      },
+      {
+        id: 'nav',
+        category: 'realtime' as const,
+        tag: 'Native Stack',
+        title: 'React Navigation v7',
+        desc: 'Native Stack Navigator, 60-120fps hardware transitions & Deep Linking',
+        icon: Compass,
+        color: '#06B6D4',
+      },
+      {
+        id: 'sqlite',
+        category: 'storage' as const,
+        tag: 'C++ JSI',
+        title: 'High-Speed SQLite Database',
+        desc: '@op-engineering/op-sqlite: C++ JSI direct memory query engine',
+        icon: Server,
+        color: '#0284C7',
+      },
+      {
+        id: 'i18n',
+        category: 'ui' as const,
+        tag: 'i18next',
+        title: t('home.i18nTitle', 'Đa Ngôn Ngữ (i18n)'),
+        desc: 'i18next: Tiếng Việt & English dynamic runtime zero-reload switching',
+        icon: Languages,
+        color: '#D97706',
+      },
+      {
+        id: 'store',
+        category: 'storage' as const,
+        tag: 'Zustand Store',
+        title: 'Zustand & Persistent Storage',
+        desc: 'Unified state management, AsyncStorage & automatic state rehydration',
+        icon: Database,
+        color: '#9333EA',
+      },
+      {
+        id: 'utils',
+        category: 'storage' as const,
+        tag: 'Zod & Tools',
+        title: 'Validation & Performance Tools',
+        desc: 'Zod schema parsing, useDebounce, useThrottle, OptimizedList, Formatters',
+        icon: Sparkles,
+        color: '#EC4899',
+      },
+      {
+        id: 'core',
+        category: 'ui' as const,
+        tag: 'Architecture',
+        title: 'Universal Base Architecture',
+        desc: 'ScreenWrapper, AppInput, ApiClient, Skeleton, Toast, ErrorBoundary',
+        icon: Layers,
+        color: '#4F46E5',
+      },
+    ],
+    [themeColors.primary, t]
+  );
 
-    {
-      id: 'realtime',
-      category: 'realtime' as const,
-      tag: 'WebSocket',
-      title: 'Universal Real-Time WebSocket',
-      desc: 'Auto-reconnect, offline message queue, heartbeat ping/pong & pub/sub',
-      icon: Radio,
-      color: '#10B981',
-    },
-    {
-      id: 'gestures',
-      category: 'security' as const,
-      tag: 'Motion & Haptics',
-      title: 'Smart Gestures & Shake Motion',
-      desc: 'Swipe 4 directions, double tap & phone shake sensor with Haptics',
-      icon: Smartphone,
-      color: '#F59E0B',
-    },
-    {
-      id: 'crypto',
-      category: 'security' as const,
-      tag: 'AES-256-GCM',
-      title: 'Server AES-256 & Security',
-      desc: 'Cross-platform cryptography & biometric FaceID/Fingerprint auth',
-      icon: ShieldCheck,
-      color: '#8B5CF6',
-    },
-    {
-      id: 'paper',
-      category: 'ui' as const,
-      tag: 'Material 3',
-      title: 'React Native Paper & UI Kit',
-      desc: 'Material Design 3 tokens, component studio, accessibility & themes',
-      icon: Palette,
-      color: '#2563EB',
-    },
-    {
-      id: 'nav',
-      category: 'realtime' as const,
-      tag: 'Native Stack',
-      title: 'React Navigation v7',
-      desc: 'Native Stack Navigator, 60-120fps hardware transitions & Deep Linking',
-      icon: Compass,
-      color: '#06B6D4',
-    },
-    {
-      id: 'sqlite',
-      category: 'storage' as const,
-      tag: 'C++ JSI',
-      title: 'High-Speed SQLite Database',
-      desc: '@op-engineering/op-sqlite: C++ JSI direct memory query engine',
-      icon: Server,
-      color: '#0284C7',
-    },
-    {
-      id: 'i18n',
-      category: 'ui' as const,
-      tag: 'i18next',
-      title: t('home.i18nTitle', 'Đa Ngôn Ngữ (i18n)'),
-      desc: 'i18next: Tiếng Việt & English dynamic runtime zero-reload switching',
-      icon: Languages,
-      color: '#D97706',
-    },
-    {
-      id: 'store',
-      category: 'storage' as const,
-      tag: 'Zustand Store',
-      title: 'Zustand & Persistent Storage',
-      desc: 'Unified state management, AsyncStorage & automatic state rehydration',
-      icon: Database,
-      color: '#9333EA',
-    },
-    {
-      id: 'utils',
-      category: 'storage' as const,
-      tag: 'Zod & Tools',
-      title: 'Validation & Performance Tools',
-      desc: 'Zod schema parsing, useDebounce, useThrottle, OptimizedList, Formatters',
-      icon: Sparkles,
-      color: '#EC4899',
-    },
-    {
-      id: 'core',
-      category: 'ui' as const,
-      tag: 'Architecture',
-      title: 'Universal Base Architecture',
-      desc: 'ScreenWrapper, AppInput, ApiClient, Skeleton, Toast, ErrorBoundary',
-      icon: Layers,
-      color: '#4F46E5',
-    },
-  ];
-
-  const normalizedQuery = removeVietnameseTones(searchQuery.trim().toLowerCase());
-  const filteredModules = modules.filter((item) => {
-    const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
-    if (!matchesCategory) return false;
-    if (!normalizedQuery) return true;
-    return removeVietnameseTones((item.title + ' ' + item.desc + ' ' + item.tag).toLowerCase()).includes(
-      normalizedQuery
-    );
-  });
+  const filteredModules = React.useMemo(() => {
+    const normalizedQuery = removeVietnameseTones(searchQuery.trim().toLowerCase());
+    return modules.filter((item) => {
+      const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
+      if (!matchesCategory) return false;
+      if (!normalizedQuery) return true;
+      return removeVietnameseTones((item.title + ' ' + item.desc + ' ' + item.tag).toLowerCase()).includes(
+        normalizedQuery
+      );
+    });
+  }, [modules, searchQuery, selectedCategory]);
 
   const isGlass = themeStyle === 'apple-glass';
 
@@ -377,9 +388,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       </View>
 
       {/* 4. Category Filter Pills */}
-      <ScrollView
+      <AppScrollView
         horizontal
-        showsHorizontalScrollIndicator={false}
+        indicatorVisible={true}
+        indicatorThickness={2.5}
+        indicatorLength={34}
+        indicatorInsets={{ left: 16, right: 16, bottom: 1 }}
         nestedScrollEnabled
         style={styles.filterScroll}
         contentContainerStyle={styles.filterScrollContent}
@@ -407,7 +421,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             </TouchableOpacity>
           );
         })}
-      </ScrollView>
+      </AppScrollView>
 
       {/* 5. Section Header */}
       <View style={styles.sectionHeaderRow}>

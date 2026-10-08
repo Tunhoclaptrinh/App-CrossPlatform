@@ -53,27 +53,48 @@ export const AppInput: React.FC<AppInputProps> = React.memo(({
   const [isFocused, setIsFocused] = useState(false);
   const [showPassword, setShowPassword] = useState(!isPassword);
 
-  const stateStyle = getInputStateStyle({
-    colors: themeColors,
-    isDark,
-    isGlassMode,
-    isFocused,
-    hasError: !!error,
-    radiusTokens,
-    globalContrast,
-    globalShadow,
-    globalControlVariant,
-    variant,
-    contrast,
-    shadow,
-    borderRadius,
-    borderWidth,
-    borderColor,
-    backgroundColor,
-  });
+  const stateStyle = React.useMemo(
+    () =>
+      getInputStateStyle({
+        colors: themeColors,
+        isDark,
+        isGlassMode,
+        isFocused,
+        hasError: !!error,
+        radiusTokens,
+        globalContrast,
+        globalShadow,
+        globalControlVariant,
+        variant,
+        contrast,
+        shadow,
+        borderRadius,
+        borderWidth,
+        borderColor,
+        backgroundColor,
+      }),
+    [
+      themeColors,
+      isDark,
+      isGlassMode,
+      isFocused,
+      error,
+      radiusTokens,
+      globalContrast,
+      globalShadow,
+      globalControlVariant,
+      variant,
+      contrast,
+      shadow,
+      borderRadius,
+      borderWidth,
+      borderColor,
+      backgroundColor,
+    ]
+  );
 
-  const sizeContainerStyle = getInputSizeStyle(size);
-  const sizeInputStyle = getInputTextSizeStyle(size);
+  const sizeContainerStyle = React.useMemo(() => getInputSizeStyle(size), [size]);
+  const sizeInputStyle = React.useMemo(() => getInputTextSizeStyle(size), [size]);
   const iconSize = ControlSize[size].iconSize;
   const isInputEditable = editable !== undefined ? editable : !disabled;
 

@@ -6,6 +6,7 @@ export interface StorybookShowcaseProps {
   radiusTokens: RadiusPresetConfig;
   isDark: boolean;
   isGlass?: boolean;
+  onResetScroll?: () => void;
 }
 
 export type StoryCategory = 'all' | 'molecules' | 'organisms' | 'atoms' | 'parity' | 'motion';
@@ -42,6 +43,7 @@ export type ComponentId =
   | 'toast'
   | 'accordion'
   | 'bottom-sheet'
+  | 'loading-overlay'
   | 'offline-banner';
 
 export interface ComponentMeta {

@@ -48,28 +48,47 @@ const AppCardComponent: React.FC<AppCardProps> = ({
       ? BorderRadius[radius]
       : radiusTokens.card;
 
-  const cardVariantStyle = createCardVariantStyle({
-    variant: effectiveVariant,
-    themeColors,
-    isDark,
-    contrast: effectiveContrast,
-    shadow: effectiveShadow,
-    borderWidth,
-    borderColor,
-    backgroundColor,
-  });
+  const cardVariantStyle = React.useMemo(
+    () =>
+      createCardVariantStyle({
+        variant: effectiveVariant,
+        themeColors,
+        isDark,
+        contrast: effectiveContrast,
+        shadow: effectiveShadow,
+        borderWidth,
+        borderColor,
+        backgroundColor,
+      }),
+    [
+      effectiveVariant,
+      themeColors,
+      isDark,
+      effectiveContrast,
+      effectiveShadow,
+      borderWidth,
+      borderColor,
+      backgroundColor,
+    ]
+  );
 
-  let resolvedPadding = Spacing[padding];
-  if (size === 'sm') resolvedPadding = Spacing.sm;
-  else if (size === 'md') resolvedPadding = Spacing.md;
-  else if (size === 'lg') resolvedPadding = Spacing.lg;
-  if (padding !== 'base') resolvedPadding = Spacing[padding];
+  const resolvedPadding = React.useMemo(() => {
+    let pad = Spacing[padding];
+    if (size === 'sm') pad = Spacing.sm;
+    else if (size === 'md') pad = Spacing.md;
+    else if (size === 'lg') pad = Spacing.lg;
+    if (padding !== 'base') pad = Spacing[padding];
+    return pad;
+  }, [padding, size]);
 
-  const cardStyle: ViewStyle = {
-    borderRadius: cardRadius,
-    padding: resolvedPadding,
-    ...cardVariantStyle,
-  };
+  const cardStyle: ViewStyle = React.useMemo(
+    () => ({
+      borderRadius: cardRadius,
+      padding: resolvedPadding,
+      ...cardVariantStyle,
+    }),
+    [cardRadius, resolvedPadding, cardVariantStyle]
+  );
 
   const highlightElement = isGlassCard ? (
     <View

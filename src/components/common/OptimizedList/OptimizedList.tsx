@@ -19,6 +19,7 @@ export function OptimizedList<T>({
   onRefresh,
   loadingMore = false,
   emptyProps,
+  showsVerticalScrollIndicator = true,
   ...restProps
 }: OptimizedListProps<T>) {
   const { theme: themeColors } = useThemeMode();
@@ -47,6 +48,7 @@ export function OptimizedList<T>({
     <FlatList
       data={data ?? []}
       renderItem={renderItem}
+      showsVerticalScrollIndicator={showsVerticalScrollIndicator}
       removeClippedSubviews={OPTIMIZED_LIST_DEFAULTS.REMOVE_CLIPPED_SUBVIEWS}
       maxToRenderPerBatch={OPTIMIZED_LIST_DEFAULTS.MAX_TO_RENDER_PER_BATCH}
       windowSize={OPTIMIZED_LIST_DEFAULTS.WINDOW_SIZE}

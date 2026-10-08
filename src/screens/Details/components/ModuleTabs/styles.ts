@@ -12,6 +12,7 @@ export const createModuleTabsStyles = (radius: RadiusPresetConfig) =>
       paddingHorizontal: 16,
       gap: 8,
       alignItems: 'center',
+      paddingBottom: 6,
     },
     tabChip: {
       flexDirection: 'row',

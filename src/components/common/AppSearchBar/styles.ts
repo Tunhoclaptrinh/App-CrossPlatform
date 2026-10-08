@@ -23,9 +23,19 @@ export const styles = StyleSheet.create({
   searchIcon: {
     marginRight: Spacing.sm,
   },
-  input: {
+  inputWrapper: {
     flex: 1,
+    justifyContent: 'center',
+    position: 'relative',
+  },
+  input: {
+    width: '100%',
     paddingVertical: 0,
+  },
+  placeholderOverlay: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
   },
   inputSm: {
     fontSize: ControlSize.sm.fontSize,

@@ -162,9 +162,12 @@ export const Organisms = {
 // 4. TEMPLATES (Bố Cục / Khung Mẫu)
 // ============================================================================
 export * from './ScreenWrapper';
+export * from './AppScrollView';
 
 import { ScreenWrapper } from './ScreenWrapper';
+import { AppScrollView } from './AppScrollView';
 
 export const Templates = {
   ScreenWrapper,
+  AppScrollView,
 } as const;

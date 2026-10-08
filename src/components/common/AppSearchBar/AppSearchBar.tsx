@@ -8,6 +8,7 @@ import { Search, X, SlidersHorizontal } from 'lucide-react-native';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useThemeMode } from '@/hooks/useThemeMode';
 import { useAppStore } from '@/hooks/useAppStore';
+import { AppText } from '../AppText';
 import type { AppSearchBarProps } from './types';
 import { DEFAULT_SEARCH_DEBOUNCE_MS, DEFAULT_SEARCH_PLACEHOLDER } from './constants';
 import {
@@ -107,16 +108,33 @@ export const AppSearchBar: React.FC<AppSearchBarProps> = React.memo(({
     >
       <Search size={iconSize} color={themeColors.textSecondary} style={styles.searchIcon} />
 
-      <TextInput
-        value={text}
-        onChangeText={handleChangeText}
-        placeholder={placeholder}
-        placeholderTextColor={themeColors.textSecondary}
-        style={[styles.input, getSearchBarInputSizeStyle(size), { color: themeColors.text }]}
-        returnKeyType="search"
-        autoCapitalize="none"
-        autoCorrect={false}
-      />
+      <View style={styles.inputWrapper}>
+        <TextInput
+          value={text}
+          onChangeText={handleChangeText}
+          placeholder=""
+          style={[styles.input, getSearchBarInputSizeStyle(size), { color: themeColors.text }]}
+          returnKeyType="search"
+          autoCapitalize="none"
+          autoCorrect={false}
+          multiline={false}
+          numberOfLines={1}
+        />
+        {!text && Boolean(placeholder) && (
+          <AppText
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            pointerEvents="none"
+            style={[
+              styles.placeholderOverlay,
+              getSearchBarInputSizeStyle(size),
+              { color: themeColors.textSecondary },
+            ]}
+          >
+            {placeholder}
+          </AppText>
+        )}
+      </View>
 
       {text.length > 0 && (
         <TouchableOpacity

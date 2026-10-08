@@ -51,62 +51,12 @@ interface MotionLabViewProps {
   isDark: boolean;
 }
 
-export const MotionLabView: React.FC<MotionLabViewProps> = ({
-  themeColors,
-  radiusTokens,
-  isDark,
-}) => {
-  const { reduceMotion, setReduceMotion, hapticsEnabled, setHapticsEnabled } = useThemeMode();
-
-  // Demo 1: Segmented Control State
-  const [activeSegment, setActiveSegment] = useState<'overview' | 'perf' | 'style'>('overview');
-
-  // Demo 4: Confirm Dialog State
-  const [dialogVisible, setDialogVisible] = useState(false);
-
-  // Demo 5: Skeleton Pulse State
-  const [showSkeleton, setShowSkeleton] = useState(true);
-
-  // Demo 6: Accordion State
-  const [accordionOpen, setAccordionOpen] = useState(false);
-
-  // Demo 7: Progress Bar State
-  const [progressVal, setProgressVal] = useState(65);
-
-  // Demo 8: Toast State
-  const [toastVisible, setToastVisible] = useState(false);
-  const [toastType, setToastType] = useState<ToastType>('success');
-  const [toastMessage, setToastMessage] = useState('Thao tác hoàn tất thành công!');
-
-  // Demo 9: Sheets State
-  const [actionSheetVisible, setActionSheetVisible] = useState(false);
-  const [bottomSheetVisible, setBottomSheetVisible] = useState(false);
-
-  // Demo 10: Selected Chips State
-  const [selectedChips, setSelectedChips] = useState<string[]>(['spring', 'gpu']);
-
-  const toggleChip = (id: string) => {
-    haptics.light();
-    setSelectedChips((prev) =>
-      prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]
-    );
-  };
-
-  const triggerToast = (type: ToastType, msg: string) => {
-    setToastType(type);
-    setToastMessage(msg);
-    setToastVisible(true);
-  };
-
-  const runProgressSimulation = () => {
-    haptics.light();
-    setProgressVal(10);
-    setTimeout(() => setProgressVal(45), 300);
-    setTimeout(() => setProgressVal(80), 600);
-    setTimeout(() => setProgressVal(100), 900);
-  };
-
-  const styles = StyleSheet.create({
+const createStyles = (
+  themeColors: ThemeColors,
+  radiusTokens: RadiusPresetConfig,
+  isDark: boolean
+) =>
+  StyleSheet.create({
     container: {
       gap: 16,
       paddingBottom: 40,
@@ -376,6 +326,66 @@ export const MotionLabView: React.FC<MotionLabViewProps> = ({
       lineHeight: 18,
     },
   });
+
+export const MotionLabView: React.FC<MotionLabViewProps> = React.memo(({
+  themeColors,
+  radiusTokens,
+  isDark,
+}) => {
+  const { reduceMotion, setReduceMotion, hapticsEnabled, setHapticsEnabled } = useThemeMode();
+
+  // Demo 1: Segmented Control State
+  const [activeSegment, setActiveSegment] = useState<'overview' | 'perf' | 'style'>('overview');
+
+  // Demo 4: Confirm Dialog State
+  const [dialogVisible, setDialogVisible] = useState(false);
+
+  // Demo 5: Skeleton Pulse State
+  const [showSkeleton, setShowSkeleton] = useState(true);
+
+  // Demo 6: Accordion State
+  const [accordionOpen, setAccordionOpen] = useState(false);
+
+  // Demo 7: Progress Bar State
+  const [progressVal, setProgressVal] = useState(65);
+
+  // Demo 8: Toast State
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastType, setToastType] = useState<ToastType>('success');
+  const [toastMessage, setToastMessage] = useState('Thao tác hoàn tất thành công!');
+
+  // Demo 9: Sheets State
+  const [actionSheetVisible, setActionSheetVisible] = useState(false);
+  const [bottomSheetVisible, setBottomSheetVisible] = useState(false);
+
+  // Demo 10: Selected Chips State
+  const [selectedChips, setSelectedChips] = useState<string[]>(['spring', 'gpu']);
+
+  const toggleChip = React.useCallback((id: string) => {
+    haptics.light();
+    setSelectedChips((prev) =>
+      prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]
+    );
+  }, []);
+
+  const triggerToast = React.useCallback((type: ToastType, msg: string) => {
+    setToastType(type);
+    setToastMessage(msg);
+    setToastVisible(true);
+  }, []);
+
+  const runProgressSimulation = React.useCallback(() => {
+    haptics.light();
+    setProgressVal(10);
+    setTimeout(() => setProgressVal(45), 300);
+    setTimeout(() => setProgressVal(80), 600);
+    setTimeout(() => setProgressVal(100), 900);
+  }, []);
+
+  const styles = React.useMemo(
+    () => createStyles(themeColors, radiusTokens, isDark),
+    [themeColors, radiusTokens, isDark]
+  );
 
   return (
     <View style={styles.container}>
@@ -1013,4 +1023,5 @@ export const MotionLabView: React.FC<MotionLabViewProps> = ({
       </AppCard>
     </View>
   );
-};
+});
+

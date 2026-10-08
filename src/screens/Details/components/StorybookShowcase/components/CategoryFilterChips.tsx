@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { TouchableOpacity, StyleSheet } from 'react-native';
 import {
   Layers,
   Sliders,
@@ -8,7 +8,7 @@ import {
   Maximize2,
   Zap,
 } from 'lucide-react-native';
-import { AppText } from '@/components';
+import { AppText, AppScrollView } from '@/components';
 import type { ThemeColors } from '@/constants/colors';
 import type { RadiusPresetConfig } from '@/constants/theme';
 import type { StoryCategory } from '../types';
@@ -22,21 +22,22 @@ interface CategoryFilterChipsProps {
   isDark: boolean;
 }
 
-export const CategoryFilterChips: React.FC<CategoryFilterChipsProps> = ({
+const CATEGORIES: { id: StoryCategory; label: string; icon: any }[] = [
+  { id: 'all', label: 'Tất Cả Linh Kiện', icon: Layers },
+  { id: 'motion', label: 'Hiệu Ứng (Motion Lab)', icon: Zap },
+  { id: 'molecules', label: 'Form & Nút (Molecules)', icon: Sliders },
+  { id: 'organisms', label: 'Bề Mặt & Header (Organisms)', icon: Box },
+  { id: 'atoms', label: 'Chỉ Số & Khung (Atoms)', icon: Sparkles },
+  { id: 'parity', label: 'Ma Trận Tỷ Lệ (1:1 Scale)', icon: Maximize2 },
+];
+
+export const CategoryFilterChips: React.FC<CategoryFilterChipsProps> = React.memo(({
   activeCategory,
   onSelectCategory,
   themeColors,
   radiusTokens,
   isDark,
 }) => {
-  const categories: { id: StoryCategory; label: string; icon: any }[] = [
-    { id: 'all', label: 'Tất Cả Linh Kiện', icon: Layers },
-    { id: 'motion', label: 'Hiệu Ứng (Motion Lab)', icon: Zap },
-    { id: 'molecules', label: 'Form & Nút (Molecules)', icon: Sliders },
-    { id: 'organisms', label: 'Bề Mặt & Header (Organisms)', icon: Box },
-    { id: 'atoms', label: 'Chỉ Số & Khung (Atoms)', icon: Sparkles },
-    { id: 'parity', label: 'Ma Trận Tỷ Lệ (1:1 Scale)', icon: Maximize2 },
-  ];
 
   const styles = React.useMemo(
     () =>
@@ -48,7 +49,8 @@ export const CategoryFilterChips: React.FC<CategoryFilterChipsProps> = ({
         scrollContent: {
           paddingHorizontal: 16,
           gap: 8,
-          paddingVertical: 2,
+          paddingTop: 2,
+          paddingBottom: 6,
         },
         chip: {
           flexDirection: 'row',
@@ -80,16 +82,19 @@ export const CategoryFilterChips: React.FC<CategoryFilterChipsProps> = ({
   );
 
   return (
-    <ScrollView
+    <AppScrollView
       horizontal
-      showsHorizontalScrollIndicator={false}
+      indicatorVisible={true}
+      indicatorThickness={2.5}
+      indicatorLength={34}
+      indicatorInsets={{ left: 16, right: 16, bottom: 1 }}
       nestedScrollEnabled
       keyboardShouldPersistTaps="handled"
       style={styles.scroll}
       contentContainerStyle={styles.scrollContent}
     >
 
-      {categories.map((cat) => {
+      {CATEGORIES.map((cat) => {
         const isActive = activeCategory === cat.id;
         const IconComponent = cat.icon;
         return (
@@ -118,6 +123,7 @@ export const CategoryFilterChips: React.FC<CategoryFilterChipsProps> = ({
           </TouchableOpacity>
         );
       })}
-    </ScrollView>
+    </AppScrollView>
   );
-};
+});
+

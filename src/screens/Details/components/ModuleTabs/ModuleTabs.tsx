@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
-import { ScrollView, TouchableOpacity } from 'react-native';
-import { AppText } from '@/components';
+import { TouchableOpacity } from 'react-native';
+import { AppText, AppScrollView } from '@/components';
 import { haptics } from '@/utils';
 import type { ModuleTabsProps } from './types';
 import { createModuleTabsStyles } from './styles';
@@ -15,9 +15,12 @@ export const ModuleTabs: React.FC<ModuleTabsProps> = ({
 }) => {
   const styles = useMemo(() => createModuleTabsStyles(radiusTokens), [radiusTokens]);
   return (
-    <ScrollView
+    <AppScrollView
       horizontal
-      showsHorizontalScrollIndicator={false}
+      indicatorVisible={true}
+      indicatorThickness={2.5}
+      indicatorLength={34}
+      indicatorInsets={{ left: 16, right: 16, bottom: 1 }}
       nestedScrollEnabled
       keyboardShouldPersistTaps="handled"
       style={styles.scroll}
@@ -73,6 +76,6 @@ export const ModuleTabs: React.FC<ModuleTabsProps> = ({
           </TouchableOpacity>
         );
       })}
-    </ScrollView>
+    </AppScrollView>
   );
 };

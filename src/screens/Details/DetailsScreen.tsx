@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { View } from 'react-native';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { View, type ScrollViewInstance } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   Sparkles,
@@ -421,10 +421,26 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
   const isGlass = themeStyle === 'apple-glass';
   const effectiveVariant = headerVariant || 'frosted-capsule';
 
+  const scrollRef = useRef<ScrollViewInstance>(null);
+
+  const handleScrollToTop = useCallback(() => {
+    scrollRef.current?.scrollTo({ y: 0, animated: false });
+    requestAnimationFrame(() => {
+      scrollRef.current?.scrollTo({ y: 0, animated: false });
+    });
+  }, []);
+
+  // When switching modules, always start at top
+  useEffect(() => {
+    handleScrollToTop();
+  }, [activeModule, handleScrollToTop]);
+
   return (
     <View style={styles.container}>
       <ScreenWrapper
+        ref={scrollRef}
         scrollable
+        showsScrollIndicator={true}
         edges={['bottom', 'left', 'right']}
         contentContainerStyle={[styles.content, { paddingTop: insets.top + 48 + 12 }]}
       >
@@ -455,6 +471,7 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
             radiusTokens={radiusTokens}
             isDark={isDark}
             isGlass={isGlass}
+            onResetScroll={handleScrollToTop}
           />
         )}
 

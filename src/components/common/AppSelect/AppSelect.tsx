@@ -3,7 +3,6 @@ import {
   View,
   TouchableOpacity,
   Modal,
-  ScrollView,
   Pressable,
   StyleSheet,
   Platform,
@@ -15,6 +14,7 @@ import { useAppStore } from '@/hooks/useAppStore';
 import { ControlSize } from '@/constants/theme';
 import { haptics } from '@/utils/haptics';
 import { AppText } from '../AppText';
+import { AppScrollView } from '../AppScrollView';
 import type { AppSelectProps, AppSelectOption } from './types';
 import {
   styles,
@@ -150,6 +150,8 @@ export const AppSelect = React.memo(function AppSelectComponent<T = string | num
       <Modal
         visible={isOpen}
         transparent
+        statusBarTranslucent
+        hardwareAccelerated
         animationType={reduceMotion ? 'none' : 'fade'}
         onRequestClose={handleClose}
       >
@@ -198,7 +200,12 @@ export const AppSelect = React.memo(function AppSelectComponent<T = string | num
             </View>
 
             {/* Options List */}
-            <ScrollView showsVerticalScrollIndicator={false} nestedScrollEnabled={true}>
+            <AppScrollView
+              indicatorVisible={true}
+              indicatorThickness={3.5}
+              indicatorInsets={{ top: 4, bottom: 4, right: 3 }}
+              nestedScrollEnabled={true}
+            >
               {options.map((option) => {
                 const isSelected = option.value === value;
                 return (
@@ -246,7 +253,7 @@ export const AppSelect = React.memo(function AppSelectComponent<T = string | num
                   </TouchableOpacity>
                 );
               })}
-            </ScrollView>
+            </AppScrollView>
           </Pressable>
         </Pressable>
       </Modal>

@@ -57,6 +57,8 @@ export const AppActionSheet: React.FC<AppActionSheetProps> = React.memo(({
     <Modal
       visible={visible}
       transparent
+      statusBarTranslucent
+      hardwareAccelerated
       animationType={reduceMotion ? 'none' : 'fade'}
       onRequestClose={onClose}
     >

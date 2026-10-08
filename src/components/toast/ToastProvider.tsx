@@ -100,9 +100,10 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const currentConfig = toast ? getTypeConfig(toast.type) : null;
+  const contextValue = React.useMemo(() => ({ show, hide }), [show, hide]);
 
   return (
-    <ToastContext.Provider value={{ show, hide }}>
+    <ToastContext.Provider value={contextValue}>
       {children}
       {toast && currentConfig ? (
         <Animated.View

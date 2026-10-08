@@ -51,8 +51,14 @@ const AppButtonComponent: React.FC<AppButtonProps> = ({
     reduceMotion,
   } = useThemeMode();
   const size = propSize ?? globalControlSize ?? 'md';
-  const styles = createButtonStyles(themeColors, radiusTokens, isDark);
-  const textColor = getButtonTextColor(variant, themeColors);
+  const styles = useMemo(
+    () => createButtonStyles(themeColors, radiusTokens, isDark),
+    [themeColors, radiusTokens, isDark]
+  );
+  const textColor = useMemo(
+    () => getButtonTextColor(variant, themeColors),
+    [variant, themeColors]
+  );
   const effectiveContrast = contrast ?? globalContrast ?? 'normal';
   const effectiveShadow = shadow ?? (globalShadow !== 'none' ? globalShadow : undefined);
 

@@ -68,42 +68,64 @@ const ConfirmDialogComponent: React.FC<ConfirmDialogProps> = ({
     }
   }, [visible, reduceMotion, scaleAnim, opacityAnim]);
 
-  let maxWidth = 340;
-  let padding = 24;
-  let iconBoxSize = 56;
-  let iconGlyphSize = 28;
-  let btnSize: 'sm' | 'md' | 'lg' = 'md';
+  const sizeConfig = React.useMemo(() => {
+    switch (size) {
+      case 'sm':
+        return { maxWidth: 300, padding: 16, iconBoxSize: 44, iconGlyphSize: 22, btnSize: 'sm' as const };
+      case 'lg':
+        return { maxWidth: 380, padding: 30, iconBoxSize: 64, iconGlyphSize: 32, btnSize: 'lg' as const };
+      default:
+        return { maxWidth: 340, padding: 24, iconBoxSize: 56, iconGlyphSize: 28, btnSize: 'md' as const };
+    }
+  }, [size]);
 
-  if (size === 'sm') {
-    maxWidth = 300;
-    padding = 16;
-    iconBoxSize = 44;
-    iconGlyphSize = 22;
-    btnSize = 'sm';
-  } else if (size === 'lg') {
-    maxWidth = 380;
-    padding = 30;
-    iconBoxSize = 64;
-    iconGlyphSize = 32;
-    btnSize = 'lg';
-  }
-
-  const defaultIcon = destructive ? (
-    <Trash2 size={iconGlyphSize} color={themeColors.error} />
-  ) : (
-    <AlertCircle size={iconGlyphSize} color={themeColors.primary} />
+  const defaultIcon = React.useMemo(
+    () =>
+      destructive ? (
+        <Trash2 size={sizeConfig.iconGlyphSize} color={themeColors.error} />
+      ) : (
+        <AlertCircle size={sizeConfig.iconGlyphSize} color={themeColors.primary} />
+      ),
+    [destructive, sizeConfig.iconGlyphSize, themeColors.error, themeColors.primary]
   );
 
   const cardRadius = borderRadius !== undefined ? borderRadius : radiusTokens.card;
+
+  const containerThemedStyle = React.useMemo(
+    () => getDialogContainerThemedStyle(isDark, radiusTokens, false, effectiveContrast),
+    [isDark, radiusTokens, effectiveContrast]
+  );
+
+  const iconThemedStyle = React.useMemo(
+    () => getDialogIconThemedStyle(themeColors, destructive),
+    [themeColors, destructive]
+  );
+
+  const dialogDimensionStyle = React.useMemo(
+    () => ({
+      maxWidth: sizeConfig.maxWidth,
+      padding: sizeConfig.padding,
+      borderRadius: cardRadius,
+    }),
+    [sizeConfig.maxWidth, sizeConfig.padding, cardRadius]
+  );
+
+  const handleCancel = React.useCallback(() => {
+    if (!loading) {
+      onCancel();
+    }
+  }, [loading, onCancel]);
 
   return (
     <Modal
       visible={visible}
       transparent
+      statusBarTranslucent
+      hardwareAccelerated
       animationType="fade"
-      onRequestClose={onCancel}
+      onRequestClose={handleCancel}
     >
-      <TouchableWithoutFeedback onPress={onCancel}>
+      <TouchableWithoutFeedback onPress={handleCancel}>
         <View
           style={[
             styles.backdrop,
@@ -114,8 +136,8 @@ const ConfirmDialogComponent: React.FC<ConfirmDialogProps> = ({
             <Animated.View
               style={[
                 styles.dialogContainer,
-                getDialogContainerThemedStyle(isDark, radiusTokens, false, effectiveContrast),
-                { maxWidth, padding, borderRadius: cardRadius },
+                containerThemedStyle,
+                dialogDimensionStyle,
                 { transform: [{ scale: scaleAnim }], opacity: opacityAnim },
                 style,
               ]}
@@ -123,8 +145,12 @@ const ConfirmDialogComponent: React.FC<ConfirmDialogProps> = ({
               <View
                 style={[
                   styles.iconWrapper,
-                  getDialogIconThemedStyle(themeColors, destructive),
-                  { width: iconBoxSize, height: iconBoxSize, borderRadius: iconBoxSize / 2 },
+                  iconThemedStyle,
+                  {
+                    width: sizeConfig.iconBoxSize,
+                    height: sizeConfig.iconBoxSize,
+                    borderRadius: sizeConfig.iconBoxSize / 2,
+                  },
                 ]}
               >
                 {icon || defaultIcon}
@@ -147,9 +173,9 @@ const ConfirmDialogComponent: React.FC<ConfirmDialogProps> = ({
                   <AppButton
                     title={cancelText}
                     variant="outline"
-                    size={btnSize}
+                    size={sizeConfig.btnSize}
                     contrast={effectiveContrast}
-                    onPress={onCancel}
+                    onPress={handleCancel}
                     disabled={loading}
                   />
                 </View>
@@ -158,7 +184,7 @@ const ConfirmDialogComponent: React.FC<ConfirmDialogProps> = ({
                   <AppButton
                     title={confirmText}
                     variant={destructive ? 'danger' : 'primary'}
-                    size={btnSize}
+                    size={sizeConfig.btnSize}
                     contrast={effectiveContrast}
                     loading={loading}
                     onPress={onConfirm}

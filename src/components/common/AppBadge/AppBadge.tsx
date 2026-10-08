@@ -17,9 +17,14 @@ export const AppBadge: React.FC<AppBadgeProps> = React.memo(({
 }) => {
   const { theme: themeColors, radiusTokens, globalContrast } = useThemeMode();
   const effectiveContrast = contrast ?? globalContrast ?? 'normal';
-  const colors = getBadgeColors(variant, themeColors);
+  const colors = useMemo(() => getBadgeColors(variant, themeColors), [variant, themeColors]);
   const isSm = size === 'sm';
   const isLg = size === 'lg';
+
+  const containerStyle = useMemo(
+    () => getBadgeContainerStyle(shape, size, colors.bg, radiusTokens),
+    [shape, size, colors.bg, radiusTokens]
+  );
 
   const contrastStyle: ViewStyle = useMemo(() => {
     if (effectiveContrast === 'high') {
@@ -40,7 +45,7 @@ export const AppBadge: React.FC<AppBadgeProps> = React.memo(({
   return (
     <View
       style={[
-        getBadgeContainerStyle(shape, size, colors.bg, radiusTokens),
+        containerStyle,
         borderRadius !== undefined ? { borderRadius } : null,
         contrastStyle,
         style,

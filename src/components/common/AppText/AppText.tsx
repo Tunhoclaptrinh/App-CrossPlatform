@@ -12,11 +12,27 @@ const AppTextComponent: React.FC<AppTextProps> = ({
   children,
   ...props
 }) => {
-  const { theme: themeColors, fontScale } = useThemeMode();
+  const { theme: themeColors, fontScale = 'normal' } = useThemeMode();
   const defaultColor = themeColors.text;
 
-  // Flatten incoming style to detect custom fontSize and lineHeight
-  const flattenedStyle = StyleSheet.flatten(style) as TextStyle | undefined;
+  // Ultra-fast path for standard scale and un-overridden text
+  if (fontScale === 'normal') {
+    return (
+      <Text
+        style={[
+          styles[variant],
+          { color: color || defaultColor },
+          style,
+        ]}
+        {...props}
+      >
+        {children}
+      </Text>
+    );
+  }
+
+  // Flatten incoming style only when dynamic font scaling is active
+  const flattenedStyle = style ? (StyleSheet.flatten(style) as TextStyle | undefined) : undefined;
   const baseVariant = Typography[variant] || Typography.body;
   const baseFontSize = flattenedStyle?.fontSize ?? baseVariant.fontSize ?? 14;
 
@@ -28,15 +44,9 @@ const AppTextComponent: React.FC<AppTextProps> = ({
 
   let autoLineHeight: number | undefined;
   if (flattenedStyle?.lineHeight) {
-    autoLineHeight =
-      scaleMultiplier !== 1.0
-        ? Math.round(flattenedStyle.lineHeight * scaleMultiplier)
-        : flattenedStyle.lineHeight;
+    autoLineHeight = Math.round(flattenedStyle.lineHeight * scaleMultiplier);
   } else if (baseVariant.lineHeight) {
-    autoLineHeight =
-      scaleMultiplier !== 1.0
-        ? Math.round(baseVariant.lineHeight * scaleMultiplier)
-        : baseVariant.lineHeight;
+    autoLineHeight = Math.round(baseVariant.lineHeight * scaleMultiplier);
   } else {
     autoLineHeight = Math.ceil(scaledFontSize * 1.3);
   }

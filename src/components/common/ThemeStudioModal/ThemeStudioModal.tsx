@@ -2,7 +2,6 @@ import React from 'react';
 import {
   Modal,
   View,
-  ScrollView,
   TouchableOpacity,
   TouchableWithoutFeedback,
   StyleSheet,
@@ -33,6 +32,7 @@ import { AppText } from '@/components/common/AppText';
 import { AppButton } from '@/components/common/AppButton';
 import { AppSwitch } from '@/components/common/AppSwitch';
 import { AppSegmentedControl } from '@/components/common/AppSegmentedControl';
+import { AppScrollView } from '@/components/common/AppScrollView';
 import type { ControlContrast, ControlShadow, ControlVariant } from '@/components/common/surfaceUtils';
 import { useThemeMode } from '@/hooks/useThemeMode';
 import {
@@ -199,6 +199,8 @@ export const ThemeStudioModal: React.FC<ThemeStudioModalProps> = React.memo(({
     <Modal
       visible={visible}
       transparent
+      statusBarTranslucent
+      hardwareAccelerated
       animationType={reduceMotion ? 'none' : 'slide'}
       onRequestClose={onClose}
     >
@@ -250,11 +252,12 @@ export const ThemeStudioModal: React.FC<ThemeStudioModalProps> = React.memo(({
                 </TouchableOpacity>
               </View>
 
-              {/* Scrollable Body with Persistent Scrollbar */}
-              <ScrollView
+              {/* Scrollable Body with Sleek Custom Indicator */}
+              <AppScrollView
                 style={styles.scrollView}
-                showsVerticalScrollIndicator={true}
-                persistentScrollbar={true}
+                indicatorVisible={true}
+                indicatorThickness={3.5}
+                indicatorInsets={{ top: 8, bottom: 8, right: 3 }}
                 nestedScrollEnabled={true}
                 contentContainerStyle={styles.scrollContent}
               >
@@ -745,7 +748,7 @@ export const ThemeStudioModal: React.FC<ThemeStudioModalProps> = React.memo(({
                     onValueChange={handleToggleReduceMotion}
                   />
                 </View>
-              </ScrollView>
+              </AppScrollView>
 
               {/* Pinned Bottom Footer Actions */}
               <View style={styles.footerContainer}>

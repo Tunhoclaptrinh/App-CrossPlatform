@@ -20,11 +20,12 @@ import {
 } from './components';
 import { haptics } from '@/utils';
 
-export const StorybookShowcase: React.FC<StorybookShowcaseProps> = ({
+export const StorybookShowcase: React.FC<StorybookShowcaseProps> = React.memo(({
   themeColors,
   radiusTokens,
   isDark,
   isGlass = false,
+  onResetScroll,
 }) => {
   const styles = useMemo(
     () => createStorybookStyles(themeColors, radiusTokens, isDark),
@@ -66,12 +67,14 @@ export const StorybookShowcase: React.FC<StorybookShowcaseProps> = ({
   const handleSelectComponent = useCallback((id: ComponentId) => {
     haptics.light();
     setSelectedComponentId(id);
-  }, []);
+    onResetScroll?.();
+  }, [onResetScroll]);
 
   const handleBackToCatalog = useCallback(() => {
     haptics.light();
     setSelectedComponentId(null);
-  }, []);
+    onResetScroll?.();
+  }, [onResetScroll]);
 
   // 1. IF DEDICATED PREVIEW STAGE IS ACTIVE -> RENDER ISOLATED PREVIEW (ZERO LAG)
   if (selectedComponent) {
@@ -86,6 +89,7 @@ export const StorybookShowcase: React.FC<StorybookShowcaseProps> = ({
           radiusTokens={radiusTokens}
           isDark={isDark}
           isGlass={isGlass}
+          onResetScroll={onResetScroll}
         />
       </View>
     );
@@ -224,4 +228,5 @@ export const StorybookShowcase: React.FC<StorybookShowcaseProps> = ({
       </View>
     </View>
   );
-};
+});
+

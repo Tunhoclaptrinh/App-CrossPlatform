@@ -16,7 +16,7 @@ interface StorybookSearchBarProps {
   isDark: boolean;
 }
 
-export const StorybookSearchBar: React.FC<StorybookSearchBarProps> = ({
+export const StorybookSearchBar: React.FC<StorybookSearchBarProps> = React.memo(({
   value,
   onChangeText,
   resultCount,
@@ -39,12 +39,25 @@ export const StorybookSearchBar: React.FC<StorybookSearchBarProps> = ({
           height: 44,
           gap: 8,
         },
-        input: {
+        inputWrapper: {
           flex: 1,
+          justifyContent: 'center',
+          position: 'relative',
+        },
+        input: {
+          width: '100%',
           fontSize: 14,
           color: themeColors.text,
           paddingVertical: 0,
           fontWeight: '500',
+        },
+        placeholderOverlay: {
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          fontSize: 14,
+          fontWeight: '500',
+          color: themeColors.textTertiary || '#94A3B8',
         },
         clearButton: {
           padding: 4,
@@ -69,16 +82,28 @@ export const StorybookSearchBar: React.FC<StorybookSearchBarProps> = ({
   return (
     <View style={styles.container}>
       <Search size={18} color={themeColors.textSecondary} strokeWidth={2.2} />
-      <TextInput
-        style={styles.input}
-        placeholder="Tìm kiếm linh kiện (VD: Button, Input, Glass, Header...)"
-        placeholderTextColor={themeColors.textTertiary || '#94A3B8'}
-        value={value}
-        onChangeText={onChangeText}
-        autoCapitalize="none"
-        autoCorrect={false}
-        clearButtonMode="never"
-      />
+      <View style={styles.inputWrapper}>
+        <TextInput
+          style={styles.input}
+          value={value}
+          onChangeText={onChangeText}
+          autoCapitalize="none"
+          autoCorrect={false}
+          clearButtonMode="never"
+          multiline={false}
+          numberOfLines={1}
+        />
+        {!value && (
+          <AppText
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            pointerEvents="none"
+            style={styles.placeholderOverlay}
+          >
+            Tìm kiếm linh kiện (VD: Button, Input, Glass...)
+          </AppText>
+        )}
+      </View>
       {value.length > 0 && (
         <TouchableOpacity
           onPress={() => {
@@ -99,4 +124,5 @@ export const StorybookSearchBar: React.FC<StorybookSearchBarProps> = ({
       </View>
     </View>
   );
-};
+});
+
