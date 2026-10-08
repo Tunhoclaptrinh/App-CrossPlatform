@@ -1,7 +1,7 @@
 import { useRef, useCallback } from 'react';
 import { BackHandler } from 'react-native';
 import { useBackHandler } from './useBackHandler';
-import { useToast } from '@/components/toast';
+import { useToast } from '@/components/common';
 
 /**
  * Hook xử lý nhấn nút Back 2 lần để thoát ứng dụng (chuẩn trải nghiệm Android)

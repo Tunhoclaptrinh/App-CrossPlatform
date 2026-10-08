@@ -7,6 +7,8 @@ export interface StorybookShowcaseProps {
   isDark: boolean;
   isGlass?: boolean;
   onResetScroll?: () => void;
+  externalSearchQuery?: string;
+  onExternalSearchQueryChange?: (query: string) => void;
 }
 
 export type StoryCategory = 'all' | 'molecules' | 'organisms' | 'atoms' | 'parity' | 'motion';

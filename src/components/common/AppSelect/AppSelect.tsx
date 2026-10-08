@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   TouchableOpacity,
@@ -6,6 +6,8 @@ import {
   Pressable,
   StyleSheet,
   Platform,
+  Keyboard,
+  useWindowDimensions,
 } from 'react-native';
 import { BlurView } from '@react-native-community/blur';
 import { ChevronDown, Check, X } from 'lucide-react-native';
@@ -13,8 +15,10 @@ import { useThemeMode } from '@/hooks/useThemeMode';
 import { useAppStore } from '@/hooks/useAppStore';
 import { ControlSize } from '@/constants/theme';
 import { haptics } from '@/utils/haptics';
+import { removeVietnameseTones } from '@/utils/formatters';
 import { AppText } from '../AppText';
 import { AppScrollView } from '../AppScrollView';
+import { AppSearchBar } from '../AppSearchBar';
 import type { AppSelectProps, AppSelectOption } from './types';
 import {
   styles,
@@ -42,6 +46,8 @@ export const AppSelect = React.memo(function AppSelectComponent<T = string | num
   borderWidth,
   borderColor,
   backgroundColor,
+  searchable,
+  searchPlaceholder = 'Tìm kiếm lựa chọn...',
 }: AppSelectProps<T>) {
   const {
     theme: themeColors,
@@ -53,10 +59,66 @@ export const AppSelect = React.memo(function AppSelectComponent<T = string | num
     globalControlSize,
     reduceMotion,
   } = useThemeMode();
+  const { height: windowHeight } = useWindowDimensions();
   const size = propSize ?? globalControlSize ?? 'md';
   const { themeStyle } = useAppStore();
   const isGlassMode = themeStyle === 'apple-glass';
   const [isOpen, setIsOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+  const [isInputFocused, setIsInputFocused] = useState(false);
+
+  const effectiveKeyboardHeight = useMemo(() => {
+    if (keyboardHeight > 0) return keyboardHeight;
+    if (isInputFocused) {
+      return Platform.OS === 'android'
+        ? Math.max(320, Math.min(380, Math.round(windowHeight * 0.42)))
+        : Math.round(windowHeight * 0.40);
+    }
+    return 0;
+  }, [keyboardHeight, isInputFocused, windowHeight]);
+
+  const isKeyboardOpen = effectiveKeyboardHeight > 0;
+
+  const isSearchEnabled = searchable ?? (options.length > 7);
+
+  useEffect(() => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+
+    const showSub = Keyboard.addListener(showEvent, (e) => {
+      setKeyboardHeight(e.endCoordinates ? e.endCoordinates.height : 0);
+    });
+    const hideSub = Keyboard.addListener(hideEvent, () => {
+      setKeyboardHeight(0);
+      setIsInputFocused(false);
+    });
+
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setSearchQuery('');
+      setKeyboardHeight(0);
+      setIsInputFocused(false);
+    }
+  }, [isOpen]);
+
+  const filteredOptions = useMemo(() => {
+    if (!isSearchEnabled || !searchQuery.trim()) return options;
+    const q = removeVietnameseTones(searchQuery.trim().toLowerCase());
+    return options.filter((opt) => {
+      const matchLabel = removeVietnameseTones(opt.label.toLowerCase()).includes(q);
+      const matchSub = opt.sublabel
+        ? removeVietnameseTones(opt.sublabel.toLowerCase()).includes(q)
+        : false;
+      return matchLabel || matchSub;
+    });
+  }, [options, isSearchEnabled, searchQuery]);
 
   const selectedOption = options.find((opt) => opt.value === value);
   const sizeContainerStyle = getSelectSizeStyle(size);
@@ -89,15 +151,26 @@ export const AppSelect = React.memo(function AppSelectComponent<T = string | num
   };
 
   const handleClose = () => {
+    Keyboard.dismiss();
+    setIsInputFocused(false);
     setIsOpen(false);
   };
 
   const handleSelectOption = (option: AppSelectOption<T>) => {
     if (option.disabled) return;
+    Keyboard.dismiss();
+    setIsInputFocused(false);
     haptics.light();
     onSelect(option.value);
     setIsOpen(false);
   };
+
+  const sheetKeyboardPaddingStyle = useMemo(() => {
+    if (isKeyboardOpen) {
+      return { paddingBottom: effectiveKeyboardHeight + 28 };
+    }
+    return null;
+  }, [isKeyboardOpen, effectiveKeyboardHeight]);
 
   return (
     <View style={[styles.wrapper, disabled && styles.disabled, containerStyle]}>
@@ -174,6 +247,8 @@ export const AppSelect = React.memo(function AppSelectComponent<T = string | num
             style={[
               styles.sheetContainer,
               isDark ? styles.sheetContainerDark : styles.sheetContainerLight,
+              isKeyboardOpen && styles.sheetContainerKeyboard,
+              sheetKeyboardPaddingStyle,
             ]}
             onPress={() => {}}
           >
@@ -199,27 +274,58 @@ export const AppSelect = React.memo(function AppSelectComponent<T = string | num
               </TouchableOpacity>
             </View>
 
+            {/* Search Input when enabled */}
+            {isSearchEnabled && (
+              <View style={styles.searchContainer}>
+                <AppSearchBar
+                  size="sm"
+                  variant="filled"
+                  backgroundColor={isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.055)'}
+                  borderColor={isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.08)'}
+                  borderWidth={1}
+                  borderRadius={Math.max(8, radiusTokens.control)}
+                  placeholder={searchPlaceholder}
+                  value={searchQuery}
+                  onChangeText={setSearchQuery}
+                  onClear={() => setSearchQuery('')}
+                  onFocus={() => setIsInputFocused(true)}
+                  onBlur={() => setIsInputFocused(false)}
+                  debounceDelay={100}
+                />
+              </View>
+            )}
+
             {/* Options List */}
             <AppScrollView
               indicatorVisible={true}
-              indicatorThickness={3.5}
+              indicatorMode="always-visible"
+              showTrack={true}
+              indicatorThickness={4}
               indicatorInsets={{ top: 4, bottom: 4, right: 3 }}
               nestedScrollEnabled={true}
+              keyboardShouldPersistTaps="handled"
             >
-              {options.map((option) => {
-                const isSelected = option.value === value;
-                return (
-                  <TouchableOpacity
-                    key={String(option.value)}
-                    activeOpacity={0.7}
-                    onPress={() => handleSelectOption(option)}
-                    disabled={option.disabled}
-                    style={[
-                      styles.optionItem,
-                      isSelected && (isDark ? styles.optionItemSelectedDark : styles.optionItemSelectedLight),
-                      option.disabled && styles.disabled,
-                    ]}
-                  >
+              {filteredOptions.length === 0 ? (
+                <View style={styles.emptyStateBox}>
+                  <AppText style={styles.emptyStateText}>
+                    Không tìm thấy mục phù hợp
+                  </AppText>
+                </View>
+              ) : (
+                filteredOptions.map((option) => {
+                  const isSelected = option.value === value;
+                  return (
+                    <TouchableOpacity
+                      key={String(option.value)}
+                      activeOpacity={0.7}
+                      onPress={() => handleSelectOption(option)}
+                      disabled={option.disabled}
+                      style={[
+                        styles.optionItem,
+                        isSelected && (isDark ? styles.optionItemSelectedDark : styles.optionItemSelectedLight),
+                        option.disabled && styles.disabled,
+                      ]}
+                    >
                     <View style={styles.optionLeft}>
                       {option.icon && (
                         <View style={styles.optionIcon}>{option.icon}</View>
@@ -252,7 +358,7 @@ export const AppSelect = React.memo(function AppSelectComponent<T = string | num
                     )}
                   </TouchableOpacity>
                 );
-              })}
+              }))}
             </AppScrollView>
           </Pressable>
         </Pressable>

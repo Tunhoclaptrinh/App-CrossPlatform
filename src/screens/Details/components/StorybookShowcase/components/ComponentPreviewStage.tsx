@@ -139,6 +139,10 @@ export const ComponentPreviewStage: React.FC<ComponentPreviewStageProps> = ({
   const [cardVariant, setCardVariant] = useState<'elevated' | 'outlined' | 'flat' | 'glass'>('elevated');
 
   const [headerVariant, setHeaderVariant] = useState<'standard' | 'floating-pill' | 'frosted-capsule'>('standard');
+  const [headerActionStyle, setHeaderActionStyle] = useState<'individual' | 'capsule'>('capsule');
+  const [headerCenterSlot, setHeaderCenterSlot] = useState<'title' | 'select' | 'searchbar'>('title');
+  const [headerExpansionPosition, setHeaderExpansionPosition] = useState<'both' | 'inner' | 'bottom'>('both');
+  const [headerCustomMode, setHeaderCustomMode] = useState<boolean>(false);
   const [badgeVariant, setBadgeVariant] = useState<
     'primary' | 'success' | 'warning' | 'error' | 'info' | 'neutral'
   >('primary');
@@ -267,6 +271,26 @@ export const ComponentPreviewStage: React.FC<ComponentPreviewStageProps> = ({
     { label: 'Frosted Capsule (Viên Thuốc Kính)', value: 'frosted-capsule', sublabel: 'Viên thuốc nổi mờ nền' },
     { label: 'Floating Pill (Đảo Động)', value: 'floating-pill', sublabel: 'Dynamic Island nổi độc lập' },
   ];
+ 
+  // Options for selecting Header Action Style (Grouped Pill Capsule vs Individual Circles)
+  const headerActionStyleOptions: AppSelectOption<string>[] = [
+    { label: 'Capsule (Viên Thuốc Gom Nhóm)', value: 'capsule', sublabel: 'Nút tìm kiếm & more thành khối pill liền mạch' },
+    { label: 'Individual (Nút Tròn Rời)', value: 'individual', sublabel: 'Mỗi nút hành động là một khối tròn độc lập' },
+  ];
+
+  // Options for selecting Header Center Slot (Custom Embedded Components)
+  const headerCenterSlotOptions: AppSelectOption<string>[] = [
+    { label: 'Tiêu Đề Tĩnh (Title & Subtitle)', value: 'title', sublabel: 'Hiển thị title và subtitle văn bản mặc định' },
+    { label: 'Nhúng Menu Xổ Xuống (AppSelect)', value: 'select', sublabel: 'Nhúng nguyên 1 dropdown chọn node cảm biến vào giữa Header' },
+    { label: 'Nhúng Thanh Search (AppSearchBar)', value: 'searchbar', sublabel: 'Nhúng trực tiếp ô tìm kiếm thường trực vào giữa Header' },
+  ];
+
+  // Options for selecting Header Expansion Position
+  const headerExpansionPositionOptions: AppSelectOption<string>[] = [
+    { label: 'Cả Hai (Both - Inner & Bottom Dropdown)', value: 'both', sublabel: 'Biến hình ruột thanh search và thả thẻ gợi ý nổi bên dưới' },
+    { label: 'Chỉ Bên Trong (Inner Only)', value: 'inner', sublabel: 'Chỉ biến hình ruột Header (thanh search), không hiện dropdown' },
+    { label: 'Chỉ Thả Dưới (Bottom Dropdown Only)', value: 'bottom', sublabel: 'Giữ nguyên Header tiêu đề/select và thả dropdown gợi ý bên dưới' },
+  ];
 
   // Options for selecting Badge Variant
   const badgeVariantOptions: AppSelectOption<string>[] = [
@@ -394,8 +418,19 @@ export const ComponentPreviewStage: React.FC<ComponentPreviewStageProps> = ({
         return `<AppSelect${sizeSnippet}${effectiveControlVariant !== 'standard' ? `\n  variant="${effectiveControlVariant}"` : ''}${contrastSnippet}${controlShadow !== 'none' ? `\n  shadow="${controlShadow}"` : ''}${customRadiusSnippet}\n  label="Quốc gia"\n  options={options}\n  value={value}\n  onSelect={setValue}\n  sheetTitle="Chọn quốc gia"\n/>`;
       case 'searchbar':
         return `<AppSearchBar${sizeSnippet}${effectiveControlVariant !== 'standard' ? `\n  variant="${effectiveControlVariant}"` : ''}${contrastSnippet}${controlShadow !== 'none' ? `\n  shadow="${controlShadow}"` : ''}${customRadiusSnippet}\n  placeholder="Tìm kiếm..."\n  value={query}\n  onChangeText={setQuery}\n  onFilterPress={() => {}}\n/>`;
-      case 'header':
-        return `<AppHeader\n  title="Màn hình chính"\n  subtitle="Hệ thống điều phối"\n  variant="${headerVariant}"${contrastSnippet}\n  showBack\n  showMore\n  onBack={() => {}}\n/>`;
+      case 'header': {
+        const centerSnippet =
+          headerCenterSlot === 'select'
+            ? '\n  centerContent={<AppSelect size="sm" variant="filled" options={options} value="1" onSelect={() => {}} />}'
+            : headerCenterSlot === 'searchbar'
+            ? '\n  centerContent={<AppSearchBar size="sm" variant="filled" placeholder="Tìm node..." style={{ height: 34 }} />}'
+            : '';
+        const expansionSnippet = headerExpansionPosition !== 'both' ? `\n  expansionPosition="${headerExpansionPosition}"` : '';
+        const customSnippet = headerCustomMode
+          ? '\n  isCustomMode={true}\n  renderCustomHeader={({ close }) => <CustomToolbar onDismiss={close} />}'
+          : '';
+        return `<AppHeader\n  title="EveSense Hub"\n  subtitle="Node điều phối cảm biến"\n  variant="${headerVariant}"\n  actionStyle="${headerActionStyle}"${contrastSnippet}${centerSnippet}${expansionSnippet}${customSnippet}\n  searchable\n  suggestions={[\n    { id: '1', label: 'Cảm biến nhiệt độ DHT22', sublabel: 'Node #01', onPress: () => {} },\n    { id: '2', label: 'Cảm biến khí BME688', sublabel: 'Node #02', onPress: () => {} },\n  ]}\n  showBack\n  showMore\n  onBack={() => {}}\n/>`;
+      }
       case 'apple-glass-card':
         return `<AppleGlassCard${sizeSnippet}${contrastSnippet}\n  balance="45,280.00"\n  balanceLabel="SỐ DƯ KHẢ DỤNG"\n  cardNumber="•••• 8829"\n  cardHolder="EVE SENSE"\n  brandName="Apple Glass"\n  onPress={() => {}}\n/>`;
       case 'card':
@@ -963,6 +998,68 @@ export const ComponentPreviewStage: React.FC<ComponentPreviewStageProps> = ({
         specTileSubCustom: {
           color: '#F59E0B',
         },
+        headerCenterSelect: {
+          maxWidth: 210,
+        },
+        headerCenterSearchBar: {
+          height: 34,
+          maxWidth: 220,
+        },
+        headerCustomBulkRow: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          width: '100%',
+          paddingHorizontal: 4,
+        },
+        headerCustomBulkLeft: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 8,
+        },
+        headerCustomBulkBadge: {
+          backgroundColor: '#6366F1',
+          paddingHorizontal: 8,
+          paddingVertical: 2,
+          borderRadius: 12,
+        },
+        headerCustomBulkBadgeText: {
+          color: '#FFFFFF',
+          fontSize: 12,
+          fontWeight: '700',
+        },
+        headerCustomBulkTitle: {
+          fontSize: 13,
+          fontWeight: '600',
+          color: themeColors.text,
+        },
+        headerCustomBulkRight: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 8,
+        },
+        headerCustomBulkSaveBtn: {
+          backgroundColor: '#6366F1',
+          paddingHorizontal: 12,
+          paddingVertical: 6,
+          borderRadius: 8,
+        },
+        headerCustomBulkSaveText: {
+          color: '#FFFFFF',
+          fontSize: 12,
+          fontWeight: '600',
+        },
+        headerCustomBulkCancelBtn: {
+          backgroundColor: isDark ? '#334155' : '#E2E8F0',
+          paddingHorizontal: 12,
+          paddingVertical: 6,
+          borderRadius: 8,
+        },
+        headerCustomBulkCancelText: {
+          color: themeColors.textSecondary,
+          fontSize: 12,
+          fontWeight: '600',
+        },
       }),
     [themeColors, activeRadiusTokens, isDark]
   );
@@ -1118,8 +1215,74 @@ export const ComponentPreviewStage: React.FC<ComponentPreviewStageProps> = ({
                   subtitle="Node điều phối cảm biến"
                   variant={headerVariant}
                   contrast={controlContrast}
+                  actionStyle={headerActionStyle}
                   showBack
                   showMore
+                  searchable
+                  expansionPosition={headerExpansionPosition}
+                  isCustomMode={headerCustomMode}
+                  onCustomModeChange={setHeaderCustomMode}
+                  renderCustomHeader={({ close }) => (
+                    <View style={styles.headerCustomBulkRow}>
+                      <View style={styles.headerCustomBulkLeft}>
+                        <View style={styles.headerCustomBulkBadge}>
+                          <AppText style={styles.headerCustomBulkBadgeText}>3</AppText>
+                        </View>
+                        <AppText style={styles.headerCustomBulkTitle}>Bulk Action Bar</AppText>
+                      </View>
+                      <View style={styles.headerCustomBulkRight}>
+                        <TouchableOpacity
+                          activeOpacity={0.7}
+                          onPress={() => haptics.success()}
+                          style={styles.headerCustomBulkSaveBtn}
+                        >
+                          <AppText style={styles.headerCustomBulkSaveText}>Lưu hàng loạt</AppText>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          activeOpacity={0.7}
+                          onPress={() => {
+                            haptics.light();
+                            close();
+                          }}
+                          style={styles.headerCustomBulkCancelBtn}
+                        >
+                          <AppText style={styles.headerCustomBulkCancelText}>Thoát</AppText>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  )}
+                  centerContent={
+                    headerCenterSlot === 'select' ? (
+                      <AppSelect
+                        size="sm"
+                        variant="filled"
+                        backgroundColor="transparent"
+                        borderWidth={0}
+                        options={[
+                          { label: 'EveSense Node #01', value: '1', sublabel: 'Phòng Server' },
+                          { label: 'EveSense Node #02', value: '2', sublabel: 'Phòng Thí Nghiệm' },
+                          { label: 'EveSense Node #03', value: '3', sublabel: 'Kho Trung Tâm' },
+                        ]}
+                        value="1"
+                        onSelect={() => haptics.light()}
+                        containerStyle={styles.headerCenterSelect}
+                      />
+                    ) : headerCenterSlot === 'searchbar' ? (
+                      <AppSearchBar
+                        size="sm"
+                        variant="filled"
+                        backgroundColor="transparent"
+                        borderWidth={0}
+                        placeholder="Tìm node cảm biến..."
+                        style={styles.headerCenterSearchBar}
+                      />
+                    ) : undefined
+                  }
+                  suggestions={[
+                    { id: '1', label: 'Cảm biến nhiệt độ DHT22', sublabel: 'Node #01 • Phòng Server', onPress: () => haptics.light() },
+                    { id: '2', label: 'Cảm biến khí BME688', sublabel: 'Node #02 • Phòng Lab', onPress: () => haptics.light() },
+                    { id: '3', label: 'Cảm biến rung Piezo', sublabel: 'Node #03 • Khu Kỹ Thuật', onPress: () => haptics.light() },
+                  ]}
                   onBack={() => haptics.light()}
                   onMore={() => haptics.light()}
                 />
@@ -2003,18 +2166,67 @@ export const ComponentPreviewStage: React.FC<ComponentPreviewStageProps> = ({
         )}
 
         {component.id === 'header' && (
-          <View style={styles.controlGroup}>
-            <AppSelect
-              label="KIỂU THANH TIÊU ĐỀ (HEADER VARIANT)"
-              options={headerVariantOptions}
-              value={headerVariant}
-              onSelect={(val) => {
-                haptics.light();
-                setHeaderVariant(val as any);
-              }}
-              sheetTitle="Chọn Kiểu Biến Thể Thanh Tiêu Đề"
-            />
-          </View>
+          <>
+            <View style={styles.controlGroup}>
+              <AppSelect
+                label="KIỂU THANH TIÊU ĐỀ (HEADER VARIANT)"
+                options={headerVariantOptions}
+                value={headerVariant}
+                onSelect={(val) => {
+                  haptics.light();
+                  setHeaderVariant(val as any);
+                }}
+                sheetTitle="Chọn Kiểu Biến Thể Thanh Tiêu Đề"
+              />
+            </View>
+            <View style={styles.controlGroup}>
+              <AppSelect
+                label="KIỂU NÚT HÀNH ĐỘNG (ACTION STYLE)"
+                options={headerActionStyleOptions}
+                value={headerActionStyle}
+                onSelect={(val) => {
+                  haptics.light();
+                  setHeaderActionStyle(val as any);
+                }}
+                sheetTitle="Chọn Kiểu Nút Hành Động"
+              />
+            </View>
+            <View style={styles.controlGroup}>
+              <AppSelect
+                label="THÀNH PHẦN TRUNG TÂM (CENTER SLOT)"
+                options={headerCenterSlotOptions}
+                value={headerCenterSlot}
+                onSelect={(val) => {
+                  haptics.light();
+                  setHeaderCenterSlot(val as any);
+                }}
+                sheetTitle="Chọn Thành Phần Trung Tâm"
+              />
+            </View>
+            <View style={styles.controlGroup}>
+              <AppSelect
+                label="VỊ TRÍ MỞ RỘNG (EXPANSION POSITION)"
+                options={headerExpansionPositionOptions}
+                value={headerExpansionPosition}
+                onSelect={(val) => {
+                  haptics.light();
+                  setHeaderExpansionPosition(val as any);
+                }}
+                sheetTitle="Chọn Vị Trí Mở Rộng Header"
+              />
+            </View>
+            <View style={styles.controlGroup}>
+              <AppSwitch
+                label="CHẾ ĐỘ THAY THẾ TOÀN PHẦN (FULL REPLACEMENT)"
+                sublabel="Thay thế vị trí Header bằng Bulk Action Toolbar linh hoạt"
+                value={headerCustomMode}
+                onValueChange={(val) => {
+                  haptics.light();
+                  setHeaderCustomMode(val);
+                }}
+              />
+            </View>
+          </>
         )}
 
         {component.id === 'badge' && (

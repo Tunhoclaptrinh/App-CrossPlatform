@@ -26,5 +26,8 @@ export interface AppActionSheetProps {
   contrast?: ControlContrast;
   borderRadius?: number;
   style?: ViewStyle;
+  searchable?: boolean;
+  searchPlaceholder?: string;
+  maxHeight?: number | string;
 }
 

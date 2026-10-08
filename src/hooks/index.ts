@@ -19,7 +19,8 @@ export * from './useNetworkStatus';
 export * from './useAsync';
 
 // In-App Toast Feedback
-export { useToast } from '@/components/toast';
+export { useToast } from '@/components/common';
+
 
 // Smart Gestures
 export * from './useGestures';

@@ -33,7 +33,7 @@ export const createActionSheetStyles = (
   const isHigh = contrast === 'high';
   const isSubtle = contrast === 'subtle';
   const sizeConfig = ACTION_SHEET_SIZES[size] || ACTION_SHEET_SIZES.md;
-  const resolvedRadius = borderRadiusOverride !== undefined ? borderRadiusOverride : Math.max(12, Math.min(radius.card, 20));
+  const resolvedRadius = borderRadiusOverride !== undefined ? borderRadiusOverride : radius.card;
 
   let borderColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)';
   let borderWidth = 1;
@@ -76,6 +76,9 @@ export const createActionSheetStyles = (
       zIndex: 10,
       elevation: 10,
     },
+    sheetWrapperKeyboard: {
+      paddingBottom: 10,
+    },
     contentBlock: {
       borderRadius: resolvedRadius,
       overflow: 'hidden',
@@ -109,6 +112,30 @@ export const createActionSheetStyles = (
       marginTop: 3,
       textAlign: 'center',
     },
+    searchContainer: {
+      paddingHorizontal: 12,
+      paddingTop: 10,
+      paddingBottom: 10,
+      borderBottomWidth: 1,
+      borderBottomColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)',
+    },
+    scrollContainer: {
+      maxHeight: 380,
+    },
+    scrollContent: {
+      flexGrow: 0,
+    },
+    emptyStateBox: {
+      paddingVertical: 28,
+      paddingHorizontal: 16,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    emptyStateText: {
+      fontSize: 13,
+      color: theme.textSecondary,
+      textAlign: 'center',
+    },
     actionItem: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -133,7 +160,7 @@ export const createActionSheetStyles = (
     iconContainer: {
       width: sizeConfig.iconBox,
       height: sizeConfig.iconBox,
-      borderRadius: Math.round(sizeConfig.iconBox * 0.25),
+      borderRadius: radius.smControl || Math.round(sizeConfig.iconBox * 0.25),
       alignItems: 'center',
       justifyContent: 'center',
       backgroundColor: isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.04)',
@@ -161,16 +188,22 @@ export const createActionSheetStyles = (
       marginTop: 2,
     },
     cancelBlock: {
-      borderRadius: resolvedRadius,
+      width: '100%',
+      borderRadius: 9999,
       overflow: 'hidden',
-      backgroundColor: surfaceBg,
-      borderWidth,
-      borderColor,
+      backgroundColor: isDark
+        ? 'rgba(30, 41, 59, 0.75)'
+        : 'rgba(255, 255, 255, 0.80)',
+      borderWidth: 1.2,
+      borderColor: isDark
+        ? 'rgba(255, 255, 255, 0.20)'
+        : 'rgba(255, 255, 255, 0.90)',
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: isHigh ? 0.28 : isSubtle ? 0.1 : 0.18,
-      shadowRadius: 14,
-      elevation: 8,
+      shadowOpacity: isHigh ? 0.28 : isDark ? 0.22 : 0.08,
+      shadowRadius: 12,
+      elevation: 6,
+      marginTop: 2,
     },
     cancelButton: {
       paddingVertical: sizeConfig.cancelPaddingV,
@@ -181,6 +214,7 @@ export const createActionSheetStyles = (
       fontSize: sizeConfig.cancelSize,
       fontWeight: '700',
       color: theme.primary,
+      letterSpacing: 0.2,
     },
   });
 };

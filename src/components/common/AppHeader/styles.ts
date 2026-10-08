@@ -348,13 +348,12 @@ export const styles = StyleSheet.create({
   islandActionBtnLight: {},
   islandActionBtnDark: {},
   islandCapsuleGroup: {
+    height: 32,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 2,
-    paddingVertical: 1,
     borderRadius: 16,
     borderWidth: 1,
-    gap: 1,
     overflow: 'hidden',
   },
   islandCapsuleGroupLight: {
@@ -362,30 +361,180 @@ export const styles = StyleSheet.create({
     borderColor: 'rgba(0, 0, 0, 0.08)',
   },
   islandCapsuleGroupDark: {
-    backgroundColor: 'rgba(255, 255, 255, 0.12)',
-    borderColor: 'rgba(255, 255, 255, 0.18)',
+    backgroundColor: 'rgba(255, 255, 255, 0.16)',
+    borderColor: 'rgba(255, 255, 255, 0.22)',
   },
   islandCapsuleItem: {
-    width: 29,
-    height: 28,
-    borderRadius: 14,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
   },
   islandCapsuleDivider: {
     width: 1,
-    height: 14,
+    height: 16,
   },
   islandCapsuleDividerLight: {
     backgroundColor: 'rgba(0, 0, 0, 0.08)',
   },
   islandCapsuleDividerDark: {
-    backgroundColor: 'rgba(255, 255, 255, 0.18)',
+    backgroundColor: 'rgba(255, 255, 255, 0.20)',
   },
   islandSpacer: {
     width: 32,
     height: 32,
+  },
+
+  // Search Header Morphing styles
+  searchHeaderRow: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 8,
+    zIndex: 2,
+  },
+  searchBackBtn: {
+    padding: 6,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  searchBarFlex: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  searchCancelBtn: {
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  searchCancelText: {
+    fontSize: 15,
+    fontWeight: '600',
+  },
+
+  // Island Unified Pill Search (Chế độ tìm kiếm liền khối Dynamic Island)
+  islandSearchFlex: {
+    flex: 1,
+    justifyContent: 'center',
+    marginHorizontal: 4,
+  },
+  islandCancelBtn: {
+    paddingVertical: 5,
+    paddingHorizontal: 8,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  islandCancelText: {
+    fontSize: 14,
+    fontWeight: '600',
+    letterSpacing: -0.2,
+  },
+
+  // Capsule Cancel Button (Nút hủy chuẩn pill kính cho Frosted Capsule)
+  capsuleCancelBtn: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 16,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  capsuleCancelBtnLight: {
+    backgroundColor: 'rgba(255, 255, 255, 0.55)',
+    borderColor: 'rgba(255, 255, 255, 0.88)',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: Platform.OS === 'android' ? 0 : 2,
+  },
+  capsuleCancelBtnDark: {
+    backgroundColor: 'rgba(30, 36, 51, 0.60)',
+    borderColor: 'rgba(255, 255, 255, 0.22)',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: Platform.OS === 'android' ? 0 : 2,
+  },
+
+  // Floating Suggestions & Expanded Bottom Dropdown (Thẻ nổi tách biệt bên dưới Header)
+  suggestionsDropdown: {
+    position: 'absolute',
+    left: 16,
+    right: 16,
+    borderRadius: 20,
+    borderWidth: 1,
+    overflow: 'hidden',
+    zIndex: 9999,
+  },
+  suggestionsDropdownLight: {
+    backgroundColor: '#FFFFFF',
+    borderColor: 'rgba(0, 0, 0, 0.08)',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: Platform.OS === 'android' ? 3 : 2,
+  },
+  suggestionsDropdownDark: {
+    backgroundColor: '#1E293B',
+    borderColor: 'rgba(255, 255, 255, 0.12)',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: Platform.OS === 'android' ? 3 : 2,
+  },
+  suggestionsScrollView: {
+    maxHeight: 380,
+  },
+  suggestionsList: {
+    paddingVertical: 6,
+  },
+  suggestionItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+  suggestionBorderLight: {
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'rgba(0, 0, 0, 0.06)',
+  },
+  suggestionBorderDark: {
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'rgba(255, 255, 255, 0.10)',
+  },
+  suggestionIcon: {
+    marginRight: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  suggestionTextContainer: {
+    flex: 1,
+  },
+  suggestionLabel: {
+    fontSize: 14.5,
+    fontWeight: '600',
+    letterSpacing: -0.1,
+  },
+  suggestionSublabel: {
+    fontSize: 12,
+    marginTop: 2,
+    lineHeight: 16,
+  },
+
+  // Bottom dock slot (Thanh phụ kiện bên dưới Header)
+  bottomContentContainer: {
+    width: '100%',
+    paddingTop: 4,
+    paddingBottom: 6,
   },
 });
 
@@ -404,7 +553,9 @@ export const getCenterTitlePadding = (
   paddingRight: rightClearance !== undefined ? rightClearance : leftClearance,
 });
 
-export const getContainerHeight = (topInset: number, baseHeight: number = 48) => ({
+export const getContainerHeight = (topInset: number, baseHeight?: number) => ({
   paddingTop: topInset,
-  height: baseHeight + topInset,
+  ...(baseHeight !== undefined
+    ? { height: baseHeight + topInset }
+    : { minHeight: 48 + topInset }),
 });

@@ -32,7 +32,11 @@ export interface AppToastProps extends ToastOptions {
 }
 
 export interface ToastContextType {
-  show: (options: ToastOptions | string) => void;
+  show: (
+    typeOrOptions: ToastType | ToastOptions | string,
+    message?: string,
+    title?: string
+  ) => void;
   success: (message: string, title?: string) => void;
   error: (message: string, title?: string) => void;
   warning: (message: string, title?: string) => void;

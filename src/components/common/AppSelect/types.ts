@@ -25,4 +25,6 @@ export interface AppSelectProps<T = string | number> extends SurfaceControlProps
   leftIcon?: ReactNode;
   containerStyle?: ViewStyle;
   sheetTitle?: string;
+  searchable?: boolean;
+  searchPlaceholder?: string;
 }

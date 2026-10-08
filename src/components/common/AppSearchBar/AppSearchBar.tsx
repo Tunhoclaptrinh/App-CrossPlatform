@@ -29,6 +29,9 @@ export const AppSearchBar: React.FC<AppSearchBarProps> = React.memo(({
   size: propSize,
   onFilterPress,
   onClear,
+  onFocus,
+  onBlur,
+  autoFocus,
   style,
   variant,
   contrast,
@@ -138,6 +141,9 @@ export const AppSearchBar: React.FC<AppSearchBarProps> = React.memo(({
           autoCorrect={false}
           multiline={false}
           numberOfLines={1}
+          autoFocus={autoFocus}
+          onFocus={onFocus}
+          onBlur={onBlur}
         />
         {!text && Boolean(placeholder) && (
           <AppText

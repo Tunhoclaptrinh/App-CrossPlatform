@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
-import { View, TouchableOpacity } from 'react-native';
+import React, { useState, useMemo, useCallback } from 'react';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ChevronLeft, MoreHorizontal } from 'lucide-react-native';
+import { ChevronLeft, MoreHorizontal, Search } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { AppText } from '../AppText';
 import { AppActionSheet } from '../AppActionSheet';
+import { AppSearchBar } from '../AppSearchBar';
+import { AppScrollView } from '../AppScrollView';
 import { useThemeMode } from '@/hooks/useThemeMode';
 import { Colors } from '@/constants/colors';
 import { haptics } from '@/utils/haptics';
-import type { AppHeaderProps, AppHeaderAction } from './types';
+import type { AppHeaderProps, AppHeaderAction, AppHeaderExpansionHelpers, AppHeaderCustomHelpers } from './types';
 import {
   styles,
   getHeaderBackgroundStyle,
@@ -23,6 +25,7 @@ export const AppHeader: React.FC<AppHeaderProps> = React.memo(({
   subtitleAlign,
   titleStyle,
   subtitleStyle,
+  centerContent,
   variant = 'standard',
   showBack = false,
   backTitle,
@@ -35,9 +38,61 @@ export const AppHeader: React.FC<AppHeaderProps> = React.memo(({
   moreTitle,
   moreMessage,
   moreActions,
+  moreSearchable,
+  moreSearchPlaceholder,
+  moreMaxHeight,
   rightAction,
   rightActions,
   actionStyle,
+  searchable = false,
+  isSearching,
+  onSearchToggle,
+  searchValue,
+  onSearchChange,
+  onSearchDebounceChange,
+  searchPlaceholder,
+  onSearchClear,
+  searchAutoFocus,
+  searchVariant,
+  searchContrast,
+  searchBorderRadius,
+  searchStyle,
+  searchContainerStyle,
+  searchProps,
+  searchContainerMode,
+  searchPillStyle,
+  searchBg,
+  searchBorderColor,
+  searchBorderWidth,
+  searchCancelText,
+  searchCancelStyle,
+  searchCancelTextStyle,
+  searchBackButtonStyle,
+  showSearchCancel = true,
+  showSearchBackButton = true,
+  customSearchComponent,
+  renderSearch,
+  suggestions,
+  searchSuggestions,
+  suggestionsContainerStyle,
+  expanded,
+  isExpanded,
+  onExpandChange,
+  expansionPosition = 'both',
+  expandedInnerContent,
+  renderExpandedInner,
+  expandedBottomContent,
+  renderExpandedBottom,
+  expandedBottomStyle,
+  expandedBottomOffset = 14,
+  customHeader,
+  renderCustomHeader,
+  isCustomMode,
+  customMode,
+  onCustomModeChange,
+  replacementScope = 'full',
+  bottomContent,
+  children,
   transparent = false,
   backgroundColor,
   backgroundOpacity,
@@ -55,7 +110,7 @@ export const AppHeader: React.FC<AppHeaderProps> = React.memo(({
   islandStyle,
 }) => {
   const insets = useSafeAreaInsets();
-  const { theme: themeColors, radiusTokens, isDark, globalContrast } = useThemeMode();
+  const { theme: themeColors, radiusTokens, isDark, globalContrast, isGlassTheme } = useThemeMode();
   const resolvedContrast = contrast ?? globalContrast;
   const isHighContrast = resolvedContrast === 'high';
   const { t } = useTranslation();
@@ -169,6 +224,544 @@ export const AppHeader: React.FC<AppHeaderProps> = React.memo(({
     );
   };
 
+  const [internalExpanded, setInternalExpanded] = useState(false);
+  const controlledExpanded = isExpanded !== undefined ? isExpanded : expanded;
+  const isCustomExpanded = controlledExpanded !== undefined ? controlledExpanded : internalExpanded;
+
+  const [internalSearching, setInternalSearching] = useState(false);
+  const isSearchActive = isSearching !== undefined ? isSearching : internalSearching;
+
+  // Header active state (can be triggered by search mode OR custom expansion)
+  const isModeActive = isSearchActive || isCustomExpanded;
+
+  const handleOpenSearch = () => {
+    haptics.light();
+    if (onSearchToggle) onSearchToggle(true);
+    else setInternalSearching(true);
+  };
+
+  const handleCloseSearch = useCallback(() => {
+    haptics.light();
+    if (onSearchToggle) onSearchToggle(false);
+    else setInternalSearching(false);
+    if (onSearchChange) onSearchChange('');
+    if (onSearchClear) onSearchClear();
+  }, [onSearchToggle, onSearchChange, onSearchClear]);
+
+  const handleCloseExpansion = useCallback(() => {
+    haptics.light();
+    if (isSearchActive) {
+      handleCloseSearch();
+    }
+    if (onExpandChange) {
+      onExpandChange(false);
+    } else {
+      setInternalExpanded(false);
+    }
+  }, [isSearchActive, handleCloseSearch, onExpandChange]);
+
+  const expansionHelpers: AppHeaderExpansionHelpers = useMemo(
+    () => ({
+      close: handleCloseExpansion,
+      isExpanded: isModeActive,
+      searchValue: searchValue || '',
+      onSearchChange: (text: string) => {
+        if (onSearchChange) onSearchChange(text);
+      },
+    }),
+    [handleCloseExpansion, isModeActive, searchValue, onSearchChange]
+  );
+
+  const handleCloseCustomMode = useCallback(() => {
+    haptics.light();
+    if (onCustomModeChange) onCustomModeChange(false);
+  }, [onCustomModeChange]);
+
+  const customHelpers: AppHeaderCustomHelpers = useMemo(
+    () => ({
+      close: handleCloseCustomMode,
+      insets,
+      isDark,
+      themeColors,
+    }),
+    [handleCloseCustomMode, insets, isDark, themeColors]
+  );
+
+  const isCustomControlled = isCustomMode !== undefined ? isCustomMode : customMode;
+  const isCustomHeaderActive =
+    isCustomControlled !== undefined
+      ? isCustomControlled
+      : Boolean(customHeader || renderCustomHeader);
+
+  const searchActionItem: AppHeaderAction = {
+    id: '__search_btn__',
+    icon: (
+      <Search
+        size={isStandardVariant ? 20 : 18}
+        color={tintColor || (isIslandVariant && isDark ? '#FFFFFF' : themeColors.text)}
+        strokeWidth={2.2}
+      />
+    ),
+    onPress: handleOpenSearch,
+    accessibilityLabel: 'Tìm kiếm',
+  };
+
+  // Resolve search appearance: automatically harmonizes with the header's variant by default
+  const defaultSearchVariant: import('../surfaceUtils').ControlVariant =
+    (isCapsuleVariant || isIslandVariant || _glass || isGlassTheme) ? 'glass' : 'filled';
+  const effectiveSearchVariant = searchVariant ?? defaultSearchVariant;
+  const effectiveSearchContrast = searchContrast ?? resolvedContrast;
+
+  const defaultSearchRadius = isIslandVariant
+    ? islandRadius
+    : isCapsuleVariant
+      ? capsuleRadius
+      : radiusTokens.control;
+  const effectiveSearchRadius = searchBorderRadius ?? defaultSearchRadius;
+
+  const defaultSearchBg = effectiveSearchVariant === 'glass'
+    ? (isDark ? 'rgba(30, 41, 59, 0.75)' : 'rgba(255, 255, 255, 0.78)')
+    : (isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.055)');
+
+  const defaultSearchBorderColor = effectiveSearchVariant === 'glass'
+    ? (isDark ? 'rgba(255, 255, 255, 0.22)' : 'rgba(255, 255, 255, 0.85)')
+    : (isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.08)');
+
+  // -------------------------------------------------------------
+  // MORPHING SEARCH HEADER (When Search Mode is Active)
+  // -------------------------------------------------------------
+  const renderSearchInputField = (isPillContainer: boolean) => {
+    if (customSearchComponent) {
+      return customSearchComponent;
+    }
+    if (renderSearch) {
+      return renderSearch({
+        searchValue: searchValue || '',
+        onSearchChange: (text: string) => {
+          if (onSearchChange) onSearchChange(text);
+        },
+        closeSearch: handleCloseSearch,
+      });
+    }
+
+    if (isPillContainer) {
+      const defaultIslandSearchBg =
+        searchBg !== undefined
+          ? searchBg
+          : isDark
+            ? 'rgba(255, 255, 255, 0.08)'
+            : 'rgba(0, 0, 0, 0.035)';
+
+      const defaultIslandSearchBorderColor =
+        searchBorderColor !== undefined
+          ? searchBorderColor
+          : isDark
+            ? 'rgba(255, 255, 255, 0.12)'
+            : 'rgba(0, 0, 0, 0.05)';
+
+      const defaultIslandSearchBorderWidth =
+        searchBorderWidth !== undefined ? searchBorderWidth : 1;
+
+      return (
+        <AppSearchBar
+          size="sm"
+          variant={effectiveSearchVariant}
+          contrast={effectiveSearchContrast}
+          borderRadius={searchBorderRadius ?? (isPill ? 18 : radiusTokens.smControl)}
+          value={searchValue}
+          onChangeText={onSearchChange}
+          onDebounceChange={onSearchDebounceChange}
+          placeholder={searchPlaceholder || 'Tìm kiếm...'}
+          onClear={onSearchClear}
+          autoFocus={searchAutoFocus ?? true}
+          backgroundColor={defaultIslandSearchBg}
+          borderColor={defaultIslandSearchBorderColor}
+          borderWidth={defaultIslandSearchBorderWidth}
+          style={StyleSheet.flatten([{ height: 34 }, searchStyle])}
+          {...searchProps}
+        />
+      );
+    }
+
+    return (
+      <AppSearchBar
+        size="sm"
+        variant={effectiveSearchVariant}
+        contrast={effectiveSearchContrast}
+        borderRadius={effectiveSearchRadius}
+        value={searchValue}
+        onChangeText={onSearchChange}
+        onDebounceChange={onSearchDebounceChange}
+        placeholder={searchPlaceholder || 'Tìm kiếm...'}
+        onClear={onSearchClear}
+        autoFocus={searchAutoFocus ?? true}
+        backgroundColor={searchBg ?? defaultSearchBg}
+        borderColor={searchBorderColor ?? defaultSearchBorderColor}
+        borderWidth={searchBorderWidth ?? 1}
+        style={searchStyle}
+        {...searchProps}
+      />
+    );
+  };
+
+  const renderInnerActiveContent = (isPillContainer: boolean) => {
+    if (renderExpandedInner) {
+      return renderExpandedInner(expansionHelpers);
+    }
+    if (expandedInnerContent) {
+      return expandedInnerContent;
+    }
+    return renderSearchInputField(isPillContainer);
+  };
+
+  const renderExpandedBottomSlot = () => {
+    if (!isModeActive) return null;
+    if (expansionPosition === 'inner') return null;
+
+    const filteredSuggestions = suggestions
+      ? suggestions.filter(
+        (s) =>
+          !searchValue ||
+          s.label.toLowerCase().includes(searchValue.toLowerCase()) ||
+          (s.sublabel && s.sublabel.toLowerCase().includes(searchValue.toLowerCase()))
+      )
+      : [];
+
+    const hasBottomCustom = Boolean(
+      expandedBottomContent ||
+      renderExpandedBottom ||
+      searchSuggestions ||
+      (suggestions && filteredSuggestions.length > 0)
+    );
+
+    if (!hasBottomCustom) return null;
+
+    const headerBarHeight = 48 + insets.top;
+    const resolvedGap = expandedBottomOffset ?? 14;
+    const dynamicPositionStyle = {
+      top: headerBarHeight + resolvedGap,
+    };
+
+    return (
+      <View
+        style={[
+          styles.suggestionsDropdown,
+          isDark ? styles.suggestionsDropdownDark : styles.suggestionsDropdownLight,
+          dynamicPositionStyle,
+          expandedBottomStyle,
+          suggestionsContainerStyle,
+        ]}
+      >
+        <AppScrollView
+          style={styles.suggestionsScrollView}
+          nestedScrollEnabled
+          keyboardShouldPersistTaps="handled"
+          indicatorThickness={2.5}
+        >
+          {renderExpandedBottom
+            ? renderExpandedBottom(expansionHelpers)
+            : expandedBottomContent
+              ? expandedBottomContent
+              : typeof searchSuggestions === 'function'
+                ? searchSuggestions(searchValue || '')
+                : searchSuggestions
+                  ? searchSuggestions
+                  : (
+                    <View style={styles.suggestionsList}>
+                      {filteredSuggestions.map((item, idx) => (
+                        <TouchableOpacity
+                          key={item.id || idx}
+                          activeOpacity={0.7}
+                          onPress={() => {
+                            haptics.light();
+                            item.onPress();
+                          }}
+                          style={[
+                            styles.suggestionItem,
+                            idx > 0 && (isDark ? styles.suggestionBorderDark : styles.suggestionBorderLight),
+                          ]}
+                        >
+                          {item.icon && <View style={styles.suggestionIcon}>{item.icon}</View>}
+                          <View style={styles.suggestionTextContainer}>
+                            <AppText
+                              style={[styles.suggestionLabel, { color: themeColors.text }]}
+                              numberOfLines={1}
+                            >
+                              {item.label}
+                            </AppText>
+                            {item.sublabel && (
+                              <AppText
+                                style={[styles.suggestionSublabel, { color: themeColors.textSecondary }]}
+                                numberOfLines={1}
+                              >
+                                {item.sublabel}
+                              </AppText>
+                            )}
+                          </View>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  )}
+        </AppScrollView>
+      </View>
+    );
+  };
+
+  // -------------------------------------------------------------
+  // FULL CUSTOM HEADER REPLACEMENT (Thay thế 100% Header ở đúng vị trí Header)
+  // -------------------------------------------------------------
+  if (isCustomHeaderActive && (customHeader || renderCustomHeader)) {
+    const customContent = renderCustomHeader
+      ? renderCustomHeader(customHelpers)
+      : customHeader;
+
+    if (replacementScope === 'inner' && isIslandVariant) {
+      return (
+        <View
+          style={[
+            styles.container,
+            styles.floatingContainer,
+            getContainerHeight(insets.top, bottomContent ? undefined : 48),
+            style,
+            containerStyle,
+          ]}
+        >
+          <View
+            style={[
+              styles.dynamicIslandPill,
+              isDark ? styles.dynamicIslandPillDark : styles.dynamicIslandPillLight,
+              { borderRadius: islandRadius },
+              islandStyle,
+            ]}
+          >
+            {customContent}
+          </View>
+          {renderExpandedBottomSlot()}
+          {bottomContent && (
+            <View style={styles.bottomContentContainer}>{bottomContent}</View>
+          )}
+          {children}
+        </View>
+      );
+    }
+
+    return (
+      <View
+        style={[
+          styles.container,
+          getContainerHeight(insets.top, bottomContent ? undefined : 48),
+          isCapsuleVariant || transparent ? styles.floatingContainer : null,
+          showBorderBottom
+            ? isHighContrast
+              ? isDark
+                ? styles.borderBottomHighDark
+                : styles.borderBottomHighLight
+              : isDark
+                ? styles.borderBottomDark
+                : styles.borderBottomLight
+            : null,
+          style,
+          containerStyle,
+        ]}
+      >
+        {shouldRenderBgLayer && (
+          <View
+            style={[
+              styles.backgroundLayer,
+              getHeaderBackgroundStyle(resolvedBgColor, backgroundOpacity),
+            ]}
+            pointerEvents="none"
+          />
+        )}
+        {customContent}
+        {renderExpandedBottomSlot()}
+        {bottomContent && (
+          <View style={styles.bottomContentContainer}>{bottomContent}</View>
+        )}
+        {children}
+      </View>
+    );
+  }
+
+  const shouldMorphInner = isModeActive && expansionPosition !== 'bottom';
+
+  if (shouldMorphInner) {
+    const isPillSearch =
+      searchContainerMode === 'pill' ||
+      (searchContainerMode !== 'bar' && isIslandVariant);
+
+    if (isPillSearch) {
+      const islandIconColor = tintColor || (isDark ? '#FFFFFF' : themeColors.text);
+      const islandBtnStyle = {
+        borderRadius: islandBtnRadius,
+        backgroundColor: isDark ? 'rgba(255, 255, 255, 0.16)' : 'rgba(0, 0, 0, 0.05)',
+        borderColor: isDark ? 'rgba(255, 255, 255, 0.22)' : 'rgba(0, 0, 0, 0.08)',
+      };
+
+      return (
+        <View
+          style={[
+            styles.container,
+            styles.floatingContainer,
+            getContainerHeight(insets.top, bottomContent ? undefined : 48),
+            style,
+            containerStyle,
+          ]}
+        >
+          <View
+            style={[
+              styles.dynamicIslandPill,
+              isDark ? styles.dynamicIslandPillDark : styles.dynamicIslandPillLight,
+              { borderRadius: islandRadius },
+              islandStyle,
+              searchPillStyle,
+            ]}
+          >
+            {showSearchBackButton && (
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={handleCloseExpansion}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                style={[
+                  styles.islandBackBtn,
+                  islandBtnStyle,
+                  backButtonStyle,
+                  searchBackButtonStyle,
+                ]}
+                accessibilityLabel="Đóng"
+              >
+                <ChevronLeft size={18} color={islandIconColor} strokeWidth={2.4} />
+              </TouchableOpacity>
+            )}
+
+            <View style={[styles.islandSearchFlex, searchContainerStyle]}>
+              {renderInnerActiveContent(true)}
+            </View>
+
+            {showSearchCancel && (
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={handleCloseExpansion}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                style={[styles.islandCancelBtn, searchCancelStyle]}
+                accessibilityLabel={searchCancelText || t('common.cancel', 'Hủy')}
+              >
+                <AppText
+                  style={[
+                    styles.islandCancelText,
+                    { color: effectiveTintColor },
+                    searchCancelTextStyle,
+                  ]}
+                >
+                  {searchCancelText || t('common.cancel', 'Hủy')}
+                </AppText>
+              </TouchableOpacity>
+            )}
+          </View>
+          {renderExpandedBottomSlot()}
+          {bottomContent && (
+            <View style={styles.bottomContentContainer}>{bottomContent}</View>
+          )}
+          {children}
+        </View>
+      );
+    }
+
+    // Standard Navbar or Capsule Bar Search mode:
+    return (
+      <View
+        style={[
+          styles.container,
+          getContainerHeight(insets.top, bottomContent ? undefined : 48),
+          isCapsuleVariant || transparent ? styles.floatingContainer : null,
+          showBorderBottom
+            ? isHighContrast
+              ? isDark
+                ? styles.borderBottomHighDark
+                : styles.borderBottomHighLight
+              : isDark
+                ? styles.borderBottomDark
+                : styles.borderBottomLight
+            : null,
+          style,
+          containerStyle,
+        ]}
+      >
+        {shouldRenderBgLayer && (
+          <View
+            style={[
+              styles.backgroundLayer,
+              getHeaderBackgroundStyle(resolvedBgColor, backgroundOpacity),
+            ]}
+            pointerEvents="none"
+          />
+        )}
+
+        <View style={[styles.searchHeaderRow, searchContainerStyle]}>
+          {showSearchBackButton && (
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={handleCloseExpansion}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              style={[
+                styles.searchBackBtn,
+                isCapsuleVariant && [
+                  styles.actionCircleBtn,
+                  isDark ? styles.actionCircleBtnDark : styles.actionCircleBtnLight,
+                  { borderRadius: actionBtnRadius },
+                ],
+                searchBackButtonStyle,
+              ]}
+              accessibilityLabel="Đóng"
+            >
+              <ChevronLeft
+                size={20}
+                color={effectiveTintColor}
+                strokeWidth={2.4}
+              />
+            </TouchableOpacity>
+          )}
+
+          <View style={styles.searchBarFlex}>
+            {renderInnerActiveContent(false)}
+          </View>
+
+          {showSearchCancel && (
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={handleCloseExpansion}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              style={[
+                styles.searchCancelBtn,
+                isCapsuleVariant && [
+                  styles.capsuleCancelBtn,
+                  isDark ? styles.capsuleCancelBtnDark : styles.capsuleCancelBtnLight,
+                ],
+                searchCancelStyle,
+              ]}
+              accessibilityLabel={searchCancelText || t('common.cancel', 'Hủy')}
+            >
+              <AppText
+                style={[
+                  styles.searchCancelText,
+                  { color: effectiveTintColor },
+                  searchCancelTextStyle,
+                ]}
+              >
+                {searchCancelText || t('common.cancel', 'Hủy')}
+              </AppText>
+            </TouchableOpacity>
+          )}
+        </View>
+        {renderExpandedBottomSlot()}
+        {bottomContent && (
+          <View style={styles.bottomContentContainer}>{bottomContent}</View>
+        )}
+        {children}
+      </View>
+    );
+  }
+
   // -------------------------------------------------------------
   // VARIANT 2: FLOATING PILL (Unified Dynamic Island Navbar)
   // -------------------------------------------------------------
@@ -187,7 +780,7 @@ export const AppHeader: React.FC<AppHeaderProps> = React.memo(({
         style={[
           styles.container,
           styles.floatingContainer,
-          getContainerHeight(insets.top),
+          getContainerHeight(insets.top, bottomContent ? undefined : 48),
           style,
           containerStyle,
         ]}
@@ -221,7 +814,7 @@ export const AppHeader: React.FC<AppHeaderProps> = React.memo(({
             )}
           </View>
 
-          {/* Island Center: Title & Subtitle */}
+          {/* Island Center: Custom Component (e.g. AppSelect, SearchBar) OR Title & Subtitle */}
           <View
             style={[
               styles.islandCenter,
@@ -231,34 +824,40 @@ export const AppHeader: React.FC<AppHeaderProps> = React.memo(({
               centerContainerStyle,
             ]}
           >
-            {title ? (
-              <AppText
-                style={[
-                  styles.islandTitle,
-                  titleAlign === 'left' && styles.textLeft,
-                  titleAlign === 'right' && styles.textRight,
-                  { color: islandTextColor },
-                  titleStyle,
-                ]}
-                numberOfLines={1}
-              >
-                {title}
-              </AppText>
-            ) : null}
-            {subtitle ? (
-              <AppText
-                style={[
-                  styles.islandSubtitle,
-                  (subtitleAlign || titleAlign) === 'left' && styles.textLeft,
-                  (subtitleAlign || titleAlign) === 'right' && styles.textRight,
-                  { color: islandSubtextColor },
-                  subtitleStyle,
-                ]}
-                numberOfLines={1}
-              >
-                {subtitle}
-              </AppText>
-            ) : null}
+            {centerContent ? (
+              centerContent
+            ) : (
+              <>
+                {title ? (
+                  <AppText
+                    style={[
+                      styles.islandTitle,
+                      titleAlign === 'left' && styles.textLeft,
+                      titleAlign === 'right' && styles.textRight,
+                      { color: islandTextColor },
+                      titleStyle,
+                    ]}
+                    numberOfLines={1}
+                  >
+                    {title}
+                  </AppText>
+                ) : null}
+                {subtitle ? (
+                  <AppText
+                    style={[
+                      styles.islandSubtitle,
+                      (subtitleAlign || titleAlign) === 'left' && styles.textLeft,
+                      (subtitleAlign || titleAlign) === 'right' && styles.textRight,
+                      { color: islandSubtextColor },
+                      subtitleStyle,
+                    ]}
+                    numberOfLines={1}
+                  >
+                    {subtitle}
+                  </AppText>
+                ) : null}
+              </>
+            )}
           </View>
 
           {/* Island Right: Actions and More */}
@@ -267,6 +866,7 @@ export const AppHeader: React.FC<AppHeaderProps> = React.memo(({
               rightAction
             ) : (() => {
               const islandActions: AppHeaderAction[] = [
+                ...(searchable ? [searchActionItem] : []),
                 ...(rightActions || []),
                 ...(showMore
                   ? [
@@ -282,7 +882,7 @@ export const AppHeader: React.FC<AppHeaderProps> = React.memo(({
               if (islandActions.length === 0) return <View style={styles.islandSpacer} />;
 
               // Support Capsule Action Style inside Dynamic Island
-              if (isCapsuleActions) {
+              if (isCapsuleActions && islandActions.length > 1) {
                 return (
                   <View
                     style={[
@@ -357,8 +957,22 @@ export const AppHeader: React.FC<AppHeaderProps> = React.memo(({
             title={moreTitle || title}
             message={moreMessage}
             actions={moreActions}
+            searchable={moreSearchable}
+            searchPlaceholder={moreSearchPlaceholder}
+            maxHeight={moreMaxHeight}
           />
         )}
+
+        {/* Expanded Bottom Slot (Suggestions or custom bottom dropdown) */}
+        {renderExpandedBottomSlot()}
+
+        {/* Bottom Dock Content (Chips, Tabs, Secondary Bar) */}
+        {bottomContent && (
+          <View style={styles.bottomContentContainer}>
+            {bottomContent}
+          </View>
+        )}
+        {children}
       </View>
     );
   }
@@ -369,6 +983,7 @@ export const AppHeader: React.FC<AppHeaderProps> = React.memo(({
   const isCenterMode = titleAlign === 'center';
 
   const allRightActionList: AppHeaderAction[] = [
+    ...(searchable ? [searchActionItem] : []),
     ...(rightActions || []),
     ...(showMore
       ? [
@@ -389,26 +1004,26 @@ export const AppHeader: React.FC<AppHeaderProps> = React.memo(({
       ? (backTitle ? 84 : 70)
       : 44
     : leftAction
-    ? 44
-    : leftActions?.length
-    ? leftActions.length * 36 + 12
-    : 16;
+      ? 44
+      : leftActions?.length
+        ? leftActions.length * 36 + 12
+        : 16;
 
   const rightClearance = allRightActionList.length > 0
     ? isCapsuleActions
       ? allRightActionList.length * 32 + 20
       : allRightActionList.length * 36 + 12
     : showMore
-    ? 44
-    : rightAction
-    ? 44
-    : 16;
+      ? 44
+      : rightAction
+        ? 44
+        : 16;
 
   return (
     <View
       style={[
         styles.container,
-        getContainerHeight(insets.top),
+        getContainerHeight(insets.top, bottomContent ? undefined : 48),
         isCapsuleVariant || transparent ? styles.floatingContainer : null,
         showBorderBottom
           ? isHighContrast
@@ -479,10 +1094,10 @@ export const AppHeader: React.FC<AppHeaderProps> = React.memo(({
         ) : null}
       </View>
 
-      {/* 2. Center / Title Slot */}
+      {/* 2. Center Slot: Custom Component (e.g. AppSelect, SearchBar) OR Title & Subtitle */}
       <View
         style={[
-          isCenterMode
+          isCenterMode && !centerContent
             ? [
               styles.centerAbsolute,
               getCenterTitlePadding(insets.top, leftClearance, rightClearance),
@@ -493,36 +1108,42 @@ export const AppHeader: React.FC<AppHeaderProps> = React.memo(({
           titleAlign === 'right' && styles.alignRight,
           centerContainerStyle,
         ]}
-        pointerEvents={isCenterMode ? 'none' : 'auto'}
+        pointerEvents={isCenterMode && !centerContent ? 'none' : 'auto'}
       >
-        {title ? (
-          <AppText
-            style={[
-              styles.title,
-              titleAlign === 'left' && styles.textLeft,
-              titleAlign === 'right' && styles.textRight,
-              { color: themeColors.text },
-              titleStyle,
-            ]}
-            numberOfLines={1}
-          >
-            {title}
-          </AppText>
-        ) : null}
-        {subtitle ? (
-          <AppText
-            style={[
-              styles.subtitle,
-              (subtitleAlign || titleAlign) === 'left' && styles.textLeft,
-              (subtitleAlign || titleAlign) === 'right' && styles.textRight,
-              { color: themeColors.textSecondary },
-              subtitleStyle,
-            ]}
-            numberOfLines={1}
-          >
-            {subtitle}
-          </AppText>
-        ) : null}
+        {centerContent ? (
+          centerContent
+        ) : (
+          <>
+            {title ? (
+              <AppText
+                style={[
+                  styles.title,
+                  titleAlign === 'left' && styles.textLeft,
+                  titleAlign === 'right' && styles.textRight,
+                  { color: themeColors.text },
+                  titleStyle,
+                ]}
+                numberOfLines={1}
+              >
+                {title}
+              </AppText>
+            ) : null}
+            {subtitle ? (
+              <AppText
+                style={[
+                  styles.subtitle,
+                  (subtitleAlign || titleAlign) === 'left' && styles.textLeft,
+                  (subtitleAlign || titleAlign) === 'right' && styles.textRight,
+                  { color: themeColors.textSecondary },
+                  subtitleStyle,
+                ]}
+                numberOfLines={1}
+              >
+                {subtitle}
+              </AppText>
+            ) : null}
+          </>
+        )}
       </View>
 
       {/* 3. Right Slot: Frosted Capsule / Standard Actions / More Button */}
@@ -538,8 +1159,8 @@ export const AppHeader: React.FC<AppHeaderProps> = React.memo(({
                   ? styles.capsuleStandardDark
                   : styles.capsuleStandardLight
                 : isDark
-                ? styles.capsuleActionGroupDark
-                : styles.capsuleActionGroupLight,
+                  ? styles.capsuleActionGroupDark
+                  : styles.capsuleActionGroupLight,
               { borderRadius: capsuleRadius },
               capsuleStyle,
             ]}
@@ -604,8 +1225,88 @@ export const AppHeader: React.FC<AppHeaderProps> = React.memo(({
           message={moreMessage}
           contrast={resolvedContrast}
           actions={moreActions}
+          searchable={moreSearchable}
+          searchPlaceholder={moreSearchPlaceholder}
+          maxHeight={moreMaxHeight}
         />
       )}
+
+      {/* Expanded Bottom Slot (Suggestions or custom bottom dropdown) */}
+      {renderExpandedBottomSlot()}
+
+      {/* Bottom Dock Content (Chips, Tabs, Secondary Bar) */}
+      {bottomContent && (
+        <View style={styles.bottomContentContainer}>{bottomContent}</View>
+      )}
+      {children}
+    </View>
+  );
+});
+
+export interface AppHeaderContainerProps {
+  children?: React.ReactNode;
+  variant?: import('./types').AppHeaderVariant;
+  transparent?: boolean;
+  borderBottom?: boolean;
+  backgroundColor?: string;
+  backgroundOpacity?: number;
+  contrast?: import('../surfaceUtils').ControlContrast;
+  style?: import('react-native').ViewStyle;
+  containerStyle?: import('react-native').ViewStyle;
+}
+
+export const AppHeaderContainer: React.FC<AppHeaderContainerProps> = React.memo(({
+  children,
+  variant = 'standard',
+  transparent = false,
+  borderBottom,
+  backgroundColor,
+  backgroundOpacity,
+  contrast,
+  style,
+  containerStyle,
+}) => {
+  const insets = useSafeAreaInsets();
+  const { isDark, globalContrast } = useThemeMode();
+  const isCapsuleVariant = variant === 'frosted-capsule';
+  const isStandardVariant = variant === 'standard';
+  const resolvedContrast = contrast ?? globalContrast;
+  const isHighContrast = resolvedContrast === 'high';
+  const defaultStandardBg = isDark ? Colors.dark.card : '#FFFFFF';
+  const resolvedBgColor = backgroundColor ?? (isStandardVariant ? defaultStandardBg : 'transparent');
+  const shouldRenderBgLayer = !transparent && resolvedBgColor !== 'transparent';
+  const showBorderBottom =
+    borderBottom !== undefined ? borderBottom : (isStandardVariant && !transparent);
+
+  return (
+    <View
+      style={[
+        styles.container,
+        getContainerHeight(insets.top, 48),
+        isCapsuleVariant || transparent ? styles.floatingContainer : null,
+        showBorderBottom
+          ? isHighContrast
+            ? isDark
+              ? styles.borderBottomHighDark
+              : styles.borderBottomHighLight
+            : isDark
+              ? styles.borderBottomDark
+              : styles.borderBottomLight
+          : null,
+        style,
+        containerStyle,
+      ]}
+    >
+      {shouldRenderBgLayer && (
+        <View
+          style={[
+            styles.backgroundLayer,
+            getHeaderBackgroundStyle(resolvedBgColor, backgroundOpacity),
+          ]}
+          pointerEvents="none"
+        />
+      )}
+      {children}
     </View>
   );
 });

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Switch, Platform } from 'react-native';
+import { View, Switch, Platform, TouchableOpacity } from 'react-native';
 import { AppText } from '../AppText';
 import { useThemeMode } from '@/hooks/useThemeMode';
 import type { AppSwitchProps } from './types';
@@ -32,7 +32,12 @@ const AppSwitchComponent: React.FC<AppSwitchProps> = ({
   );
 
   return (
-    <View style={[styles.container, style]}>
+    <TouchableOpacity
+      activeOpacity={0.8}
+      disabled={disabled}
+      onPress={() => onValueChange(!value)}
+      style={[styles.container, style]}
+    >
       {(label || sublabel) && (
         <View style={styles.textContainer}>
           {label && (
@@ -75,7 +80,7 @@ const AppSwitchComponent: React.FC<AppSwitchProps> = ({
         ios_backgroundColor={offTrackColor}
         {...props}
       />
-    </View>
+    </TouchableOpacity>
   );
 };
 

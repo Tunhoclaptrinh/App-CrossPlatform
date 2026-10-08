@@ -4,8 +4,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { PaperProvider, MD3DarkTheme, MD3LightTheme } from 'react-native-paper';
 import { AppNavigator, linking } from '@/navigation';
-import { ToastProvider } from '@/components/toast';
-import { ErrorBoundary, OfflineBanner } from '@/components/common';
+import { ToastProvider, ErrorBoundary, OfflineBanner } from '@/components/common';
 import { useThemeMode, useNetworkStatus } from '@/hooks';
 import '@/i18n';
 

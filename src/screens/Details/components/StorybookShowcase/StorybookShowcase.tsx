@@ -26,6 +26,8 @@ export const StorybookShowcase: React.FC<StorybookShowcaseProps> = React.memo(({
   isDark,
   isGlass = false,
   onResetScroll,
+  externalSearchQuery,
+  onExternalSearchQueryChange,
 }) => {
   const styles = useMemo(
     () => createStorybookStyles(themeColors, radiusTokens, isDark),
@@ -33,7 +35,14 @@ export const StorybookShowcase: React.FC<StorybookShowcaseProps> = React.memo(({
   );
 
   // Search & Filter State
-  const [searchQuery, setSearchQuery] = useState('');
+  const [internalSearchQuery, setInternalSearchQuery] = useState('');
+  const activeSearchQuery = externalSearchQuery !== undefined ? externalSearchQuery : internalSearchQuery;
+
+  const handleSearchChange = useCallback((text: string) => {
+    setInternalSearchQuery(text);
+    onExternalSearchQueryChange?.(text);
+  }, [onExternalSearchQueryChange]);
+
   const [activeCategory, setActiveCategory] = useState<StoryCategory>('all');
 
   // Active Component in Dedicated Preview Stage (null = catalog list view)
@@ -48,15 +57,15 @@ export const StorybookShowcase: React.FC<StorybookShowcaseProps> = React.memo(({
       }
 
       // 2. Search query check
-      if (!searchQuery.trim()) return true;
-      const q = searchQuery.toLowerCase().trim();
+      if (!activeSearchQuery.trim()) return true;
+      const q = activeSearchQuery.toLowerCase().trim();
       const matchName = comp.name.toLowerCase().includes(q);
       const matchDesc = comp.description.toLowerCase().includes(q);
       const matchTags = comp.tags.some((tag) => tag.toLowerCase().includes(q));
 
       return matchName || matchDesc || matchTags;
     });
-  }, [activeCategory, searchQuery]);
+  }, [activeCategory, activeSearchQuery]);
 
   // Selected component metadata
   const selectedComponent = useMemo(() => {
@@ -164,8 +173,8 @@ export const StorybookShowcase: React.FC<StorybookShowcaseProps> = React.memo(({
 
       {/* Real-time Search Bar */}
       <StorybookSearchBar
-        value={searchQuery}
-        onChangeText={setSearchQuery}
+        value={activeSearchQuery}
+        onChangeText={handleSearchChange}
         resultCount={filteredComponents.length}
         totalCount={COMPONENTS_CATALOG.length}
         themeColors={themeColors}
@@ -215,13 +224,13 @@ export const StorybookShowcase: React.FC<StorybookShowcaseProps> = React.memo(({
             <SearchX size={36} color={themeColors.textTertiary || '#94A3B8'} strokeWidth={1.5} />
             <AppText style={styles.emptyTitle}>Không tìm thấy linh kiện phù hợp</AppText>
             <AppText style={styles.emptyDesc}>
-              Không có component nào khớp với từ khóa "{searchQuery}". Hãy thử tìm kiếm với tên khác hoặc xóa bộ lọc.
+              Không có component nào khớp với từ khóa "{activeSearchQuery}". Hãy thử tìm kiếm với tên khác hoặc xóa bộ lọc.
             </AppText>
             <AppButton
               size="sm"
               variant="tonal"
               title="Xóa từ khóa tìm kiếm"
-              onPress={() => setSearchQuery('')}
+              onPress={() => handleSearchChange('')}
             />
           </AppCard>
         )}

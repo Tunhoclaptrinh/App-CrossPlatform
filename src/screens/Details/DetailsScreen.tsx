@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { View, type ScrollViewInstance } from 'react-native';
+import { View, Text, TouchableOpacity, type ScrollViewInstance } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   Sparkles,
@@ -34,7 +34,6 @@ import type { ServerEncryptedPayload } from '@/utils';
 import type { DetailsScreenProps } from '@/navigation/types';
 import { createDetailsStyles } from './styles';
 import {
-  ModuleTabs,
   AppleGlassShowcase,
   ThemeStudioShowcase,
   RealtimeShowcase,
@@ -61,6 +60,7 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
   const initialItemId = resolveModuleId(route.params?.itemId);
   const [activeModule, setActiveModule] = useState<string>(initialItemId);
   const [isStudioOpen, setIsStudioOpen] = useState(false);
+  const [isBulkSelectionActive, setIsBulkSelectionActive] = useState(false);
 
   useEffect(() => {
     if (route.params?.itemId) {
@@ -157,81 +157,84 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
   }, []);
 
   // Module Definitions with full metadata
-  const moduleTabs: ModuleTabItem[] = [
-    {
-      id: 'storybook',
-      label: 'Storybook UI',
-      fullTitle: 'Design System & Storybook Catalog',
-      desc: 'Ma trận đồng bộ kích thước chuẩn Button, Input, Select, Badge, Card (sm, md, lg)',
-      icon: BookOpen,
-      color: '#6366F1',
-    },
-    {
-      id: 'theme-studio',
-      label: 'Theme & Bo Góc',
-      fullTitle: 'Studio Tinh Chỉnh Giao Diện',
-      desc: 'Tùy chỉnh màu sắc chủ đạo, 4 cấp độ bo góc, phong cách kính Apple Glass và phản hồi xúc giác trong thời gian thực.',
-      icon: SlidersHorizontal,
-      color: themeColors.primary,
-    },
-    {
-      id: 'apple',
-      label: 'Apple Glass',
-      fullTitle: 'Apple iOS 18 Liquid Glass',
-      desc: 'Cupertino frosted glassmorphism, specular borders & continuous squircles.',
-      icon: Sparkles,
-      color: '#007AFF',
-    },
+  const moduleTabs = useMemo<ModuleTabItem[]>(
+    () => [
+      {
+        id: 'storybook',
+        label: 'Storybook UI',
+        fullTitle: 'Design System & Storybook Catalog',
+        desc: 'Ma trận đồng bộ kích thước chuẩn Button, Input, Select, Badge, Card (sm, md, lg)',
+        icon: BookOpen,
+        color: '#6366F1',
+      },
+      {
+        id: 'theme-studio',
+        label: 'Theme & Bo Góc',
+        fullTitle: 'Studio Tinh Chỉnh Giao Diện',
+        desc: 'Tùy chỉnh màu sắc chủ đạo, 4 cấp độ bo góc, phong cách kính Apple Glass và phản hồi xúc giác trong thời gian thực.',
+        icon: SlidersHorizontal,
+        color: themeColors.primary,
+      },
+      {
+        id: 'apple',
+        label: 'Apple Glass',
+        fullTitle: 'Apple iOS 18 Liquid Glass',
+        desc: 'Cupertino frosted glassmorphism, specular borders & continuous squircles.',
+        icon: Sparkles,
+        color: '#007AFF',
+      },
 
-    {
-      id: 'realtime',
-      label: 'WebSocket',
-      fullTitle: 'Universal Real-Time WebSocket',
-      desc: 'Auto-reconnect, offline message queue, heartbeat ping/pong & pub/sub.',
-      icon: Radio,
-      color: '#10B981',
-    },
-    {
-      id: 'gestures',
-      label: 'Cử chỉ & Rung',
-      fullTitle: 'Smart Gestures & Shake Motion',
-      desc: 'Swipe 4 directions, double tap & phone shake sensor with Haptics feedback.',
-      icon: Smartphone,
-      color: '#F59E0B',
-    },
-    {
-      id: 'crypto',
-      label: 'Bảo mật AES',
-      fullTitle: 'Server AES-256 & Security',
-      desc: 'Cross-platform cryptography, AES-256-GCM and biometric FaceID/Fingerprint auth.',
-      icon: ShieldCheck,
-      color: '#8B5CF6',
-    },
-    {
-      id: 'paper',
-      label: 'UI Components',
-      fullTitle: 'React Native Paper & Base UI',
-      desc: 'Material Design 3 tokens, component studio, accessibility & themes.',
-      icon: Palette,
-      color: '#2563EB',
-    },
-    {
-      id: 'sqlite',
-      label: 'SQLite & Store',
-      fullTitle: 'SQLite & Persistent Storage',
-      desc: 'C++ JSI direct SQLite engine, Zustand unified state & File I/O.',
-      icon: Database,
-      color: '#0284C7',
-    },
-    {
-      id: 'utils',
-      label: 'Tiện ích & i18n',
-      fullTitle: 'Platform Tools & Localization',
-      desc: 'UUID generator, camera permissions, live i18n & app update checker.',
-      icon: Sliders,
-      color: '#EC4899',
-    },
-  ];
+      {
+        id: 'realtime',
+        label: 'WebSocket',
+        fullTitle: 'Universal Real-Time WebSocket',
+        desc: 'Auto-reconnect, offline message queue, heartbeat ping/pong & pub/sub.',
+        icon: Radio,
+        color: '#10B981',
+      },
+      {
+        id: 'gestures',
+        label: 'Cử chỉ & Rung',
+        fullTitle: 'Smart Gestures & Shake Motion',
+        desc: 'Swipe 4 directions, double tap & phone shake sensor with Haptics feedback.',
+        icon: Smartphone,
+        color: '#F59E0B',
+      },
+      {
+        id: 'crypto',
+        label: 'Bảo mật AES',
+        fullTitle: 'Server AES-256 & Security',
+        desc: 'Cross-platform cryptography, AES-256-GCM and biometric FaceID/Fingerprint auth.',
+        icon: ShieldCheck,
+        color: '#8B5CF6',
+      },
+      {
+        id: 'paper',
+        label: 'UI Components',
+        fullTitle: 'React Native Paper & Base UI',
+        desc: 'Material Design 3 tokens, component studio, accessibility & themes.',
+        icon: Palette,
+        color: '#2563EB',
+      },
+      {
+        id: 'sqlite',
+        label: 'SQLite & Store',
+        fullTitle: 'SQLite & Persistent Storage',
+        desc: 'C++ JSI direct SQLite engine, Zustand unified state & File I/O.',
+        icon: Database,
+        color: '#0284C7',
+      },
+      {
+        id: 'utils',
+        label: 'Tiện ích & i18n',
+        fullTitle: 'Platform Tools & Localization',
+        desc: 'UUID generator, camera permissions, live i18n & app update checker.',
+        icon: Sliders,
+        color: '#EC4899',
+      },
+    ],
+    [themeColors.primary]
+  );
 
   const currentTab = moduleTabs.find((m) => m.id === activeModule) || moduleTabs[0];
 
@@ -245,7 +248,7 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
     () => [
       {
         id: 'demo-frosted-capsule',
-        label: 'Kiểu 1: Apple iOS 18 Frosted Capsule',
+        label: 'Header: Apple iOS 18 Frosted Capsule',
         description: 'Nút tròn mờ độc lập & cụm actions capsule trong suốt',
         icon: <Sparkles size={18} color="#8B5CF6" />,
         onPress: () => {
@@ -255,7 +258,7 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
       },
       {
         id: 'demo-floating-pill',
-        label: 'Kiểu 2: Dynamic Island Floating Pill',
+        label: 'Header: Dynamic Island Floating Pill',
         description: 'Đảo Dynamic Island nổi liền khối giữa màn hình',
         icon: <Sparkles size={18} color="#EC4899" />,
         onPress: () => {
@@ -265,7 +268,7 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
       },
       {
         id: 'demo-standard',
-        label: 'Kiểu 3: Standard iOS Navbar',
+        label: 'Header: Standard iOS Navbar',
         description: 'Thanh Header đặc chuẩn Apple iOS có viền phân cách',
         icon: <Layout size={18} color="#007AFF" />,
         onPress: () => {
@@ -274,9 +277,19 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
         },
       },
       {
+        id: 'demo-custom-header',
+        label: 'Header: Thử nghiệm Thay thế Toàn phần (Bulk Action Bar)',
+        description: 'Biến hình vị trí Header thành thanh công cụ chọn nhiều mục',
+        icon: <Sliders size={18} color="#6366F1" />,
+        onPress: () => {
+          setIsBulkSelectionActive(true);
+          toast.show('info', 'Header đã được thay thế an toàn bằng Bulk Action Bar!');
+        },
+      },
+      {
         id: 'demo-toggle-theme',
-        label: isDark ? 'Chuyển sang Giao diện Sáng' : 'Chuyển sang Giao diện Tối',
-        description: 'Thay đổi chế độ màu sắc hiển thị',
+        label: isDark ? 'Giao diện: Chuyển sang Sáng' : 'Giao diện: Chuyển sang Tối',
+        description: 'Thay đổi chế độ màu sắc hiển thị hệ thống',
         icon: <SlidersHorizontal size={18} color="#10B981" />,
         onPress: () => {
           toggleTheme();
@@ -285,8 +298,8 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
       },
       {
         id: 'demo-open-studio',
-        label: 'Mở Studio Theme & Bo Góc',
-        description: 'Tinh chỉnh màu sắc và độ bo góc Squircle',
+        label: 'Theme Studio: Tinh chỉnh Màu & Bo góc',
+        description: 'Tùy biến bảng màu và độ bo góc Squircle thời gian thực',
         icon: <Palette size={18} color={themeColors.primary} />,
         onPress: () => {
           setIsStudioOpen(true);
@@ -301,8 +314,23 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
           toast.show('success', `Đã tạo liên kết chia sẻ cho module ${currentTab.label}!`, 'Share Sheet');
         },
       },
+      ...moduleTabs
+        .filter((m) => m.id !== activeModule)
+        .map((m) => {
+          const TabIcon = m.icon;
+          return {
+            id: `switch-${m.id}`,
+            label: `Module: ${m.label}`,
+            description: `${m.fullTitle} • ${m.desc}`,
+            icon: <TabIcon size={18} color={m.color} />,
+            onPress: () => {
+              setActiveModule(m.id);
+              toast.show('info', `Đã chuyển sang ${m.label}`);
+            },
+          };
+        }),
     ],
-    [setHeaderVariant, toast, isDark, toggleTheme, themeColors.primary, currentTab.label]
+    [setHeaderVariant, toast, isDark, toggleTheme, themeColors.primary, currentTab.label, moduleTabs, activeModule]
   );
 
   // Handlers for Demos
@@ -430,9 +458,16 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
     });
   }, []);
 
-  // When switching modules, always start at top
+  const [isStorybookSearching, setIsStorybookSearching] = useState(false);
+  const [storybookSearchQuery, setStorybookSearchQuery] = useState('');
+
+  // When switching modules, always start at top and reset module-specific search
   useEffect(() => {
     handleScrollToTop();
+    if (activeModule !== 'storybook') {
+      setIsStorybookSearching(false);
+      setStorybookSearchQuery('');
+    }
   }, [activeModule, handleScrollToTop]);
 
   return (
@@ -444,17 +479,7 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
         edges={['bottom', 'left', 'right']}
         contentContainerStyle={[styles.content, { paddingTop: insets.top + 48 + 12 }]}
       >
-        {/* 1. Horizontal Module Navigation Tabs */}
-        <ModuleTabs
-          tabs={moduleTabs}
-          activeModule={activeModule}
-          onSelectTab={(id) => setActiveModule(id)}
-          isDark={isDark}
-          radiusTokens={radiusTokens}
-          isGlass={isGlass}
-        />
-
-        {/* 2. Dedicated Modules Showcase */}
+        {/* Dedicated Modules Showcase */}
         {activeModule === 'apple' && (
           <AppleGlassShowcase
             themeColors={themeColors}
@@ -471,6 +496,8 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
             radiusTokens={radiusTokens}
             isDark={isDark}
             isGlass={isGlass}
+            externalSearchQuery={storybookSearchQuery}
+            onExternalSearchQueryChange={setStorybookSearchQuery}
             onResetScroll={handleScrollToTop}
           />
         )}
@@ -646,9 +673,107 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
         backTitle={t('common.back', 'Quay lại')}
         backStyle={effectiveVariant === 'frosted-capsule' ? 'circle' : 'text'}
         onBack={() => navigation.goBack()}
+        actionStyle="capsule"
+        isCustomMode={isBulkSelectionActive}
+        onCustomModeChange={setIsBulkSelectionActive}
+        renderCustomHeader={({ close }) => (
+          <View style={styles.customBulkHeaderRow}>
+            <View style={styles.customBulkHeaderLeft}>
+              <View style={styles.customBulkBadge}>
+                <Text style={styles.customBulkBadgeText}>3</Text>
+              </View>
+              <Text style={[styles.customBulkTitle, { color: themeColors.text }]}>
+                Đã chọn 3 mục (Bulk Bar)
+              </Text>
+            </View>
+            <View style={styles.customBulkRight}>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                style={styles.customBulkActionBtn}
+                onPress={() => {
+                  haptics.light();
+                  toast.show('info', 'Đã chia sẻ 3 mục đã chọn!');
+                }}
+              >
+                <Share2 size={15} color="#6366F1" />
+                <Text style={styles.customBulkShareText}>Chia sẻ</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                style={styles.customBulkCancelBtn}
+                onPress={() => {
+                  haptics.light();
+                  close();
+                  toast.show('info', 'Đã đóng chế độ thay thế Header');
+                }}
+              >
+                <Text style={styles.customBulkCancelText}>Xong</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+        searchable={activeModule === 'storybook'}
+        isSearching={activeModule === 'storybook' && isStorybookSearching}
+        onSearchToggle={(active) => setIsStorybookSearching(active)}
+        searchValue={storybookSearchQuery}
+        onSearchChange={setStorybookSearchQuery}
+        searchPlaceholder="Tìm kiếm linh kiện Storybook..."
+        suggestions={
+          activeModule === 'storybook'
+            ? [
+              {
+                id: 's-button',
+                label: 'Button & CTA Studio',
+                sublabel: 'Kích thước sm, md, lg và các biến thể glass, filled',
+                onPress: () => {
+                  setStorybookSearchQuery('Button');
+                  setIsStorybookSearching(false);
+                },
+              },
+              {
+                id: 's-input',
+                label: 'AppInput & AppSearchBar',
+                sublabel: 'Thanh tìm kiếm và trường nhập liệu Design System',
+                onPress: () => {
+                  setStorybookSearchQuery('Input');
+                  setIsStorybookSearching(false);
+                },
+              },
+              {
+                id: 's-select',
+                label: 'AppSelect Dropdown Picker',
+                sublabel: 'Thực đơn lựa chọn mở Modal ActionSheet',
+                onPress: () => {
+                  setStorybookSearchQuery('Select');
+                  setIsStorybookSearching(false);
+                },
+              },
+              {
+                id: 's-glass',
+                label: 'Apple Glass Cards',
+                sublabel: 'Thẻ kính Cupertino mờ đa tầng specular viền sáng',
+                onPress: () => {
+                  setStorybookSearchQuery('Glass');
+                  setIsStorybookSearching(false);
+                },
+              },
+              {
+                id: 's-badge',
+                label: 'Badge & Segmented Control',
+                sublabel: 'Huy hiệu trạng thái và thanh gạt phân đoạn',
+                onPress: () => {
+                  setStorybookSearchQuery('Badge');
+                  setIsStorybookSearching(false);
+                },
+              },
+            ]
+            : undefined
+        }
         showMore
         moreTitle="Tùy Chọn Màn Hình Chi Tiết"
-        moreMessage="Chuyển đổi kiểu dáng Header & Thiết lập giao diện"
+        moreMessage="Tìm kiếm & chuyển nhanh module, kiểu dáng giao diện"
+        moreSearchable
+        moreSearchPlaceholder="Tìm module hoặc tính năng..."
         moreActions={detailsDemoActions}
         style={styles.floatingHeader}
       />

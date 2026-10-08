@@ -71,3 +71,33 @@ export const formatFileSize = (bytes: number): string => {
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
 };
+
+/**
+ * Định dạng tiền tệ theo locale chuẩn (mặc định vi-VN, VND)
+ */
+export const formatCurrency = (
+  amount: number,
+  locale: string = 'vi-VN',
+  currency: string = 'VND'
+): string => {
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency,
+  }).format(amount);
+};
+
+/**
+ * Định dạng ngày tháng ngắn gọn theo locale (mặc định DD/MM/YYYY)
+ */
+export const formatDate = (
+  date: Date | string | number,
+  locale: string = 'vi-VN'
+): string => {
+  const d = new Date(date);
+  return d.toLocaleDateString(locale, {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
+};
+

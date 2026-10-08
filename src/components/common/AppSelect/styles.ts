@@ -109,6 +109,9 @@ export const styles = StyleSheet.create({
     borderTopColor: '#334155',
     borderTopWidth: 1,
   },
+  sheetContainerKeyboard: {
+    maxHeight: '88%',
+  },
   sheetHandle: {
     width: 36,
     height: 4,
@@ -136,6 +139,19 @@ export const styles = StyleSheet.create({
   },
   sheetCloseBtn: {
     padding: Spacing.xs,
+  },
+  searchContainer: {
+    marginBottom: Spacing.sm,
+  },
+  emptyStateBox: {
+    paddingVertical: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyStateText: {
+    fontSize: 13,
+    color: '#64748B',
+    textAlign: 'center',
   },
   optionItem: {
     flexDirection: 'row',

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { validators } from './validators';
 
 /**
  * Standard Zod validation schemas for forms and data verification
@@ -17,7 +18,7 @@ export const registerSchema = z
     phone: z
       .string()
       .transform((val) => val.trim().replace(/[\s+-]/g, ''))
-      .refine((val) => /^(?:84|0)(?:3|5|7|8|9)\d{8}$/.test(val), {
+      .refine(validators.isValidVietnamesePhone, {
         message: 'validation.phoneInvalid',
       }),
     password: z.string().min(6, 'validation.passwordMin'),
