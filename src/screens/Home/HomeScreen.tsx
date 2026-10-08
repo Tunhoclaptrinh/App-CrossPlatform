@@ -30,11 +30,81 @@ import {
 } from '@/components';
 import { useAppStore, useThemeMode, useDoubleBackExit } from '@/hooks';
 import { removeVietnameseTones, haptics } from '@/utils';
+import type { ThemeColors } from '@/constants/colors';
 import type { HomeScreenProps } from '@/navigation/types';
 import { createHomeStyles } from './styles';
 import { useTranslation } from 'react-i18next';
 
 type CategoryFilter = 'all' | 'ui' | 'realtime' | 'security' | 'storage';
+
+interface HomeModuleItem {
+  id: string;
+  category: 'ui' | 'realtime' | 'security' | 'storage';
+  tag: string;
+  title: string;
+  desc: string;
+  icon: any;
+  color: string;
+  searchIndex: string;
+}
+
+interface HomeModuleCardItemProps {
+  item: HomeModuleItem;
+  isGlass: boolean;
+  themeColors: ThemeColors;
+  styles: ReturnType<typeof createHomeStyles>;
+  onPress: (item: HomeModuleItem) => void;
+}
+
+const HomeModuleCardItem = React.memo<HomeModuleCardItemProps>(({
+  item,
+  isGlass,
+  themeColors,
+  styles,
+  onPress,
+}) => {
+  const IconComponent = item.icon;
+  return (
+    <TouchableOpacity
+      activeOpacity={0.7}
+      style={isGlass ? styles.itemCardGlass : styles.itemCard}
+      onPress={() => onPress(item)}
+    >
+      {/* Specular Highlight Hairline */}
+      {isGlass && <View style={styles.itemGlassHighlight} pointerEvents="none" />}
+
+      <View style={styles.itemLeft}>
+        {/* Clean Flat Icon Badge with soft accent tint */}
+        <View
+          style={[
+            styles.iconWrapper,
+            { backgroundColor: `${item.color}18` },
+          ]}
+        >
+          <IconComponent size={22} color={item.color} strokeWidth={2.2} />
+        </View>
+
+        <View style={styles.itemTexts}>
+          <View style={styles.itemTitleRow}>
+            <AppText style={styles.itemTitle}>{item.title}</AppText>
+            <View style={[styles.itemTagBadge, isGlass && styles.itemTagBadgeGlass]}>
+              <AppText style={styles.itemTagText}>{item.tag}</AppText>
+            </View>
+          </View>
+          <AppText style={styles.itemDesc} numberOfLines={2}>
+            {item.desc}
+          </AppText>
+        </View>
+      </View>
+
+      {/* Clean navigation chevron */}
+      <View style={styles.chevronWrapper}>
+        <ChevronRight size={18} color={themeColors.textSecondary} />
+      </View>
+    </TouchableOpacity>
+  );
+});
+HomeModuleCardItem.displayName = 'HomeModuleCardItem';
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const { theme: themeColors, isDark, toggleTheme, radiusTokens } = useThemeMode();
@@ -89,8 +159,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     [language]
   );
 
-  const modules = React.useMemo(
-    () => [
+  const modules = React.useMemo<HomeModuleItem[]>(() => {
+    const rawModules = [
       {
         id: 'theme-studio',
         category: 'ui' as const,
@@ -208,9 +278,13 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         icon: Layers,
         color: '#4F46E5',
       },
-    ],
-    [themeColors.primary, t]
-  );
+    ];
+
+    return rawModules.map((item) => ({
+      ...item,
+      searchIndex: removeVietnameseTones((item.title + ' ' + item.desc + ' ' + item.tag).toLowerCase()),
+    }));
+  }, [themeColors.primary, t]);
 
   const filteredModules = React.useMemo(() => {
     const normalizedQuery = removeVietnameseTones(searchQuery.trim().toLowerCase());
@@ -218,11 +292,25 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
       if (!matchesCategory) return false;
       if (!normalizedQuery) return true;
-      return removeVietnameseTones((item.title + ' ' + item.desc + ' ' + item.tag).toLowerCase()).includes(
-        normalizedQuery
-      );
+      return item.searchIndex.includes(normalizedQuery);
     });
   }, [modules, searchQuery, selectedCategory]);
+
+  const handleModulePress = React.useCallback(
+    (item: HomeModuleItem) => {
+      haptics.light();
+      if (item.id === 'theme-studio') {
+        setIsStudioOpen(true);
+      } else {
+        navigation.navigate('Details', {
+          itemId: item.id,
+          title: item.title,
+          description: item.desc,
+        });
+      }
+    },
+    [navigation]
+  );
 
   const isGlass = themeStyle === 'apple-glass';
 
@@ -448,64 +536,16 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         />
       ) : (
         <View style={styles.grid}>
-          {filteredModules.map((item) => {
-            const IconComponent = item.icon;
-            return (
-              <TouchableOpacity
-                key={item.id}
-                activeOpacity={0.7}
-                style={isGlass ? styles.itemCardGlass : styles.itemCard}
-                onPress={() => {
-                  haptics.light();
-                  if (item.id === 'theme-studio') {
-                    setIsStudioOpen(true);
-                  } else {
-                    navigation.navigate('Details', {
-                      itemId: item.id,
-                      title: item.title,
-                      description: item.desc,
-                    });
-                  }
-                }}
-              >
-                {/* Specular Highlight Hairline */}
-                {isGlass && <View style={styles.itemGlassHighlight} pointerEvents="none" />}
-
-                <View style={styles.itemLeft}>
-                  {/* Clean Flat Icon Badge with soft accent tint */}
-                  <View
-                    style={[
-                      styles.iconWrapper,
-                      { backgroundColor: `${item.color}18` },
-                    ]}
-                  >
-                    <IconComponent size={22} color={item.color} strokeWidth={2.2} />
-                  </View>
-
-                  <View style={styles.itemTexts}>
-                    <View style={styles.itemTitleRow}>
-                      <AppText style={styles.itemTitle}>
-                        {item.title}
-                      </AppText>
-                      <View style={[styles.itemTagBadge, isGlass && styles.itemTagBadgeGlass]}>
-                        <AppText style={styles.itemTagText}>
-                          {item.tag}
-                        </AppText>
-                      </View>
-                    </View>
-                    <AppText style={styles.itemDesc} numberOfLines={2}>
-                      {item.desc}
-                    </AppText>
-                  </View>
-                </View>
-
-                {/* Clean navigation chevron */}
-                <View style={styles.chevronWrapper}>
-                  <ChevronRight size={18} color={themeColors.textSecondary} />
-                </View>
-              </TouchableOpacity>
-            );
-          })}
+          {filteredModules.map((item) => (
+            <HomeModuleCardItem
+              key={item.id}
+              item={item}
+              isGlass={isGlass}
+              themeColors={themeColors}
+              styles={styles}
+              onPress={handleModulePress}
+            />
+          ))}
         </View>
       )}
 

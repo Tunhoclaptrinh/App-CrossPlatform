@@ -11,6 +11,7 @@ import {
   View,
   Animated,
   PanResponder,
+  Platform,
   NativeSyntheticEvent,
   NativeScrollEvent,
   LayoutChangeEvent,
@@ -21,7 +22,7 @@ import { useAppStore } from '@/hooks/useAppStore';
 import type { AppScrollViewProps } from './types';
 import { styles } from './styles';
 
-export const AppScrollView = React.forwardRef<ScrollViewInstance, AppScrollViewProps>(({
+export const AppScrollView = React.memo(React.forwardRef<ScrollViewInstance, AppScrollViewProps>(({
   children,
   horizontal = false,
   indicatorVisible = true,
@@ -154,12 +155,18 @@ export const AppScrollView = React.forwardRef<ScrollViewInstance, AppScrollViewP
   const handleLayout = useCallback((e: LayoutChangeEvent) => {
     onLayout?.(e);
     const { width, height } = e.nativeEvent.layout;
-    setContainerDimension({ width, height });
+    setContainerDimension((prev) => {
+      if (prev.width === width && prev.height === height) return prev;
+      return { width, height };
+    });
   }, [onLayout]);
 
   const handleContentSizeChange = useCallback((w: number, h: number) => {
     onContentSizeChange?.(w, h);
-    setContentDimension({ width: w, height: h });
+    setContentDimension((prev) => {
+      if (prev.width === w && prev.height === h) return prev;
+      return { width: w, height: h };
+    });
   }, [onContentSizeChange]);
 
   // Calculations
@@ -260,6 +267,18 @@ export const AppScrollView = React.forwardRef<ScrollViewInstance, AppScrollViewP
     idleTimeoutMs,
   ]);
 
+  // Stable refs for panResponder to avoid recreating gesture handlers on every render
+  const shouldShowRef = useRef(shouldShow);
+  shouldShowRef.current = shouldShow;
+  const onDragStartRef = useRef(onDragStart);
+  onDragStartRef.current = onDragStart;
+  const onDragEndRef = useRef(onDragEnd);
+  onDragEndRef.current = onDragEnd;
+  const idleTimeoutMsRef = useRef(idleTimeoutMs);
+  idleTimeoutMsRef.current = idleTimeoutMs;
+  const enableGrabFeedbackRef = useRef(enableGrabFeedback);
+  enableGrabFeedbackRef.current = enableGrabFeedback;
+
   // Interactive PanResponder for touch & drag (Fast-Scroller)
   const panResponder = useMemo(() => {
     if (!draggableIndicator) return null;
@@ -268,13 +287,13 @@ export const AppScrollView = React.forwardRef<ScrollViewInstance, AppScrollViewP
       onStartShouldSetPanResponder: () => false,
       onStartShouldSetPanResponderCapture: () => false,
       onMoveShouldSetPanResponder: (_, gestureState) => {
-        if (!shouldShow) return false;
+        if (!shouldShowRef.current) return false;
         const delta = horizontal ? gestureState.dx : gestureState.dy;
         const crossDelta = horizontal ? gestureState.dy : gestureState.dx;
         return Math.abs(delta) > 3 && Math.abs(delta) > Math.abs(crossDelta);
       },
       onMoveShouldSetPanResponderCapture: (_, gestureState) => {
-        if (!shouldShow) return false;
+        if (!shouldShowRef.current) return false;
         const delta = horizontal ? gestureState.dx : gestureState.dy;
         const crossDelta = horizontal ? gestureState.dy : gestureState.dx;
         return Math.abs(delta) > 3 && Math.abs(delta) > Math.abs(crossDelta);
@@ -295,7 +314,7 @@ export const AppScrollView = React.forwardRef<ScrollViewInstance, AppScrollViewP
           clearTimeout(fadeTimeoutRef.current);
         }
         activeAnim.setValue(1);
-        if (enableGrabFeedback) {
+        if (enableGrabFeedbackRef.current) {
           Animated.spring(grabAnim, {
             toValue: 1,
             friction: 7,
@@ -304,7 +323,7 @@ export const AppScrollView = React.forwardRef<ScrollViewInstance, AppScrollViewP
           }).start();
         }
 
-        onDragStart?.();
+        onDragStartRef.current?.();
       },
       onPanResponderMove: (_, gestureState) => {
         if (!isDraggingRef.current) return;
@@ -326,7 +345,7 @@ export const AppScrollView = React.forwardRef<ScrollViewInstance, AppScrollViewP
       },
       onPanResponderRelease: () => {
         isDraggingRef.current = false;
-        if (enableGrabFeedback) {
+        if (enableGrabFeedbackRef.current) {
           Animated.timing(grabAnim, {
             toValue: 0,
             duration: 160,
@@ -334,7 +353,7 @@ export const AppScrollView = React.forwardRef<ScrollViewInstance, AppScrollViewP
           }).start();
         }
 
-        onDragEnd?.();
+        onDragEndRef.current?.();
 
         if (fadeTimeoutRef.current) {
           clearTimeout(fadeTimeoutRef.current);
@@ -345,11 +364,11 @@ export const AppScrollView = React.forwardRef<ScrollViewInstance, AppScrollViewP
             duration: 320,
             useNativeDriver: true,
           }).start();
-        }, idleTimeoutMs);
+        }, idleTimeoutMsRef.current);
       },
       onPanResponderTerminate: () => {
         isDraggingRef.current = false;
-        if (enableGrabFeedback) {
+        if (enableGrabFeedbackRef.current) {
           Animated.timing(grabAnim, {
             toValue: 0,
             duration: 160,
@@ -357,7 +376,7 @@ export const AppScrollView = React.forwardRef<ScrollViewInstance, AppScrollViewP
           }).start();
         }
 
-        onDragEnd?.();
+        onDragEndRef.current?.();
 
         if (fadeTimeoutRef.current) {
           clearTimeout(fadeTimeoutRef.current);
@@ -368,20 +387,15 @@ export const AppScrollView = React.forwardRef<ScrollViewInstance, AppScrollViewP
             duration: 320,
             useNativeDriver: true,
           }).start();
-        }, idleTimeoutMs);
+        }, idleTimeoutMsRef.current);
       },
     });
   }, [
     draggableIndicator,
-    shouldShow,
     horizontal,
     activeAnim,
     grabAnim,
     indicatorPos,
-    idleTimeoutMs,
-    enableGrabFeedback,
-    onDragStart,
-    onDragEnd,
   ]);
 
   // Color resolution
@@ -503,6 +517,7 @@ export const AppScrollView = React.forwardRef<ScrollViewInstance, AppScrollViewP
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
         scrollEventThrottle={16}
+        removeClippedSubviews={Platform.OS === 'android'}
         onScroll={handleScroll}
         onContentSizeChange={handleContentSizeChange}
         style={horizontal ? styles.innerScrollViewHorizontal : styles.innerScrollView}
@@ -538,6 +553,6 @@ export const AppScrollView = React.forwardRef<ScrollViewInstance, AppScrollViewP
       )}
     </View>
   );
-});
+}));
 
 AppScrollView.displayName = 'AppScrollView';

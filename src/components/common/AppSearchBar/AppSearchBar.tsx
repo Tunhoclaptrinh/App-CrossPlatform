@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   TextInput,
   TouchableOpacity,
@@ -80,22 +80,41 @@ export const AppSearchBar: React.FC<AppSearchBarProps> = React.memo(({
     if (onClear) onClear();
   };
 
-  const containerSurfaceStyle = getSearchBarThemedContainer({
-    colors: themeColors,
-    isDark,
-    isGlassMode: isGlass,
-    radiusTokens,
-    globalContrast,
-    globalShadow,
-    globalControlVariant,
-    variant,
-    contrast,
-    shadow,
-    borderRadius,
-    borderWidth,
-    borderColor,
-    backgroundColor,
-  });
+  const containerSurfaceStyle = useMemo(
+    () =>
+      getSearchBarThemedContainer({
+        colors: themeColors,
+        isDark,
+        isGlassMode: isGlass,
+        radiusTokens,
+        globalContrast,
+        globalShadow,
+        globalControlVariant,
+        variant,
+        contrast,
+        shadow,
+        borderRadius,
+        borderWidth,
+        borderColor,
+        backgroundColor,
+      }),
+    [
+      themeColors,
+      isDark,
+      isGlass,
+      radiusTokens,
+      globalContrast,
+      globalShadow,
+      globalControlVariant,
+      variant,
+      contrast,
+      shadow,
+      borderRadius,
+      borderWidth,
+      borderColor,
+      backgroundColor,
+    ]
+  );
 
   return (
     <View

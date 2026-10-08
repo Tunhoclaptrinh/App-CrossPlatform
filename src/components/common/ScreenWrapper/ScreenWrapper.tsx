@@ -15,7 +15,7 @@ import { AppScrollView } from '../AppScrollView';
 import type { ScreenWrapperProps } from './types';
 import { styles } from './styles';
 
-export const ScreenWrapper = React.forwardRef<ScrollViewInstance, ScreenWrapperProps>(({
+export const ScreenWrapper = React.memo(React.forwardRef<ScrollViewInstance, ScreenWrapperProps>(({
   children,
   scrollable = false,
   contentContainerStyle,
@@ -111,6 +111,6 @@ export const ScreenWrapper = React.forwardRef<ScrollViewInstance, ScreenWrapperP
       </SafeAreaView>
     </View>
   );
-});
+}));
 
 ScreenWrapper.displayName = 'ScreenWrapper';

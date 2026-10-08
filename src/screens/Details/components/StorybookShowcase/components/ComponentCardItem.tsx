@@ -15,6 +15,66 @@ interface ComponentCardItemProps {
   isDark: boolean;
 }
 
+const staticStyles = StyleSheet.create({
+  card: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 13,
+    gap: 12,
+  },
+  iconBox: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+  },
+  infoCol: {
+    flex: 1,
+    gap: 3,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  name: {
+    fontSize: 14.5,
+    fontWeight: '700',
+  },
+  categoryBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+  },
+  categoryText: {
+    fontSize: 9.5,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: 0.4,
+  },
+  desc: {
+    fontSize: 12,
+    lineHeight: 16.5,
+  },
+  arrowBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2,
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+  },
+  arrowBtnDark: {
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  arrowBtnLight: {
+    backgroundColor: 'rgba(0, 0, 0, 0.04)',
+  },
+  demoText: {
+    fontSize: 11,
+    fontWeight: '600',
+  },
+});
+
 export const ComponentCardItem: React.FC<ComponentCardItemProps> = React.memo(({
   item,
   onPress,
@@ -31,102 +91,56 @@ export const ComponentCardItem: React.FC<ComponentCardItemProps> = React.memo(({
       ? '#8B5CF6'
       : '#10B981';
 
-  const styles = React.useMemo(
-    () =>
-      StyleSheet.create({
-        card: {
-          flexDirection: 'row',
-          alignItems: 'center',
-          padding: 13,
-          gap: 12,
-        },
-        iconBox: {
-          width: 40,
-          height: 40,
-          borderRadius: Math.min(radiusTokens.control, 14),
-          backgroundColor: isDark
-            ? `${categoryColor}25`
-            : `${categoryColor}15`,
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderWidth: 1,
-          borderColor: isDark ? `${categoryColor}40` : `${categoryColor}25`,
-        },
-        infoCol: {
-          flex: 1,
-          gap: 3,
-        },
-        headerRow: {
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: 6,
-        },
-        name: {
-          fontSize: 14.5,
-          fontWeight: '700',
-          color: themeColors.text,
-        },
-        categoryBadge: {
-          paddingHorizontal: 6,
-          paddingVertical: 2,
-          borderRadius: radiusTokens.pill,
-          backgroundColor: isDark ? `${categoryColor}20` : `${categoryColor}12`,
-        },
-        categoryText: {
-          fontSize: 9.5,
-          fontWeight: '700',
-          color: categoryColor,
-          textTransform: 'uppercase',
-          letterSpacing: 0.4,
-        },
-        desc: {
-          fontSize: 12,
-          color: themeColors.textSecondary,
-          lineHeight: 16.5,
-        },
-        arrowBtn: {
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: 2,
-          paddingHorizontal: 8,
-          paddingVertical: 5,
-          borderRadius: radiusTokens.pill,
-          backgroundColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.04)',
-        },
-        demoText: {
-          fontSize: 11,
-          fontWeight: '600',
-          color: themeColors.textSecondary,
-        },
-      }),
-    [themeColors, radiusTokens, isDark, categoryColor]
-  );
-
   return (
     <AppCard
       padding="none"
-      style={styles.card}
+      style={staticStyles.card}
       onPress={() => {
         haptics.light();
         onPress();
       }}
     >
-      <View style={styles.iconBox}>
+      <View
+        style={[
+          staticStyles.iconBox,
+          {
+            borderRadius: Math.min(radiusTokens.control, 14),
+            backgroundColor: isDark ? `${categoryColor}25` : `${categoryColor}15`,
+            borderColor: isDark ? `${categoryColor}40` : `${categoryColor}25`,
+          },
+        ]}
+      >
         <IconComponent size={20} color={categoryColor} strokeWidth={2.2} />
       </View>
-      <View style={styles.infoCol}>
-        <View style={styles.headerRow}>
-          <AppText style={styles.name}>{item.name}</AppText>
-          <View style={styles.categoryBadge}>
-            <AppText style={styles.categoryText}>{item.category}</AppText>
+      <View style={staticStyles.infoCol}>
+        <View style={staticStyles.headerRow}>
+          <AppText style={[staticStyles.name, { color: themeColors.text }]}>{item.name}</AppText>
+          <View
+            style={[
+              staticStyles.categoryBadge,
+              {
+                borderRadius: radiusTokens.pill,
+                backgroundColor: isDark ? `${categoryColor}20` : `${categoryColor}12`,
+              },
+            ]}
+          >
+            <AppText style={[staticStyles.categoryText, { color: categoryColor }]}>
+              {item.category}
+            </AppText>
           </View>
         </View>
-        <AppText style={styles.desc} numberOfLines={2}>
+        <AppText style={[staticStyles.desc, { color: themeColors.textSecondary }]} numberOfLines={2}>
           {item.description}
         </AppText>
       </View>
-      <View style={styles.arrowBtn}>
-        <AppText style={styles.demoText}>Demo</AppText>
+      <View
+        style={[
+          staticStyles.arrowBtn,
+          isDark ? staticStyles.arrowBtnDark : staticStyles.arrowBtnLight,
+          { borderRadius: radiusTokens.pill },
+        ]}
+      >
+        <AppText style={[staticStyles.demoText, { color: themeColors.textSecondary }]}>Demo</AppText>
         <ChevronRight size={13} color={themeColors.textSecondary} strokeWidth={2.5} />
       </View>
     </AppCard>

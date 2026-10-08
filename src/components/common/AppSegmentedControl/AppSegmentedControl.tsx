@@ -117,9 +117,12 @@ const AppSegmentedControlComponent = <T extends string | number = string>({
   const sizeStyle = useMemo(() => getSizeStyles(size, styles), [size, styles]);
 
   const numOptions = options.length || 1;
-  const availableWidth = Math.max(0, containerWidth - 6);
+  const paddingOffset = 3;
+  const availableWidth = Math.max(0, containerWidth - paddingOffset * 2);
   const itemWidth = fullWidth ? availableWidth / numOptions : (customLayouts[activeIndex]?.width ?? 0);
-  const targetX = fullWidth ? activeIndex * itemWidth : (customLayouts[activeIndex]?.x ?? 0);
+  const targetX = fullWidth
+    ? paddingOffset + activeIndex * itemWidth
+    : (customLayouts[activeIndex]?.x ?? paddingOffset);
 
   // Animate the thumb position using 100% Native Driver (Zero JS thread bottleneck)
   useEffect(() => {
