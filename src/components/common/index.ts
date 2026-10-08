@@ -3,7 +3,8 @@
  * 
  * 1. ATOMS:      Fundamental primitives (Text, Badge, Logo, Skeleton, IconTile, MeshBackground, Avatar, Divider, ProgressBar, PaginationDots)
  * 2. MOLECULES:  Interactive unit controls (Button, Input, Select, SearchBar, Switch, Checkbox, Radio, Chip, OtpInput, Rating, ListItem, EmptyState, SegmentedControl)
- * 3. ORGANISMS:   Complex feature sections (Card, GlassCard, AppleGlassCard, ConfirmDialog, Accordion, BottomSheet, Toast, ActionSheet, Header, etc.)
+ * 3. ORGANISMS:   Complex feature sections (Card, AppleGlassCard, ConfirmDialog, Accordion, BottomSheet, Toast, ActionSheet, Header, etc.)
+
  * 4. TEMPLATES:  Screen framing & layout wrappers (ScreenWrapper)
  */
 

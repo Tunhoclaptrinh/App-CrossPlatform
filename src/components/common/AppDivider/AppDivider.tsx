@@ -5,7 +5,7 @@ import { useThemeMode } from '@/hooks/useThemeMode';
 import type { AppDividerProps } from './types';
 import { styles, getDividerColor } from './styles';
 
-export const AppDivider: React.FC<AppDividerProps> = ({
+export const AppDivider: React.FC<AppDividerProps> = React.memo(({
   orientation = 'horizontal',
   inset = 0,
   insetEnd = 0,
@@ -112,4 +112,4 @@ export const AppDivider: React.FC<AppDividerProps> = ({
       ]}
     />
   );
-};
+});

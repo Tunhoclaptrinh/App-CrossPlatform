@@ -143,8 +143,9 @@ export const createHomeStyles = (
     },
     metricCardGlass: {
       backgroundColor: isDark ? 'rgba(30, 34, 48, 0.65)' : 'rgba(255, 255, 255, 0.60)',
-      borderRadius: Math.min(radius.card, 16),
+      borderRadius: radius.card,
       borderWidth: 1,
+
       borderColor: isDark ? 'rgba(255, 255, 255, 0.22)' : 'rgba(255, 255, 255, 0.75)',
       padding: Spacing.md + 4,
       marginBottom: Spacing.lg,
@@ -348,8 +349,9 @@ export const createHomeStyles = (
     },
     itemCardGlass: {
       backgroundColor: isDark ? 'rgba(30, 34, 48, 0.65)' : 'rgba(255, 255, 255, 0.60)',
-      borderRadius: Math.min(radius.card, 16),
+      borderRadius: radius.card,
       borderWidth: 1,
+
       borderColor: isDark ? 'rgba(255, 255, 255, 0.22)' : 'rgba(255, 255, 255, 0.75)',
       padding: Spacing.md + 2,
       flexDirection: 'row',

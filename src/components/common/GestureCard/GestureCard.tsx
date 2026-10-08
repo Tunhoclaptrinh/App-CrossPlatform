@@ -9,7 +9,7 @@ import { useSwipeGesture, useDoubleTap } from '@/hooks/useGestures';
 import type { GestureCardProps } from './types';
 import { createGestureCardStyles } from './styles';
 
-export const GestureCard: React.FC<GestureCardProps> = ({
+export const GestureCard: React.FC<GestureCardProps> = React.memo(({
   title,
   description,
   size = 'md',
@@ -129,4 +129,4 @@ export const GestureCard: React.FC<GestureCardProps> = ({
       </TouchableWithoutFeedback>
     </AppCard>
   );
-};
+});

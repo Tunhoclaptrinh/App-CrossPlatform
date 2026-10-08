@@ -7,7 +7,7 @@ import { haptics } from '@/utils/haptics';
 import type { AppListItemProps } from './types';
 import { createListItemStyles } from './styles';
 
-export const AppListItem: React.FC<AppListItemProps> = ({
+export const AppListItem: React.FC<AppListItemProps> = React.memo(({
   title,
   subtitle,
   leading,
@@ -192,4 +192,4 @@ export const AppListItem: React.FC<AppListItemProps> = ({
       )}
     </View>
   );
-};
+});

@@ -26,6 +26,6 @@ export const styles = StyleSheet.create({
     opacity: 0.5,
   },
   label: {
-    flex: 1,
+    flexShrink: 1,
   },
 });

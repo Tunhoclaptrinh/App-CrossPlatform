@@ -4,7 +4,7 @@ import { useThemeMode } from '@/hooks/useThemeMode';
 import type { SkeletonProps, SkeletonCardProps } from './types';
 import { styles, getSkeletonRadius, getSkeletonCardThemedStyle } from './styles';
 
-export const Skeleton: React.FC<SkeletonProps> = ({
+const SkeletonComponent: React.FC<SkeletonProps> = ({
   width = '100%',
   height = 20,
   borderRadius,
@@ -12,13 +12,18 @@ export const Skeleton: React.FC<SkeletonProps> = ({
   contrast,
   style,
 }) => {
-  const { theme: themeColors, isDark, globalContrast } = useThemeMode();
+  const { theme: themeColors, isDark, globalContrast, reduceMotion } = useThemeMode();
   const resolvedContrast = contrast ?? globalContrast;
   const isHigh = resolvedContrast === 'high';
 
   const opacity = useRef(new Animated.Value(isHigh ? 0.45 : 0.3)).current;
 
   useEffect(() => {
+    if (reduceMotion) {
+      opacity.setValue(isHigh ? 0.6 : 0.4);
+      return;
+    }
+
     const pulseAnimation = Animated.loop(
       Animated.sequence([
         Animated.timing(opacity, {
@@ -37,7 +42,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({
     pulseAnimation.start();
 
     return () => pulseAnimation.stop();
-  }, [opacity, isHigh]);
+  }, [opacity, isHigh, reduceMotion]);
 
   const bgColor = isHigh
     ? isDark ? 'rgba(255, 255, 255, 0.22)' : 'rgba(0, 0, 0, 0.16)'
@@ -53,7 +58,9 @@ export const Skeleton: React.FC<SkeletonProps> = ({
   return <Animated.View style={[baseStyle, { opacity }, style]} />;
 };
 
-export const SkeletonCard: React.FC<SkeletonCardProps> = ({ style }) => {
+export const Skeleton = React.memo(SkeletonComponent);
+
+const SkeletonCardComponent: React.FC<SkeletonCardProps> = ({ style }) => {
   const { theme: themeColors } = useThemeMode();
 
   return (
@@ -77,3 +84,6 @@ export const SkeletonCard: React.FC<SkeletonCardProps> = ({ style }) => {
     </Animated.View>
   );
 };
+
+export const SkeletonCard = React.memo(SkeletonCardComponent);
+

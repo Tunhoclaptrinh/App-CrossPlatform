@@ -7,7 +7,7 @@ import { haptics } from '@/utils/haptics';
 import type { AppRatingProps } from './types';
 import { styles } from './styles';
 
-export const AppRating: React.FC<AppRatingProps> = ({
+const AppRatingComponent: React.FC<AppRatingProps> = ({
   value,
   max = 5,
   onChange,
@@ -124,3 +124,6 @@ export const AppRating: React.FC<AppRatingProps> = ({
     </View>
   );
 };
+
+export const AppRating = React.memo(AppRatingComponent);
+

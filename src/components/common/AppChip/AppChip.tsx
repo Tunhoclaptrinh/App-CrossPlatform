@@ -1,5 +1,5 @@
-import React from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import React, { useRef } from 'react';
+import { TouchableOpacity, View, Animated } from 'react-native';
 import { X } from 'lucide-react-native';
 import { AppText } from '../AppText';
 import { useThemeMode } from '@/hooks/useThemeMode';
@@ -7,7 +7,7 @@ import { haptics } from '@/utils/haptics';
 import type { AppChipProps } from './types';
 import { createChipStyles } from './styles';
 
-export const AppChip: React.FC<AppChipProps> = ({
+const AppChipComponent: React.FC<AppChipProps> = ({
   label,
   selected = false,
   onPress,
@@ -23,9 +23,11 @@ export const AppChip: React.FC<AppChipProps> = ({
   labelStyle,
   accessibilityLabel,
 }) => {
-  const { theme, isDark, globalContrast, globalShadow } = useThemeMode();
+  const { theme, isDark, globalContrast, globalShadow, reduceMotion } = useThemeMode();
   const resolvedContrast = contrast ?? globalContrast;
   const resolvedShadow = shadow ?? globalShadow;
+
+  const scaleAnim = useRef(new Animated.Value(1)).current;
 
   const styles = createChipStyles(
     theme,
@@ -35,6 +37,26 @@ export const AppChip: React.FC<AppChipProps> = ({
     selected,
     resolvedContrast
   );
+
+  const handlePressIn = () => {
+    if (reduceMotion || !onPress) return;
+    Animated.spring(scaleAnim, {
+      toValue: 0.96,
+      speed: 50,
+      bounciness: 0,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    if (reduceMotion || !onPress) return;
+    Animated.spring(scaleAnim, {
+      toValue: 1.0,
+      speed: 35,
+      bounciness: 4,
+      useNativeDriver: true,
+    }).start();
+  };
 
   const handlePress = () => {
     if (!disabled && onPress) {
@@ -92,18 +114,25 @@ export const AppChip: React.FC<AppChipProps> = ({
 
   if (onPress) {
     return (
-      <TouchableOpacity
-        activeOpacity={0.75}
-        disabled={disabled}
-        onPress={handlePress}
-        accessibilityRole="button"
-        accessibilityState={{ selected, disabled }}
-        accessibilityLabel={accessibilityLabel || label}
-      >
-        {content}
-      </TouchableOpacity>
+      <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+        <TouchableOpacity
+          activeOpacity={0.80}
+          disabled={disabled}
+          onPressIn={handlePressIn}
+          onPressOut={handlePressOut}
+          onPress={handlePress}
+          accessibilityRole="button"
+          accessibilityState={{ selected, disabled }}
+          accessibilityLabel={accessibilityLabel || label}
+        >
+          {content}
+        </TouchableOpacity>
+      </Animated.View>
     );
   }
 
   return content;
 };
+
+export const AppChip = React.memo(AppChipComponent);
+

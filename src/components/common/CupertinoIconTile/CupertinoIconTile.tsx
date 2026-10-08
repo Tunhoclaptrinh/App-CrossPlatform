@@ -4,7 +4,7 @@ import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 import type { CupertinoIconTileProps } from './types';
 import { styles } from './styles';
 
-export const CupertinoIconTile: React.FC<CupertinoIconTileProps> = ({
+export const CupertinoIconTile: React.FC<CupertinoIconTileProps> = React.memo(({
   icon: IconComponent,
   size = 'md',
   iconSize,
@@ -83,7 +83,7 @@ export const CupertinoIconTile: React.FC<CupertinoIconTileProps> = ({
       <IconComponent size={actualIconSize} color="#FFFFFF" strokeWidth={2.2} />
     </View>
   );
-};
+});
 
 // Helper to darken hex color for 3D depth without bitwise ops
 function shadeColor(color: string, percent: number): string {

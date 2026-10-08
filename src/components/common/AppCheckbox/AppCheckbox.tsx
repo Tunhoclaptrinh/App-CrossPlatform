@@ -6,17 +6,18 @@ import { useThemeMode } from '@/hooks/useThemeMode';
 import type { AppCheckboxProps } from './types';
 import { styles, CHECKBOX_SIZES } from './styles';
 
-export const AppCheckbox: React.FC<AppCheckboxProps> = ({
+const AppCheckboxComponent: React.FC<AppCheckboxProps> = ({
   checked,
   onChange,
   label,
   disabled = false,
-  size = 'md',
+  size: propSize,
   contrast,
   borderRadius,
   style,
 }) => {
-  const { theme: themeColors, isDark, globalContrast } = useThemeMode();
+  const { theme: themeColors, isDark, globalContrast, globalControlSize } = useThemeMode();
+  const size = propSize ?? globalControlSize ?? 'md';
   const resolvedContrast = contrast ?? globalContrast;
   const isHigh = resolvedContrast === 'high';
   const sizeConfig = CHECKBOX_SIZES[size];
@@ -79,3 +80,6 @@ export const AppCheckbox: React.FC<AppCheckboxProps> = ({
     </TouchableOpacity>
   );
 };
+
+export const AppCheckbox = React.memo(AppCheckboxComponent);
+

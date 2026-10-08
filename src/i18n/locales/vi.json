@@ -170,5 +170,26 @@
     "outputLabel": "Chuỗi Payload chuẩn",
     "encryptSuccess": "Đã mã hóa dữ liệu theo chuẩn Server Backend!",
     "decryptSuccess": "Đã giải mã dữ liệu chuẩn Server thành công!"
+  },
+  "themeStudio": {
+    "title": "Studio Tinh Chỉnh Giao Diện",
+    "subtitle": "Thời gian thực • Lưu tự động • Thiết kế đồng bộ",
+    "modeTitle": "1. Chế Độ Hiển Thị",
+    "surfaceTitle": "2. Phong Cách Bề Mặt",
+    "accentTitle": "3. Màu Sắc Chủ Đạo",
+    "radiusTitle": "4. Mức Độ Bo Góc",
+    "sizeTitle": "5. Kích Thước Điều Khiển Mặc Định",
+    "fontScaleTitle": "6. Cỡ Chữ Toàn Hệ Thống",
+    "headerTitle": "7. Thanh Tiêu Đề Điều Hướng",
+    "variantTitle": "8. Kiểu Bề Mặt Mặc Định (Form Base)",
+    "contrastTitle": "9. Mức Độ Tương Phản Viền",
+    "shadowTitle": "10. Bóng Đổ Khối Nổi",
+    "languageTitle": "11. Ngôn Ngữ Hệ Thống (Language)",
+    "hapticsTitle": "Phản Hồi Rung Xúc Giác (Haptics)",
+    "hapticsDesc": "Rung nhẹ tạo chiều sâu xúc giác khi chạm nút và cử chỉ",
+    "reduceMotionTitle": "Giảm Chuyển Động (Reduce Motion)",
+    "reduceMotionDesc": "Tối ưu hóa tốc độ, tắt các hiệu ứng chuyển động phức tạp",
+    "defaultBtn": "Mặc Định",
+    "doneBtn": "Hoàn Tất"
   }
 }

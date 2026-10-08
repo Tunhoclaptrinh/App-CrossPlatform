@@ -5,7 +5,7 @@ import { useThemeMode } from '@/hooks/useThemeMode';
 import type { AppProgressBarProps } from './types';
 import { styles } from './styles';
 
-export const AppProgressBar: React.FC<AppProgressBarProps> = ({
+const AppProgressBarComponent: React.FC<AppProgressBarProps> = ({
   progress,
   height = 7,
   size,
@@ -20,7 +20,7 @@ export const AppProgressBar: React.FC<AppProgressBarProps> = ({
   style,
   labelStyle,
 }) => {
-  const { theme, radiusTokens, isDark, globalContrast } = useThemeMode();
+  const { theme, radiusTokens, isDark, globalContrast, reduceMotion } = useThemeMode();
   const resolvedContrast = contrast ?? globalContrast;
   const isHighContrast = resolvedContrast === 'high';
 
@@ -41,16 +41,16 @@ export const AppProgressBar: React.FC<AppProgressBarProps> = ({
   const animatedWidth = useRef(new Animated.Value(normalizedValue)).current;
 
   useEffect(() => {
-    if (animated) {
+    if (animated && !reduceMotion) {
       Animated.timing(animatedWidth, {
         toValue: normalizedValue,
-        duration: 350,
+        duration: 320,
         useNativeDriver: false,
       }).start();
     } else {
       animatedWidth.setValue(normalizedValue);
     }
-  }, [normalizedValue, animated, animatedWidth]);
+  }, [normalizedValue, animated, reduceMotion, animatedWidth]);
 
   const activeColor = color || theme.primary;
   const inactiveTrackColor =
@@ -159,3 +159,6 @@ export const AppProgressBar: React.FC<AppProgressBarProps> = ({
     </View>
   );
 };
+
+export const AppProgressBar = React.memo(AppProgressBarComponent);
+

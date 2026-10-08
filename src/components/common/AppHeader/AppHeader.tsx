@@ -16,7 +16,7 @@ import {
   getContainerHeight,
 } from './styles';
 
-export const AppHeader: React.FC<AppHeaderProps> = ({
+export const AppHeader: React.FC<AppHeaderProps> = React.memo(({
   title,
   subtitle,
   titleAlign = 'center',
@@ -608,4 +608,5 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
       )}
     </View>
   );
-};
+});
+

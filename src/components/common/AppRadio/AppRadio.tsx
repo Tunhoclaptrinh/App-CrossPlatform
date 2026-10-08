@@ -6,19 +6,20 @@ import { haptics } from '@/utils/haptics';
 import type { AppRadioProps } from './types';
 import { createRadioStyles } from './styles';
 
-export const AppRadio: React.FC<AppRadioProps> = ({
+const AppRadioComponent: React.FC<AppRadioProps> = ({
   selected,
   onSelect,
   label,
   sublabel,
   disabled = false,
-  size = 'md',
+  size: propSize,
   contrast,
   style,
   labelStyle,
   accessibilityLabel,
 }) => {
-  const { theme, isDark, globalContrast } = useThemeMode();
+  const { theme, isDark, globalContrast, globalControlSize } = useThemeMode();
+  const size = propSize ?? globalControlSize ?? 'md';
   const resolvedContrast = contrast ?? globalContrast;
   const styles = createRadioStyles(
     theme,
@@ -68,3 +69,6 @@ export const AppRadio: React.FC<AppRadioProps> = ({
     </TouchableOpacity>
   );
 };
+
+export const AppRadio = React.memo(AppRadioComponent);
+

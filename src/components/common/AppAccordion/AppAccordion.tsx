@@ -11,7 +11,7 @@ import { haptics } from '@/utils/haptics';
 import type { AppAccordionProps } from './types';
 import { createAccordionStyles, ACCORDION_SIZES } from './styles';
 
-export const AppAccordion: React.FC<AppAccordionProps> = ({
+const AppAccordionComponent: React.FC<AppAccordionProps> = ({
   title,
   subtitle,
   icon,
@@ -29,7 +29,7 @@ export const AppAccordion: React.FC<AppAccordionProps> = ({
   titleStyle,
   disabled = false,
 }) => {
-  const { theme, radiusTokens, isDark, globalContrast, isGlassTheme } = useThemeMode();
+  const { theme, radiusTokens, isDark, globalContrast, isGlassTheme, reduceMotion } = useThemeMode();
   const [internalExpanded, setInternalExpanded] = useState(defaultExpanded);
 
   const isExpanded = controlledExpanded !== undefined ? controlledExpanded : internalExpanded;
@@ -51,12 +51,16 @@ export const AppAccordion: React.FC<AppAccordionProps> = ({
   const rotateAnim = useRef(new Animated.Value(isExpanded ? 1 : 0)).current;
 
   useEffect(() => {
-    Animated.timing(rotateAnim, {
-      toValue: isExpanded ? 1 : 0,
-      duration: 220,
-      useNativeDriver: true,
-    }).start();
-  }, [isExpanded, rotateAnim]);
+    if (reduceMotion) {
+      rotateAnim.setValue(isExpanded ? 1 : 0);
+    } else {
+      Animated.timing(rotateAnim, {
+        toValue: isExpanded ? 1 : 0,
+        duration: 220,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [isExpanded, reduceMotion, rotateAnim]);
 
   const handleToggle = () => {
     if (disabled) return;
@@ -109,3 +113,6 @@ export const AppAccordion: React.FC<AppAccordionProps> = ({
     </View>
   );
 };
+
+export const AppAccordion = React.memo(AppAccordionComponent);
+

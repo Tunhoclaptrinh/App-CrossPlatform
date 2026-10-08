@@ -13,7 +13,7 @@ import {
   createAvatarStyles,
 } from './styles';
 
-export const AppAvatar: React.FC<AppAvatarProps> = ({
+export const AppAvatar: React.FC<AppAvatarProps> = React.memo(({
   source,
   name,
   size = 'md',
@@ -115,4 +115,4 @@ export const AppAvatar: React.FC<AppAvatarProps> = ({
   }
 
   return content;
-};
+});

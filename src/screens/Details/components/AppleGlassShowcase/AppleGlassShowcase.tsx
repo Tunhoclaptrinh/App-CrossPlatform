@@ -220,6 +220,7 @@ export const AppleGlassShowcase: React.FC<AppleGlassShowcaseProps> = ({
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
+          nestedScrollEnabled={true}
           contentContainerStyle={styles.themeSelectorContent}
           style={styles.themeSelectorScroll}
         >

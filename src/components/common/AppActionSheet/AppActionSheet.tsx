@@ -15,7 +15,7 @@ import { haptics } from '@/utils/haptics';
 import type { AppActionSheetProps } from './types';
 import { createActionSheetStyles } from './styles';
 
-export const AppActionSheet: React.FC<AppActionSheetProps> = ({
+export const AppActionSheet: React.FC<AppActionSheetProps> = React.memo(({
   visible,
   onClose,
   title,
@@ -28,7 +28,7 @@ export const AppActionSheet: React.FC<AppActionSheetProps> = ({
   borderRadius,
   style,
 }) => {
-  const { theme, radiusTokens, isDark, globalContrast, isGlassTheme } = useThemeMode();
+  const { theme, radiusTokens, isDark, globalContrast, isGlassTheme, reduceMotion } = useThemeMode();
   const resolvedContrast = contrast ?? globalContrast;
   const styles = createActionSheetStyles(
     theme,
@@ -57,7 +57,7 @@ export const AppActionSheet: React.FC<AppActionSheetProps> = ({
     <Modal
       visible={visible}
       transparent
-      animationType="fade"
+      animationType={reduceMotion ? 'none' : 'fade'}
       onRequestClose={onClose}
     >
       <View style={styles.modalRoot}>
@@ -166,4 +166,4 @@ export const AppActionSheet: React.FC<AppActionSheetProps> = ({
       </View>
     </Modal>
   );
-};
+});

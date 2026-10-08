@@ -1,10 +1,11 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef } from 'react';
 import {
   TouchableOpacity,
   ActivityIndicator,
   View,
   ViewStyle,
   GestureResponderEvent,
+  Animated,
 } from 'react-native';
 import { AppText } from '../AppText';
 import { useThemeMode } from '@/hooks/useThemeMode';
@@ -19,10 +20,10 @@ import {
   getIconOnlySizeStyle,
 } from './styles';
 
-export const AppButton: React.FC<AppButtonProps> = ({
+const AppButtonComponent: React.FC<AppButtonProps> = ({
   title,
   variant = 'primary',
-  size = 'md',
+  size: propSize,
   loading = false,
   disabled = false,
   fullWidth = false,
@@ -46,11 +47,16 @@ export const AppButton: React.FC<AppButtonProps> = ({
     isDark,
     globalContrast,
     globalShadow,
+    globalControlSize,
+    reduceMotion,
   } = useThemeMode();
+  const size = propSize ?? globalControlSize ?? 'md';
   const styles = createButtonStyles(themeColors, radiusTokens, isDark);
   const textColor = getButtonTextColor(variant, themeColors);
   const effectiveContrast = contrast ?? globalContrast ?? 'normal';
   const effectiveShadow = shadow ?? (globalShadow !== 'none' ? globalShadow : undefined);
+
+  const scaleAnim = useRef(new Animated.Value(1)).current;
 
   const customSurfaceStyle: ViewStyle = useMemo(() => {
     let shadowStyle: ViewStyle = {};
@@ -94,6 +100,26 @@ export const AppButton: React.FC<AppButtonProps> = ({
     };
   }, [borderRadius, borderWidth, borderColor, backgroundColor, effectiveContrast, variant, effectiveShadow, isDark]);
 
+  const handlePressIn = () => {
+    if (reduceMotion) return;
+    Animated.spring(scaleAnim, {
+      toValue: 0.975,
+      speed: 50,
+      bounciness: 0,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    if (reduceMotion) return;
+    Animated.spring(scaleAnim, {
+      toValue: 1.0,
+      speed: 35,
+      bounciness: 4,
+      useNativeDriver: true,
+    }).start();
+  };
+
   const handlePress = (e: GestureResponderEvent) => {
     if (haptic) {
       haptics.light();
@@ -115,44 +141,52 @@ export const AppButton: React.FC<AppButtonProps> = ({
   };
 
   return (
-    <TouchableOpacity
-      activeOpacity={0.75}
-      style={[
-        styles.base,
-        getSizeStyle(size, styles),
-        getVariantStyle(variant, styles),
-        isIconOnly && styles.iconOnly,
-        isIconOnly && getIconOnlySizeStyle(size, styles),
-        fullWidth && styles.fullWidth,
-        isInteractiveDisabled && styles.disabled,
-        customSurfaceStyle,
-        style,
-      ]}
-      disabled={isInteractiveDisabled}
-      onPress={handlePress}
-      {...props}
-    >
-      {loading ? (
-        <ActivityIndicator color={textColor} size="small" />
-      ) : (
-        <>
-          {leftIcon ? (
-            <View style={[styles.leftIconWrapper, isIconOnly && styles.iconOnlyWrapper]}>
-              {renderIcon(leftIcon)}
-            </View>
-          ) : null}
-          {title ? (
-            <AppText
-              variant="subtitle"
-              color={textColor}
-              style={[styles.textBase, getTextSizeStyle(size, styles), textStyle]}
-            >
-              {title}
-            </AppText>
-          ) : null}
-          {rightIcon ? <View style={styles.rightIconWrapper}>{renderIcon(rightIcon)}</View> : null}
-        </>
-      )}
-    </TouchableOpacity>
+    <Animated.View style={[{ transform: [{ scale: scaleAnim }] }, fullWidth && styles.fullWidth]}>
+      <TouchableOpacity
+        activeOpacity={0.80}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        style={[
+          styles.base,
+          getSizeStyle(size, styles),
+          getVariantStyle(variant, styles),
+          isIconOnly && styles.iconOnly,
+          isIconOnly && getIconOnlySizeStyle(size, styles),
+          fullWidth && styles.fullWidth,
+          isInteractiveDisabled && styles.disabled,
+          customSurfaceStyle,
+          style,
+        ]}
+        disabled={isInteractiveDisabled}
+        onPress={handlePress}
+        {...props}
+      >
+        {loading ? (
+          <ActivityIndicator color={textColor} size="small" />
+        ) : (
+          <>
+            {leftIcon ? (
+              <View style={[styles.leftIconWrapper, isIconOnly && styles.iconOnlyWrapper]}>
+                {renderIcon(leftIcon)}
+              </View>
+            ) : null}
+            {title ? (
+              <AppText
+                variant="subtitle"
+                color={textColor}
+                style={[styles.textBase, getTextSizeStyle(size, styles), textStyle]}
+              >
+                {title}
+              </AppText>
+            ) : null}
+            {rightIcon ? <View style={styles.rightIconWrapper}>{renderIcon(rightIcon)}</View> : null}
+          </>
+        )}
+      </TouchableOpacity>
+    </Animated.View>
   );
 };
+
+export const AppButton = React.memo(AppButtonComponent);
+
+

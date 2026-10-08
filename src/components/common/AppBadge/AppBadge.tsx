@@ -5,7 +5,7 @@ import { useThemeMode } from '@/hooks/useThemeMode';
 import type { AppBadgeProps } from './types';
 import { styles, getBadgeColors, getBadgeContainerStyle } from './styles';
 
-export const AppBadge: React.FC<AppBadgeProps> = ({
+export const AppBadge: React.FC<AppBadgeProps> = React.memo(({
   label,
   variant = 'primary',
   shape = 'pill',
@@ -56,4 +56,4 @@ export const AppBadge: React.FC<AppBadgeProps> = ({
       </AppText>
     </View>
   );
-};
+});

@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   Modal,
   View,
   TouchableWithoutFeedback,
+  Animated,
 } from 'react-native';
 import { AlertCircle, Trash2 } from 'lucide-react-native';
 import { AppText } from '../AppText';
@@ -11,7 +12,7 @@ import { useThemeMode } from '@/hooks/useThemeMode';
 import type { ConfirmDialogProps } from './types';
 import { styles, getDialogContainerThemedStyle, getDialogIconThemedStyle } from './styles';
 
-export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
+const ConfirmDialogComponent: React.FC<ConfirmDialogProps> = ({
   visible,
   title,
   message,
@@ -21,14 +22,51 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   onCancel,
   destructive = false,
   loading = false,
-  size = 'md',
+  size: propSize,
   borderRadius,
   icon,
   contrast,
   style,
 }) => {
-  const { theme: themeColors, isDark, radiusTokens, globalContrast } = useThemeMode();
+  const {
+    theme: themeColors,
+    isDark,
+    radiusTokens,
+    globalContrast,
+    globalControlSize,
+    reduceMotion,
+  } = useThemeMode();
+  const size = propSize ?? globalControlSize ?? 'md';
   const effectiveContrast = contrast ?? globalContrast ?? 'normal';
+
+  const scaleAnim = useRef(new Animated.Value(0.94)).current;
+  const opacityAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (visible) {
+      if (reduceMotion) {
+        scaleAnim.setValue(1);
+        opacityAnim.setValue(1);
+      } else {
+        scaleAnim.setValue(0.94);
+        opacityAnim.setValue(0);
+        Animated.parallel([
+          Animated.spring(scaleAnim, {
+            toValue: 1,
+            damping: 24,
+            mass: 0.65,
+            stiffness: 280,
+            useNativeDriver: true,
+          }),
+          Animated.timing(opacityAnim, {
+            toValue: 1,
+            duration: 180,
+            useNativeDriver: true,
+          }),
+        ]).start();
+      }
+    }
+  }, [visible, reduceMotion, scaleAnim, opacityAnim]);
 
   let maxWidth = 340;
   let padding = 24;
@@ -73,15 +111,15 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
           ]}
         >
           <TouchableWithoutFeedback>
-            <View
+            <Animated.View
               style={[
                 styles.dialogContainer,
                 getDialogContainerThemedStyle(isDark, radiusTokens, false, effectiveContrast),
                 { maxWidth, padding, borderRadius: cardRadius },
+                { transform: [{ scale: scaleAnim }], opacity: opacityAnim },
                 style,
               ]}
             >
-
               <View
                 style={[
                   styles.iconWrapper,
@@ -127,10 +165,13 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                   />
                 </View>
               </View>
-            </View>
+            </Animated.View>
           </TouchableWithoutFeedback>
         </View>
       </TouchableWithoutFeedback>
     </Modal>
   );
 };
+
+export const ConfirmDialog = React.memo(ConfirmDialogComponent);
+

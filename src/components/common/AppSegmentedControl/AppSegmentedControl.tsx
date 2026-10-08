@@ -1,16 +1,21 @@
-import React, { useMemo } from 'react';
-import { View, TouchableOpacity } from 'react-native';
+import React, { useMemo, useRef, useState, useEffect, useCallback } from 'react';
+import {
+  View,
+  TouchableOpacity,
+  Animated,
+  LayoutChangeEvent,
+} from 'react-native';
 import { AppText } from '../AppText';
 import { useThemeMode } from '@/hooks/useThemeMode';
 import { haptics } from '@/utils/haptics';
 import type { AppSegmentedControlProps, SegmentOption } from './types';
 import { createSegmentedStyles, getSizeStyles } from './styles';
 
-export const AppSegmentedControl = <T extends string | number = string>({
+const AppSegmentedControlComponent = <T extends string | number = string>({
   options,
   value,
   onChange,
-  size = 'md',
+  size: propSize,
   variant = 'standard',
   contrast,
   shadow,
@@ -42,10 +47,21 @@ export const AppSegmentedControl = <T extends string | number = string>({
     isDark,
     globalContrast,
     globalShadow,
+    globalControlSize,
+    reduceMotion,
   } = useThemeMode();
 
+  const size = propSize ?? globalControlSize ?? 'md';
   const effectiveContrast = contrast ?? globalContrast ?? 'normal';
   const effectiveShadow = shadow ?? (globalShadow !== 'none' ? globalShadow : undefined);
+
+  const activeIndex = Math.max(0, options.findIndex((opt) => opt.value === value));
+
+  const [containerWidth, setContainerWidth] = useState(0);
+  const [customLayouts, setCustomLayouts] = useState<Record<number, { x: number; width: number }>>({});
+
+  const animatedTranslateX = useRef(new Animated.Value(0)).current;
+  const isInitialMount = useRef(true);
 
   const customContrastStyle = useMemo(() => {
     let shadowStyle = {};
@@ -100,6 +116,50 @@ export const AppSegmentedControl = <T extends string | number = string>({
 
   const sizeStyle = useMemo(() => getSizeStyles(size, styles), [size, styles]);
 
+  const numOptions = options.length || 1;
+  const availableWidth = Math.max(0, containerWidth - 6);
+  const itemWidth = fullWidth ? availableWidth / numOptions : (customLayouts[activeIndex]?.width ?? 0);
+  const targetX = fullWidth ? activeIndex * itemWidth : (customLayouts[activeIndex]?.x ?? 0);
+
+  // Animate the thumb position using 100% Native Driver (Zero JS thread bottleneck)
+  useEffect(() => {
+    if (containerWidth <= 0 && fullWidth) return;
+
+    if (isInitialMount.current) {
+      animatedTranslateX.setValue(targetX);
+      isInitialMount.current = false;
+      return;
+    }
+
+    if (reduceMotion) {
+      animatedTranslateX.setValue(targetX);
+    } else {
+      Animated.spring(animatedTranslateX, {
+        toValue: targetX,
+        damping: 24,
+        mass: 0.65,
+        stiffness: 280,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [activeIndex, targetX, containerWidth, fullWidth, reduceMotion, animatedTranslateX]);
+
+  const handleContainerLayout = useCallback((e: LayoutChangeEvent) => {
+    const width = e.nativeEvent.layout.width;
+    if (width > 0) {
+      setContainerWidth(width);
+    }
+  }, []);
+
+  const handleItemLayout = useCallback((index: number, e: LayoutChangeEvent) => {
+    if (fullWidth) return;
+    const { x, width } = e.nativeEvent.layout;
+    setCustomLayouts((prev) => {
+      if (prev[index]?.x === x && prev[index]?.width === width) return prev;
+      return { ...prev, [index]: { x, width } };
+    });
+  }, [fullWidth]);
+
   const handleSelect = (option: SegmentOption<T>) => {
     if (disabled || option.disabled || option.value === value) return;
     if (haptic) {
@@ -124,27 +184,28 @@ export const AppSegmentedControl = <T extends string | number = string>({
     }
   };
 
-  const getItemActiveStyle = () => {
+  const getThumbVariantStyle = () => {
     switch (variant) {
       case 'glass':
-        return isDark ? styles.itemActiveGlassDark : styles.itemActiveGlassLight;
+        return isDark ? styles.thumbActiveGlassDark : styles.thumbActiveGlassLight;
       case 'pill':
-        return isDark ? styles.itemActivePillDark : styles.itemActivePillLight;
+        return isDark ? styles.thumbActivePillDark : styles.thumbActivePillLight;
       case 'tonal':
-        return isDark ? styles.itemActiveTonalDark : styles.itemActiveTonalLight;
+        return isDark ? styles.thumbActiveTonalDark : styles.thumbActiveTonalLight;
       case 'outline':
-        return isDark ? styles.itemActiveOutlineDark : styles.itemActiveOutlineLight;
+        return isDark ? styles.thumbActiveOutlineDark : styles.thumbActiveOutlineLight;
       case 'standard':
       default:
-        return isDark ? styles.itemActiveDark : styles.itemActiveLight;
+        return isDark ? styles.thumbActiveStandardDark : styles.thumbActiveStandardLight;
     }
   };
 
-  const resolvedActiveColor = activeColor || themeColors.primary;
+  const resolvedActiveColor = activeColor || (variant === 'outline' ? themeColors.primary : (isDark ? '#FFFFFF' : themeColors.text));
   const resolvedInactiveColor = inactiveColor || themeColors.textSecondary;
 
   return (
     <View
+      onLayout={handleContainerLayout}
       style={[
         styles.container,
         getTrackVariantStyle(),
@@ -157,7 +218,25 @@ export const AppSegmentedControl = <T extends string | number = string>({
         style,
       ]}
     >
-      {options.map((option) => {
+      {/* 60fps Native Driver GPU-Accelerated Sliding Thumb Indicator */}
+      {containerWidth > 0 && itemWidth > 0 && (
+        <Animated.View
+          style={[
+            styles.thumbBase,
+            getThumbVariantStyle(),
+            {
+              width: itemWidth,
+              transform: [{ translateX: animatedTranslateX }],
+            },
+            activeThumbColor ? { backgroundColor: activeThumbColor } : undefined,
+            activeBorderColor ? { borderColor: activeBorderColor } : undefined,
+            activeItemStyle,
+          ]}
+          pointerEvents="none"
+        />
+      )}
+
+      {options.map((option, index) => {
         const isActive = option.value === value;
         const isDisabled = disabled || option.disabled;
 
@@ -185,17 +264,12 @@ export const AppSegmentedControl = <T extends string | number = string>({
             key={String(option.value)}
             activeOpacity={0.7}
             disabled={isDisabled}
+            onLayout={(e) => handleItemLayout(index, e)}
             style={[
               styles.item,
               fullWidth ? styles.itemFullWidth : styles.itemAuto,
               itemHeight ? { height: itemHeight } : undefined,
               itemStyle,
-              isActive && [
-                getItemActiveStyle(),
-                activeThumbColor ? { backgroundColor: activeThumbColor } : undefined,
-                activeBorderColor ? { borderColor: activeBorderColor } : undefined,
-                activeItemStyle,
-              ],
               isDisabled && styles.itemDisabled,
             ]}
             onPress={() => handleSelect(option)}
@@ -248,3 +322,5 @@ export const AppSegmentedControl = <T extends string | number = string>({
     </View>
   );
 };
+
+export const AppSegmentedControl = React.memo(AppSegmentedControlComponent) as typeof AppSegmentedControlComponent;

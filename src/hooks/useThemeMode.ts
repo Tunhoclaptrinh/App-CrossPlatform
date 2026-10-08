@@ -11,8 +11,9 @@ import {
   RadiusPresets,
   RadiusPresetConfig,
   BorderRadius,
+  ControlSizeKey,
 } from '@/constants/theme';
-import { useAppStore, ThemeMode, ThemeStyle } from './useAppStore';
+import { useAppStore, ThemeMode, ThemeStyle, FontScale } from './useAppStore';
 
 export interface ThemeState {
   theme: ThemeColors;
@@ -40,6 +41,12 @@ export interface ThemeState {
   setGlobalShadow: (shadow: import('@/components/common/surfaceUtils').ControlShadow) => void;
   globalControlVariant: import('@/components/common/surfaceUtils').ControlVariant;
   setGlobalControlVariant: (variant: import('@/components/common/surfaceUtils').ControlVariant) => void;
+  globalControlSize: ControlSizeKey;
+  setGlobalControlSize: (size: ControlSizeKey) => void;
+  fontScale: FontScale;
+  setFontScale: (scale: FontScale) => void;
+  reduceMotion: boolean;
+  setReduceMotion: (enabled: boolean) => void;
   hapticsEnabled: boolean;
   setHapticsEnabled: (enabled: boolean) => void;
   resetThemeSettings: () => void;
@@ -47,7 +54,7 @@ export interface ThemeState {
 
 /**
  * Hook quản lý và ghi nhớ chế độ Sáng / Tối, màu chủ đạo (Accent Color),
- * cấp độ bo góc (Border Radius Presets) và phong cách bề mặt (Apple Glass / Flat).
+ * cấp độ bo góc (Border Radius Presets), phong cách bề mặt, tỷ lệ chữ và kích thước điều khiển.
  */
 export function useThemeMode(): ThemeState {
   const deviceScheme = useDeviceColorScheme();
@@ -68,6 +75,12 @@ export function useThemeMode(): ThemeState {
     setGlobalShadow,
     globalControlVariant,
     setGlobalControlVariant,
+    globalControlSize,
+    setGlobalControlSize,
+    fontScale,
+    setFontScale,
+    reduceMotion,
+    setReduceMotion,
     hapticsEnabled,
     setHapticsEnabled,
     resetThemeSettings,
@@ -127,6 +140,12 @@ export function useThemeMode(): ThemeState {
     setGlobalShadow,
     globalControlVariant,
     setGlobalControlVariant,
+    globalControlSize,
+    setGlobalControlSize,
+    fontScale,
+    setFontScale,
+    reduceMotion,
+    setReduceMotion,
     hapticsEnabled,
     setHapticsEnabled,
     resetThemeSettings,

@@ -15,7 +15,7 @@ export const createSegmentedStyles = (
     : (isPill ? radius.pill : radius.control);
   const itemRadius = isPill
     ? radius.pill
-    : Math.max(trackRadius - 3, 2);
+    : Math.max(trackRadius - 2, 4);
 
   return StyleSheet.create({
     container: {
@@ -24,6 +24,7 @@ export const createSegmentedStyles = (
       padding: 3,
       borderRadius: trackRadius,
       borderWidth: 1,
+      position: 'relative',
     },
     containerDisabled: {
       opacity: 0.45,
@@ -83,77 +84,76 @@ export const createSegmentedStyles = (
       height: ControlSize.lg.height, // 52px
     },
 
-    // Item
-    item: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
-      height: '100%',
+    // Animated Sliding Thumb Indicator
+    thumbBase: {
+      position: 'absolute',
+      top: 3,
+      bottom: 3,
+      left: 3,
       borderRadius: itemRadius,
-      gap: 5,
-      paddingHorizontal: 8,
+      zIndex: 0,
     },
-    itemFullWidth: {
-      flex: 1,
-    },
-    itemAuto: {
-      paddingHorizontal: 14,
-    },
-    itemActiveLight: {
+    thumbActiveStandardLight: {
       backgroundColor: '#FFFFFF',
       shadowColor: '#000000',
       shadowOffset: { width: 0, height: 1.5 },
-      shadowOpacity: 0.12,
-      shadowRadius: 2.5,
+      shadowOpacity: 0.14,
+      shadowRadius: 3,
       elevation: 2,
+      borderWidth: 0.5,
+      borderColor: 'rgba(0, 0, 0, 0.04)',
     },
-    itemActiveDark: {
+    thumbActiveStandardDark: {
       backgroundColor: '#334155',
       shadowColor: '#000000',
       shadowOffset: { width: 0, height: 1.5 },
-      shadowOpacity: 0.3,
-      shadowRadius: 2.5,
+      shadowOpacity: 0.35,
+      shadowRadius: 3,
       elevation: 2,
+      borderWidth: 0.5,
+      borderColor: 'rgba(255, 255, 255, 0.10)',
     },
-    itemActiveGlassLight: {
-      backgroundColor: '#FFFFFF',
+    thumbActiveGlassLight: {
+      backgroundColor: 'rgba(255, 255, 255, 0.92)',
       shadowColor: '#000000',
       shadowOffset: { width: 0, height: 1.5 },
-      shadowOpacity: 0.1,
-      shadowRadius: 2,
-      elevation: 1,
+      shadowOpacity: 0.10,
+      shadowRadius: 2.5,
+      elevation: 1.5,
+      borderWidth: 0.5,
+      borderColor: 'rgba(255, 255, 255, 0.95)',
     },
-    itemActiveGlassDark: {
-      backgroundColor: 'rgba(255, 255, 255, 0.16)',
+    thumbActiveGlassDark: {
+      backgroundColor: 'rgba(255, 255, 255, 0.18)',
       borderWidth: 1,
-      borderColor: 'rgba(255, 255, 255, 0.25)',
+      borderColor: 'rgba(255, 255, 255, 0.28)',
       shadowColor: '#000000',
       shadowOffset: { width: 0, height: 1.5 },
-      shadowOpacity: 0.2,
-      shadowRadius: 2,
-      elevation: 1,
+      shadowOpacity: 0.25,
+      shadowRadius: 3,
+      elevation: 1.5,
     },
-    itemActivePillLight: {
+    thumbActivePillLight: {
       backgroundColor: '#FFFFFF',
       borderWidth: 1,
-      borderColor: 'rgba(0, 122, 255, 0.25)',
-      shadowColor: '#000000',
+      borderColor: `${colors.primary}35`,
+      shadowColor: colors.primary,
       shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.12,
+      shadowOpacity: 0.15,
       shadowRadius: 4,
       elevation: 2,
     },
-    itemActivePillDark: {
+    thumbActivePillDark: {
       backgroundColor: 'rgba(30, 41, 59, 0.95)',
       borderWidth: 1,
-      borderColor: 'rgba(0, 122, 255, 0.35)',
+      borderColor: `${colors.primary}45`,
       shadowColor: '#000000',
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.35,
       shadowRadius: 5,
       elevation: 2,
     },
-    itemActiveTonalLight: {
+    thumbActiveTonalLight: {
       backgroundColor: '#FFFFFF',
       borderWidth: 1,
       borderColor: `${colors.primary}30`,
@@ -163,7 +163,7 @@ export const createSegmentedStyles = (
       shadowRadius: 3,
       elevation: 1.5,
     },
-    itemActiveTonalDark: {
+    thumbActiveTonalDark: {
       backgroundColor: `${colors.primary}35`,
       borderWidth: 1,
       borderColor: `${colors.primary}55`,
@@ -173,15 +173,34 @@ export const createSegmentedStyles = (
       shadowRadius: 3,
       elevation: 1.5,
     },
-    itemActiveOutlineLight: {
-      backgroundColor: '#F8FAFC',
+    thumbActiveOutlineLight: {
+      backgroundColor: `${colors.primary}15`,
       borderWidth: 1,
       borderColor: colors.primary,
     },
-    itemActiveOutlineDark: {
-      backgroundColor: '#1E293B',
+    thumbActiveOutlineDark: {
+      backgroundColor: `${colors.primary}25`,
       borderWidth: 1,
       borderColor: colors.primary,
+    },
+
+    // Item
+    item: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      height: '100%',
+      borderRadius: itemRadius,
+      gap: 5,
+      paddingHorizontal: 8,
+      zIndex: 1,
+      backgroundColor: 'transparent',
+    },
+    itemFullWidth: {
+      flex: 1,
+    },
+    itemAuto: {
+      paddingHorizontal: 14,
     },
     itemDisabled: {
       opacity: 0.35,

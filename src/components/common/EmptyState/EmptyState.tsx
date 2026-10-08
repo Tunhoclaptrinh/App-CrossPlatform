@@ -7,7 +7,7 @@ import { useThemeMode } from '@/hooks/useThemeMode';
 import type { EmptyStateProps } from './types';
 import { styles } from './styles';
 
-export const EmptyState: React.FC<EmptyStateProps> = ({
+export const EmptyState: React.FC<EmptyStateProps> = React.memo(({
   title = 'Không có dữ liệu',
   description = 'Hiện tại chưa có mục nào được hiển thị ở đây.',
   icon,
@@ -76,4 +76,4 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
       )}
     </View>
   );
-};
+});

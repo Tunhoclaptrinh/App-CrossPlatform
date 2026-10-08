@@ -10,7 +10,7 @@ import { useAppStore } from '@/hooks/useAppStore';
 import type { AppCardProps } from './types';
 import { styles, createCardVariantStyle } from './styles';
 
-export const AppCard: React.FC<AppCardProps> = ({
+const AppCardComponent: React.FC<AppCardProps> = ({
   children,
   variant = 'elevated',
   size,
@@ -100,3 +100,6 @@ export const AppCard: React.FC<AppCardProps> = ({
     </View>
   );
 };
+
+export const AppCard = React.memo(AppCardComponent);
+

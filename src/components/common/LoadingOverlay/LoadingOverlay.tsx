@@ -6,7 +6,7 @@ import { useThemeMode } from '@/hooks/useThemeMode';
 import type { LoadingOverlayProps } from './types';
 import { styles } from './styles';
 
-export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
+export const LoadingOverlay: React.FC<LoadingOverlayProps> = React.memo(({
   visible = true,
   message = 'Đang tải dữ liệu...',
   fullscreen = false,
@@ -60,4 +60,4 @@ export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
       </View>
     </View>
   );
-};
+});

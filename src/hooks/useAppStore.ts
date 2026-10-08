@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { changeLanguage } from '@/i18n';
 import type { User } from '@/types';
 import type { AccentColor } from '@/constants/colors';
-import type { RadiusPreset } from '@/constants/theme';
+import type { RadiusPreset, ControlSizeKey } from '@/constants/theme';
 import type {
   ControlContrast,
   ControlShadow,
@@ -15,6 +15,7 @@ export type ThemeMode = 'system' | 'light' | 'dark';
 export type ThemeStyle = 'default' | 'apple-glass';
 export type HeaderVariant = 'standard' | 'frosted-capsule' | 'floating-pill';
 export type Language = 'vi' | 'en';
+export type FontScale = 'small' | 'standard' | 'large';
 
 export interface AppStoreState {
   // Theme & Appearance
@@ -41,6 +42,12 @@ export interface AppStoreState {
   setAccentColor: (accent: AccentColor) => void;
   radiusPreset: RadiusPreset;
   setRadiusPreset: (preset: RadiusPreset) => void;
+  globalControlSize: ControlSizeKey;
+  setGlobalControlSize: (size: ControlSizeKey) => void;
+  fontScale: FontScale;
+  setFontScale: (scale: FontScale) => void;
+  reduceMotion: boolean;
+  setReduceMotion: (enabled: boolean) => void;
   hapticsEnabled: boolean;
   setHapticsEnabled: (enabled: boolean) => void;
   resetThemeSettings: () => void;
@@ -101,6 +108,15 @@ export const useAppStore = create<AppStoreState>()(
       radiusPreset: 'standard',
       setRadiusPreset: (preset: RadiusPreset) => set({ radiusPreset: preset }),
 
+      globalControlSize: 'md',
+      setGlobalControlSize: (size: ControlSizeKey) => set({ globalControlSize: size }),
+
+      fontScale: 'standard',
+      setFontScale: (scale: FontScale) => set({ fontScale: scale }),
+
+      reduceMotion: false,
+      setReduceMotion: (enabled: boolean) => set({ reduceMotion: enabled }),
+
       hapticsEnabled: true,
       setHapticsEnabled: (enabled: boolean) => set({ hapticsEnabled: enabled }),
 
@@ -110,9 +126,13 @@ export const useAppStore = create<AppStoreState>()(
           radiusPreset: 'standard',
           themeStyle: 'apple-glass',
           themeMode: 'light',
+          headerVariant: 'standard',
           globalContrast: 'normal',
           globalShadow: 'none',
           globalControlVariant: 'standard',
+          globalControlSize: 'md',
+          fontScale: 'standard',
+          reduceMotion: false,
           hapticsEnabled: true,
         }),
 
@@ -140,6 +160,9 @@ export const useAppStore = create<AppStoreState>()(
         headerVariant: state.headerVariant,
         accentColor: state.accentColor,
         radiusPreset: state.radiusPreset,
+        globalControlSize: state.globalControlSize,
+        fontScale: state.fontScale,
+        reduceMotion: state.reduceMotion,
         hapticsEnabled: state.hapticsEnabled,
         language: state.language,
         user: state.user,

@@ -20,18 +20,19 @@ export const styles = StyleSheet.create({
   sizeSm: {
     height: ControlSize.sm.height,
     minHeight: ControlSize.sm.height,
-    paddingHorizontal: 10,
+    paddingHorizontal: ControlSize.sm.paddingHorizontal,
   },
   sizeMd: {
     height: ControlSize.md.height,
     minHeight: ControlSize.md.height,
-    paddingHorizontal: 12,
+    paddingHorizontal: ControlSize.md.paddingHorizontal,
   },
   sizeLg: {
     height: ControlSize.lg.height,
     minHeight: ControlSize.lg.height,
-    paddingHorizontal: 16,
+    paddingHorizontal: ControlSize.lg.paddingHorizontal,
   },
+
   contentRow: {
     flex: 1,
     flexDirection: 'row',

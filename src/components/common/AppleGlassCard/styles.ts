@@ -11,7 +11,8 @@ export const createAppleGlassCardStyles = (
   borderRadiusOverride?: number
 ) => {
   const isHigh = contrast === 'high';
-  const resolvedRadius = borderRadiusOverride !== undefined ? borderRadiusOverride : Math.min(cardRadius, 16);
+  const resolvedRadius = borderRadiusOverride !== undefined ? borderRadiusOverride : cardRadius;
+
 
   let height = 172;
   let padding: number = Spacing.lg;

@@ -170,5 +170,26 @@
     "outputLabel": "Standard Payload string",
     "encryptSuccess": "Payload encrypted with Server-compatible standard!",
     "decryptSuccess": "Payload decrypted successfully from Server standard!"
+  },
+  "themeStudio": {
+    "title": "Theme Design Studio",
+    "subtitle": "Real-time • Auto-saved • Unified Design Tokens",
+    "modeTitle": "1. Appearance Mode",
+    "surfaceTitle": "2. Visual Surface Style",
+    "accentTitle": "3. Brand Accent Palette",
+    "radiusTitle": "4. Corner Radius Tokens",
+    "sizeTitle": "5. Default Control Size",
+    "fontScaleTitle": "6. System Font Scale",
+    "headerTitle": "7. Navigation Header Style",
+    "variantTitle": "8. Default Form Variant",
+    "contrastTitle": "9. Border Contrast Level",
+    "shadowTitle": "10. Global Elevation Shadows",
+    "languageTitle": "11. System Language",
+    "hapticsTitle": "Haptic Feedback (Sensory)",
+    "hapticsDesc": "Subtle tactile vibration feedback for taps and gestures",
+    "reduceMotionTitle": "Reduce Motion",
+    "reduceMotionDesc": "Minimize animations for faster rendering and accessibility",
+    "defaultBtn": "Reset Defaults",
+    "doneBtn": "Done"
   }
 }

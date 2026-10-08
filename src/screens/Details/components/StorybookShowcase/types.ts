@@ -8,7 +8,7 @@ export interface StorybookShowcaseProps {
   isGlass?: boolean;
 }
 
-export type StoryCategory = 'all' | 'molecules' | 'organisms' | 'atoms' | 'parity';
+export type StoryCategory = 'all' | 'molecules' | 'organisms' | 'atoms' | 'parity' | 'motion';
 
 export type ComponentId =
   | 'button'
@@ -17,9 +17,9 @@ export type ComponentId =
   | 'searchbar'
   | 'header'
   | 'apple-glass-card'
-  | 'glass-card'
   | 'card'
   | 'widget-card'
+
   | 'gesture-card'
   | 'badge'
   | 'switch'

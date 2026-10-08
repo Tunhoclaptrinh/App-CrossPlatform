@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, TouchableOpacity, Platform } from 'react-native';
+import React, { useRef } from 'react';
+import { View, TouchableOpacity, Platform, Animated } from 'react-native';
 import { BlurView } from '@react-native-community/blur';
 import { Sparkles, Radio, ShieldCheck } from 'lucide-react-native';
 import { useThemeMode } from '@/hooks/useThemeMode';
@@ -8,7 +8,7 @@ import { AppText } from '../AppText';
 import type { AppleGlassCardProps } from './types';
 import { createAppleGlassCardStyles } from './styles';
 
-export const AppleGlassCard: React.FC<AppleGlassCardProps> = ({
+export const AppleGlassCard: React.FC<AppleGlassCardProps> = React.memo(({
   balance = '$14,850.25',
   balanceLabel = 'Số dư khả dụng',
   cardNumber = '•••• •••• •••• 9248',
@@ -20,9 +20,34 @@ export const AppleGlassCard: React.FC<AppleGlassCardProps> = ({
   style,
   onPress,
 }) => {
-  const { isDark, radiusTokens, globalContrast, theme: themeColors } = useThemeMode();
+  const { isDark, radiusTokens, globalContrast, theme: themeColors, reduceMotion } = useThemeMode();
   const effectiveContrast = contrast ?? globalContrast ?? 'normal';
   const styles = createAppleGlassCardStyles(isDark, radiusTokens.card, size, effectiveContrast, borderRadius);
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  const handlePressIn = () => {
+    if (onPress && !reduceMotion) {
+      Animated.spring(scaleAnim, {
+        toValue: 0.985,
+        stiffness: 300,
+        damping: 20,
+        mass: 0.8,
+        useNativeDriver: true,
+      }).start();
+    }
+  };
+
+  const handlePressOut = () => {
+    if (onPress && !reduceMotion) {
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        stiffness: 300,
+        damping: 20,
+        mass: 0.8,
+        useNativeDriver: true,
+      }).start();
+    }
+  };
 
   const handlePress = () => {
     if (onPress) {
@@ -86,11 +111,19 @@ export const AppleGlassCard: React.FC<AppleGlassCardProps> = ({
 
   if (onPress) {
     return (
-      <TouchableOpacity activeOpacity={0.85} onPress={handlePress}>
-        {CardContent}
-      </TouchableOpacity>
+      <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+        <TouchableOpacity
+          activeOpacity={0.88}
+          onPressIn={handlePressIn}
+          onPressOut={handlePressOut}
+          onPress={handlePress}
+        >
+          {CardContent}
+        </TouchableOpacity>
+      </Animated.View>
     );
   }
 
   return CardContent;
-};
+});
+

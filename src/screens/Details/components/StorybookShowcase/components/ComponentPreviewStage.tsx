@@ -82,6 +82,7 @@ import type { ThemeColors } from '@/constants/colors';
 import type { ComponentId, ComponentMeta, PreviewCanvasBackground } from '../types';
 import { haptics } from '@/utils';
 import { InteractiveScrubber } from './InteractiveScrubber';
+import { ComponentMotionInspector } from './ComponentMotionInspector';
 
 interface ComponentPreviewStageProps {
   component: ComponentMeta;
@@ -205,6 +206,44 @@ export const ComponentPreviewStage: React.FC<ComponentPreviewStageProps> = ({
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
+
+  const handleMotionAction = useCallback((actionId: string) => {
+    haptics.light();
+    switch (actionId) {
+      case 'press-test':
+        setIsLoading(true);
+        setTimeout(() => setIsLoading(false), 800);
+        break;
+      case 'cycle-tab':
+        setSegmentedVal((prev) => (prev === 'all' ? 'pending' : prev === 'pending' ? 'completed' : 'all'));
+        break;
+      case 'open-dialog':
+        setIsDialogOpen(true);
+        break;
+      case 'toggle-skeleton':
+        break;
+      case 'toggle-accordion':
+        setAccordionExpanded((prev) => !prev);
+        break;
+      case 'simulate-progress':
+        setProgressVal(0);
+        setTimeout(() => setProgressVal(35), 250);
+        setTimeout(() => setProgressVal(75), 550);
+        setTimeout(() => setProgressVal(100), 850);
+        break;
+      case 'trigger-toast':
+        setIsToastOpen(true);
+        break;
+      case 'open-sheet':
+        setIsSheetOpen(true);
+        break;
+      case 'open-bottom-sheet':
+        setIsBottomSheetOpen(true);
+        break;
+      default:
+        break;
+    }
+  }, []);
 
   // Sample options for live testing
   const sampleSelectOptions: AppSelectOption<string>[] = [
@@ -1127,15 +1166,16 @@ export const ComponentPreviewStage: React.FC<ComponentPreviewStageProps> = ({
             {component.id === 'card' && (
               <AppCard
                 size={controlSize}
-                variant={isGlassPreview ? 'glass' : cardVariant}
+                variant={cardVariant}
                 contrast={controlContrast}
                 borderRadius={activeRadiusTokens.card}
                 style={cardDynamicRadiusStyle}
               >
                 <View style={styles.cardContentGap}>
                   <AppText style={styles.cardTitle}>
-                    AppCard ({isGlassPreview ? 'GLASS' : cardVariant.toUpperCase()})
+                    AppCard ({cardVariant.toUpperCase()})
                   </AppText>
+
                   <AppText style={styles.cardSubtitle}>
                     Khung bề mặt card với token bo góc radius.card ({activeRadiusTokens.card}px).
                   </AppText>
@@ -1662,6 +1702,15 @@ export const ComponentPreviewStage: React.FC<ComponentPreviewStageProps> = ({
           </View>
         </View>
       </AppCard>
+
+      {/* 3.5. DEDICATED COMPONENT MOTION & ANIMATION INSPECTOR */}
+      <ComponentMotionInspector
+        componentId={component.id}
+        themeColors={themeColors}
+        radiusTokens={activeRadiusTokens}
+        isDark={isDark}
+        onTriggerAction={handleMotionAction}
+      />
 
       {/* 4. INTERACTIVE PROPS CONTROLS PANEL */}
       <AppCard style={styles.controlsCard}>

@@ -19,13 +19,13 @@ import {
 } from './styles';
 import { ControlSize } from '@/constants/theme';
 
-export const AppSearchBar: React.FC<AppSearchBarProps> = ({
+export const AppSearchBar: React.FC<AppSearchBarProps> = React.memo(({
   value: controlledValue,
   onChangeText,
   onDebounceChange,
   debounceDelay = DEFAULT_SEARCH_DEBOUNCE_MS,
   placeholder = DEFAULT_SEARCH_PLACEHOLDER,
-  size = 'md',
+  size: propSize,
   onFilterPress,
   onClear,
   style,
@@ -44,7 +44,9 @@ export const AppSearchBar: React.FC<AppSearchBarProps> = ({
     globalContrast,
     globalShadow,
     globalControlVariant,
+    globalControlSize,
   } = useThemeMode();
+  const size = propSize ?? globalControlSize ?? 'md';
   const { themeStyle } = useAppStore();
   const isGlass = themeStyle === 'apple-glass';
   const iconSize = ControlSize[size].iconSize;
@@ -139,4 +141,4 @@ export const AppSearchBar: React.FC<AppSearchBarProps> = ({
       )}
     </View>
   );
-};
+});

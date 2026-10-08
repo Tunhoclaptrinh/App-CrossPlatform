@@ -16,6 +16,7 @@ import {
   ComponentCardItem,
   ComponentPreviewStage,
   ParityMatrixView,
+  MotionLabView,
 } from './components';
 import { haptics } from '@/utils';
 
@@ -41,7 +42,7 @@ export const StorybookShowcase: React.FC<StorybookShowcaseProps> = ({
   const filteredComponents = useMemo(() => {
     return COMPONENTS_CATALOG.filter((comp) => {
       // 1. Category check
-      if (activeCategory !== 'all' && activeCategory !== 'parity') {
+      if (activeCategory !== 'all' && activeCategory !== 'parity' && activeCategory !== 'motion') {
         if (comp.category !== activeCategory) return false;
       }
 
@@ -90,7 +91,27 @@ export const StorybookShowcase: React.FC<StorybookShowcaseProps> = ({
     );
   }
 
-  // 2. IF PARITY MATRIX CATEGORY IS ACTIVE -> RENDER ISOLATED PARITY MATRIX
+  // 2. IF MOTION LAB CATEGORY IS ACTIVE -> RENDER DEDICATED MOTION & ANIMATION SHOWCASE
+  if (activeCategory === 'motion') {
+    return (
+      <View style={styles.container}>
+        <CategoryFilterChips
+          activeCategory={activeCategory}
+          onSelectCategory={setActiveCategory}
+          themeColors={themeColors}
+          radiusTokens={radiusTokens}
+          isDark={isDark}
+        />
+        <MotionLabView
+          themeColors={themeColors}
+          radiusTokens={radiusTokens}
+          isDark={isDark}
+        />
+      </View>
+    );
+  }
+
+  // 3. IF PARITY MATRIX CATEGORY IS ACTIVE -> RENDER ISOLATED PARITY MATRIX
   if (activeCategory === 'parity') {
     return (
       <View style={styles.container}>

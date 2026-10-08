@@ -17,10 +17,10 @@ import {
   getInputTextSizeStyle,
 } from './styles';
 
-export const AppInput: React.FC<AppInputProps> = ({
+export const AppInput: React.FC<AppInputProps> = React.memo(({
   label,
   error,
-  size = 'md',
+  size: propSize,
   disabled = false,
   leftIcon,
   rightIcon,
@@ -44,7 +44,9 @@ export const AppInput: React.FC<AppInputProps> = ({
     globalContrast,
     globalShadow,
     globalControlVariant,
+    globalControlSize,
   } = useThemeMode();
+  const size = propSize ?? globalControlSize ?? 'md';
   const { themeStyle } = useAppStore();
   const isGlassMode = themeStyle === 'apple-glass';
 
@@ -126,4 +128,5 @@ export const AppInput: React.FC<AppInputProps> = ({
       )}
     </View>
   );
-};
+});
+

@@ -380,9 +380,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
+        nestedScrollEnabled
         style={styles.filterScroll}
         contentContainerStyle={styles.filterScrollContent}
       >
+
         {categories.map((cat) => {
           const isActive = selectedCategory === cat.id;
           const CatIcon = cat.icon;

@@ -10,7 +10,7 @@ import { haptics } from '@/utils/haptics';
 import type { AppOtpInputProps } from './types';
 import { createOtpStyles } from './styles';
 
-export const AppOtpInput: React.FC<AppOtpInputProps> = ({
+export const AppOtpInput: React.FC<AppOtpInputProps> = React.memo(({
   length = 6,
   value,
   onChange,
@@ -113,4 +113,4 @@ export const AppOtpInput: React.FC<AppOtpInputProps> = ({
       </View>
     </TouchableWithoutFeedback>
   );
-};
+});

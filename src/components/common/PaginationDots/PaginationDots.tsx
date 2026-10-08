@@ -5,7 +5,7 @@ import { haptics } from '@/utils/haptics';
 import type { PaginationDotsProps } from './types';
 import { styles } from './styles';
 
-export const PaginationDots: React.FC<PaginationDotsProps> = ({
+export const PaginationDots: React.FC<PaginationDotsProps> = React.memo(({
   count,
   activeIndex,
   onDotPress,
@@ -103,4 +103,4 @@ export const PaginationDots: React.FC<PaginationDotsProps> = ({
       })}
     </View>
   );
-};
+});

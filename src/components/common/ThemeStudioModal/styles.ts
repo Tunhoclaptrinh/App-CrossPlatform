@@ -1,4 +1,4 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet, Dimensions, Platform } from 'react-native';
 import { Spacing, ControlSize } from '@/constants/theme';
 import type { ThemeColors } from '@/constants/colors';
 import type { RadiusPresetConfig } from '@/constants/theme';
@@ -9,126 +9,150 @@ export const createThemeStudioStyles = (
   colors: ThemeColors,
   radius: RadiusPresetConfig,
   isDark: boolean = false
-) =>
-  StyleSheet.create({
+) => {
+  const subtleBorder = isDark ? '#2B3448' : '#E2E8F0';
+  const inactiveCardBg = isDark ? '#19202E' : '#FFFFFF';
+  const inactiveChipBg = isDark ? '#141A26' : '#F8FAFC';
+  const textSubtle = isDark ? '#94A3B8' : '#64748B';
+
+  return StyleSheet.create({
     backdrop: {
       flex: 1,
       justifyContent: 'flex-end',
     },
     backdropLight: {
-      backgroundColor: 'rgba(15, 23, 42, 0.55)',
+      backgroundColor: 'rgba(15, 23, 42, 0.45)',
     },
     backdropDark: {
       backgroundColor: 'rgba(0, 0, 0, 0.75)',
     },
     sheetContainer: {
-      backgroundColor: isDark ? '#181C28' : '#FFFFFF',
-      // Sheet top corners: capped at 16px (large pill radius would look odd on bottom sheet)
-      borderTopLeftRadius: Math.min(radius.card, 16),
-      borderTopRightRadius: Math.min(radius.card, 16),
+      backgroundColor: isDark ? '#121722' : '#FFFFFF',
+      borderTopLeftRadius: Math.min(radius.card, 18),
+      borderTopRightRadius: Math.min(radius.card, 18),
       borderWidth: 1,
-      borderColor: isDark ? '#334155' : '#E2E8F0',
-      maxHeight: WINDOW_HEIGHT * 0.88,
+      borderColor: subtleBorder,
+      height: Math.round(WINDOW_HEIGHT * 0.85),
+      maxHeight: Math.round(WINDOW_HEIGHT * 0.90),
       shadowColor: '#000000',
       shadowOffset: { width: 0, height: -4 },
-      shadowOpacity: 0.25,
+      shadowOpacity: isDark ? 0.35 : 0.12,
       shadowRadius: 20,
       elevation: 16,
       position: 'relative',
       overflow: 'hidden',
+      display: 'flex',
+      flexDirection: 'column',
     },
     dragHandleArea: {
       alignItems: 'center',
-      paddingVertical: 10,
+      paddingVertical: 8,
+      backgroundColor: isDark ? '#121722' : '#FFFFFF',
     },
     dragHandle: {
-      width: 40,
+      width: 36,
       height: 4,
       borderRadius: 2,
-      backgroundColor: colors.border,
+      backgroundColor: isDark ? '#475569' : '#CBD5E1',
     },
     header: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
       paddingHorizontal: Spacing.lg,
-      paddingBottom: Spacing.sm,
+      paddingVertical: Spacing.sm + 1,
       borderBottomWidth: 1,
-      borderBottomColor: colors.border,
+      borderBottomColor: subtleBorder,
+      backgroundColor: isDark ? '#161D2A' : '#FAFAFC',
     },
     headerTitleRow: {
       flexDirection: 'row',
       alignItems: 'center',
       gap: 10,
+      flex: 1,
+    },
+    headerTextCol: {
+      flex: 1,
     },
     headerIconBox: {
-      // Fixed square icon button: use smControl so it stays near-circle in smooth mode
       width: ControlSize.iconBtnSm,
       height: ControlSize.iconBtnSm,
       borderRadius: Math.min(radius.smControl, ControlSize.iconBtnSm / 2),
-      backgroundColor: `${colors.primary}18`,
+      backgroundColor: `${colors.primary}15`,
+      borderWidth: 1,
+      borderColor: `${colors.primary}35`,
       alignItems: 'center',
       justifyContent: 'center',
     },
     headerTitle: {
-      fontSize: 17,
+      fontSize: 16,
       fontWeight: '700',
       color: colors.text,
-      letterSpacing: -0.3,
+      letterSpacing: -0.2,
     },
     headerSubtitle: {
       fontSize: 11.5,
-      color: colors.textSecondary,
+      color: textSubtle,
       fontWeight: '500',
+      marginTop: 1,
     },
     closeBtn: {
-      // Close button: fixed 36×36, stays circular in smooth mode
       width: ControlSize.iconBtnSm,
       height: ControlSize.iconBtnSm,
       borderRadius: Math.min(radius.smControl, ControlSize.iconBtnSm / 2),
-      backgroundColor: colors.surfaceSubtle,
+      backgroundColor: isDark ? '#202838' : '#F1F5F9',
+      borderWidth: 1,
+      borderColor: subtleBorder,
       alignItems: 'center',
       justifyContent: 'center',
     },
 
+    scrollView: {
+      flex: 1,
+    },
     scrollContent: {
       paddingHorizontal: Spacing.lg,
       paddingTop: Spacing.md,
-      paddingBottom: Spacing.xl + 20,
-      gap: Spacing.lg,
+      paddingBottom: Spacing.lg,
+      gap: 16,
     },
 
     // Sections
     section: {
-      gap: 10,
+      gap: 9,
     },
     sectionHeader: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
+      gap: 8,
     },
     sectionTitleRow: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 7,
+      gap: 6,
+      flex: 1,
+      flexShrink: 1,
     },
     sectionTitle: {
-      fontSize: 13.5,
+      fontSize: 12.5,
       fontWeight: '700',
       color: colors.text,
       textTransform: 'uppercase',
-      letterSpacing: 0.5,
+      letterSpacing: 0.4,
+      flexShrink: 1,
     },
     sectionBadge: {
+      flexShrink: 0,
       paddingHorizontal: 8,
       paddingVertical: 2,
       borderRadius: radius.badge,
-      backgroundColor: colors.surfaceSubtle,
+      backgroundColor: `${colors.primary}12`,
       borderWidth: 1,
-      borderColor: colors.border,
+      borderColor: `${colors.primary}30`,
     },
     sectionBadgeText: {
-      fontSize: 11,
+      fontSize: 10.5,
       fontWeight: '600',
       color: colors.primary,
     },
@@ -144,23 +168,22 @@ export const createThemeStudioStyles = (
       alignItems: 'center',
       justifyContent: 'center',
       gap: 6,
-      // Fixed height via ControlSize.sm for vertical consistency
       height: ControlSize.sm.height,
       paddingHorizontal: ControlSize.sm.paddingHorizontal,
-      // Chips use control radius → becomes pill in smooth mode
       borderRadius: radius.control,
-      backgroundColor: colors.surfaceSubtle,
-      borderWidth: 1.5,
-      borderColor: colors.border,
+      backgroundColor: inactiveChipBg,
+      borderWidth: 1,
+      borderColor: subtleBorder,
     },
     optionChipActive: {
-      backgroundColor: `${colors.primary}15`,
+      backgroundColor: `${colors.primary}14`,
       borderColor: colors.primary,
+      borderWidth: 1.5,
     },
     optionChipText: {
       fontSize: 12.5,
-      fontWeight: '600',
-      color: colors.textSecondary,
+      fontWeight: '500',
+      color: textSubtle,
     },
     optionChipTextActive: {
       color: colors.primary,
@@ -171,31 +194,34 @@ export const createThemeStudioStyles = (
     colorGrid: {
       flexDirection: 'row',
       flexWrap: 'wrap',
-      gap: 10,
+      gap: 8,
       justifyContent: 'space-between',
     },
     colorSwatchItem: {
-      width: '31%',
+      width: '31.5%',
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 8,
+      gap: 7,
       paddingVertical: 8,
-      paddingHorizontal: 10,
+      paddingHorizontal: 8,
       borderRadius: radius.pill,
-      backgroundColor: colors.surfaceSubtle,
-      borderWidth: 1.5,
-      borderColor: colors.border,
+      backgroundColor: inactiveCardBg,
+      borderWidth: 1,
+      borderColor: subtleBorder,
     },
     colorSwatchItemActive: {
       borderColor: colors.primary,
+      borderWidth: 1.5,
       backgroundColor: `${colors.primary}12`,
     },
     colorDot: {
-      width: 20,
-      height: 20,
-      borderRadius: 10,
+      width: 18,
+      height: 18,
+      borderRadius: 9,
       alignItems: 'center',
       justifyContent: 'center',
+      borderWidth: 1,
+      borderColor: 'rgba(255, 255, 255, 0.4)',
     },
     colorSwatchName: {
       fontSize: 11.5,
@@ -204,6 +230,7 @@ export const createThemeStudioStyles = (
       flex: 1,
     },
     colorSwatchNameActive: {
+      color: colors.primary,
       fontWeight: '700',
     },
 
@@ -214,13 +241,13 @@ export const createThemeStudioStyles = (
     },
     radiusPresetCard: {
       flex: 1,
-      paddingVertical: 10,
-      paddingHorizontal: 6,
+      paddingVertical: 9,
+      paddingHorizontal: 4,
       alignItems: 'center',
-      backgroundColor: colors.surfaceSubtle,
-      borderWidth: 1.5,
-      borderColor: colors.border,
-      gap: 6,
+      backgroundColor: inactiveCardBg,
+      borderWidth: 1,
+      borderColor: subtleBorder,
+      gap: 5,
     },
     radiusPresetCardSharp: { borderRadius: 8 },
     radiusPresetCardCompact: { borderRadius: 12 },
@@ -228,13 +255,14 @@ export const createThemeStudioStyles = (
     radiusPresetCardSmooth: { borderRadius: 16 },
     radiusPresetCardActive: {
       borderColor: colors.primary,
+      borderWidth: 1.5,
       backgroundColor: `${colors.primary}12`,
     },
     radiusVisualBox: {
-      width: 32,
-      height: 32,
-      borderWidth: 2,
-      borderColor: colors.textSecondary,
+      width: 30,
+      height: 30,
+      borderWidth: 1.5,
+      borderColor: textSubtle,
       borderStyle: 'dashed',
     },
     radiusVisualBoxSharp: { borderRadius: 4 },
@@ -244,20 +272,22 @@ export const createThemeStudioStyles = (
     radiusVisualBoxActive: {
       borderColor: colors.primary,
       borderStyle: 'solid',
+      backgroundColor: `${colors.primary}10`,
     },
     radiusPresetName: {
-      fontSize: 12,
-      fontWeight: '700',
+      fontSize: 11.5,
+      fontWeight: '600',
       color: colors.text,
       textAlign: 'center',
     },
     radiusPresetNameActive: {
       color: colors.primary,
+      fontWeight: '700',
     },
     radiusPresetPixel: {
-      fontSize: 10,
-      fontWeight: '600',
-      color: colors.textSecondary,
+      fontSize: 9.5,
+      fontWeight: '500',
+      color: textSubtle,
     },
 
     // Switch row
@@ -265,96 +295,42 @@ export const createThemeStudioStyles = (
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      backgroundColor: colors.surfaceSubtle,
+      backgroundColor: inactiveChipBg,
       padding: Spacing.md,
-      // Card container: safe max 16px to prevent pill distortion
       borderRadius: Math.min(radius.card, 16),
       borderWidth: 1,
-      borderColor: colors.border,
+      borderColor: subtleBorder,
     },
     switchLabelGroup: {
       flex: 1,
       marginRight: Spacing.md,
     },
     switchTitle: {
-      fontSize: 13.5,
+      fontSize: 13,
       fontWeight: '600',
       color: colors.text,
     },
     switchDesc: {
-      fontSize: 11.5,
-      color: colors.textSecondary,
+      fontSize: 11,
+      color: textSubtle,
+      fontWeight: '400',
       marginTop: 2,
     },
 
-    // Live Sandbox
-    sandboxCard: {
-      backgroundColor: colors.card,
-      borderRadius: radius.card,
-      borderWidth: 1.5,
-      borderColor: colors.border,
-      padding: Spacing.md,
-      gap: 12,
-      shadowColor: '#000000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.05,
-      shadowRadius: 6,
-      elevation: 0,
-    },
-    sandboxHeader: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      gap: 8,
-    },
-    sandboxTitle: {
-      fontSize: 11,
-      fontWeight: '700',
-      color: colors.textSecondary,
-      textTransform: 'uppercase',
-      letterSpacing: 0.5,
-      flexShrink: 1,
-    },
-    sandboxControls: {
-      gap: 10,
-    },
-    sandboxInlineRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      gap: 8,
-    },
-    sandboxBadges: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 6,
-    },
-    sandboxTagRow: {
-      flexDirection: 'row',
-      gap: 6,
-    },
-    sandboxTag: {
-      paddingHorizontal: 8,
-      paddingVertical: 2,
-      borderRadius: radius.badge,
-      backgroundColor: `${colors.primary}18`,
-      borderWidth: 1,
-      borderColor: `${colors.primary}40`,
-      flexShrink: 0,
-    },
-    sandboxTagText: {
-      fontSize: 10.5,
-      fontWeight: '700',
-      color: colors.primary,
-    },
 
-    // Footer
-    footerRow: {
+    // Pinned Bottom Footer
+    footerContainer: {
       flexDirection: 'row',
       gap: 10,
-      marginTop: 4,
+      paddingHorizontal: Spacing.lg,
+      paddingTop: 10,
+      paddingBottom: Platform.OS === 'ios' ? 22 : 12,
+      borderTopWidth: 1,
+      borderTopColor: subtleBorder,
+      backgroundColor: isDark ? '#161D2A' : '#FAFAFC',
     },
     footerBtn: {
       flex: 1,
     },
   });
+};

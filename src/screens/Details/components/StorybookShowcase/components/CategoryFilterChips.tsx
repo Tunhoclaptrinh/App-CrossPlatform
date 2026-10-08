@@ -6,6 +6,7 @@ import {
   Box,
   Sparkles,
   Maximize2,
+  Zap,
 } from 'lucide-react-native';
 import { AppText } from '@/components';
 import type { ThemeColors } from '@/constants/colors';
@@ -30,6 +31,7 @@ export const CategoryFilterChips: React.FC<CategoryFilterChipsProps> = ({
 }) => {
   const categories: { id: StoryCategory; label: string; icon: any }[] = [
     { id: 'all', label: 'Tất Cả Linh Kiện', icon: Layers },
+    { id: 'motion', label: 'Hiệu Ứng (Motion Lab)', icon: Zap },
     { id: 'molecules', label: 'Form & Nút (Molecules)', icon: Sliders },
     { id: 'organisms', label: 'Bề Mặt & Header (Organisms)', icon: Box },
     { id: 'atoms', label: 'Chỉ Số & Khung (Atoms)', icon: Sparkles },
@@ -82,6 +84,7 @@ export const CategoryFilterChips: React.FC<CategoryFilterChipsProps> = ({
       horizontal
       showsHorizontalScrollIndicator={false}
       nestedScrollEnabled
+      keyboardShouldPersistTaps="handled"
       style={styles.scroll}
       contentContainerStyle={styles.scrollContent}
     >

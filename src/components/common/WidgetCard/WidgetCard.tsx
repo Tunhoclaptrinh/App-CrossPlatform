@@ -9,7 +9,7 @@ import { haptics } from '@/utils/haptics';
 import type { WidgetCardProps } from './types';
 import { styles } from './styles';
 
-export const WidgetCard: React.FC<WidgetCardProps> = ({
+export const WidgetCard: React.FC<WidgetCardProps> = React.memo(({
   title,
   subtitle,
   badge,
@@ -73,5 +73,5 @@ export const WidgetCard: React.FC<WidgetCardProps> = ({
       {children && <View style={styles.contentArea}>{children}</View>}
     </AppCard>
   );
-};
+});
 

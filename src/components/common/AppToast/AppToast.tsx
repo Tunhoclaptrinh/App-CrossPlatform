@@ -16,7 +16,7 @@ import { haptics } from '@/utils/haptics';
 import type { AppToastProps } from './types';
 import { createToastStyles, TOAST_COLORS, TOAST_SIZES } from './styles';
 
-export const AppToast: React.FC<AppToastProps> = ({
+export const AppToast: React.FC<AppToastProps> = React.memo(({
   visible,
   onDismiss,
   message,
@@ -32,7 +32,7 @@ export const AppToast: React.FC<AppToastProps> = ({
   style,
   messageStyle,
 }) => {
-  const { isDark, globalContrast } = useThemeMode();
+  const { isDark, globalContrast, reduceMotion } = useThemeMode();
   const resolvedContrast = contrast ?? globalContrast;
   const styles = createToastStyles(isDark, type, position, size, resolvedContrast, borderRadius);
 
@@ -40,6 +40,10 @@ export const AppToast: React.FC<AppToastProps> = ({
   const opacity = useRef(new Animated.Value(0)).current;
 
   const handleDismiss = React.useCallback(() => {
+    if (reduceMotion) {
+      onDismiss();
+      return;
+    }
     Animated.parallel([
       Animated.timing(translateY, {
         toValue: position === 'top' ? -80 : 80,
@@ -54,7 +58,7 @@ export const AppToast: React.FC<AppToastProps> = ({
     ]).start(() => {
       onDismiss();
     });
-  }, [onDismiss, opacity, position, translateY]);
+  }, [onDismiss, opacity, position, translateY, reduceMotion]);
 
   useEffect(() => {
     if (visible) {
@@ -63,19 +67,24 @@ export const AppToast: React.FC<AppToastProps> = ({
       else if (type === 'warning') haptics.warning();
       else haptics.light();
 
-      Animated.parallel([
-        Animated.spring(translateY, {
-          toValue: 0,
-          useNativeDriver: true,
-          tension: 65,
-          friction: 9,
-        }),
-        Animated.timing(opacity, {
-          toValue: 1,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-      ]).start();
+      if (reduceMotion) {
+        translateY.setValue(0);
+        opacity.setValue(1);
+      } else {
+        Animated.parallel([
+          Animated.spring(translateY, {
+            toValue: 0,
+            useNativeDriver: true,
+            tension: 65,
+            friction: 9,
+          }),
+          Animated.timing(opacity, {
+            toValue: 1,
+            duration: 200,
+            useNativeDriver: true,
+          }),
+        ]).start();
+      }
 
       const timer = setTimeout(() => {
         handleDismiss();
@@ -85,7 +94,7 @@ export const AppToast: React.FC<AppToastProps> = ({
     } else {
       handleDismiss();
     }
-  }, [visible, duration, handleDismiss, opacity, translateY, type]);
+  }, [visible, duration, handleDismiss, opacity, translateY, type, reduceMotion]);
 
   if (!visible) return null;
 
@@ -131,4 +140,5 @@ export const AppToast: React.FC<AppToastProps> = ({
       </TouchableOpacity>
     </Animated.View>
   );
-};
+});
+

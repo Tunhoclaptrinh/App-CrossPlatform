@@ -7,7 +7,7 @@ import { AppText } from '../AppText';
 import type { OfflineBannerProps } from './types';
 import { styles } from './styles';
 
-export const OfflineBanner: React.FC<OfflineBannerProps> = ({
+export const OfflineBanner: React.FC<OfflineBannerProps> = React.memo(({
   message,
   onRetry,
   size = 'md',
@@ -72,4 +72,4 @@ export const OfflineBanner: React.FC<OfflineBannerProps> = ({
       )}
     </View>
   );
-};
+});

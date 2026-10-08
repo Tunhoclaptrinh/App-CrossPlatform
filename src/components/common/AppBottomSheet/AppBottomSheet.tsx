@@ -14,7 +14,7 @@ import { haptics } from '@/utils/haptics';
 import type { AppBottomSheetProps } from './types';
 import { createBottomSheetStyles, getSheetHeight } from './styles';
 
-export const AppBottomSheet: React.FC<AppBottomSheetProps> = ({
+export const AppBottomSheet: React.FC<AppBottomSheetProps> = React.memo(({
   visible,
   onClose,
   title,
@@ -29,7 +29,7 @@ export const AppBottomSheet: React.FC<AppBottomSheetProps> = ({
   style,
   contentStyle,
 }) => {
-  const { theme, radiusTokens, isDark, globalContrast, isGlassTheme } = useThemeMode();
+  const { theme, radiusTokens, isDark, globalContrast, isGlassTheme, reduceMotion } = useThemeMode();
   const resolvedContrast = contrast ?? globalContrast;
 
   const styles = createBottomSheetStyles(
@@ -54,7 +54,7 @@ export const AppBottomSheet: React.FC<AppBottomSheetProps> = ({
     <Modal
       visible={visible}
       transparent
-      animationType="slide"
+      animationType={reduceMotion ? 'none' : 'slide'}
       onRequestClose={handleClose}
     >
       <View style={styles.modalRoot}>
@@ -103,6 +103,7 @@ export const AppBottomSheet: React.FC<AppBottomSheetProps> = ({
 
           <ScrollView
             showsVerticalScrollIndicator={false}
+            nestedScrollEnabled={true}
             contentContainerStyle={[styles.content, contentStyle]}
             bounces={false}
           >
@@ -112,4 +113,4 @@ export const AppBottomSheet: React.FC<AppBottomSheetProps> = ({
       </View>
     </Modal>
   );
-};
+});

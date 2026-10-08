@@ -19,6 +19,7 @@ export const ModuleTabs: React.FC<ModuleTabsProps> = ({
       horizontal
       showsHorizontalScrollIndicator={false}
       nestedScrollEnabled
+      keyboardShouldPersistTaps="handled"
       style={styles.scroll}
       contentContainerStyle={styles.scrollContent}
     >

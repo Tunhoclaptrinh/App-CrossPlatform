@@ -23,11 +23,11 @@ import {
   getSelectTriggerStyle,
 } from './styles';
 
-export function AppSelect<T = string | number>({
+export const AppSelect = React.memo(function AppSelectComponent<T = string | number>({
   options,
   value,
   onSelect,
-  size = 'md',
+  size: propSize,
   label,
   placeholder = 'Chọn một mục...',
   error,
@@ -50,7 +50,10 @@ export function AppSelect<T = string | number>({
     globalContrast,
     globalShadow,
     globalControlVariant,
+    globalControlSize,
+    reduceMotion,
   } = useThemeMode();
+  const size = propSize ?? globalControlSize ?? 'md';
   const { themeStyle } = useAppStore();
   const isGlassMode = themeStyle === 'apple-glass';
   const [isOpen, setIsOpen] = useState(false);
@@ -147,7 +150,7 @@ export function AppSelect<T = string | number>({
       <Modal
         visible={isOpen}
         transparent
-        animationType="fade"
+        animationType={reduceMotion ? 'none' : 'fade'}
         onRequestClose={handleClose}
       >
         <Pressable
@@ -195,7 +198,7 @@ export function AppSelect<T = string | number>({
             </View>
 
             {/* Options List */}
-            <ScrollView showsVerticalScrollIndicator={false}>
+            <ScrollView showsVerticalScrollIndicator={false} nestedScrollEnabled={true}>
               {options.map((option) => {
                 const isSelected = option.value === value;
                 return (
@@ -249,4 +252,4 @@ export function AppSelect<T = string | number>({
       </Modal>
     </View>
   );
-}
+}) as <T = string | number>(props: AppSelectProps<T>) => React.ReactElement | null;

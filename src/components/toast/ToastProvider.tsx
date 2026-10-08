@@ -14,7 +14,7 @@ import { styles } from './styles';
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { theme: themeColors, isDark } = useThemeMode();
+  const { theme: themeColors, isDark, reduceMotion } = useThemeMode();
   const insets = useSafeAreaInsets();
 
   const [toast, setToast] = useState<ToastOptions | null>(null);
@@ -23,12 +23,17 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const hide = useCallback(() => {
     if (timerRef.current) clearTimeout(timerRef.current);
-    Animated.timing(translateY, {
-      toValue: -120,
-      duration: 250,
-      useNativeDriver: true,
-    }).start(() => setToast(null));
-  }, [translateY]);
+    if (reduceMotion) {
+      translateY.setValue(-120);
+      setToast(null);
+    } else {
+      Animated.timing(translateY, {
+        toValue: -120,
+        duration: 220,
+        useNativeDriver: true,
+      }).start(() => setToast(null));
+    }
+  }, [translateY, reduceMotion]);
 
   const show = useCallback(
     (typeOrOptions: ToastType | ToastOptions, message?: string, title?: string) => {
@@ -46,17 +51,22 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       if (timerRef.current) clearTimeout(timerRef.current);
       setToast(opts);
 
-      Animated.spring(translateY, {
-        toValue: insets.top + 58,
-        friction: 8,
-        tension: 45,
-        useNativeDriver: true,
-      }).start();
+      const targetY = insets.top + 58;
+      if (reduceMotion) {
+        translateY.setValue(targetY);
+      } else {
+        Animated.spring(translateY, {
+          toValue: targetY,
+          friction: 8,
+          tension: 45,
+          useNativeDriver: true,
+        }).start();
+      }
 
       const duration = opts.duration || 3500;
       timerRef.current = setTimeout(hide, duration);
     },
-    [hide, insets.top, translateY]
+    [hide, insets.top, translateY, reduceMotion]
   );
 
   const getTypeConfig = (type: ToastType = 'info') => {

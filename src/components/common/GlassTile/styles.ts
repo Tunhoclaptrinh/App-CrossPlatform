@@ -26,7 +26,8 @@ export const createGlassTileStyles = (
 ) => {
   const isHigh = contrast === 'high';
   const sizeConfig = GLASS_TILE_SIZES[size] || GLASS_TILE_SIZES.md;
-  const resolvedRadius = borderRadiusOverride !== undefined ? borderRadiusOverride : Math.min(cardRadius, 14);
+  const resolvedRadius = borderRadiusOverride !== undefined ? borderRadiusOverride : cardRadius;
+
 
   let borderColor = isDark ? 'rgba(255, 255, 255, 0.22)' : 'rgba(255, 255, 255, 0.85)';
   if (isHigh) {

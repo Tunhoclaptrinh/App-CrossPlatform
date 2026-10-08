@@ -5,7 +5,7 @@ import { useThemeMode } from '@/hooks/useThemeMode';
 import type { AppleMeshBackgroundProps, MeshVariant } from './types';
 import { styles } from './styles';
 
-export const AppleMeshBackground: React.FC<AppleMeshBackgroundProps> = ({
+export const AppleMeshBackground: React.FC<AppleMeshBackgroundProps> = React.memo(({
   variant = 'aurora',
   style,
   children,
@@ -154,6 +154,6 @@ export const AppleMeshBackground: React.FC<AppleMeshBackgroundProps> = ({
       {children}
     </View>
   );
-};
+});
 
 export type { AppleMeshBackgroundProps, MeshVariant };

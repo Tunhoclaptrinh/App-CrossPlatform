@@ -5,18 +5,19 @@ import { useThemeMode } from '@/hooks/useThemeMode';
 import type { AppSwitchProps } from './types';
 import { styles } from './styles';
 
-export const AppSwitch: React.FC<AppSwitchProps> = ({
+const AppSwitchComponent: React.FC<AppSwitchProps> = ({
   value,
   onValueChange,
   label,
   sublabel,
   disabled = false,
-  size = 'md',
+  size: propSize,
   contrast,
   style,
   ...props
 }) => {
-  const { theme: themeColors, isDark, globalContrast } = useThemeMode();
+  const { theme: themeColors, isDark, globalContrast, globalControlSize } = useThemeMode();
+  const size = propSize ?? globalControlSize ?? 'md';
   const resolvedContrast = contrast ?? globalContrast;
   const isHigh = resolvedContrast === 'high';
 
@@ -77,3 +78,6 @@ export const AppSwitch: React.FC<AppSwitchProps> = ({
     </View>
   );
 };
+
+export const AppSwitch = React.memo(AppSwitchComponent);
+
