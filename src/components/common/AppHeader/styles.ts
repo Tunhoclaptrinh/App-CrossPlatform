@@ -283,11 +283,11 @@ export const styles = StyleSheet.create({
     elevation: Platform.OS === 'android' ? 0 : 2,
   },
   dynamicIslandPillDark: {
-    backgroundColor: '#000000',
+    backgroundColor: 'rgba(20, 26, 40, 0.88)',
     borderColor: 'rgba(255, 255, 255, 0.22)',
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.50,
+    shadowOpacity: 0.40,
     shadowRadius: 18,
     elevation: Platform.OS === 'android' ? 0 : 4,
   },

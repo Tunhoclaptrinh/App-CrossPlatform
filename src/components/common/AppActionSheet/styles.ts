@@ -34,6 +34,9 @@ export const createActionSheetStyles = (
   const isSubtle = contrast === 'subtle';
   const sizeConfig = ACTION_SHEET_SIZES[size] || ACTION_SHEET_SIZES.md;
   const resolvedRadius = borderRadiusOverride !== undefined ? borderRadiusOverride : radius.card;
+  const cancelRadius = borderRadiusOverride !== undefined
+    ? borderRadiusOverride
+    : (radius.control >= 9999 || radius.pill >= 9999 ? 9999 : resolvedRadius);
 
   let borderColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)';
   let borderWidth = 1;
@@ -189,7 +192,7 @@ export const createActionSheetStyles = (
     },
     cancelBlock: {
       width: '100%',
-      borderRadius: 9999,
+      borderRadius: cancelRadius,
       overflow: 'hidden',
       backgroundColor: isDark
         ? 'rgba(30, 41, 59, 0.75)'

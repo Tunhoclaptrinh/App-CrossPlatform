@@ -1,3 +1,10 @@
+import {
+  HeaderBackButton,
+  HeaderActionGroup,
+  HeaderTitle,
+  HeaderSearchRow,
+  HeaderDropdownSuggestions,
+} from './components';
 import React, { useState, useMemo, useCallback } from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -18,7 +25,7 @@ import {
   getContainerHeight,
 } from './styles';
 
-export const AppHeader: React.FC<AppHeaderProps> = React.memo(({
+const AppHeaderComponent: React.FC<AppHeaderProps> = React.memo(({
   title,
   subtitle,
   titleAlign = 'center',
@@ -127,7 +134,7 @@ export const AppHeader: React.FC<AppHeaderProps> = React.memo(({
   const controlRadius = isPill ? 19 : radiusTokens.control;
   const backBtnRadius = controlRadius;
   const actionBtnRadius = controlRadius;
-  const islandBtnRadius = isPill ? 16 : radiusTokens.smControl;
+  const islandBtnRadius = 16;
 
   const isCapsuleVariant = variant === 'frosted-capsule';
   const isIslandVariant = variant === 'floating-pill';
@@ -1309,5 +1316,14 @@ export const AppHeaderContainer: React.FC<AppHeaderContainerProps> = React.memo(
       {children}
     </View>
   );
+});
+
+export const AppHeader = Object.assign(AppHeaderComponent, {
+  BackButton: HeaderBackButton,
+  ActionGroup: HeaderActionGroup,
+  Title: HeaderTitle,
+  SearchRow: HeaderSearchRow,
+  Dropdown: HeaderDropdownSuggestions,
+  Container: AppHeaderContainer,
 });
 
