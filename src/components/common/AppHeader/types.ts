@@ -145,7 +145,7 @@ export interface AppHeaderProps {
   onCustomModeChange?: (active: boolean) => void;                 // Callback khi bật/tắt chế độ custom mode
   replacementScope?: 'full' | 'inner';                            // 'full' (mặc định: chiếm 100% diện tích Header từ mép trái sang phải) | 'inner' (vẫn giữ khung pill/capsule bên ngoài)
 
-  // Bottom dock slot (Thanh phụ kiện docked bên dưới Header: chip lọc, tab, segmented)
+  placement?: 'top' | 'bottom';                                   // 'top' (mặc định) | 'bottom' (Bottom Command Bar phong cách Safari / Arc)
   bottomContent?: React.ReactNode;
   children?: React.ReactNode;
 

@@ -13,6 +13,7 @@ import {
   Grid,
   AlertCircle,
   PanelTop,
+  PanelBottom,
   Split,
   User,
   Minus,
@@ -186,6 +187,15 @@ export const COMPONENTS_CATALOG: ComponentMeta[] = [
     description: 'Thanh điều hướng cao cấp hỗ trợ 3 chế độ: Standard iOS, Floating Pill Island và Frosted Capsule.',
     tags: ['header', 'navbar', 'topbar', 'tieu de', 'thanh dieu huong', 'parity'],
     icon: PanelTop,
+    hasParity: true,
+  },
+  {
+    id: 'bottom-nav',
+    name: 'AppBottomNav',
+    category: 'organisms',
+    description: 'Thanh điều hướng đáy (Bottom Navigation Bar / Floating Dock) hỗ trợ 3 biến thể: Standard iOS, Floating Pill và Frosted Glass kèm nút FAB trung tâm.',
+    tags: ['bottomnav', 'tabbar', 'nav', 'dock', 'thanh dieu huong duoi', 'tab', 'menu', 'navigation', 'parity'],
+    icon: PanelBottom,
     hasParity: true,
   },
   {

@@ -19,6 +19,7 @@ export type ComponentId =
   | 'select'
   | 'searchbar'
   | 'header'
+  | 'bottom-nav'
   | 'apple-glass-card'
   | 'card'
   | 'widget-card'

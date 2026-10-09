@@ -30,6 +30,22 @@ export const styles = StyleSheet.create({
     borderBottomWidth: 1.5,
     borderBottomColor: 'rgba(255, 255, 255, 0.32)',
   },
+  borderTopLight: {
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'rgba(0, 0, 0, 0.12)',
+  },
+  borderTopDark: {
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'rgba(255, 255, 255, 0.14)',
+  },
+  borderTopHighLight: {
+    borderTopWidth: 1.5,
+    borderTopColor: 'rgba(0, 0, 0, 0.28)',
+  },
+  borderTopHighDark: {
+    borderTopWidth: 1.5,
+    borderTopColor: 'rgba(255, 255, 255, 0.32)',
+  },
   standardBgLight: {
     backgroundColor: '#FFFFFF',
   },
@@ -553,9 +569,18 @@ export const getCenterTitlePadding = (
   paddingRight: rightClearance !== undefined ? rightClearance : leftClearance,
 });
 
-export const getContainerHeight = (topInset: number, baseHeight?: number) => ({
-  paddingTop: topInset,
-  ...(baseHeight !== undefined
-    ? { height: baseHeight + topInset }
-    : { minHeight: 48 + topInset }),
+export const getContainerHeight = (inset: number, baseHeight?: number, isBottom = false) => ({
+  ...(isBottom
+    ? {
+      paddingBottom: inset,
+      ...(baseHeight !== undefined
+        ? { height: baseHeight + inset }
+        : { minHeight: 48 + inset }),
+    }
+    : {
+      paddingTop: inset,
+      ...(baseHeight !== undefined
+        ? { height: baseHeight + inset }
+        : { minHeight: 48 + inset }),
+    }),
 });

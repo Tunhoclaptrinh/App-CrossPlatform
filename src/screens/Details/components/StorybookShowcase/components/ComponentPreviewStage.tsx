@@ -25,6 +25,17 @@ import {
   Activity,
   WifiOff,
   RotateCcw,
+  Home,
+  Compass,
+  Plus,
+  Folder,
+  Music,
+  Play,
+  Pause,
+  X,
+  ArrowUpDown,
+  ScanLine,
+  Mic,
 } from 'lucide-react-native';
 import {
   AppText,
@@ -38,7 +49,7 @@ import {
   AppCard,
   AppleGlassCard,
   AppHeader,
-
+  AppBottomNav,
   ConfirmDialog,
   AppActionSheet,
   Skeleton,
@@ -74,6 +85,13 @@ import {
   type ControlContrast,
   type ChipVariant,
   type ToastType,
+  type BottomNavItem,
+  type BottomNavVariant,
+  type BottomNavIndicator,
+  type BottomNavItemLayout,
+  type BottomNavFabShape,
+  type BottomNavFabPlacement,
+  type BottomNavPlacement,
 } from '@/components';
 import {
   ControlSize,
@@ -139,10 +157,27 @@ export const ComponentPreviewStage: React.FC<ComponentPreviewStageProps> = ({
   const [cardVariant, setCardVariant] = useState<'elevated' | 'outlined' | 'flat' | 'glass'>('elevated');
 
   const [headerVariant, setHeaderVariant] = useState<'standard' | 'floating-pill' | 'frosted-capsule'>('standard');
+  const [headerPlacement, setHeaderPlacement] = useState<'top' | 'bottom'>('top');
   const [headerActionStyle, setHeaderActionStyle] = useState<'individual' | 'capsule'>('capsule');
   const [headerCenterSlot, setHeaderCenterSlot] = useState<'title' | 'select' | 'searchbar'>('title');
   const [headerExpansionPosition, setHeaderExpansionPosition] = useState<'both' | 'inner' | 'bottom'>('both');
   const [headerCustomMode, setHeaderCustomMode] = useState<boolean>(false);
+  const [activeBottomTab, setActiveBottomTab] = useState('home');
+  const [bottomNavVariant, setBottomNavVariant] = useState<BottomNavVariant>('floating-pill');
+  const [bottomNavPlacement, setBottomNavPlacement] = useState<BottomNavPlacement>('bottom');
+  const [bottomNavIndicator, setBottomNavIndicator] = useState<BottomNavIndicator>('none');
+  const [bottomNavItemLayout, setBottomNavItemLayout] = useState<BottomNavItemLayout>('vertical');
+  const [bottomNavFabShape, setBottomNavFabShape] = useState<BottomNavFabShape>('circle');
+  const [bottomNavFabPlacement, setBottomNavFabPlacement] = useState<BottomNavFabPlacement>('lifted');
+  const [bottomNavLiftOffset, setBottomNavLiftOffset] = useState<number>(22);
+  const [bottomNavCustomFabType, setBottomNavCustomFabType] = useState<
+    'standard' | 'ai-orb' | 'qr-radar' | 'voice-wave'
+  >('standard');
+  const [bottomNavShowLabels, setBottomNavShowLabels] = useState(true);
+  const [bottomNavHasFab, setBottomNavHasFab] = useState(true);
+  const [bottomNavHasTopContent, setBottomNavHasTopContent] = useState(false);
+  const [bottomNavCustomMode, setBottomNavCustomMode] = useState(false);
+  const [miniPlayerPlaying, setMiniPlayerPlaying] = useState(true);
   const [badgeVariant, setBadgeVariant] = useState<
     'primary' | 'success' | 'warning' | 'error' | 'info' | 'neutral'
   >('primary');
@@ -272,6 +307,12 @@ export const ComponentPreviewStage: React.FC<ComponentPreviewStageProps> = ({
     { label: 'Floating Pill (Đảo Động)', value: 'floating-pill', sublabel: 'Dynamic Island nổi độc lập' },
   ];
  
+  // Options for selecting Header Placement (Top vs Bottom Inversion)
+  const headerPlacementOptions: AppSelectOption<string>[] = [
+    { label: 'Top (Trên đỉnh - Tiêu chuẩn)', value: 'top', sublabel: 'Thanh điều hướng tiêu chuẩn trên cùng màn hình' },
+    { label: 'Bottom (Dưới đáy - Command Bar)', value: 'bottom', sublabel: 'Thanh lệnh tầm với một tay kiểu Safari / Arc' },
+  ];
+
   // Options for selecting Header Action Style (Grouped Pill Capsule vs Individual Circles)
   const headerActionStyleOptions: AppSelectOption<string>[] = [
     { label: 'Capsule (Viên Thuốc Gom Nhóm)', value: 'capsule', sublabel: 'Nút tìm kiếm & more thành khối pill liền mạch' },
@@ -291,6 +332,66 @@ export const ComponentPreviewStage: React.FC<ComponentPreviewStageProps> = ({
     { label: 'Chỉ Bên Trong (Inner Only)', value: 'inner', sublabel: 'Chỉ biến hình ruột Header (thanh search), không hiện dropdown' },
     { label: 'Chỉ Thả Dưới (Bottom Dropdown Only)', value: 'bottom', sublabel: 'Giữ nguyên Header tiêu đề/select và thả dropdown gợi ý bên dưới' },
   ];
+
+  // Options for selecting BottomNav Variant
+  const bottomNavVariantOptions: AppSelectOption<string>[] = [
+    { label: 'Floating Pill (Đảo Nổi Độc Lập)', value: 'floating-pill', sublabel: 'Dock viên thuốc bo tròn nổi bồng bềnh' },
+    { label: 'Standard (Thanh Chuẩn iOS)', value: 'standard', sublabel: 'Navbar mép đáy cố định, vách ngăn hairline' },
+    { label: 'Frosted Glass (Kính Mờ Apple)', value: 'frosted-glass', sublabel: 'Kính lỏng Liquid Glass quang học khúc xạ' },
+  ];
+
+  // Options for selecting BottomNav Placement (Bottom vs Top Inversion)
+  const bottomNavPlacementOptions: AppSelectOption<string>[] = [
+    { label: 'Bottom (Dưới đáy - Tiêu chuẩn)', value: 'bottom', sublabel: 'Thanh dock điều hướng nằm sát đáy màn hình' },
+    { label: 'Top (Trên đỉnh - Category Tabs)', value: 'top', sublabel: 'Thanh dock nằm trên đỉnh phân loại danh mục' },
+  ];
+
+  // Options for selecting BottomNav Indicator
+  const bottomNavIndicatorOptions: AppSelectOption<string>[] = [
+    { label: 'None (Tối Giản Sạch Sẽ - Mặc định)', value: 'none', sublabel: 'Chỉ làm nổi bật màu icon/text bằng primary color' },
+    { label: 'Pill (Khối Viên Thuốc Mờ)', value: 'pill', sublabel: 'Nền viên thuốc êm dịu bao quanh mục tab' },
+    { label: 'Glow (Chấm Sáng Phát Quang)', value: 'glow', sublabel: 'Vầng hào quang phát quang nhẹ' },
+    { label: 'Dot (Chấm Tròn Tinh Tế)', value: 'dot', sublabel: 'Dấu chấm chỉ báo nhỏ phía dưới' },
+    { label: 'Line (Vạch Viền Đáy)', value: 'line', sublabel: 'Vạch sáng thanh mảnh hiện đại' },
+  ];
+
+  // Options for selecting BottomNav Item Layout
+  const bottomNavItemLayoutOptions: AppSelectOption<string>[] = [
+    { label: 'Vertical (Icon trên, Chữ dưới)', value: 'vertical', sublabel: 'Bố cục tab mobile kinh điển' },
+    { label: 'Horizontal (Icon trái, Chữ phải)', value: 'horizontal', sublabel: 'Bố cục dạng dock ngang gọn gàng' },
+    { label: 'Icon Only (Chỉ biểu tượng)', value: 'icon-only', sublabel: 'Ẩn nhãn chữ, tối đa hóa không gian' },
+  ];
+
+  // Options for selecting BottomNav FAB Shape
+  const bottomNavFabShapeOptions: AppSelectOption<string>[] = [
+    { label: 'Circle (Tròn hoàn hảo)', value: 'circle', sublabel: 'Bo tròn bán kính 26px' },
+    { label: 'Squircle (Apple Squircle)', value: 'squircle', sublabel: 'Bo góc mềm mại bán kính 16px' },
+  ];
+
+  // Options for selecting BottomNav FAB Placement
+  const bottomNavFabPlacementOptions: AppSelectOption<string>[] = [
+    { label: 'Lifted (Nhô cao mép trên)', value: 'lifted', sublabel: 'Nổi bật nhô lên 22px bên trên dock' },
+    { label: 'Embedded (Chìm phẳng ngang bằng)', value: 'embedded', sublabel: 'Nằm phẳng cân đối bên trong thân dock' },
+  ];
+
+  // Options for selecting Custom Center FAB component type
+  const bottomNavCustomFabTypeOptions: AppSelectOption<string>[] = [
+    { label: 'Tiêu Chuẩn (Action Button +)', value: 'standard', sublabel: 'Nút hành động tròn / squircle với biểu tượng Plus' },
+    { label: 'AI Copilot Orb (Viên Cầu Đa Sắc)', value: 'ai-orb', sublabel: 'Khối cầu AI phát sáng gradient với icon Sparkles' },
+    { label: 'QR Scanner Radar (Máy Quét)', value: 'qr-radar', sublabel: 'Nút quét mã công nghệ cao với viền quét radar xanh ngọc' },
+    { label: 'Voice Visualizer (Sóng Âm)', value: 'voice-wave', sublabel: 'Nút thu âm với icon micro đa sắc' },
+  ];
+
+  // Sample items for BottomNav live preview
+  const bottomNavItems: BottomNavItem[] = useMemo(
+    () => [
+      { key: 'home', label: 'Trang chủ', icon: <Home size={19} /> },
+      { key: 'explore', label: 'Khám phá', icon: <Compass size={19} />, badge: 3 },
+      { key: 'files', label: 'Tài liệu', icon: <Folder size={19} /> },
+      { key: 'profile', label: 'Cá nhân', icon: <User size={19} />, badgeDot: true },
+    ],
+    []
+  );
 
   // Options for selecting Badge Variant
   const badgeVariantOptions: AppSelectOption<string>[] = [
@@ -426,10 +527,36 @@ export const ComponentPreviewStage: React.FC<ComponentPreviewStageProps> = ({
             ? '\n  centerContent={<AppSearchBar size="sm" variant="filled" placeholder="Tìm node..." style={{ height: 34 }} />}'
             : '';
         const expansionSnippet = headerExpansionPosition !== 'both' ? `\n  expansionPosition="${headerExpansionPosition}"` : '';
+        const placementSnippet = headerPlacement !== 'top' ? `\n  placement="${headerPlacement}"` : '';
         const customSnippet = headerCustomMode
           ? '\n  isCustomMode={true}\n  renderCustomHeader={({ close }) => <CustomToolbar onDismiss={close} />}'
           : '';
-        return `<AppHeader\n  title="EveSense Hub"\n  subtitle="Node điều phối cảm biến"\n  variant="${headerVariant}"\n  actionStyle="${headerActionStyle}"${contrastSnippet}${centerSnippet}${expansionSnippet}${customSnippet}\n  searchable\n  suggestions={[\n    { id: '1', label: 'Cảm biến nhiệt độ DHT22', sublabel: 'Node #01', onPress: () => {} },\n    { id: '2', label: 'Cảm biến khí BME688', sublabel: 'Node #02', onPress: () => {} },\n  ]}\n  showBack\n  showMore\n  onBack={() => {}}\n/>`;
+        return `<AppHeader\n  title="EveSense Hub"\n  subtitle="Node điều phối cảm biến"\n  variant="${headerVariant}"${placementSnippet}\n  actionStyle="${headerActionStyle}"${contrastSnippet}${centerSnippet}${expansionSnippet}${customSnippet}\n  searchable\n  suggestions={[\n    { id: '1', label: 'Cảm biến nhiệt độ DHT22', sublabel: 'Node #01', onPress: () => {} },\n    { id: '2', label: 'Cảm biến khí BME688', sublabel: 'Node #02', onPress: () => {} },\n  ]}\n  showBack\n  showMore\n  onBack={() => {}}\n/>`;
+      }
+      case 'bottom-nav': {
+        const placementSnippet = bottomNavPlacement !== 'bottom' ? `\n  placement="${bottomNavPlacement}"` : '';
+        const fabSnippet = bottomNavHasFab
+          ? bottomNavCustomFabType === 'ai-orb'
+            ? `\n  centerFab={{\n    placement: '${bottomNavFabPlacement}',${bottomNavLiftOffset !== 22 ? `\n    liftOffset: ${bottomNavLiftOffset},` : ''}\n    customComponent: <AiCopilotOrb />,\n  }}`
+            : bottomNavCustomFabType === 'qr-radar'
+            ? `\n  centerFab={{\n    placement: '${bottomNavFabPlacement}',${bottomNavLiftOffset !== 22 ? `\n    liftOffset: ${bottomNavLiftOffset},` : ''}\n    customComponent: <QrScannerRadar />,\n  }}`
+            : bottomNavCustomFabType === 'voice-wave'
+            ? `\n  centerFab={{\n    placement: '${bottomNavFabPlacement}',${bottomNavLiftOffset !== 22 ? `\n    liftOffset: ${bottomNavLiftOffset},` : ''}\n    customComponent: <VoiceVisualizer />,\n  }}`
+            : `\n  centerFab={{\n    icon: <Plus size={22} color="#FFFFFF" strokeWidth={2.5} />,\n    onPress: () => {},\n    accessibilityLabel: 'Tạo mới',\n    shape: '${bottomNavFabShape}',\n    placement: '${bottomNavFabPlacement}',${bottomNavLiftOffset !== 22 ? `\n    liftOffset: ${bottomNavLiftOffset},` : ''}\n  }}`
+          : '';
+        const liftOffsetSnippet = (bottomNavHasFab && bottomNavLiftOffset !== 22)
+          ? `\n  fabLiftOffset={${bottomNavLiftOffset}}`
+          : '';
+        const layoutSnippet = bottomNavItemLayout !== 'vertical'
+          ? `\n  itemLayout="${bottomNavItemLayout}"`
+          : '';
+        const topContentSnippet = bottomNavHasTopContent
+          ? `\n  topContent={<MiniPlayer playing={${miniPlayerPlaying}} />}`
+          : '';
+        const customModeSnippet = bottomNavCustomMode
+          ? `\n  isCustomMode={true}\n  renderCustomBottomNav={({ close }) => (\n    <BulkActionBar count={3} onClose={close} onDelete={() => {}} />\n  )}`
+          : '';
+        return `<AppBottomNav\n  items={[\n    { key: 'home', label: 'Trang chủ', icon: <Home size={19} /> },\n    { key: 'explore', label: 'Khám phá', icon: <Compass size={19} />, badge: 3 },\n    { key: 'files', label: 'Tài liệu', icon: <Folder size={19} /> },\n    { key: 'profile', label: 'Cá nhân', icon: <User size={19} />, badgeDot: true },\n  ]}\n  activeKey="${activeBottomTab}"\n  onChange={setActiveBottomTab}\n  variant="${bottomNavVariant}"${placementSnippet}\n  indicatorStyle="${bottomNavIndicator}"${layoutSnippet}${contrastSnippet}\n  showLabels={${bottomNavShowLabels}}${fabSnippet}${liftOffsetSnippet}${topContentSnippet}${customModeSnippet}\n/>`;
       }
       case 'apple-glass-card':
         return `<AppleGlassCard${sizeSnippet}${contrastSnippet}\n  balance="45,280.00"\n  balanceLabel="SỐ DƯ KHẢ DỤNG"\n  cardNumber="•••• 8829"\n  cardHolder="EVE SENSE"\n  brandName="Apple Glass"\n  onPress={() => {}}\n/>`;
@@ -772,6 +899,201 @@ export const ComponentPreviewStage: React.FC<ComponentPreviewStageProps> = ({
         headerWrapper: {
           borderRadius: Math.min(activeRadiusTokens.card, 14),
           overflow: 'hidden',
+        },
+        placementToggleBtn: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 5,
+          paddingHorizontal: 8,
+          paddingVertical: 3.5,
+          borderRadius: 8,
+          backgroundColor: isDark ? 'rgba(99, 102, 241, 0.16)' : 'rgba(99, 102, 241, 0.10)',
+          borderWidth: 1,
+          borderColor: isDark ? 'rgba(99, 102, 241, 0.32)' : 'rgba(99, 102, 241, 0.22)',
+        },
+        placementToggleText: {
+          fontSize: 10.5,
+          fontWeight: '700',
+          color: isDark ? '#A5B4FC' : '#4F46E5',
+          letterSpacing: 0.2,
+        },
+        bottomNavPreviewWrapper: {
+          width: '100%',
+          paddingTop: 28,
+          paddingBottom: 16,
+          justifyContent: 'center',
+          alignItems: 'center',
+        },
+        bottomNavRelative: {
+          position: 'relative',
+          width: '100%',
+          paddingHorizontal: 0,
+        },
+        customFabOrb: {
+          width: 52,
+          height: 52,
+          borderRadius: 26,
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#6366F1',
+          borderWidth: 3.5,
+          shadowColor: '#6366F1',
+          shadowOffset: { width: 0, height: 6 },
+          shadowOpacity: 0.45,
+          shadowRadius: 12,
+          elevation: 8,
+        },
+        customFabRadar: {
+          width: 52,
+          height: 52,
+          borderRadius: 26,
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: isDark ? '#020617' : '#0F172A',
+          borderWidth: 2.5,
+          borderColor: '#06B6D4',
+          shadowColor: '#06B6D4',
+          shadowOffset: { width: 0, height: 5 },
+          shadowOpacity: 0.45,
+          shadowRadius: 10,
+          elevation: 8,
+        },
+        customFabVoice: {
+          width: 52,
+          height: 52,
+          borderRadius: 26,
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#EC4899',
+          borderWidth: 3.5,
+          shadowColor: '#EC4899',
+          shadowOffset: { width: 0, height: 6 },
+          shadowOpacity: 0.45,
+          shadowRadius: 12,
+          elevation: 8,
+        },
+        customFabHaloLight: {
+          borderColor: '#FFFFFF',
+        },
+        customFabHaloDark: {
+          borderColor: '#0F172A',
+        },
+        bottomNavMiniPlayer: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          width: '100%',
+          maxWidth: 420,
+          paddingHorizontal: 12,
+          paddingVertical: 8,
+          borderRadius: 20,
+          borderWidth: 1,
+          shadowColor: '#000000',
+          shadowOffset: { width: 0, height: 3 },
+          shadowOpacity: 0.12,
+          shadowRadius: 8,
+          elevation: 3,
+        },
+        bottomNavMiniPlayerLight: {
+          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+          borderColor: 'rgba(0, 0, 0, 0.08)',
+        },
+        bottomNavMiniPlayerDark: {
+          backgroundColor: 'rgba(30, 41, 59, 0.92)',
+          borderColor: 'rgba(255, 255, 255, 0.16)',
+        },
+        bottomNavMiniPlayerLeft: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 10,
+          flex: 1,
+        },
+        bottomNavMusicIconBox: {
+          width: 32,
+          height: 32,
+          borderRadius: 16,
+          alignItems: 'center',
+          justifyContent: 'center',
+        },
+        bottomNavMiniPlayerInfo: {
+          flex: 1,
+        },
+        bottomNavTrackTitle: {
+          fontSize: 12.5,
+          fontWeight: '700',
+          color: themeColors.text,
+        },
+        bottomNavTrackSubtitle: {
+          fontSize: 10.5,
+          color: themeColors.textSecondary,
+          marginTop: 1,
+        },
+        bottomNavMiniPlayerControls: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 12,
+          marginLeft: 8,
+        },
+        bottomNavMiniPlayerBtn: {
+          padding: 4,
+        },
+        bottomNavBulkBar: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          width: '100%',
+          paddingHorizontal: 8,
+          paddingVertical: 4,
+        },
+        bottomNavBulkLeft: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 8,
+        },
+        bottomNavBulkText: {
+          fontSize: 13,
+          fontWeight: '500',
+        },
+        bottomNavBulkRight: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 8,
+        },
+        bottomNavBulkCancelBtn: {
+          paddingHorizontal: 12,
+          paddingVertical: 6,
+          borderRadius: 14,
+          borderWidth: 1,
+        },
+        bottomNavBulkCancelBtnLight: {
+          backgroundColor: '#F1F5F9',
+          borderColor: 'rgba(0, 0, 0, 0.08)',
+        },
+        bottomNavBulkCancelBtnDark: {
+          backgroundColor: 'rgba(255, 255, 255, 0.1)',
+          borderColor: 'rgba(255, 255, 255, 0.15)',
+        },
+        bottomNavBulkCancelText: {
+          fontSize: 12,
+          fontWeight: '600',
+        },
+        bottomNavBulkDeleteBtn: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 4,
+          paddingHorizontal: 12,
+          paddingVertical: 6,
+          borderRadius: 14,
+          backgroundColor: '#EF4444',
+        },
+        bottomNavBulkDeleteText: {
+          fontSize: 12,
+          fontWeight: '700',
+          color: '#FFFFFF',
+        },
+        bottomNavBulkCount: {
+          fontWeight: '700',
+          color: themeColors.primary,
         },
         cardContentGap: {
           gap: 6,
@@ -1129,6 +1451,36 @@ export const ComponentPreviewStage: React.FC<ComponentPreviewStageProps> = ({
             <AppText style={styles.stageTitle} numberOfLines={1}>
               SÂN KHẤU PREVIEW
             </AppText>
+            {component.id === 'header' && (
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => {
+                  haptics.medium();
+                  setHeaderPlacement((prev) => (prev === 'top' ? 'bottom' : 'top'));
+                }}
+                style={styles.placementToggleBtn}
+              >
+                <ArrowUpDown size={12} color={isDark ? '#A5B4FC' : '#4F46E5'} strokeWidth={2.4} />
+                <AppText style={styles.placementToggleText}>
+                  {headerPlacement === 'top' ? 'Vị trí: Top' : 'Vị trí: Bottom'}
+                </AppText>
+              </TouchableOpacity>
+            )}
+            {component.id === 'bottom-nav' && (
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => {
+                  haptics.medium();
+                  setBottomNavPlacement((prev) => (prev === 'bottom' ? 'top' : 'bottom'));
+                }}
+                style={styles.placementToggleBtn}
+              >
+                <ArrowUpDown size={12} color={isDark ? '#A5B4FC' : '#4F46E5'} strokeWidth={2.4} />
+                <AppText style={styles.placementToggleText}>
+                  {bottomNavPlacement === 'bottom' ? 'Vị trí: Bottom' : 'Vị trí: Top'}
+                </AppText>
+              </TouchableOpacity>
+            )}
           </View>
           <AppSegmentedControl<PreviewCanvasBackground>
             size="sm"
@@ -1213,6 +1565,7 @@ export const ComponentPreviewStage: React.FC<ComponentPreviewStageProps> = ({
                 <AppHeader
                   title="EveSense Hub"
                   subtitle="Node điều phối cảm biến"
+                  placement={headerPlacement}
                   variant={headerVariant}
                   contrast={controlContrast}
                   actionStyle={headerActionStyle}
@@ -1285,6 +1638,188 @@ export const ComponentPreviewStage: React.FC<ComponentPreviewStageProps> = ({
                   ]}
                   onBack={() => haptics.light()}
                   onMore={() => haptics.light()}
+                />
+              </View>
+            )}
+
+            {component.id === 'bottom-nav' && (
+              <View style={[styles.bottomNavPreviewWrapper, { paddingTop: Math.max(28, bottomNavLiftOffset + 10) }]}>
+                <AppBottomNav
+                  items={bottomNavItems}
+                  activeKey={activeBottomTab}
+                  onChange={(key) => {
+                    haptics.light();
+                    setActiveBottomTab(key);
+                  }}
+                  placement={bottomNavPlacement}
+                  variant={bottomNavVariant}
+                  indicatorStyle={bottomNavIndicator}
+                  itemLayout={bottomNavItemLayout}
+                  contrast={controlContrast}
+                  showLabels={bottomNavShowLabels}
+                  safeArea={false}
+                  style={styles.bottomNavRelative}
+                  fabShape={bottomNavFabShape}
+                  fabPlacement={bottomNavFabPlacement}
+                  fabLiftOffset={bottomNavLiftOffset}
+                  centerFab={
+                    !bottomNavHasFab
+                      ? undefined
+                      : bottomNavCustomFabType === 'ai-orb'
+                      ? {
+                          placement: bottomNavFabPlacement,
+                          liftOffset: bottomNavLiftOffset,
+                          customComponent: (
+                            <TouchableOpacity
+                              activeOpacity={0.8}
+                              onPress={() => haptics.medium()}
+                              style={[
+                                styles.customFabOrb,
+                                isDark ? styles.customFabHaloDark : styles.customFabHaloLight,
+                              ]}
+                            >
+                              <Sparkles size={24} color="#FFFFFF" strokeWidth={2.2} />
+                            </TouchableOpacity>
+                          ),
+                        }
+                      : bottomNavCustomFabType === 'qr-radar'
+                      ? {
+                          placement: bottomNavFabPlacement,
+                          liftOffset: bottomNavLiftOffset,
+                          customComponent: (
+                            <TouchableOpacity
+                              activeOpacity={0.8}
+                              onPress={() => haptics.medium()}
+                              style={styles.customFabRadar}
+                            >
+                              <ScanLine size={23} color="#06B6D4" strokeWidth={2.3} />
+                            </TouchableOpacity>
+                          ),
+                        }
+                      : bottomNavCustomFabType === 'voice-wave'
+                      ? {
+                          placement: bottomNavFabPlacement,
+                          liftOffset: bottomNavLiftOffset,
+                          customComponent: (
+                            <TouchableOpacity
+                              activeOpacity={0.8}
+                              onPress={() => haptics.medium()}
+                              style={[
+                                styles.customFabVoice,
+                                isDark ? styles.customFabHaloDark : styles.customFabHaloLight,
+                              ]}
+                            >
+                              <Mic size={22} color="#FFFFFF" strokeWidth={2.3} />
+                            </TouchableOpacity>
+                          ),
+                        }
+                      : {
+                          icon: <Plus size={22} color="#FFFFFF" strokeWidth={2.5} />,
+                          onPress: () => haptics.medium(),
+                          accessibilityLabel: 'Tạo mới',
+                          shape: bottomNavFabShape,
+                          placement: bottomNavFabPlacement,
+                          liftOffset: bottomNavLiftOffset,
+                        }
+                  }
+                  topContent={
+                    bottomNavHasTopContent ? (
+                      <View
+                        style={[
+                          styles.bottomNavMiniPlayer,
+                          isDark ? styles.bottomNavMiniPlayerDark : styles.bottomNavMiniPlayerLight,
+                        ]}
+                      >
+                        <View style={styles.bottomNavMiniPlayerLeft}>
+                          <View
+                            style={[
+                              styles.bottomNavMusicIconBox,
+                              { backgroundColor: `${themeColors.primary}20` },
+                            ]}
+                          >
+                            <Music size={15} color={themeColors.primary} />
+                          </View>
+                          <View style={styles.bottomNavMiniPlayerInfo}>
+                            <AppText style={styles.bottomNavTrackTitle} numberOfLines={1}>
+                              Midnight City • M83
+                            </AppText>
+                            <AppText style={styles.bottomNavTrackSubtitle} numberOfLines={1}>
+                              {miniPlayerPlaying ? 'Đang phát • Hi-Res 24-bit' : 'Tạm dừng'}
+                            </AppText>
+                          </View>
+                        </View>
+                        <View style={styles.bottomNavMiniPlayerControls}>
+                          <TouchableOpacity
+                            onPress={() => {
+                              haptics.light();
+                              setMiniPlayerPlaying(!miniPlayerPlaying);
+                            }}
+                            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                            style={styles.bottomNavMiniPlayerBtn}
+                          >
+                            {miniPlayerPlaying ? (
+                              <Pause size={17} color={themeColors.text} />
+                            ) : (
+                              <Play size={17} color={themeColors.primary} fill={themeColors.primary} />
+                            )}
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            onPress={() => {
+                              haptics.light();
+                              setBottomNavHasTopContent(false);
+                            }}
+                            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                            style={styles.bottomNavMiniPlayerBtn}
+                          >
+                            <X size={16} color={themeColors.textSecondary} />
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    ) : undefined
+                  }
+                  isCustomMode={bottomNavCustomMode}
+                  onCustomModeChange={setBottomNavCustomMode}
+                  renderCustomBottomNav={({ close }) => (
+                    <View style={styles.bottomNavBulkBar}>
+                      <View style={styles.bottomNavBulkLeft}>
+                        <CheckCircle2 size={18} color={themeColors.primary} />
+                        <AppText style={[styles.bottomNavBulkText, { color: themeColors.text }]}>
+                          Đã chọn{' '}
+                          <AppText style={styles.bottomNavBulkCount}>
+                            3 mục
+                          </AppText>
+                        </AppText>
+                      </View>
+                      <View style={styles.bottomNavBulkRight}>
+                        <TouchableOpacity
+                          activeOpacity={0.7}
+                          onPress={() => {
+                            haptics.light();
+                            close();
+                          }}
+                          style={[
+                            styles.bottomNavBulkCancelBtn,
+                            isDark ? styles.bottomNavBulkCancelBtnDark : styles.bottomNavBulkCancelBtnLight,
+                          ]}
+                        >
+                          <AppText style={[styles.bottomNavBulkCancelText, { color: themeColors.textSecondary }]}>
+                            Hủy
+                          </AppText>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          activeOpacity={0.8}
+                          onPress={() => {
+                            haptics.medium();
+                            close();
+                          }}
+                          style={styles.bottomNavBulkDeleteBtn}
+                        >
+                          <Trash2 size={14} color="#FFFFFF" />
+                          <AppText style={styles.bottomNavBulkDeleteText}>Xóa</AppText>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  )}
                 />
               </View>
             )}
@@ -2181,6 +2716,18 @@ export const ComponentPreviewStage: React.FC<ComponentPreviewStageProps> = ({
             </View>
             <View style={styles.controlGroup}>
               <AppSelect
+                label="VỊ TRÍ THANH TIÊU ĐỀ (PLACEMENT)"
+                options={headerPlacementOptions}
+                value={headerPlacement}
+                onSelect={(val) => {
+                  haptics.light();
+                  setHeaderPlacement(val as 'top' | 'bottom');
+                }}
+                sheetTitle="Chọn Vị Trí Thanh Tiêu Đề"
+              />
+            </View>
+            <View style={styles.controlGroup}>
+              <AppSelect
                 label="KIỂU NÚT HÀNH ĐỘNG (ACTION STYLE)"
                 options={headerActionStyleOptions}
                 value={headerActionStyle}
@@ -2223,6 +2770,167 @@ export const ComponentPreviewStage: React.FC<ComponentPreviewStageProps> = ({
                 onValueChange={(val) => {
                   haptics.light();
                   setHeaderCustomMode(val);
+                }}
+              />
+            </View>
+          </>
+        )}
+
+        {component.id === 'bottom-nav' && (
+          <>
+            <View style={styles.controlGroup}>
+              <AppSelect
+                label="BIẾN THỂ PHONG CÁCH (VARIANT)"
+                options={bottomNavVariantOptions}
+                value={bottomNavVariant}
+                onSelect={(val) => {
+                  haptics.light();
+                  setBottomNavVariant(val as BottomNavVariant);
+                }}
+                sheetTitle="Chọn Biến Thể Thanh Điều Hướng Dưới"
+              />
+            </View>
+            <View style={styles.controlGroup}>
+              <AppSelect
+                label="VỊ TRÍ THANH ĐIỀU HƯỚNG (PLACEMENT)"
+                options={bottomNavPlacementOptions}
+                value={bottomNavPlacement}
+                onSelect={(val) => {
+                  haptics.light();
+                  setBottomNavPlacement(val as BottomNavPlacement);
+                }}
+                sheetTitle="Chọn Vị Trí Thanh Điều Hướng"
+              />
+            </View>
+            <View style={styles.controlGroup}>
+              <AppSelect
+                label="CHỈ BÁO TAB KÍCH HOẠT (INDICATOR)"
+                options={bottomNavIndicatorOptions}
+                value={bottomNavIndicator}
+                onSelect={(val) => {
+                  haptics.light();
+                  setBottomNavIndicator(val as BottomNavIndicator);
+                }}
+                sheetTitle="Chọn Kiểu Chỉ Báo Active Tab"
+              />
+            </View>
+            <View style={styles.controlGroup}>
+              <AppSelect
+                label="BỐ CỤC MỤC TAB (ITEM LAYOUT)"
+                options={bottomNavItemLayoutOptions}
+                value={bottomNavItemLayout}
+                onSelect={(val) => {
+                  haptics.light();
+                  setBottomNavItemLayout(val as BottomNavItemLayout);
+                }}
+                sheetTitle="Chọn Bố Cục Hiển Thị Mục Tab"
+              />
+            </View>
+            <View style={styles.controlGroup}>
+              <AppSwitch
+                label="HIỂN THỊ NHÃN CHỮ (LABELS)"
+                sublabel="Hiển thị văn bản chú thích bên dưới biểu tượng"
+                value={bottomNavShowLabels}
+                onValueChange={(val) => {
+                  haptics.light();
+                  setBottomNavShowLabels(val);
+                }}
+              />
+            </View>
+            <View style={styles.controlGroup}>
+              <AppSwitch
+                label="NÚT HÀNH ĐỘNG NỔI TRUNG TÂM (CENTER FAB)"
+                sublabel="Thêm nút Floating Action Button nhô cao ở giữa"
+                value={bottomNavHasFab}
+                onValueChange={(val) => {
+                  haptics.light();
+                  setBottomNavHasFab(val);
+                }}
+              />
+            </View>
+            {bottomNavHasFab && (
+              <>
+                <View style={styles.controlGroup}>
+                  <AppSelect
+                    label="LOẠI COMPONENT TRUNG TÂM (FAB TYPE)"
+                    options={bottomNavCustomFabTypeOptions}
+                    value={bottomNavCustomFabType}
+                    onSelect={(val) => {
+                      haptics.light();
+                      setBottomNavCustomFabType(val as any);
+                    }}
+                    sheetTitle="Chọn Component Nút Trung Tâm"
+                  />
+                </View>
+                {bottomNavCustomFabType === 'standard' && (
+                  <View style={styles.controlGroup}>
+                    <AppSelect
+                      label="HÌNH DÁNG NÚT FAB (FAB SHAPE)"
+                      options={bottomNavFabShapeOptions}
+                      value={bottomNavFabShape}
+                      onSelect={(val) => {
+                        haptics.light();
+                        setBottomNavFabShape(val as BottomNavFabShape);
+                      }}
+                      sheetTitle="Chọn Hình Dáng FAB Trung Tâm"
+                    />
+                  </View>
+                )}
+                <View style={styles.controlGroup}>
+                  <AppSelect
+                    label="VỊ TRÍ NÚT FAB (FAB PLACEMENT)"
+                    options={bottomNavFabPlacementOptions}
+                    value={bottomNavFabPlacement}
+                    onSelect={(val) => {
+                      haptics.light();
+                      setBottomNavFabPlacement(val as BottomNavFabPlacement);
+                    }}
+                    sheetTitle="Chọn Vị Trí Nhô/Chìm FAB"
+                  />
+                </View>
+                {bottomNavFabPlacement === 'lifted' && (
+                  <View style={styles.controlGroup}>
+                    <InteractiveScrubber
+                      label="KÉO CHỈNH ĐỘ NHÔ CAO (LIFT OFFSET)"
+                      value={bottomNavLiftOffset}
+                      min={0}
+                      max={46}
+                      step={2}
+                      unit="px"
+                      formatValue={(val) =>
+                        val === 0
+                          ? '0px (Chìm)'
+                          : val === 22
+                          ? '22px (Chuẩn)'
+                          : `${val}px (${val > 22 ? 'Nhô cao' : 'Nhô nhẹ'})`
+                      }
+                      themeColors={themeColors}
+                      isDark={isDark}
+                      onChange={setBottomNavLiftOffset}
+                    />
+                  </View>
+                )}
+              </>
+            )}
+            <View style={styles.controlGroup}>
+              <AppSwitch
+                label="SLOT PHỤ KIỆN PHÍA TRÊN (TOP ACCESSORY DOCK)"
+                sublabel="Thanh Mini-Player nhạc nổi docked ngay phía trên dock"
+                value={bottomNavHasTopContent}
+                onValueChange={(val) => {
+                  haptics.light();
+                  setBottomNavHasTopContent(val);
+                }}
+              />
+            </View>
+            <View style={styles.controlGroup}>
+              <AppSwitch
+                label="CHẾ ĐỘ TÙY CHỈNH THAY THẾ (CUSTOM REPLACEMENT MODE)"
+                sublabel="Bật thanh tác vụ chọn nhiều mục (Bulk Action Bar) với [Hủy] và [Xóa]"
+                value={bottomNavCustomMode}
+                onValueChange={(val) => {
+                  haptics.light();
+                  setBottomNavCustomMode(val);
                 }}
               />
             </View>

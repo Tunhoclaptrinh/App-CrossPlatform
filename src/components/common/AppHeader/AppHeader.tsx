@@ -4,6 +4,7 @@ import {
   HeaderTitle,
   HeaderSearchRow,
   HeaderDropdownSuggestions,
+  HeaderContainer,
 } from './components';
 import React, { useState, useMemo, useCallback } from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
@@ -34,6 +35,7 @@ const AppHeaderComponent: React.FC<AppHeaderProps> = React.memo(({
   subtitleStyle,
   centerContent,
   variant = 'standard',
+  placement = 'top',
   showBack = false,
   backTitle,
   backStyle,
@@ -123,6 +125,14 @@ const AppHeaderComponent: React.FC<AppHeaderProps> = React.memo(({
   const { t } = useTranslation();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
+  const isBottom = placement === 'bottom';
+  const effectiveInset = isBottom ? insets.bottom : insets.top;
+
+  const headerContainerHeightStyle = useMemo(
+    () => getContainerHeight(effectiveInset, bottomContent ? undefined : 48, isBottom),
+    [effectiveInset, bottomContent, isBottom]
+  );
+
   const defaultBackTitle = t('common.back', 'Quay lại');
   const defaultMoreLabel = t('common.moreOptions', 'Tùy chọn khác');
   const effectiveBackTitle = backTitle ?? defaultBackTitle;
@@ -153,6 +163,24 @@ const AppHeaderComponent: React.FC<AppHeaderProps> = React.memo(({
     borderBottom !== undefined
       ? borderBottom
       : (isStandardVariant && !transparent);
+
+  const borderPlacementStyle = showBorderBottom
+    ? isBottom
+      ? isHighContrast
+        ? isDark
+          ? styles.borderTopHighDark
+          : styles.borderTopHighLight
+        : isDark
+          ? styles.borderTopDark
+          : styles.borderTopLight
+      : isHighContrast
+        ? isDark
+          ? styles.borderBottomHighDark
+          : styles.borderBottomHighLight
+        : isDark
+          ? styles.borderBottomDark
+          : styles.borderBottomLight
+    : null;
 
   const handleBack = () => {
     haptics.light();
@@ -528,7 +556,7 @@ const AppHeaderComponent: React.FC<AppHeaderProps> = React.memo(({
           style={[
             styles.container,
             styles.floatingContainer,
-            getContainerHeight(insets.top, bottomContent ? undefined : 48),
+            headerContainerHeightStyle,
             style,
             containerStyle,
           ]}
@@ -556,17 +584,9 @@ const AppHeaderComponent: React.FC<AppHeaderProps> = React.memo(({
       <View
         style={[
           styles.container,
-          getContainerHeight(insets.top, bottomContent ? undefined : 48),
+          headerContainerHeightStyle,
           isCapsuleVariant || transparent ? styles.floatingContainer : null,
-          showBorderBottom
-            ? isHighContrast
-              ? isDark
-                ? styles.borderBottomHighDark
-                : styles.borderBottomHighLight
-              : isDark
-                ? styles.borderBottomDark
-                : styles.borderBottomLight
-            : null,
+          borderPlacementStyle,
           style,
           containerStyle,
         ]}
@@ -610,7 +630,7 @@ const AppHeaderComponent: React.FC<AppHeaderProps> = React.memo(({
           style={[
             styles.container,
             styles.floatingContainer,
-            getContainerHeight(insets.top, bottomContent ? undefined : 48),
+            headerContainerHeightStyle,
             style,
             containerStyle,
           ]}
@@ -679,17 +699,9 @@ const AppHeaderComponent: React.FC<AppHeaderProps> = React.memo(({
       <View
         style={[
           styles.container,
-          getContainerHeight(insets.top, bottomContent ? undefined : 48),
+          headerContainerHeightStyle,
           isCapsuleVariant || transparent ? styles.floatingContainer : null,
-          showBorderBottom
-            ? isHighContrast
-              ? isDark
-                ? styles.borderBottomHighDark
-                : styles.borderBottomHighLight
-              : isDark
-                ? styles.borderBottomDark
-                : styles.borderBottomLight
-            : null,
+          borderPlacementStyle,
           style,
           containerStyle,
         ]}
@@ -787,7 +799,7 @@ const AppHeaderComponent: React.FC<AppHeaderProps> = React.memo(({
         style={[
           styles.container,
           styles.floatingContainer,
-          getContainerHeight(insets.top, bottomContent ? undefined : 48),
+          headerContainerHeightStyle,
           style,
           containerStyle,
         ]}
@@ -1030,17 +1042,9 @@ const AppHeaderComponent: React.FC<AppHeaderProps> = React.memo(({
     <View
       style={[
         styles.container,
-        getContainerHeight(insets.top, bottomContent ? undefined : 48),
+        headerContainerHeightStyle,
         isCapsuleVariant || transparent ? styles.floatingContainer : null,
-        showBorderBottom
-          ? isHighContrast
-            ? isDark
-              ? styles.borderBottomHighDark
-              : styles.borderBottomHighLight
-            : isDark
-              ? styles.borderBottomDark
-              : styles.borderBottomLight
-          : null,
+        borderPlacementStyle,
         style,
         containerStyle,
       ]}
@@ -1250,73 +1254,8 @@ const AppHeaderComponent: React.FC<AppHeaderProps> = React.memo(({
   );
 });
 
-export interface AppHeaderContainerProps {
-  children?: React.ReactNode;
-  variant?: import('./types').AppHeaderVariant;
-  transparent?: boolean;
-  borderBottom?: boolean;
-  backgroundColor?: string;
-  backgroundOpacity?: number;
-  contrast?: import('../surfaceUtils').ControlContrast;
-  style?: import('react-native').ViewStyle;
-  containerStyle?: import('react-native').ViewStyle;
-}
-
-export const AppHeaderContainer: React.FC<AppHeaderContainerProps> = React.memo(({
-  children,
-  variant = 'standard',
-  transparent = false,
-  borderBottom,
-  backgroundColor,
-  backgroundOpacity,
-  contrast,
-  style,
-  containerStyle,
-}) => {
-  const insets = useSafeAreaInsets();
-  const { isDark, globalContrast } = useThemeMode();
-  const isCapsuleVariant = variant === 'frosted-capsule';
-  const isStandardVariant = variant === 'standard';
-  const resolvedContrast = contrast ?? globalContrast;
-  const isHighContrast = resolvedContrast === 'high';
-  const defaultStandardBg = isDark ? Colors.dark.card : '#FFFFFF';
-  const resolvedBgColor = backgroundColor ?? (isStandardVariant ? defaultStandardBg : 'transparent');
-  const shouldRenderBgLayer = !transparent && resolvedBgColor !== 'transparent';
-  const showBorderBottom =
-    borderBottom !== undefined ? borderBottom : (isStandardVariant && !transparent);
-
-  return (
-    <View
-      style={[
-        styles.container,
-        getContainerHeight(insets.top, 48),
-        isCapsuleVariant || transparent ? styles.floatingContainer : null,
-        showBorderBottom
-          ? isHighContrast
-            ? isDark
-              ? styles.borderBottomHighDark
-              : styles.borderBottomHighLight
-            : isDark
-              ? styles.borderBottomDark
-              : styles.borderBottomLight
-          : null,
-        style,
-        containerStyle,
-      ]}
-    >
-      {shouldRenderBgLayer && (
-        <View
-          style={[
-            styles.backgroundLayer,
-            getHeaderBackgroundStyle(resolvedBgColor, backgroundOpacity),
-          ]}
-          pointerEvents="none"
-        />
-      )}
-      {children}
-    </View>
-  );
-});
+export const AppHeaderContainer = HeaderContainer;
+export type { HeaderContainerProps as AppHeaderContainerProps } from './components/HeaderContainer';
 
 export const AppHeader = Object.assign(AppHeaderComponent, {
   BackButton: HeaderBackButton,

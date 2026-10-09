@@ -117,6 +117,7 @@ export * from './ThemeStudioModal';
 export * from './AppActionSheet';
 export * from './ErrorBoundary';
 export * from './AppWebView';
+export * from './AppBottomNav';
 
 import { AppCard } from './AppCard';
 import { AppleGlassCard } from './AppleGlassCard';
@@ -124,6 +125,7 @@ import { GlassTile } from './GlassTile';
 import { WidgetCard } from './WidgetCard';
 import { GestureCard } from './GestureCard';
 import { AppHeader } from './AppHeader';
+import { AppBottomNav } from './AppBottomNav';
 import { ConfirmDialog } from './ConfirmDialog';
 import { AppToast, ToastProvider } from './AppToast';
 import { AppAccordion } from './AppAccordion';
@@ -141,9 +143,9 @@ export const Organisms = {
   AppleGlassCard,
   GlassTile,
   WidgetCard,
-
   GestureCard,
   AppHeader,
+  AppBottomNav,
   ConfirmDialog,
   AppToast,
   ToastProvider,
