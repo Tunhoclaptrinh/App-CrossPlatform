@@ -1,5 +1,12 @@
-import React, { useMemo, useCallback } from 'react';
-import { View, StyleProp, ViewStyle } from 'react-native';
+import React, { useMemo, useCallback, useState, useRef, useEffect } from 'react';
+import {
+  View,
+  StyleProp,
+  ViewStyle,
+  LayoutAnimation,
+  Animated,
+  LayoutChangeEvent,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeMode } from '@/hooks/useThemeMode';
 import {
@@ -43,6 +50,13 @@ const AppBottomNavComponent: React.FC<AppBottomNavProps> = React.memo(({
   hidden = false,
   safeArea = true,
   borderRadius,
+  indicatorBorderRadius,
+  indicatorInset,
+  indicatorBorderEnabled = true,
+  indicatorBorderWidth,
+  indicatorBorderColor,
+  indicatorBorderOpacity,
+  labelGap,
   style,
   containerStyle,
   itemStyle,
@@ -50,7 +64,7 @@ const AppBottomNavComponent: React.FC<AppBottomNavProps> = React.memo(({
   activeLabelStyle,
 }) => {
   const insets = useSafeAreaInsets();
-  const { theme: themeColors, isDark, globalContrast, radiusTokens } = useThemeMode();
+  const { theme: themeColors, isDark, globalContrast, reduceMotion } = useThemeMode();
 
   const isTop = placement === 'top';
   const isFloating = variant === 'floating-pill' || variant === 'frosted-glass';
@@ -59,17 +73,107 @@ const AppBottomNavComponent: React.FC<AppBottomNavProps> = React.memo(({
   const effectiveActiveColor = activeColor || themeColors.primary;
   const effectiveInactiveColor = inactiveColor || themeColors.textSecondary;
 
+  // Segmented Sliding Indicator Layout State & Physics (Concentric 60fps continuous thumb)
+  const [itemLayouts, setItemLayouts] = useState<Record<string, { x: number; width: number }>>({});
+  const indicatorTranslateX = useRef(new Animated.Value(0)).current;
+  const indicatorWidth = useRef(new Animated.Value(0)).current;
+  const isInitialIndicatorMount = useRef(true);
+
+  const handleItemLayout = useCallback((key: string, e: LayoutChangeEvent) => {
+    const { x, width } = e.nativeEvent.layout;
+    if (width > 0) {
+      setItemLayouts((prev) => {
+        if (prev[key]?.x === x && prev[key]?.width === width) return prev;
+        return { ...prev, [key]: { x, width } };
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    const layout = itemLayouts[activeKey];
+    if (!layout) return;
+
+    if (isInitialIndicatorMount.current) {
+      indicatorTranslateX.setValue(layout.x);
+      indicatorWidth.setValue(layout.width);
+      isInitialIndicatorMount.current = false;
+      return;
+    }
+
+    if (reduceMotion) {
+      indicatorTranslateX.setValue(layout.x);
+      indicatorWidth.setValue(layout.width);
+    } else {
+      Animated.parallel([
+        Animated.spring(indicatorTranslateX, {
+          toValue: layout.x,
+          damping: 24,
+          mass: 0.65,
+          stiffness: 280,
+          useNativeDriver: false,
+        }),
+        Animated.spring(indicatorWidth, {
+          toValue: layout.width,
+          damping: 24,
+          mass: 0.65,
+          stiffness: 280,
+          useNativeDriver: false,
+        }),
+      ]).start();
+    }
+  }, [activeKey, itemLayouts, reduceMotion, indicatorTranslateX, indicatorWidth]);
+
   // Corner radius calculation synchronized with Theme Tokens
   const effectiveRadius = useMemo(() => {
     if (borderRadius !== undefined) return borderRadius;
-    if (variant === 'floating-pill') {
-      return radiusTokens.pill >= 999 ? 34 : Math.max(radiusTokens.card, 20);
-    }
-    if (variant === 'frosted-glass') {
-      return radiusTokens.pill >= 999 ? 30 : Math.max(radiusTokens.card, 18);
+    if (variant === 'floating-pill' || variant === 'frosted-glass') {
+      return 9999;
     }
     return 0;
-  }, [borderRadius, variant, radiusTokens]);
+  }, [borderRadius, variant]);
+
+  const effectiveIndicatorRadius = useMemo(() => {
+    if (indicatorBorderRadius !== undefined) return indicatorBorderRadius;
+    if (variant === 'standard') {
+      // Trong thanh đáy phẳng standard, bo góc 14px hài hòa, không bị phình thành khối tròn khổng lồ
+      return 14;
+    }
+    // Default to true full pill (capsule) matching the dock's concentric curved cap
+    return 9999;
+  }, [indicatorBorderRadius, variant]);
+
+  const showIndicatorBorder =
+    indicatorBorderEnabled !== false &&
+    (indicatorBorderWidth === undefined || indicatorBorderWidth > 0);
+  const effectiveBorderWidth = showIndicatorBorder ? (indicatorBorderWidth ?? 1) : 0;
+
+  const effectiveBorderColor = useMemo(() => {
+    if (!showIndicatorBorder) return 'transparent';
+    const toAlphaHex = (opacity: number) => {
+      const v = Math.round(Math.max(0, Math.min(1, opacity)) * 255);
+      return v.toString(16).padStart(2, '0');
+    };
+    const defaultAlpha = indicatorBorderOpacity ?? 0.28;
+    if (indicatorBorderColor) {
+      if (
+        indicatorBorderOpacity !== undefined &&
+        indicatorBorderColor.startsWith('#') &&
+        indicatorBorderColor.length === 7
+      ) {
+        return `${indicatorBorderColor}${toAlphaHex(indicatorBorderOpacity)}`;
+      }
+      return indicatorBorderColor;
+    }
+    if (effectiveActiveColor.startsWith('#') && effectiveActiveColor.length === 7) {
+      return `${effectiveActiveColor}${toAlphaHex(defaultAlpha)}`;
+    }
+    return `${effectiveActiveColor}28`;
+  }, [
+    showIndicatorBorder,
+    indicatorBorderColor,
+    indicatorBorderOpacity,
+    effectiveActiveColor,
+  ]);
 
   const navBaseHeight = getNavHeight(size, isFloating);
   const effectiveInset = safeArea ? (isTop ? insets.top : insets.bottom) : 0;
@@ -241,6 +345,37 @@ const AppBottomNavComponent: React.FC<AppBottomNavProps> = React.memo(({
     );
   }
 
+  const hasSlidingIndicator = indicatorStyle === 'pill' && Boolean(itemLayouts[activeKey]);
+
+  const renderSlidingIndicator = () => {
+    if (indicatorStyle !== 'pill' || !itemLayouts[activeKey]) return null;
+    const inset = indicatorInset !== undefined ? indicatorInset : 3.5;
+    const topOffset = (isTop && !isFloating && safeArea ? insets.top : 0) + inset;
+    const bottomOffset = (!isTop && !isFloating && safeArea ? insets.bottom : 0) + inset;
+    return (
+      <Animated.View
+        pointerEvents="none"
+        style={[
+          styles.slidingIndicatorPill,
+          {
+            top: topOffset,
+            bottom: bottomOffset,
+            transform: [
+              {
+                translateX: Animated.add(indicatorTranslateX, inset),
+              },
+            ],
+            width: Animated.add(indicatorWidth, -inset * 2),
+            borderRadius: effectiveIndicatorRadius,
+            backgroundColor: `${effectiveActiveColor}16`,
+            borderColor: effectiveBorderColor,
+            borderWidth: effectiveBorderWidth,
+          },
+        ]}
+      />
+    );
+  };
+
   const renderItem = (item: (typeof items)[0]) => {
     const isActive = item.key === activeKey;
     return (
@@ -248,7 +383,12 @@ const AppBottomNavComponent: React.FC<AppBottomNavProps> = React.memo(({
         key={item.key}
         item={item}
         isActive={isActive}
-        onPress={() => onChange(item.key)}
+        onPress={() => {
+          LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+          onChange(item.key);
+        }}
+        onLayout={(e) => handleItemLayout(item.key, e)}
+        hasSlidingIndicator={hasSlidingIndicator}
         showLabel={showLabels}
         itemLayout={itemLayout}
         activeColor={effectiveActiveColor}
@@ -258,6 +398,11 @@ const AppBottomNavComponent: React.FC<AppBottomNavProps> = React.memo(({
         itemStyle={itemStyle}
         labelStyle={labelStyle}
         activeLabelStyle={activeLabelStyle}
+        indicatorBorderRadius={effectiveIndicatorRadius}
+        indicatorInset={indicatorInset}
+        indicatorBorderWidth={effectiveBorderWidth}
+        indicatorBorderColor={effectiveBorderColor}
+        labelGap={labelGap}
       />
     );
   };
@@ -300,6 +445,7 @@ const AppBottomNavComponent: React.FC<AppBottomNavProps> = React.memo(({
             containerStyle,
           ]}
         >
+          {renderSlidingIndicator()}
           {hasSplitFab ? (
             <>
               {leftItems.map(renderItem)}
@@ -336,6 +482,7 @@ const AppBottomNavComponent: React.FC<AppBottomNavProps> = React.memo(({
           containerStyle,
         ]}
       >
+        {renderSlidingIndicator()}
         {hasSplitFab ? (
           <>
             {leftItems.map(renderItem)}

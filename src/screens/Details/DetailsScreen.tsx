@@ -13,6 +13,7 @@ import {
   ArrowLeft,
   BookOpen,
   Layout,
+  LayoutGrid,
   Share2,
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -43,6 +44,7 @@ import {
   StorageShowcase,
   UtilsShowcase,
   StorybookShowcase,
+  LayoutLabView,
   type ModuleTabItem,
 } from './components';
 
@@ -166,6 +168,14 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
         desc: 'Ma trận đồng bộ kích thước chuẩn Button, Input, Select, Badge, Card (sm, md, lg)',
         icon: BookOpen,
         color: '#6366F1',
+      },
+      {
+        id: 'layout-lab',
+        label: 'Layout Lab',
+        fullTitle: 'Phòng Thí Nghiệm Bố Cục & Dock',
+        desc: 'Kiểm tra toàn diện Dock trên/dưới, thanh điều hướng, cuộn trang & offset tự do theo thời gian thực.',
+        icon: LayoutGrid,
+        color: '#8B5CF6',
       },
       {
         id: 'theme-studio',
@@ -499,6 +509,17 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
             externalSearchQuery={storybookSearchQuery}
             onExternalSearchQueryChange={setStorybookSearchQuery}
             onResetScroll={handleScrollToTop}
+            onOpenLayoutLabScreen={() => navigation.navigate('LayoutLab')}
+          />
+        )}
+
+        {activeModule === 'layout-lab' && (
+          <LayoutLabView
+            themeColors={themeColors}
+            radiusTokens={radiusTokens}
+            isDark={isDark}
+            isGlass={isGlass}
+            onOpenFullScreen={() => navigation.navigate('LayoutLab')}
           />
         )}
 
@@ -666,6 +687,7 @@ export const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation 
 
       {/* Real Application Header for Details Screen - Placed after ScreenWrapper to guarantee touch responder priority & elevation */}
       <AppHeader
+        containerStyle={styles.floatingHeader}
         title={currentTab.label}
         subtitle={currentTab.fullTitle}
         variant={effectiveVariant}

@@ -8,8 +8,10 @@ export type RootStackParamList = {
     title: string;
     description: string;
   };
+  LayoutLab: undefined;
 };
 
 export type SplashScreenProps = NativeStackScreenProps<RootStackParamList, 'Splash'>;
 export type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;
 export type DetailsScreenProps = NativeStackScreenProps<RootStackParamList, 'Details'>;
+export type LayoutLabScreenProps = NativeStackScreenProps<RootStackParamList, 'LayoutLab'>;

@@ -10,12 +10,21 @@ import type {
   ControlShadow,
   ControlVariant,
 } from '@/components/common/surfaceUtils';
+import type { MeshVariant } from '@/components/common/AppleMeshBackground/types';
+import type {
+  AppHeaderVariant,
+  AppHeaderBackStyle,
+  AppHeaderActionStyle,
+  HeaderTitleAlign,
+  AppHeaderSize,
+} from '@/components/common/AppHeader/types';
 
 export type ThemeMode = 'system' | 'light' | 'dark';
 export type ThemeStyle = 'default' | 'apple-glass';
-export type HeaderVariant = 'standard' | 'frosted-capsule' | 'floating-pill';
+export type HeaderVariant = AppHeaderVariant;
 export type Language = 'vi' | 'en';
 export type FontScale = 'small' | 'standard' | 'large';
+export type { MeshVariant };
 
 export interface AppStoreState {
   // Theme & Appearance
@@ -29,6 +38,10 @@ export interface AppStoreState {
   setHeaderVariant: (variant: HeaderVariant) => void;
   toggleHeaderVariant: () => void;
 
+  // Global Dynamic Mesh Wallpaper & Background
+  meshVariant: MeshVariant;
+  setMeshVariant: (variant: MeshVariant) => void;
+
   // Surface & Contrast Engine Controls
   globalContrast: ControlContrast;
   setGlobalContrast: (contrast: ControlContrast) => void;
@@ -36,6 +49,30 @@ export interface AppStoreState {
   setGlobalShadow: (shadow: ControlShadow) => void;
   globalControlVariant: ControlVariant;
   setGlobalControlVariant: (variant: ControlVariant) => void;
+
+  // Global Surface Radius Override
+  customCardRadius: number | undefined;
+  setCustomCardRadius: (radius: number | undefined) => void;
+
+  // Global Header Styling
+  headerBackStyle: AppHeaderBackStyle;
+  setHeaderBackStyle: (style: AppHeaderBackStyle) => void;
+  headerActionStyle: AppHeaderActionStyle;
+  setHeaderActionStyle: (style: AppHeaderActionStyle) => void;
+  headerTitleAlign: HeaderTitleAlign;
+  setHeaderTitleAlign: (align: HeaderTitleAlign) => void;
+  headerSize: AppHeaderSize;
+  setHeaderSize: (size: AppHeaderSize) => void;
+  headerTitleColor: string | undefined;
+  setHeaderTitleColor: (color: string | undefined) => void;
+  headerSubtitleColor: string | undefined;
+  setHeaderSubtitleColor: (color: string | undefined) => void;
+  headerTintColor: string | undefined;
+  setHeaderTintColor: (color: string | undefined) => void;
+  headerBgColor: string | undefined;
+  setHeaderBgColor: (color: string | undefined) => void;
+  headerBorderRadius: number | undefined;
+  setHeaderBorderRadius: (radius: number | undefined) => void;
 
   // Dynamic UI Customizations
   accentColor: AccentColor;
@@ -86,12 +123,37 @@ export const useAppStore = create<AppStoreState>()(
         set({ themeStyle: current === 'apple-glass' ? 'default' : 'apple-glass' });
       },
 
+      meshVariant: 'aurora',
+      setMeshVariant: (variant: MeshVariant) => set({ meshVariant: variant }),
+
       headerVariant: 'standard',
       setHeaderVariant: (variant: HeaderVariant) => set({ headerVariant: variant }),
       toggleHeaderVariant: () => {
         const current = get().headerVariant;
         set({ headerVariant: current === 'standard' ? 'frosted-capsule' : 'standard' });
       },
+
+      customCardRadius: undefined,
+      setCustomCardRadius: (radius: number | undefined) => set({ customCardRadius: radius }),
+
+      headerBackStyle: 'glass-capsule',
+      setHeaderBackStyle: (style: AppHeaderBackStyle) => set({ headerBackStyle: style }),
+      headerActionStyle: 'capsule',
+      setHeaderActionStyle: (style: AppHeaderActionStyle) => set({ headerActionStyle: style }),
+      headerTitleAlign: 'center',
+      setHeaderTitleAlign: (align: HeaderTitleAlign) => set({ headerTitleAlign: align }),
+      headerSize: 'md',
+      setHeaderSize: (size: AppHeaderSize) => set({ headerSize: size }),
+      headerTitleColor: undefined,
+      setHeaderTitleColor: (color: string | undefined) => set({ headerTitleColor: color }),
+      headerSubtitleColor: undefined,
+      setHeaderSubtitleColor: (color: string | undefined) => set({ headerSubtitleColor: color }),
+      headerTintColor: undefined,
+      setHeaderTintColor: (color: string | undefined) => set({ headerTintColor: color }),
+      headerBgColor: undefined,
+      setHeaderBgColor: (color: string | undefined) => set({ headerBgColor: color }),
+      headerBorderRadius: undefined,
+      setHeaderBorderRadius: (radius: number | undefined) => set({ headerBorderRadius: radius }),
 
       globalContrast: 'normal',
       setGlobalContrast: (contrast: ControlContrast) => set({ globalContrast: contrast }),
@@ -126,7 +188,18 @@ export const useAppStore = create<AppStoreState>()(
           radiusPreset: 'standard',
           themeStyle: 'apple-glass',
           themeMode: 'light',
+          meshVariant: 'aurora',
+          customCardRadius: undefined,
           headerVariant: 'standard',
+          headerBackStyle: 'glass-capsule',
+          headerActionStyle: 'capsule',
+          headerTitleAlign: 'center',
+          headerSize: 'md',
+          headerTitleColor: undefined,
+          headerSubtitleColor: undefined,
+          headerTintColor: undefined,
+          headerBgColor: undefined,
+          headerBorderRadius: undefined,
           globalContrast: 'normal',
           globalShadow: 'none',
           globalControlVariant: 'standard',
@@ -157,7 +230,18 @@ export const useAppStore = create<AppStoreState>()(
       partialize: (state) => ({
         themeMode: state.themeMode,
         themeStyle: state.themeStyle,
+        meshVariant: state.meshVariant,
+        customCardRadius: state.customCardRadius,
         headerVariant: state.headerVariant,
+        headerBackStyle: state.headerBackStyle,
+        headerActionStyle: state.headerActionStyle,
+        headerTitleAlign: state.headerTitleAlign,
+        headerSize: state.headerSize,
+        headerTitleColor: state.headerTitleColor,
+        headerSubtitleColor: state.headerSubtitleColor,
+        headerTintColor: state.headerTintColor,
+        headerBgColor: state.headerBgColor,
+        headerBorderRadius: state.headerBorderRadius,
         accentColor: state.accentColor,
         radiusPreset: state.radiusPreset,
         globalControlSize: state.globalControlSize,

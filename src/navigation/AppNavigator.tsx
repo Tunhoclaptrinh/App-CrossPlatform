@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SplashScreen } from '@/screens/Splash';
 import { HomeScreen } from '@/screens/Home';
 import { DetailsScreen } from '@/screens/Details';
+import { LayoutLabScreen } from '@/screens/LayoutLab';
 import { useThemeMode } from '@/hooks';
 import { RootStackParamList } from './types';
 
@@ -46,6 +47,13 @@ export const AppNavigator: React.FC = () => {
       <Stack.Screen
         name="Details"
         component={DetailsScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="LayoutLab"
+        component={LayoutLabScreen}
         options={{
           headerShown: false,
         }}

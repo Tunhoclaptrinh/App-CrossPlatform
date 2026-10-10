@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import {
   TouchableOpacity,
-  View,
   StyleProp,
   ViewStyle,
   TextStyle,
+  Animated,
+  LayoutChangeEvent,
 } from 'react-native';
 import { AppText } from '../../AppText';
 import { haptics } from '@/utils/haptics';
@@ -29,6 +30,13 @@ export interface BottomNavItemProps {
   itemStyle?: StyleProp<ViewStyle>;
   labelStyle?: StyleProp<TextStyle>;
   activeLabelStyle?: StyleProp<TextStyle>;
+  indicatorBorderRadius?: number;
+  indicatorInset?: number;
+  indicatorBorderWidth?: number;
+  indicatorBorderColor?: string;
+  labelGap?: number;
+  onLayout?: (e: LayoutChangeEvent) => void;
+  hasSlidingIndicator?: boolean;
 }
 
 export const BottomNavItemComponent: React.FC<BottomNavItemProps> = React.memo(({
@@ -44,7 +52,68 @@ export const BottomNavItemComponent: React.FC<BottomNavItemProps> = React.memo((
   itemStyle,
   labelStyle,
   activeLabelStyle,
+  indicatorBorderRadius,
+  indicatorInset,
+  indicatorBorderWidth,
+  indicatorBorderColor,
+  labelGap,
+  onLayout,
+  hasSlidingIndicator = false,
 }) => {
+  const pillScale = useRef(new Animated.Value(isActive ? 1 : 0.75)).current;
+  const pillOpacity = useRef(new Animated.Value(isActive ? 1 : 0)).current;
+  const iconScale = useRef(new Animated.Value(isActive ? 1.05 : 1)).current;
+
+  useEffect(() => {
+    if (isActive) {
+      Animated.parallel([
+        Animated.spring(pillScale, {
+          toValue: 1,
+          friction: 6,
+          tension: 100,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pillOpacity, {
+          toValue: 1,
+          duration: 180,
+          useNativeDriver: true,
+        }),
+        Animated.sequence([
+          Animated.spring(iconScale, {
+            toValue: 1.14,
+            friction: 4,
+            tension: 140,
+            useNativeDriver: true,
+          }),
+          Animated.spring(iconScale, {
+            toValue: 1.04,
+            friction: 6,
+            tension: 80,
+            useNativeDriver: true,
+          }),
+        ]),
+      ]).start();
+    } else {
+      Animated.parallel([
+        Animated.timing(pillScale, {
+          toValue: 0.75,
+          duration: 140,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pillOpacity, {
+          toValue: 0,
+          duration: 140,
+          useNativeDriver: true,
+        }),
+        Animated.timing(iconScale, {
+          toValue: 1,
+          duration: 140,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }
+  }, [isActive, pillScale, pillOpacity, iconScale]);
+
   const handlePress = () => {
     if (item.disabled) return;
     haptics.light();
@@ -75,11 +144,17 @@ export const BottomNavItemComponent: React.FC<BottomNavItemProps> = React.memo((
     return item.icon;
   };
 
+  const effectiveRadius = indicatorBorderRadius !== undefined ? indicatorBorderRadius : 9999;
+  const inset = indicatorInset !== undefined ? indicatorInset : 3.5;
+  const insetV = inset;
+  const insetH = inset;
+
   return (
     <TouchableOpacity
       activeOpacity={0.7}
       disabled={item.disabled}
       onPress={handlePress}
+      onLayout={onLayout}
       accessibilityRole="tab"
       accessibilityState={{ selected: isActive, disabled: item.disabled }}
       accessibilityLabel={item.accessibilityLabel || item.label}
@@ -91,35 +166,56 @@ export const BottomNavItemComponent: React.FC<BottomNavItemProps> = React.memo((
         itemStyle,
       ]}
     >
-      {/* 1. Pill Indicator Background */}
-      {isActive && indicatorStyle === 'pill' && (
-        <View
+      {/* 1. Animated Pill Indicator Background (only when not handled by dock container sliding thumb) */}
+      {indicatorStyle === 'pill' && !hasSlidingIndicator && (
+        <Animated.View
+          pointerEvents="none"
           style={[
             styles.indicatorPill,
-            { backgroundColor: `${activeColor}16` },
+            {
+              backgroundColor: `${activeColor}16`,
+              borderColor: indicatorBorderColor ?? `${activeColor}28`,
+              borderWidth: indicatorBorderWidth ?? 1,
+              borderRadius: effectiveRadius,
+              top: insetV,
+              bottom: insetV,
+              left: insetH,
+              right: insetH,
+              opacity: pillOpacity,
+              transform: [{ scale: pillScale }],
+            },
           ]}
         />
       )}
 
       {/* 2. Glow Indicator Background */}
-      {isActive && indicatorStyle === 'glow' && (
-        <View
+      {indicatorStyle === 'glow' && (
+        <Animated.View
+          pointerEvents="none"
           style={[
             styles.indicatorGlow,
-            { backgroundColor: activeColor },
+            {
+              backgroundColor: activeColor,
+              opacity: pillOpacity.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, 0.28],
+              }),
+              transform: [{ scale: pillScale }],
+            },
+            indicatorBorderRadius !== undefined && { borderRadius: indicatorBorderRadius },
           ]}
         />
       )}
 
       {/* Icon with Badge */}
-      <View style={styles.iconContainer}>
+      <Animated.View style={[styles.iconContainer, { transform: [{ scale: iconScale }] }]}>
         {renderIcon()}
         <BottomNavBadge
           badge={item.badge}
           badgeDot={item.badgeDot}
           isDark={isDark}
         />
-      </View>
+      </Animated.View>
 
       {/* Optional Label (Hidden if icon-only or showLabel=false) */}
       {!isIconOnly && showLabel && item.label ? (
@@ -127,6 +223,7 @@ export const BottomNavItemComponent: React.FC<BottomNavItemProps> = React.memo((
           style={[
             styles.label,
             isHorizontal && styles.labelHorizontal,
+            !isHorizontal && labelGap !== undefined && { marginTop: labelGap },
             { color: iconColor },
             isActive && styles.labelActive,
             labelStyle,
@@ -139,13 +236,31 @@ export const BottomNavItemComponent: React.FC<BottomNavItemProps> = React.memo((
       ) : null}
 
       {/* 3. Dot Indicator */}
-      {isActive && indicatorStyle === 'dot' && (
-        <View style={[styles.indicatorDot, { backgroundColor: activeColor }]} />
+      {indicatorStyle === 'dot' && (
+        <Animated.View
+          style={[
+            styles.indicatorDot,
+            {
+              backgroundColor: activeColor,
+              opacity: pillOpacity,
+              transform: [{ scale: pillScale }],
+            },
+          ]}
+        />
       )}
 
       {/* 4. Line Indicator */}
-      {isActive && indicatorStyle === 'line' && (
-        <View style={[styles.indicatorLine, { backgroundColor: activeColor }]} />
+      {indicatorStyle === 'line' && (
+        <Animated.View
+          style={[
+            styles.indicatorLine,
+            {
+              backgroundColor: activeColor,
+              opacity: pillOpacity,
+              transform: [{ scaleX: pillScale }],
+            },
+          ]}
+        />
       )}
     </TouchableOpacity>
   );

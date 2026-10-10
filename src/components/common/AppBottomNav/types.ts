@@ -258,6 +258,46 @@ export interface AppBottomNavProps {
    */
   borderRadius?: number;
 
+  /**
+   * Tùy biến bán kính bo góc cho chỉ báo tab chọn (Pill indicator)
+   */
+  indicatorBorderRadius?: number;
+
+  /**
+   * Khoảng đệm mép của chỉ báo viên thuốc (khoảng cách viền ôm sát, pixel)
+   * @default 2
+   */
+  indicatorInset?: number;
+
+  /**
+   * Khoảng cách giữa icon và chữ nhãn (pixel)
+   * @default 1.5
+   */
+  labelGap?: number;
+
+  /**
+   * Bật/tắt đường viền bao quanh chỉ báo mục tab đang chọn
+   * @default true
+   */
+  indicatorBorderEnabled?: boolean;
+
+  /**
+   * Độ dày đường viền chỉ báo (pixel)
+   * @default 1
+   */
+  indicatorBorderWidth?: number;
+
+  /**
+   * Màu viền tùy chỉnh của chỉ báo viên thuốc (mặc định lấy theo activeColor)
+   */
+  indicatorBorderColor?: string;
+
+  /**
+   * Độ đậm nhạt / trong suốt của đường viền chỉ báo (0.0 -> 1.0)
+   * @default 0.28
+   */
+  indicatorBorderOpacity?: number;
+
   // Custom style overrides
   style?: StyleProp<ViewStyle>;
   containerStyle?: StyleProp<ViewStyle>;

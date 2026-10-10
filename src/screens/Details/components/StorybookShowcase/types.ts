@@ -9,9 +9,10 @@ export interface StorybookShowcaseProps {
   onResetScroll?: () => void;
   externalSearchQuery?: string;
   onExternalSearchQueryChange?: (query: string) => void;
+  onOpenLayoutLabScreen?: () => void;
 }
 
-export type StoryCategory = 'all' | 'molecules' | 'organisms' | 'atoms' | 'parity' | 'motion';
+export type StoryCategory = 'all' | 'molecules' | 'organisms' | 'atoms' | 'parity' | 'motion' | 'layout-lab';
 
 export type ComponentId =
   | 'button'

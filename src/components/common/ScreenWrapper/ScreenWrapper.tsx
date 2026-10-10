@@ -45,11 +45,11 @@ export const ScreenWrapper = React.memo(React.forwardRef<ScrollViewInstance, Scr
   ...props
 }, ref) => {
 
-  const { theme: themeColors } = useThemeMode();
+  const { theme: themeColors, meshVariant } = useThemeMode();
   const { themeStyle } = useAppStore();
   const isGlass = themeStyle === 'apple-glass';
 
-  // In Apple Glass mode, background defaults to transparent with Aurora Mesh underneath
+  // In Apple Glass mode, background defaults to transparent with Dynamic Mesh underneath
   const shouldRenderMesh = isGlass && !disableMeshBackground;
   const defaultBg = shouldRenderMesh ? 'transparent' : themeColors.background;
   const resolvedBgColor = backgroundColor !== undefined ? backgroundColor : defaultBg;
@@ -96,7 +96,7 @@ export const ScreenWrapper = React.memo(React.forwardRef<ScrollViewInstance, Scr
 
   return (
     <View style={styles.outerContainer}>
-      {shouldRenderMesh && <AppleMeshBackground variant="aurora" />}
+      {shouldRenderMesh && <AppleMeshBackground variant={meshVariant || 'aurora'} />}
       <SafeAreaView
         edges={edges}
         style={[styles.container, { backgroundColor: resolvedBgColor }, style]}

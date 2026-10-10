@@ -35,6 +35,37 @@ export interface ThemeState {
   setThemeStyle: (style: ThemeStyle) => void;
   toggleThemeStyle: () => void;
   isGlassTheme: boolean;
+
+  // Global Dynamic Mesh Wallpaper & Background
+  meshVariant: import('./useAppStore').MeshVariant;
+  setMeshVariant: (variant: import('./useAppStore').MeshVariant) => void;
+
+  // Custom Surface Radius Override
+  customCardRadius: number | undefined;
+  setCustomCardRadius: (radius: number | undefined) => void;
+
+  // Global Header Styling
+  headerVariant: import('@/components/common/AppHeader/types').AppHeaderVariant;
+  setHeaderVariant: (variant: import('@/components/common/AppHeader/types').AppHeaderVariant) => void;
+  headerBackStyle: import('@/components/common/AppHeader/types').AppHeaderBackStyle;
+  setHeaderBackStyle: (style: import('@/components/common/AppHeader/types').AppHeaderBackStyle) => void;
+  headerActionStyle: import('@/components/common/AppHeader/types').AppHeaderActionStyle;
+  setHeaderActionStyle: (style: import('@/components/common/AppHeader/types').AppHeaderActionStyle) => void;
+  headerTitleAlign: import('@/components/common/AppHeader/types').HeaderTitleAlign;
+  setHeaderTitleAlign: (align: import('@/components/common/AppHeader/types').HeaderTitleAlign) => void;
+  headerSize: import('@/components/common/AppHeader/types').AppHeaderSize;
+  setHeaderSize: (size: import('@/components/common/AppHeader/types').AppHeaderSize) => void;
+  headerTitleColor: string | undefined;
+  setHeaderTitleColor: (color: string | undefined) => void;
+  headerSubtitleColor: string | undefined;
+  setHeaderSubtitleColor: (color: string | undefined) => void;
+  headerTintColor: string | undefined;
+  setHeaderTintColor: (color: string | undefined) => void;
+  headerBgColor: string | undefined;
+  setHeaderBgColor: (color: string | undefined) => void;
+  headerBorderRadius: number | undefined;
+  setHeaderBorderRadius: (radius: number | undefined) => void;
+
   globalContrast: import('@/components/common/surfaceUtils').ControlContrast;
   setGlobalContrast: (contrast: import('@/components/common/surfaceUtils').ControlContrast) => void;
   globalShadow: import('@/components/common/surfaceUtils').ControlShadow;
@@ -69,6 +100,30 @@ export function useThemeMode(): ThemeState {
     themeStyle,
     setThemeStyle,
     toggleThemeStyle,
+    meshVariant,
+    setMeshVariant,
+    customCardRadius,
+    setCustomCardRadius,
+    headerVariant,
+    setHeaderVariant,
+    headerBackStyle,
+    setHeaderBackStyle,
+    headerActionStyle,
+    setHeaderActionStyle,
+    headerTitleAlign,
+    setHeaderTitleAlign,
+    headerSize,
+    setHeaderSize,
+    headerTitleColor,
+    setHeaderTitleColor,
+    headerSubtitleColor,
+    setHeaderSubtitleColor,
+    headerTintColor,
+    setHeaderTintColor,
+    headerBgColor,
+    setHeaderBgColor,
+    headerBorderRadius,
+    setHeaderBorderRadius,
     globalContrast,
     setGlobalContrast,
     globalShadow,
@@ -137,6 +192,30 @@ export function useThemeMode(): ThemeState {
     setThemeStyle,
     toggleThemeStyle,
     isGlassTheme: themeStyle === 'apple-glass',
+    meshVariant,
+    setMeshVariant,
+    customCardRadius,
+    setCustomCardRadius,
+    headerVariant,
+    setHeaderVariant,
+    headerBackStyle,
+    setHeaderBackStyle,
+    headerActionStyle,
+    setHeaderActionStyle,
+    headerTitleAlign,
+    setHeaderTitleAlign,
+    headerSize,
+    setHeaderSize,
+    headerTitleColor,
+    setHeaderTitleColor,
+    headerSubtitleColor,
+    setHeaderSubtitleColor,
+    headerTintColor,
+    setHeaderTintColor,
+    headerBgColor,
+    setHeaderBgColor,
+    headerBorderRadius,
+    setHeaderBorderRadius,
     globalContrast,
     setGlobalContrast,
     globalShadow,

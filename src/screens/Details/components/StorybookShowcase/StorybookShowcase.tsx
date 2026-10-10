@@ -17,6 +17,7 @@ import {
   ComponentPreviewStage,
   ParityMatrixView,
   MotionLabView,
+  LayoutLabView,
 } from './components';
 import { haptics } from '@/utils';
 
@@ -28,6 +29,7 @@ export const StorybookShowcase: React.FC<StorybookShowcaseProps> = React.memo(({
   onResetScroll,
   externalSearchQuery,
   onExternalSearchQueryChange,
+  onOpenLayoutLabScreen,
 }) => {
   const styles = useMemo(
     () => createStorybookStyles(themeColors, radiusTokens, isDark),
@@ -94,11 +96,41 @@ export const StorybookShowcase: React.FC<StorybookShowcaseProps> = React.memo(({
           allComponents={COMPONENTS_CATALOG}
           onBackToCatalog={handleBackToCatalog}
           onSelectComponent={handleSelectComponent}
+          onOpenLayoutLab={() => {
+            if (onOpenLayoutLabScreen) {
+              onOpenLayoutLabScreen();
+            } else {
+              setSelectedComponentId(null);
+              setActiveCategory('layout-lab');
+            }
+          }}
           themeColors={themeColors}
           radiusTokens={radiusTokens}
           isDark={isDark}
           isGlass={isGlass}
           onResetScroll={onResetScroll}
+        />
+      </View>
+    );
+  }
+
+  // 1.5. IF LAYOUT LAB CATEGORY IS ACTIVE -> RENDER DEDICATED LAYOUT & DOCK SIMULATOR
+  if (activeCategory === 'layout-lab') {
+    return (
+      <View style={styles.container}>
+        <CategoryFilterChips
+          activeCategory={activeCategory}
+          onSelectCategory={setActiveCategory}
+          themeColors={themeColors}
+          radiusTokens={radiusTokens}
+          isDark={isDark}
+        />
+        <LayoutLabView
+          themeColors={themeColors}
+          radiusTokens={radiusTokens}
+          isDark={isDark}
+          isGlass={isGlass}
+          onOpenFullScreen={onOpenLayoutLabScreen}
         />
       </View>
     );

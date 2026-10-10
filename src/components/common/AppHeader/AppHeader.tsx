@@ -108,6 +108,7 @@ const AppHeaderComponent: React.FC<AppHeaderProps> = React.memo(({
   glass: _glass,
   borderBottom,
   contrast,
+  borderRadius,
   tintColor,
   style,
   containerStyle,
@@ -137,14 +138,14 @@ const AppHeaderComponent: React.FC<AppHeaderProps> = React.memo(({
   const defaultMoreLabel = t('common.moreOptions', 'Tùy chọn khác');
   const effectiveBackTitle = backTitle ?? defaultBackTitle;
 
-  // Dynamic border radius synchronized directly with App-wide theme tokens
+  // Dynamic border radius synchronized directly with App-wide theme tokens or custom prop
   const isPill = radiusTokens.pill >= 9999 || radiusTokens.control >= 9999;
-  const islandRadius = isPill ? 24 : radiusTokens.card;
-  const capsuleRadius = isPill ? 19 : radiusTokens.control;
-  const controlRadius = isPill ? 19 : radiusTokens.control;
+  const islandRadius = borderRadius !== undefined ? borderRadius : (isPill ? 24 : radiusTokens.card);
+  const capsuleRadius = borderRadius !== undefined ? borderRadius : (isPill ? 19 : radiusTokens.control);
+  const controlRadius = borderRadius !== undefined ? Math.min(borderRadius, 19) : (isPill ? 19 : radiusTokens.control);
   const backBtnRadius = controlRadius;
   const actionBtnRadius = controlRadius;
-  const islandBtnRadius = 16;
+  const islandBtnRadius = borderRadius !== undefined ? Math.min(borderRadius, 16) : 16;
 
   const isCapsuleVariant = variant === 'frosted-capsule';
   const isIslandVariant = variant === 'floating-pill';

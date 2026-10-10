@@ -7,6 +7,7 @@ import {
   Sparkles,
   Maximize2,
   Zap,
+  LayoutGrid,
 } from 'lucide-react-native';
 import { AppText, AppScrollView } from '@/components';
 import type { ThemeColors } from '@/constants/colors';
@@ -24,6 +25,7 @@ interface CategoryFilterChipsProps {
 
 const CATEGORIES: { id: StoryCategory; label: string; icon: any }[] = [
   { id: 'all', label: 'Tất Cả Linh Kiện', icon: Layers },
+  { id: 'layout-lab', label: 'Bố Cục (Layout Lab)', icon: LayoutGrid },
   { id: 'motion', label: 'Hiệu Ứng (Motion Lab)', icon: Zap },
   { id: 'molecules', label: 'Form & Nút (Molecules)', icon: Sliders },
   { id: 'organisms', label: 'Bề Mặt & Header (Organisms)', icon: Box },

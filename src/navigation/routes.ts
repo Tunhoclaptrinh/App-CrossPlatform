@@ -1,6 +1,7 @@
 export const Routes = {
   HOME: 'Home',
   DETAILS: 'Details',
+  LAYOUT_LAB: 'LayoutLab',
   LOGIN: 'Login',
   REGISTER: 'Register',
   PROFILE: 'Profile',

@@ -51,11 +51,17 @@ export const styles = StyleSheet.create({
   standardContainer: {
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: 'rgba(0, 0, 0, 0.08)',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: -3 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: Platform.OS === 'android' ? 6 : 0,
   },
   standardContainerTop: {
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: 'rgba(0, 0, 0, 0.08)',
     borderTopWidth: 0,
+    shadowOffset: { width: 0, height: 3 },
   },
   standardLight: {
     backgroundColor: '#FFFFFF',
@@ -66,6 +72,7 @@ export const styles = StyleSheet.create({
     backgroundColor: '#0F172A',
     borderTopColor: 'rgba(255, 255, 255, 0.12)',
     borderBottomColor: 'rgba(255, 255, 255, 0.12)',
+    shadowOpacity: 0.35,
   },
 
   // Floating Pill Variant (Dynamic Island style bottom dock)
@@ -73,8 +80,8 @@ export const styles = StyleSheet.create({
   floatingPill: {
     borderRadius: 34,
     borderWidth: 1,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingHorizontal: 0,
+    paddingVertical: 0,
     width: '100%',
     maxWidth: 480,
     shadowColor: '#000000',
@@ -97,8 +104,8 @@ export const styles = StyleSheet.create({
   frostedGlass: {
     borderRadius: 30,
     borderWidth: 1,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingHorizontal: 0,
+    paddingVertical: 0,
     width: '100%',
     maxWidth: 480,
     shadowColor: '#000000',
@@ -135,18 +142,20 @@ export const styles = StyleSheet.create({
   // Tab Item
   item: {
     flex: 1,
+    height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 5,
-    paddingHorizontal: 4,
+    paddingVertical: 2,
+    paddingHorizontal: 2,
     position: 'relative',
   },
   itemHorizontal: {
     flexDirection: 'row',
     gap: 6,
+    height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 6,
+    paddingVertical: 4,
     paddingHorizontal: 8,
   },
   itemDisabled: {
@@ -163,28 +172,40 @@ export const styles = StyleSheet.create({
   // Labels
   label: {
     fontSize: 11,
+    lineHeight: 14,
     fontWeight: '500',
-    marginTop: 3.5,
+    marginTop: 2,
     letterSpacing: -0.1,
     textAlign: 'center',
+    includeFontPadding: false,
   },
   labelHorizontal: {
     marginTop: 0,
     fontSize: 12,
+    lineHeight: 15,
+    includeFontPadding: false,
   },
   labelActive: {
     fontWeight: '700',
   },
 
   // Indicators
-  // 1. Pill Indicator (Soft colored capsule behind the item)
+  // 1. Sliding Segmented Pill Indicator (Continuous spring motion across dock)
+  slidingIndicatorPill: {
+    position: 'absolute',
+    left: 0,
+    borderWidth: 1,
+    zIndex: 0,
+  },
+  // 2. Pill Indicator (Soft colored capsule behind the item)
   indicatorPill: {
     position: 'absolute',
     top: 2,
     bottom: 2,
-    left: 4,
-    right: 4,
-    borderRadius: 16,
+    left: 3,
+    right: 3,
+    borderRadius: 9999,
+    borderWidth: 1,
     zIndex: -1,
   },
   // 2. Glow Indicator

@@ -19,6 +19,7 @@ import {
   RotateCcw,
   SlidersHorizontal,
   BookOpen,
+  LayoutGrid,
 } from 'lucide-react-native';
 import {
   AppText,
@@ -189,6 +190,15 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         color: '#6366F1',
       },
       {
+        id: 'layout-lab',
+        category: 'ui' as const,
+        tag: 'Adaptive Docks',
+        title: 'Phòng Thí Nghiệm Bố Cục (Layout Lab)',
+        desc: 'Áp dụng trực tiếp toàn màn hình: đảo Header ⇄ BottomNav, kéo chỉnh độ nhô FAB & viền nổi live',
+        icon: LayoutGrid,
+        color: '#8B5CF6',
+      },
+      {
         id: 'realtime',
         category: 'realtime' as const,
         tag: 'WebSocket',
@@ -301,6 +311,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       haptics.light();
       if (item.id === 'theme-studio') {
         setIsStudioOpen(true);
+      } else if (item.id === 'layout-lab') {
+        navigation.navigate('LayoutLab');
       } else {
         navigation.navigate('Details', {
           itemId: item.id,
