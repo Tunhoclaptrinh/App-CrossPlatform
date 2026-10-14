@@ -271,6 +271,11 @@ export const createLayoutLabScreenStyles = (
       fontSize: 11,
       color: themeColors.textSecondary,
     },
+    menuModeDesc: {
+      fontSize: 11,
+      color: themeColors.textSecondary,
+      marginTop: 8,
+    },
 
     // Mesh Wallpaper Selector
     meshSelectorBox: {

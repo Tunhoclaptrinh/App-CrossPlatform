@@ -7,6 +7,8 @@ import {
   Home,
   Folder,
   User,
+  Bell,
+  Heart,
   ArrowUpDown,
   Palette,
   ScanLine,
@@ -59,6 +61,7 @@ import type {
   BottomNavSize,
   BottomNavFabShape,
   BottomNavFabPlacement,
+  BottomNavMode,
 } from '@/components/common/AppBottomNav/types';
 import { createLayoutLabScreenStyles } from './styles';
 
@@ -157,6 +160,18 @@ const NAV_INDICATOR_SEGMENT_OPTIONS: SegmentOption<BottomNavIndicator>[] = [
   { value: 'dot', label: 'Dot' },
   { value: 'line', label: 'Line' },
   { value: 'none', label: 'None' },
+];
+
+const NAV_MODE_SEGMENT_OPTIONS: SegmentOption<BottomNavMode>[] = [
+  { value: 'tabs', label: 'Tab Bar + FAB' },
+  { value: 'menu', label: 'Thuần Menu (Max 6)' },
+];
+
+const NAV_ITEM_COUNT_SEGMENT_OPTIONS: SegmentOption<number>[] = [
+  { value: 3, label: '3 Mục' },
+  { value: 4, label: '4 Mục' },
+  { value: 5, label: '5 Mục' },
+  { value: 6, label: '6 Mục (Tối Đa)' },
 ];
 
 const NAV_LAYOUT_SEGMENT_OPTIONS: SegmentOption<BottomNavItemLayout>[] = [
@@ -385,16 +400,27 @@ const FAB_ICON_COLORS: ColorOption[] = [
   { label: 'Đỏ Ruby', color: '#E11D48', value: '#E11D48' },
 ];
 
-// Dynamic Nav Items forwarding active/inactive icon color
-const renderHomeIcon = ({ color }: { color: string }) => <Home size={19} color={color} />;
-const renderCompassIcon = ({ color }: { color: string }) => <Compass size={19} color={color} />;
-const renderFolderIcon = ({ color }: { color: string }) => <Folder size={19} color={color} />;
-const renderUserIcon = ({ color }: { color: string }) => <User size={19} color={color} />;
+// Dynamic Nav Items forwarding active/inactive icon color and adaptive sizing
+const renderHomeIcon = ({ color, size }: { color: string; size?: number }) => <Home size={size || 19} color={color} />;
+const renderCompassIcon = ({ color, size }: { color: string; size?: number }) => <Compass size={size || 19} color={color} />;
+const renderBellIcon = ({ color, size }: { color: string; size?: number }) => <Bell size={size || 19} color={color} />;
+const renderFolderIcon = ({ color, size }: { color: string; size?: number }) => <Folder size={size || 19} color={color} />;
+const renderHeartIcon = ({ color, size }: { color: string; size?: number }) => <Heart size={size || 19} color={color} />;
+const renderUserIcon = ({ color, size }: { color: string; size?: number }) => <User size={size || 19} color={color} />;
 
 const STORYBOOK_NAV_ITEMS: BottomNavItem[] = [
   { key: 'home', label: 'Trang chủ', icon: renderHomeIcon },
   { key: 'explore', label: 'Khám phá', icon: renderCompassIcon, badge: 3 },
   { key: 'files', label: 'Tài liệu', icon: renderFolderIcon },
+  { key: 'profile', label: 'Cá nhân', icon: renderUserIcon, badgeDot: true },
+];
+
+const STORYBOOK_6_NAV_ITEMS: BottomNavItem[] = [
+  { key: 'home', label: 'Trang chủ', icon: renderHomeIcon },
+  { key: 'explore', label: 'Khám phá', icon: renderCompassIcon, badge: 3 },
+  { key: 'notifications', label: 'Thông báo', icon: renderBellIcon, badge: '9+' },
+  { key: 'files', label: 'Tài liệu', icon: renderFolderIcon },
+  { key: 'favorites', label: 'Yêu thích', icon: renderHeartIcon },
   { key: 'profile', label: 'Cá nhân', icon: renderUserIcon, badgeDot: true },
 ];
 
@@ -467,6 +493,8 @@ export const LayoutLabScreen: React.FC<LayoutLabScreenProps> = ({ navigation }) 
   const [headerSearchable, setHeaderSearchable] = useState(false);
 
   // Bottom Nav Demo State (Kept local for Sandbox preview)
+  const [navMode, setNavMode] = useState<BottomNavMode>('tabs');
+  const [navMenuItemCount, setNavMenuItemCount] = useState<number>(6);
   const [navVariant, setNavVariant] = useState<BottomNavVariant>('floating-pill');
   const [navIndicator, setNavIndicator] = useState<BottomNavIndicator>('pill');
   const [navLayout, setNavLayout] = useState<BottomNavItemLayout>('vertical');
@@ -476,6 +504,39 @@ export const LayoutLabScreen: React.FC<LayoutLabScreenProps> = ({ navigation }) 
   const [navActiveColor, setNavActiveColor] = useState<string | undefined>(undefined);
   const [navInactiveColor, setNavInactiveColor] = useState<string | undefined>(undefined);
   const [navBgColor, setNavBgColor] = useState<string | undefined>(undefined);
+
+  const handleSelectNavMode = useCallback(
+    (mode: BottomNavMode) => {
+      haptics.light();
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      setNavMode(mode);
+      const items = mode === 'menu' ? STORYBOOK_6_NAV_ITEMS.slice(0, navMenuItemCount) : STORYBOOK_NAV_ITEMS;
+      if (!items.some((i) => i.key === activeTab)) {
+        setActiveTab(items[0]?.key || 'home');
+      }
+    },
+    [activeTab, navMenuItemCount]
+  );
+
+  const handleSelectMenuItemCount = useCallback(
+    (count: number) => {
+      haptics.light();
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      setNavMenuItemCount(count);
+      const items = STORYBOOK_6_NAV_ITEMS.slice(0, count);
+      if (!items.some((i) => i.key === activeTab)) {
+        setActiveTab(items[0]?.key || 'home');
+      }
+    },
+    [activeTab]
+  );
+
+  const currentNavItems = useMemo(() => {
+    if (navMode === 'menu') {
+      return STORYBOOK_6_NAV_ITEMS.slice(0, Math.min(navMenuItemCount, 6));
+    }
+    return STORYBOOK_NAV_ITEMS;
+  }, [navMode, navMenuItemCount]);
 
   // FAB State & Color Customization
   const [navHasFab, setNavHasFab] = useState(true);
@@ -574,9 +635,14 @@ export const LayoutLabScreen: React.FC<LayoutLabScreenProps> = ({ navigation }) 
           setFabBgColor(undefined);
           setFabIconColor('#FFFFFF');
           setNavBorderRadius(undefined);
-          setNavIndicatorRadius(undefined);
-          setNavIndicatorInset(2);
+          setNavIndicatorInset(3.5);
+          setNavIndicatorBorderEnabled(true);
+          setNavIndicatorBorderWidth(1);
+          setNavIndicatorBorderOpacity(0.28);
+          setNavIndicatorBorderColor(undefined);
           setNavLabelGap(2);
+          setNavMode('tabs');
+          setNavMenuItemCount(6);
           setHeaderBorderRadius(undefined);
           setCustomCardRadius(undefined);
         },
@@ -1348,10 +1414,52 @@ export const LayoutLabScreen: React.FC<LayoutLabScreenProps> = ({ navigation }) 
         {/* TAB 3: NAV BAR STUDIO (COLORS & LAYOUT) */}
         {activeStudioTab === 'nav' && (
           <>
-            {/* Tùy chỉnh Màu sắc Nav Bar */}
-            <AppCard style={styles.controlCard}>
+            {/* Chế Độ Điều Hướng: Tab Bar + FAB hoặc Thuần Menu (Tối đa 6 mục) */}
+            <AppCard style={styles.controlCard} borderRadius={cardEffectiveRadius}>
               <View style={styles.cardHeaderRow}>
-                <AppText style={styles.cardTitle}>1. Màu Sắc Nav Bar (Icon, Nhãn & Nền)</AppText>
+                <AppText style={styles.cardTitle}>1. Chế Độ Điều Hướng & Menu Tối Đa 6 Mục</AppText>
+                <AppBadge
+                  label={navMode === 'menu' ? `${navMenuItemCount} Mục Menu` : 'Tabs + FAB'}
+                  variant="primary"
+                />
+              </View>
+
+              <AppText style={styles.meshSelectorTitle}>Chế độ hiển thị thanh điều hướng:</AppText>
+              <AppSegmentedControl<BottomNavMode>
+                size="sm"
+                variant={isGlassTheme ? 'glass' : 'pill'}
+                options={NAV_MODE_SEGMENT_OPTIONS}
+                value={navMode}
+                onChange={handleSelectNavMode}
+                activeColor={resolvedHeaderTintColor || themeColors.primary}
+                haptic={hapticsEnabled}
+              />
+
+              {navMode === 'menu' && (
+                <>
+                  <AppText style={styles.subSectionTitle}>
+                    Số lượng mục Menu hiển thị (Tối đa 6 mục):
+                  </AppText>
+                  <AppSegmentedControl<number>
+                    size="sm"
+                    variant={isGlassTheme ? 'glass' : 'pill'}
+                    options={NAV_ITEM_COUNT_SEGMENT_OPTIONS}
+                    value={navMenuItemCount}
+                    onChange={handleSelectMenuItemCount}
+                    activeColor={resolvedHeaderTintColor || themeColors.primary}
+                    haptic={hapticsEnabled}
+                  />
+                  <AppText style={styles.menuModeDesc}>
+                    Chế độ Menu thuần túy không có nút ở giữa, dàn trải đều 100% bề ngang. Kích thước icon, nhãn chữ và huy hiệu tự động co giãn thông minh khi hiển thị tối đa 6 mục.
+                  </AppText>
+                </>
+              )}
+            </AppCard>
+
+            {/* Tùy chỉnh Màu sắc Nav Bar */}
+            <AppCard style={styles.controlCard} borderRadius={cardEffectiveRadius}>
+              <View style={styles.cardHeaderRow}>
+                <AppText style={styles.cardTitle}>2. Màu Sắc Nav Bar (Icon, Nhãn & Nền)</AppText>
                 <Sparkles size={16} color={themeColors.primary} />
               </View>
 
@@ -1430,9 +1538,9 @@ export const LayoutLabScreen: React.FC<LayoutLabScreenProps> = ({ navigation }) 
             </AppCard>
 
             {/* Kiểu Dáng Nav & Chỉ Báo */}
-            <AppCard style={styles.controlCard}>
+            <AppCard style={styles.controlCard} borderRadius={cardEffectiveRadius}>
               <View style={styles.cardHeaderRow}>
-                <AppText style={styles.cardTitle}>2. Kiểu Dáng Nav & Chỉ Báo Tab</AppText>
+                <AppText style={styles.cardTitle}>3. Kiểu Dáng Nav & Chỉ Báo Tab</AppText>
                 <AppBadge label={`${navVariant} • ${navIndicator}`} variant="primary" />
               </View>
 
@@ -1460,9 +1568,9 @@ export const LayoutLabScreen: React.FC<LayoutLabScreenProps> = ({ navigation }) 
             </AppCard>
 
             {/* Bố Cục Item & Kích Thước Nav */}
-            <AppCard style={styles.controlCard}>
+            <AppCard style={styles.controlCard} borderRadius={cardEffectiveRadius}>
               <View style={styles.cardHeaderRow}>
-                <AppText style={styles.cardTitle}>3. Bố Cục Item & Kích Thước Nav</AppText>
+                <AppText style={styles.cardTitle}>4. Bố Cục Item & Kích Thước Nav</AppText>
                 <AppBadge label={`${navLayout} • ${navSize}`} variant="neutral" />
               </View>
 
@@ -1492,7 +1600,7 @@ export const LayoutLabScreen: React.FC<LayoutLabScreenProps> = ({ navigation }) 
             {/* Tùy Chỉnh Bo Góc Nav & Tab Indicator Pill */}
             <AppCard style={styles.controlCard} borderRadius={cardEffectiveRadius}>
               <View style={styles.cardHeaderRow}>
-                <AppText style={styles.cardTitle}>4. Tùy Chỉnh Bo Góc Nav & Nút Đang Chọn</AppText>
+                <AppText style={styles.cardTitle}>5. Tùy Chỉnh Bo Góc Nav & Nút Đang Chọn</AppText>
                 <AppBadge
                   label={`${navIndicatorRadius === undefined ? 'Full Pill' : `${navIndicatorRadius}px`} • Inset ${navIndicatorInset}px`}
                   variant="primary"
@@ -1646,7 +1754,7 @@ export const LayoutLabScreen: React.FC<LayoutLabScreenProps> = ({ navigation }) 
             {/* Hoán Đổi Vị Trí (Dock Swap) */}
             <AppCard style={styles.controlCard} borderRadius={cardEffectiveRadius}>
               <View style={styles.cardHeaderRow}>
-                <AppText style={styles.cardTitle}>5. Hoán Đổi Vị Trí Dock (Layout Inversion)</AppText>
+                <AppText style={styles.cardTitle}>6. Hoán Đổi Vị Trí Dock (Layout Inversion)</AppText>
                 <AppBadge
                   label={isSwappedDocks ? 'Nav Trên • Header Dưới' : 'Header Trên • Nav Dưới'}
                   variant="info"
@@ -1943,13 +2051,15 @@ export const LayoutLabScreen: React.FC<LayoutLabScreenProps> = ({ navigation }) 
         {isSwappedDocks ? (
           // Inverted: BottomNav mounted at Top (Category Tabs)
           <AppBottomNav
-            items={STORYBOOK_NAV_ITEMS}
+            items={currentNavItems}
             activeKey={activeTab}
             onChange={(k) => {
               haptics.light();
               setActiveTab(k);
             }}
             placement="top"
+            mode={navMode}
+            maxItems={6}
             variant={navVariant}
             indicatorStyle={navIndicator}
             itemLayout={navLayout}
@@ -2027,13 +2137,15 @@ export const LayoutLabScreen: React.FC<LayoutLabScreenProps> = ({ navigation }) 
         ) : (
           // Standard: AppBottomNav mounted at Bottom
           <AppBottomNav
-            items={STORYBOOK_NAV_ITEMS}
+            items={currentNavItems}
             activeKey={activeTab}
             onChange={(k) => {
               haptics.light();
               setActiveTab(k);
             }}
             placement="bottom"
+            mode={navMode}
+            maxItems={6}
             variant={navVariant}
             indicatorStyle={navIndicator}
             itemLayout={navLayout}
@@ -2107,6 +2219,8 @@ export const LayoutLabScreen: React.FC<LayoutLabScreenProps> = ({ navigation }) 
               setNavIndicatorBorderOpacity(0.28);
               setNavIndicatorBorderColor(undefined);
               setNavLabelGap(2);
+              setNavMode('tabs');
+              setNavMenuItemCount(6);
               setHeaderBorderRadius(undefined);
               setCustomCardRadius(undefined);
             },

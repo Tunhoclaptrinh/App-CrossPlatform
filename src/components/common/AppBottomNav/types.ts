@@ -10,6 +10,7 @@ export type BottomNavItemLayout = 'vertical' | 'horizontal' | 'icon-only';
 export type BottomNavFabShape = 'circle' | 'squircle';
 export type BottomNavFabPlacement = 'lifted' | 'embedded';
 export type BottomNavPlacement = 'bottom' | 'top';
+export type BottomNavMode = 'tabs' | 'menu';
 
 export interface AppBottomNavCustomHelpers {
   close: () => void;
@@ -71,7 +72,21 @@ export interface BottomNavCenterFab {
 
 export interface AppBottomNavProps {
   /**
-   * Danh sách các mục điều hướng (2 - 5 tabs là tối ưu cho mobile)
+   * Chế độ hoạt động của thanh điều hướng:
+   * - tabs: Tab điều hướng chuẩn (hỗ trợ nút hành động FAB ở giữa)
+   * - menu: Thanh menu thuần túy (không có nút ở giữa, dàn trải đều tối đa 6 mục)
+   * @default 'tabs'
+   */
+  mode?: BottomNavMode;
+
+  /**
+   * Giới hạn số lượng mục tối đa hiển thị (mặc định: 6 trong chế độ menu)
+   * @default 6
+   */
+  maxItems?: number;
+
+  /**
+   * Danh sách các mục điều hướng (2 - 5 tabs cho tab bar, tối đa 6 cho menu)
    */
   items: BottomNavItem[];
 

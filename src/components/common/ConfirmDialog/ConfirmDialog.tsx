@@ -2,7 +2,8 @@ import React, { useEffect, useRef } from 'react';
 import {
   Modal,
   View,
-  TouchableWithoutFeedback,
+  Pressable,
+  StyleSheet,
   Animated,
 } from 'react-native';
 import { AlertCircle, Trash2 } from 'lucide-react-native';
@@ -125,76 +126,76 @@ const ConfirmDialogComponent: React.FC<ConfirmDialogProps> = ({
       animationType="fade"
       onRequestClose={handleCancel}
     >
-      <TouchableWithoutFeedback onPress={handleCancel}>
-        <View
+      <View style={styles.backdrop}>
+        <Pressable
           style={[
-            styles.backdrop,
+            StyleSheet.absoluteFill,
             isDark ? styles.backdropDark : styles.backdropLight,
           ]}
+          onPress={handleCancel}
+          accessibilityRole="button"
+          accessibilityLabel="Đóng"
+        />
+        <Animated.View
+          style={[
+            styles.dialogContainer,
+            containerThemedStyle,
+            dialogDimensionStyle,
+            { transform: [{ scale: scaleAnim }], opacity: opacityAnim },
+            style,
+          ]}
         >
-          <TouchableWithoutFeedback>
-            <Animated.View
-              style={[
-                styles.dialogContainer,
-                containerThemedStyle,
-                dialogDimensionStyle,
-                { transform: [{ scale: scaleAnim }], opacity: opacityAnim },
-                style,
-              ]}
-            >
-              <View
-                style={[
-                  styles.iconWrapper,
-                  iconThemedStyle,
-                  {
-                    width: sizeConfig.iconBoxSize,
-                    height: sizeConfig.iconBoxSize,
-                    borderRadius: sizeConfig.iconBoxSize / 2,
-                  },
-                ]}
-              >
-                {icon || defaultIcon}
-              </View>
+          <View
+            style={[
+              styles.iconWrapper,
+              iconThemedStyle,
+              {
+                width: sizeConfig.iconBoxSize,
+                height: sizeConfig.iconBoxSize,
+                borderRadius: sizeConfig.iconBoxSize / 2,
+              },
+            ]}
+          >
+            {icon || defaultIcon}
+          </View>
 
-              <AppText variant="title" color={themeColors.text} style={styles.title}>
-                {title}
-              </AppText>
+          <AppText variant="title" color={themeColors.text} style={styles.title}>
+            {title}
+          </AppText>
 
-              <AppText
-                variant="body"
-                color={effectiveContrast === 'high' ? (isDark ? '#E2E8F0' : '#1E293B') : themeColors.textSecondary}
-                style={styles.message}
-              >
-                {message}
-              </AppText>
+          <AppText
+            variant="body"
+            color={effectiveContrast === 'high' ? (isDark ? '#E2E8F0' : '#1E293B') : themeColors.textSecondary}
+            style={styles.message}
+          >
+            {message}
+          </AppText>
 
-              <View style={styles.actionsRow}>
-                <View style={styles.buttonFlex}>
-                  <AppButton
-                    title={cancelText}
-                    variant="outline"
-                    size={sizeConfig.btnSize}
-                    contrast={effectiveContrast}
-                    onPress={handleCancel}
-                    disabled={loading}
-                  />
-                </View>
+          <View style={styles.actionsRow}>
+            <View style={styles.buttonFlex}>
+              <AppButton
+                title={cancelText}
+                variant="outline"
+                size={sizeConfig.btnSize}
+                contrast={effectiveContrast}
+                onPress={handleCancel}
+                disabled={loading}
+              />
+            </View>
 
-                <View style={styles.buttonFlex}>
-                  <AppButton
-                    title={confirmText}
-                    variant={destructive ? 'danger' : 'primary'}
-                    size={sizeConfig.btnSize}
-                    contrast={effectiveContrast}
-                    loading={loading}
-                    onPress={onConfirm}
-                  />
-                </View>
-              </View>
-            </Animated.View>
-          </TouchableWithoutFeedback>
-        </View>
-      </TouchableWithoutFeedback>
+            <View style={styles.buttonFlex}>
+              <AppButton
+                title={confirmText}
+                variant={destructive ? 'danger' : 'primary'}
+                size={sizeConfig.btnSize}
+                contrast={effectiveContrast}
+                loading={loading}
+                onPress={onConfirm}
+              />
+            </View>
+          </View>
+        </Animated.View>
+      </View>
     </Modal>
   );
 };

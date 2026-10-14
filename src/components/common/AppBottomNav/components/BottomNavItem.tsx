@@ -6,6 +6,7 @@ import {
   TextStyle,
   Animated,
   LayoutChangeEvent,
+  StyleSheet,
 } from 'react-native';
 import { AppText } from '../../AppText';
 import { haptics } from '@/utils/haptics';
@@ -16,6 +17,24 @@ import type {
   BottomNavIndicator,
   BottomNavItemLayout,
 } from '../types';
+
+const itemStyles = StyleSheet.create({
+  itemDense: {
+    paddingHorizontal: 1.5,
+  },
+  itemVeryDense: {
+    paddingHorizontal: 1,
+  },
+  labelDense: {
+    fontSize: 10.5,
+    lineHeight: 13,
+  },
+  labelVeryDense: {
+    fontSize: 10,
+    lineHeight: 12,
+    letterSpacing: -0.3,
+  },
+});
 
 export interface BottomNavItemProps {
   item: ItemType;
@@ -37,6 +56,7 @@ export interface BottomNavItemProps {
   labelGap?: number;
   onLayout?: (e: LayoutChangeEvent) => void;
   hasSlidingIndicator?: boolean;
+  totalItems?: number;
 }
 
 export const BottomNavItemComponent: React.FC<BottomNavItemProps> = React.memo(({
@@ -59,6 +79,7 @@ export const BottomNavItemComponent: React.FC<BottomNavItemProps> = React.memo((
   labelGap,
   onLayout,
   hasSlidingIndicator = false,
+  totalItems,
 }) => {
   const pillScale = useRef(new Animated.Value(isActive ? 1 : 0.75)).current;
   const pillOpacity = useRef(new Animated.Value(isActive ? 1 : 0)).current;
@@ -124,9 +145,14 @@ export const BottomNavItemComponent: React.FC<BottomNavItemProps> = React.memo((
   };
 
   const iconColor = isActive ? activeColor : inactiveColor;
-  const iconSize = itemLayout === 'horizontal' ? 20 : 22;
+  const isDense = (totalItems ?? 4) >= 5;
+  const isVeryDense = (totalItems ?? 4) >= 6;
   const isHorizontal = itemLayout === 'horizontal';
   const isIconOnly = itemLayout === 'icon-only';
+
+  const iconSize = isHorizontal
+    ? (isVeryDense ? 16 : isDense ? 18 : 20)
+    : (isVeryDense ? 19 : isDense ? 20 : 22);
 
   const renderIcon = () => {
     if (isActive && item.activeIcon) {
@@ -161,6 +187,8 @@ export const BottomNavItemComponent: React.FC<BottomNavItemProps> = React.memo((
       testID={item.testID}
       style={[
         styles.item,
+        isDense && itemStyles.itemDense,
+        isVeryDense && itemStyles.itemVeryDense,
         isHorizontal && styles.itemHorizontal,
         item.disabled && styles.itemDisabled,
         itemStyle,
@@ -214,6 +242,7 @@ export const BottomNavItemComponent: React.FC<BottomNavItemProps> = React.memo((
           badge={item.badge}
           badgeDot={item.badgeDot}
           isDark={isDark}
+          isCompact={isVeryDense}
         />
       </Animated.View>
 
@@ -222,6 +251,8 @@ export const BottomNavItemComponent: React.FC<BottomNavItemProps> = React.memo((
         <AppText
           style={[
             styles.label,
+            isDense && itemStyles.labelDense,
+            isVeryDense && itemStyles.labelVeryDense,
             isHorizontal && styles.labelHorizontal,
             !isHorizontal && labelGap !== undefined && { marginTop: labelGap },
             { color: iconColor },

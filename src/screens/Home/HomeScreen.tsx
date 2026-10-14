@@ -4,6 +4,7 @@ import {
   Compass,
   Palette,
   ShieldCheck,
+  Lock,
   ChevronRight,
   Database,
   Layers,
@@ -280,6 +281,24 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         color: '#EC4899',
       },
       {
+        id: 'auth',
+        category: 'security' as const,
+        tag: 'Chuẩn Mực',
+        title: 'Đăng Ký & Đăng Nhập Chuẩn Mực',
+        desc: 'Giao diện xác thực tối giản, FaceID 1-chạm, băm mật khẩu PBKDF2 Zero-Knowledge',
+        icon: Lock,
+        color: '#6366F1',
+      },
+      {
+        id: 'security-settings',
+        category: 'security' as const,
+        tag: 'Mã Hóa & Icon',
+        title: 'Cài Đặt Bảo Mật & Mã Hóa',
+        desc: 'Cấu hình Cipher AES-256/ChaCha20, KDF rounds, Tùy biến Icon App & Soi gói tin Live',
+        icon: ShieldCheck,
+        color: '#10B981',
+      },
+      {
         id: 'core',
         category: 'ui' as const,
         tag: 'Architecture',
@@ -313,6 +332,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         setIsStudioOpen(true);
       } else if (item.id === 'layout-lab') {
         navigation.navigate('LayoutLab');
+      } else if (item.id === 'auth' || item.id === 'auth-demo') {
+        navigation.navigate('Auth');
+      } else if (item.id === 'security-settings') {
+        navigation.navigate('SecuritySettings');
       } else {
         navigation.navigate('Details', {
           itemId: item.id,

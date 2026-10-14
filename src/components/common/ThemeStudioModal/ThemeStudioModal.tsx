@@ -3,7 +3,7 @@ import {
   Modal,
   View,
   TouchableOpacity,
-  TouchableWithoutFeedback,
+  Pressable,
   StyleSheet,
   Platform,
 } from 'react-native';
@@ -204,23 +204,30 @@ export const ThemeStudioModal: React.FC<ThemeStudioModalProps> = React.memo(({
       animationType={reduceMotion ? 'none' : 'slide'}
       onRequestClose={onClose}
     >
-      <TouchableWithoutFeedback onPress={onClose}>
-        <View
-          style={[
-            styles.backdrop,
-            isDark ? styles.backdropDark : styles.backdropLight,
-          ]}
+      <View style={styles.backdrop}>
+        <Pressable
+          style={StyleSheet.absoluteFill}
+          onPress={onClose}
+          accessibilityRole="button"
+          accessibilityLabel="Đóng"
         >
-          {Platform.OS === 'ios' && (
-            <BlurView
-              style={StyleSheet.absoluteFill}
-              blurType={isDark ? 'dark' : 'light'}
-              blurAmount={25}
-              reducedTransparencyFallbackColor={isDark ? 'rgba(0, 0, 0, 0.7)' : 'rgba(0, 0, 0, 0.4)'}
-            />
-          )}
-          <TouchableWithoutFeedback onPress={() => {}}>
-            <View style={styles.sheetContainer}>
+          <View
+            style={[
+              StyleSheet.absoluteFill,
+              isDark ? styles.backdropDark : styles.backdropLight,
+            ]}
+          >
+            {Platform.OS === 'ios' && (
+              <BlurView
+                style={StyleSheet.absoluteFill}
+                blurType={isDark ? 'dark' : 'light'}
+                blurAmount={25}
+                reducedTransparencyFallbackColor={isDark ? 'rgba(0, 0, 0, 0.7)' : 'rgba(0, 0, 0, 0.4)'}
+              />
+            )}
+          </View>
+        </Pressable>
+        <View style={styles.sheetContainer}>
               {/* Drag Handle */}
               <View style={styles.dragHandleArea}>
                 <View style={styles.dragHandle} />
@@ -772,10 +779,8 @@ export const ThemeStudioModal: React.FC<ThemeStudioModalProps> = React.memo(({
                 </View>
               </View>
             </View>
-          </TouchableWithoutFeedback>
-        </View>
-      </TouchableWithoutFeedback>
-    </Modal>
+          </View>
+        </Modal>
   );
 });
 

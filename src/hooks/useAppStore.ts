@@ -25,6 +25,17 @@ export type HeaderVariant = AppHeaderVariant;
 export type Language = 'vi' | 'en';
 export type FontScale = 'small' | 'standard' | 'large';
 export type { MeshVariant };
+import type { SecurityConfig, CryptoPacket } from '@/screens/Auth/types';
+
+export const DEFAULT_SECURITY_CONFIG: SecurityConfig = {
+  cipherAlgorithm: 'AES-256-GCM',
+  keyDerivation: 'PBKDF2-100k',
+  secretPepper: 'React_Native_Enterprise_Sec_Pepper_#2026',
+  requireBiometrics: false,
+  enableZeroKnowledgeHash: true,
+  simulatedLatencyMs: 600,
+  autoEnrollBiometrics: true,
+};
 
 export interface AppStoreState {
   // Theme & Appearance
@@ -103,6 +114,13 @@ export interface AppStoreState {
   increment: () => void;
   decrement: () => void;
   reset: () => void;
+
+  // Enterprise Cryptography & Security Settings
+  securityConfig: SecurityConfig;
+  setSecurityConfig: (config: SecurityConfig) => void;
+  resetSecurityConfig: () => void;
+  latestCryptoPacket: CryptoPacket | null;
+  setLatestCryptoPacket: (pkt: CryptoPacket | null) => void;
 }
 
 export const useAppStore = create<AppStoreState>()(
@@ -223,6 +241,12 @@ export const useAppStore = create<AppStoreState>()(
       increment: () => set((state) => ({ counter: state.counter + 1 })),
       decrement: () => set((state) => ({ counter: Math.max(0, state.counter - 1) })),
       reset: () => set({ counter: 0 }),
+
+      securityConfig: DEFAULT_SECURITY_CONFIG,
+      setSecurityConfig: (config: SecurityConfig) => set({ securityConfig: config }),
+      resetSecurityConfig: () => set({ securityConfig: DEFAULT_SECURITY_CONFIG }),
+      latestCryptoPacket: null,
+      setLatestCryptoPacket: (pkt: CryptoPacket | null) => set({ latestCryptoPacket: pkt }),
     }),
     {
       name: '@app/unified_store',
@@ -251,6 +275,7 @@ export const useAppStore = create<AppStoreState>()(
         language: state.language,
         user: state.user,
         counter: state.counter,
+        securityConfig: state.securityConfig,
       }),
       onRehydrateStorage: () => (state) => {
         if (state?.language) {

@@ -228,29 +228,36 @@ export const AppSelect = React.memo(function AppSelectComponent<T = string | num
         animationType={reduceMotion ? 'none' : 'fade'}
         onRequestClose={handleClose}
       >
-        <Pressable
-          style={[
-            styles.modalOverlay,
-            isDark ? styles.modalOverlayDark : styles.modalOverlayLight,
-          ]}
-          onPress={handleClose}
-        >
-          {Platform.OS === 'ios' && (
-            <BlurView
-              style={StyleSheet.absoluteFill}
-              blurType={isDark ? 'dark' : 'light'}
-              blurAmount={25}
-              reducedTransparencyFallbackColor={isDark ? 'rgba(0, 0, 0, 0.7)' : 'rgba(0, 0, 0, 0.4)'}
-            />
-          )}
+        <View style={styles.modalOverlay}>
           <Pressable
+            style={StyleSheet.absoluteFill}
+            onPress={handleClose}
+            accessibilityRole="button"
+            accessibilityLabel="Đóng"
+          >
+            <View
+              style={[
+                StyleSheet.absoluteFill,
+                isDark ? styles.modalOverlayDark : styles.modalOverlayLight,
+              ]}
+            >
+              {Platform.OS === 'ios' && (
+                <BlurView
+                  style={StyleSheet.absoluteFill}
+                  blurType={isDark ? 'dark' : 'light'}
+                  blurAmount={25}
+                  reducedTransparencyFallbackColor={isDark ? 'rgba(0, 0, 0, 0.7)' : 'rgba(0, 0, 0, 0.4)'}
+                />
+              )}
+            </View>
+          </Pressable>
+          <View
             style={[
               styles.sheetContainer,
               isDark ? styles.sheetContainerDark : styles.sheetContainerLight,
               isKeyboardOpen && styles.sheetContainerKeyboard,
               sheetKeyboardPaddingStyle,
             ]}
-            onPress={() => {}}
           >
             {/* Grab Handle */}
             <View
@@ -360,8 +367,8 @@ export const AppSelect = React.memo(function AppSelectComponent<T = string | num
                 );
               }))}
             </AppScrollView>
-          </Pressable>
-        </Pressable>
+          </View>
+        </View>
       </Modal>
     </View>
   );

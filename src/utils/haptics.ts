@@ -56,6 +56,13 @@ export const haptics = {
   },
 
   /**
+   * Rung nhe khi chon item hoac switch tab (Selection feedback)
+   */
+  selection() {
+    safeVibrate(Platform.OS === 'android' ? 8 : undefined);
+  },
+
+  /**
    * Rung vua (Medium impact)
    */
   medium() {

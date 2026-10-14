@@ -4,6 +4,8 @@ import { SplashScreen } from '@/screens/Splash';
 import { HomeScreen } from '@/screens/Home';
 import { DetailsScreen } from '@/screens/Details';
 import { LayoutLabScreen } from '@/screens/LayoutLab';
+import { AuthScreen } from '@/screens/Auth';
+import { SecuritySettingsScreen } from '@/screens/SecuritySettings';
 import { useThemeMode } from '@/hooks';
 import { RootStackParamList } from './types';
 
@@ -54,6 +56,20 @@ export const AppNavigator: React.FC = () => {
       <Stack.Screen
         name="LayoutLab"
         component={LayoutLabScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="Auth"
+        component={AuthScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="SecuritySettings"
+        component={SecuritySettingsScreen}
         options={{
           headerShown: false,
         }}

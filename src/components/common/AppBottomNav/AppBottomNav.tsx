@@ -24,6 +24,8 @@ const AppBottomNavComponent: React.FC<AppBottomNavProps> = React.memo(({
   items,
   activeKey,
   onChange,
+  mode = 'tabs',
+  maxItems = 6,
   variant = 'standard',
   placement = 'bottom',
   contrast,
@@ -178,19 +180,28 @@ const AppBottomNavComponent: React.FC<AppBottomNavProps> = React.memo(({
   const navBaseHeight = getNavHeight(size, isFloating);
   const effectiveInset = safeArea ? (isTop ? insets.top : insets.bottom) : 0;
 
-  // Split items around centerFab if provided
-  const { leftItems, rightItems, hasSplitFab } = useMemo(() => {
-    const hasFabElement = Boolean(centerFab || renderCenterFab);
-    if (!hasFabElement || items.length <= 1) {
-      return { leftItems: items, rightItems: [], hasSplitFab: false };
+  const isMenuMode = mode === 'menu';
+  const effectiveMaxItems = maxItems ?? 6;
+  const effectiveItems = useMemo(() => {
+    if (isMenuMode) {
+      return items.slice(0, effectiveMaxItems);
     }
-    const midPoint = Math.ceil(items.length / 2);
+    return maxItems !== undefined ? items.slice(0, maxItems) : items;
+  }, [items, isMenuMode, effectiveMaxItems, maxItems]);
+
+  // Split items around centerFab if provided and not in pure menu mode
+  const { leftItems, rightItems, hasSplitFab } = useMemo(() => {
+    const hasFabElement = !isMenuMode && Boolean(centerFab || renderCenterFab);
+    if (!hasFabElement || effectiveItems.length <= 1) {
+      return { leftItems: effectiveItems, rightItems: [], hasSplitFab: false };
+    }
+    const midPoint = Math.ceil(effectiveItems.length / 2);
     return {
-      leftItems: items.slice(0, midPoint),
-      rightItems: items.slice(midPoint),
+      leftItems: effectiveItems.slice(0, midPoint),
+      rightItems: effectiveItems.slice(midPoint),
       hasSplitFab: true,
     };
-  }, [items, centerFab, renderCenterFab]);
+  }, [effectiveItems, centerFab, renderCenterFab, isMenuMode]);
 
   // Variant styling
   const variantContainerStyle = useMemo(() => {
@@ -376,13 +387,14 @@ const AppBottomNavComponent: React.FC<AppBottomNavProps> = React.memo(({
     );
   };
 
-  const renderItem = (item: (typeof items)[0]) => {
+  const renderItem = (item: (typeof effectiveItems)[0]) => {
     const isActive = item.key === activeKey;
     return (
       <BottomNavItemComponent
         key={item.key}
         item={item}
         isActive={isActive}
+        totalItems={effectiveItems.length}
         onPress={() => {
           LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
           onChange(item.key);
@@ -408,7 +420,7 @@ const AppBottomNavComponent: React.FC<AppBottomNavProps> = React.memo(({
   };
 
   const renderFabComponent = (floating: boolean) => {
-    if (!centerFab && !renderCenterFab) return null;
+    if (isMenuMode || (!centerFab && !renderCenterFab)) return null;
     return (
       <BottomNavCenterFabComponent
         fab={centerFab}
@@ -454,7 +466,7 @@ const AppBottomNavComponent: React.FC<AppBottomNavProps> = React.memo(({
             </>
           ) : (
             <>
-              {items.map(renderItem)}
+              {effectiveItems.map(renderItem)}
               {renderFabComponent(true)}
             </>
           )}
@@ -491,7 +503,7 @@ const AppBottomNavComponent: React.FC<AppBottomNavProps> = React.memo(({
           </>
         ) : (
           <>
-            {items.map(renderItem)}
+            {effectiveItems.map(renderItem)}
             {renderFabComponent(false)}
           </>
         )}
