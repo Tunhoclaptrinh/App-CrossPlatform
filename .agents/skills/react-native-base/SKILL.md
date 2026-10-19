@@ -350,3 +350,21 @@ import { Save, Share2, Bell } from 'lucide-react-native';
 
 
 
+
+### Jest with pnpm
+- Keep `.pnpm/` traversable in `transformIgnorePatterns` so React Native and React Navigation sources are transformed under both npm and pnpm layouts.
+- Atomic export tests must reflect the current public API: `GlassTile` and `AppleGlassCard` are the glass organisms; the removed `GlassCard` is not an export.
+
+### New Architecture LayoutAnimation
+- React Native 0.87 enables LayoutAnimation without `UIManager.setLayoutAnimationEnabledExperimental`. Do not call that legacy no-op at module import: its development warning can obscure bottom navigation. Keep `LayoutAnimation.configureNext` where animations are requested.
+
+### Reusable inputs and navigation integration
+- `AppDateTimeInput` wraps the native datetimepicker with base buttons/sheets/theme; cancellation leaves values unchanged and selecting a date preserves time. Rebuild native apps after installing dependencies.
+- `AppInput multiline` grows above the standard control height and aligns long text at the top.
+- `AppBottomNav` items expose long press; hapticFeedback and reduced motion are honored. AppHeader size uses ControlSize/Spacing tokens.
+
+### Navigation theme synchronization
+- NavigationContainer must receive a memoized theme built from useThemeMode, including background/card/text/primary colors. Preserve React Navigation fonts/default fields; glass backgrounds stay transparent so base mesh surfaces remain visible.
+
+### Multiline inputs and compact choices
+- Multiline AppInput defaults to radiusTokens.card, preserving explicit radius overrides; pill controls must not turn textareas into ovals. Left-aligned AppHeader collapses empty leading space, preserving back/actions. AppSegmentedControl exposes tablist/tab selected/disabled accessibility and respects global hapticsEnabled.

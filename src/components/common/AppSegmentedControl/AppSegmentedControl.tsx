@@ -49,6 +49,7 @@ const AppSegmentedControlComponent = <T extends string | number = string>({
     globalShadow,
     globalControlSize,
     reduceMotion,
+    hapticsEnabled,
   } = useThemeMode();
 
   const size = propSize ?? globalControlSize ?? 'md';
@@ -165,7 +166,7 @@ const AppSegmentedControlComponent = <T extends string | number = string>({
 
   const handleSelect = (option: SegmentOption<T>) => {
     if (disabled || option.disabled || option.value === value) return;
-    if (haptic) {
+    if (haptic && hapticsEnabled) {
       haptics.light();
     }
     onChange(option.value);
@@ -208,6 +209,7 @@ const AppSegmentedControlComponent = <T extends string | number = string>({
 
   return (
     <View
+      accessibilityRole="tablist"
       onLayout={handleContainerLayout}
       style={[
         styles.container,
@@ -265,6 +267,9 @@ const AppSegmentedControlComponent = <T extends string | number = string>({
         return (
           <TouchableOpacity
             key={String(option.value)}
+            accessibilityRole="tab"
+            accessibilityLabel={option.label}
+            accessibilityState={{ selected: isActive, disabled: Boolean(isDisabled) }}
             activeOpacity={0.7}
             disabled={isDisabled}
             onLayout={(e) => handleItemLayout(index, e)}

@@ -16,6 +16,7 @@ import { AppActionSheet } from '../AppActionSheet';
 import { AppSearchBar } from '../AppSearchBar';
 import { AppScrollView } from '../AppScrollView';
 import { useThemeMode } from '@/hooks/useThemeMode';
+import { ControlSize, Spacing } from '@/constants/theme';
 import { Colors } from '@/constants/colors';
 import { haptics } from '@/utils/haptics';
 import type { AppHeaderProps, AppHeaderAction, AppHeaderExpansionHelpers, AppHeaderCustomHelpers } from './types';
@@ -35,6 +36,7 @@ const AppHeaderComponent: React.FC<AppHeaderProps> = React.memo(({
   subtitleStyle,
   centerContent,
   variant = 'standard',
+  size = 'md',
   placement = 'top',
   showBack = false,
   backTitle,
@@ -130,8 +132,8 @@ const AppHeaderComponent: React.FC<AppHeaderProps> = React.memo(({
   const effectiveInset = isBottom ? insets.bottom : insets.top;
 
   const headerContainerHeightStyle = useMemo(
-    () => getContainerHeight(effectiveInset, bottomContent ? undefined : 48, isBottom),
-    [effectiveInset, bottomContent, isBottom]
+    () => getContainerHeight(effectiveInset, bottomContent ? undefined : ControlSize[size].height + Spacing.xs, isBottom),
+    [effectiveInset, bottomContent, isBottom, size]
   );
 
   const defaultBackTitle = t('common.back', 'Quay lại');
@@ -150,6 +152,7 @@ const AppHeaderComponent: React.FC<AppHeaderProps> = React.memo(({
   const isCapsuleVariant = variant === 'frosted-capsule';
   const isIslandVariant = variant === 'floating-pill';
   const isStandardVariant = variant === 'standard';
+  const collapseEmptyLeft = titleAlign === 'left' && !showBack && !leftAction && !leftActions?.length;
   const effectiveBackStyle = backStyle || (isCapsuleVariant ? 'circle' : 'text');
   const effectiveActionStyle = actionStyle || (isCapsuleVariant ? 'capsule' : 'individual');
   const isCapsuleActions = effectiveActionStyle === 'capsule';
@@ -814,7 +817,7 @@ const AppHeaderComponent: React.FC<AppHeaderProps> = React.memo(({
           ]}
         >
           {/* Island Left: Back Button or Left Action */}
-          <View style={[styles.islandLeft, leftContainerStyle]}>
+          <View style={[styles.islandLeft, collapseEmptyLeft && styles.emptyLeading, leftContainerStyle]}>
             {showBack ? (
               <TouchableOpacity
                 activeOpacity={0.7}
@@ -830,7 +833,7 @@ const AppHeaderComponent: React.FC<AppHeaderProps> = React.memo(({
             ) : leftActions?.length ? (
               renderAction(leftActions[0], 0)
             ) : (
-              <View style={styles.islandSpacer} />
+              !collapseEmptyLeft && <View style={styles.islandSpacer} />
             )}
           </View>
 
@@ -1062,7 +1065,7 @@ const AppHeaderComponent: React.FC<AppHeaderProps> = React.memo(({
       )}
 
       {/* 1. Left Slot: Back Button / Custom Left Actions */}
-      <View style={[styles.leftContainer, leftContainerStyle]}>
+      <View style={[styles.leftContainer, collapseEmptyLeft && styles.emptyLeading, leftContainerStyle]}>
         {showBack ? (
           effectiveBackStyle === 'circle' ? (
             <TouchableOpacity

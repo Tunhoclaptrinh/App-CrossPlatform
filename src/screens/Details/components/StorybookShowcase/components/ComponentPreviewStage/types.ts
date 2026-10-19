@@ -63,7 +63,7 @@ export interface PreviewCanvasCardProps {
   // Control Props
   controlSize: ControlSizeKey;
   effectiveControlVariant: ControlVariant;
-  effectiveButtonVariant: 'primary' | 'secondary' | 'outline' | 'tonal' | 'glass' | 'danger';
+  effectiveButtonVariant: 'primary' | 'secondary' | 'outline' | 'tonal' | 'glass' | 'danger' | 'success';
   controlContrast: ControlContrast;
   controlShadow: ShadowLevel;
   buttonIconColor: string;
@@ -200,7 +200,7 @@ export interface PreviewControlsCardProps {
   setControlShadow: (s: ShadowLevel) => void;
   controlVariant: ControlVariant;
   setControlVariant: (v: ControlVariant) => void;
-  buttonVariant: 'primary' | 'secondary' | 'outline' | 'tonal' | 'glass' | 'danger';
+  buttonVariant: 'primary' | 'secondary' | 'outline' | 'tonal' | 'glass' | 'danger' | 'success';
   setButtonVariant: (v: any) => void;
 
   // Toggles

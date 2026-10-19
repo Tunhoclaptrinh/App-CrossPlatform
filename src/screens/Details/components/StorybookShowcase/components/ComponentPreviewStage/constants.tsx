@@ -25,6 +25,7 @@ export const buttonVariantOptions: AppSelectOption<string>[] = [
   { label: 'Secondary (Nút Phụ)', value: 'secondary', sublabel: 'Nền trung tính, tương phản nhẹ nhàng' },
   { label: 'Outline (Viền Đơn)', value: 'outline', sublabel: 'Nền trong suốt, viền mảnh 1px' },
   { label: 'Tonal (Bề Mặt Mờ)', value: 'tonal', sublabel: 'Nền dịu mắt với độ mờ trong suốt' },
+  { label: 'Success (Thành Công)', value: 'success', sublabel: 'Màu xanh ngọc dành cho hoàn tất/lưu' },
   { label: 'Glass (Kính Lỏng Apple)', value: 'glass', sublabel: 'Kính mờ khúc xạ Liquid Glass iOS' },
   { label: 'Danger (Cảnh Báo)', value: 'danger', sublabel: 'Màu đỏ dành cho thao tác xóa hoặc hủy' },
 ];

@@ -16,6 +16,16 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  multilineContainer: {
+    height: undefined,
+    minHeight: ControlSize.lg.height * 2,
+    alignItems: 'flex-start',
+    paddingVertical: Spacing.md,
+  },
+  multilineInput: {
+    minHeight: ControlSize.lg.height * 2 - Spacing.xl,
+    textAlignVertical: 'top',
+  },
   sizeSm: {
     height: ControlSize.sm.height,
     minHeight: ControlSize.sm.height,

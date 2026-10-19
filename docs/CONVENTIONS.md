@@ -310,3 +310,24 @@ Toàn bộ hệ thống giao diện trong `src/components/` phân định rõ 4 
 
 
 
+
+## Kiểm thử với pnpm
+
+- Jest phải cho phép đi qua `node_modules/.pnpm/` trước khi áp dụng danh sách package cần transform, để React Native preset chạy được với cả npm và pnpm.
+- Kiểm tra Atomic Design theo public API hiện tại: `GlassTile`, `AppleGlassCard`; `GlassCard` cũ không còn được export.
+
+## LayoutAnimation trên New Architecture
+
+React Native 0.87 không cần bật `UIManager.setLayoutAnimationEnabledExperimental`. Không gọi API no-op này khi import module vì cảnh báo development có thể che giao diện; tiếp tục dùng `LayoutAnimation.configureNext` cho các thao tác cần animation.
+
+## Chọn ngày, nhập dài và tích hợp điều hướng
+
+Dùng `AppDateTimeInput` cho ngày/giờ native, `AppInput multiline` cho ghi chú/nội dung dài. Tích hợp navigator qua API `AppBottomNav`, phát cả tabPress và tabLongPress, giữ trạng thái selected/disabled. Tôn trọng cấu hình giảm chuyển động và haptics. AppHeader size dùng ControlSize và Spacing.
+
+## Theme của NavigationContainer
+
+Đồng bộ NavigationContainer với `useThemeMode()` bằng theme được memoize; giữ nguyên fonts và các thuộc tính mặc định của React Navigation. Màu nền kính phải trong suốt để không che mesh của base.
+
+### Ô nhập dài, header căn trái và segmented control
+
+AppInput nhiều dòng mặc định dùng bo góc card, kể cả preset pill; vẫn tôn trọng borderRadius truyền rõ ràng. AppHeader căn trái bỏ khoảng trống đầu nếu không có back/action. AppSegmentedControl cung cấp trạng thái chọn/vô hiệu hóa cho trợ năng và tôn trọng tùy chọn haptics toàn cục.
