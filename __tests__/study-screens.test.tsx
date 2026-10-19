@@ -16,6 +16,7 @@ import {
   AppButton,
   AppInput,
   AppSearchBar,
+  AppSegmentedControl,
   EmptyState,
   AppDateTimeInput,
   AppSelect,
@@ -83,6 +84,10 @@ test('course search updates FlatList and the empty state; opening uses the selec
       {...({ navigation } as unknown as StudyTabProps<'Courses'>)}
     />,
   );
+  expect(nodes(StudyCourseCard)).toHaveLength(5);
+  await act(async () => nodes(AppSegmentedControl)[0].props.onChange('all'));
+  expect(nodes(StudyCourseCard)).toHaveLength(7);
+  await act(async () => nodes(AppSegmentedControl)[0].props.onChange('current'));
   expect(nodes(StudyCourseCard)).toHaveLength(5);
   await act(async () =>
     nodes(AppSearchBar)[0].props.onChangeText('co so du lieu'),

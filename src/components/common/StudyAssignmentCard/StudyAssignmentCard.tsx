@@ -1,10 +1,22 @@
 import React, { useState } from 'react';
 import { Pressable, View } from 'react-native';
-import { CalendarClock, Check, RotateCcw } from 'lucide-react-native';
+import {
+  CalendarClock,
+  Check,
+  RotateCcw,
+  CheckCircle2,
+  AlertTriangle,
+  Clock,
+  Calendar,
+} from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { useThemeMode } from '@/hooks/useThemeMode';
 import { useAppStore } from '@/hooks/useAppStore';
-import { isCompleted, isOverdue, formatStudyDate } from '@/utils/study';
+import {
+  isCompleted,
+  formatStudyDate,
+  getAssignmentDueInfo,
+} from '@/utils/study';
 import { AppCard } from '../AppCard';
 import { AppText } from '../AppText';
 import { AppBadge } from '../AppBadge';
@@ -12,6 +24,7 @@ import { AppButton } from '../AppButton';
 import { useToast } from '../AppToast';
 import type { StudyAssignmentCardProps } from './types';
 import { styles } from './styles';
+
 export const StudyAssignmentCard = React.memo(
   ({ assignment, now, onPress, editable }: StudyAssignmentCardProps) => {
     const course = useAppStore(s =>
@@ -24,7 +37,13 @@ export const StudyAssignmentCard = React.memo(
     const [saving, setSaving] = useState(false);
     const toast = useToast();
     const done = isCompleted(assignment, completion);
-    const overdue = isOverdue(assignment, completion, now);
+    const dueInfo = getAssignmentDueInfo(
+      assignment.dueAt,
+      done,
+      now,
+      i18n.language,
+    );
+
     const toggle = async () => {
       setSaving(true);
       try {
@@ -36,42 +55,61 @@ export const StudyAssignmentCard = React.memo(
         setSaving(false);
       }
     };
+
+    const statusIcon =
+      dueInfo.status === 'completed' ? (
+        <CheckCircle2 size={12} color={theme.successText} />
+      ) : dueInfo.status === 'overdue' ? (
+        <AlertTriangle size={12} color={theme.errorText} />
+      ) : dueInfo.status === 'dueSoon' ? (
+        <Clock size={12} color={theme.warningText} />
+      ) : (
+        <Calendar size={12} color={theme.infoText} />
+      );
+
     return (
       <AppCard style={styles.card}>
         <Pressable
           onPress={onPress}
           accessibilityRole="button"
-          accessibilityLabel={`${assignment.title}, ${t(
-            done ? 'study.completed' : 'study.pending',
-          )}`}
+          accessibilityLabel={`${assignment.title}, ${t(dueInfo.labelKey)}`}
           style={styles.body}
         >
           <View style={styles.row}>
             <AppBadge size="sm" label={course?.code ?? ''} variant="neutral" />
             <AppBadge
               size="sm"
-              label={t(
-                done
-                  ? 'study.completed'
-                  : overdue
-                  ? 'study.overdue'
-                  : 'study.pending',
-              )}
-              variant={done ? 'success' : overdue ? 'error' : 'warning'}
+              label={t(dueInfo.labelKey)}
+              variant={dueInfo.badgeVariant}
+              icon={statusIcon}
             />
+            {dueInfo.relativeText ? (
+              <AppBadge
+                size="sm"
+                label={dueInfo.relativeText}
+                variant={dueInfo.badgeVariant}
+              />
+            ) : null}
           </View>
-          <AppText style={styles.title}>{assignment.title}</AppText>
+          <AppText style={done ? styles.titleDone : styles.title}>
+            {assignment.title}
+          </AppText>
           <AppText variant="caption" color={theme.textSecondary}>
             {course?.name}
           </AppText>
           <View style={styles.row}>
             <CalendarClock
               size={15}
-              color={overdue ? theme.error : theme.textSecondary}
+              color={
+                dueInfo.status === 'overdue' ? theme.error : theme.textSecondary
+              }
             />
             <AppText
               variant="caption"
-              color={overdue ? theme.error : theme.textSecondary}
+              style={styles.dueText}
+              color={
+                dueInfo.status === 'overdue' ? theme.error : theme.textSecondary
+              }
             >
               {t('study.dueAt')}:{' '}
               {formatStudyDate(assignment.dueAt, i18n.language, true)}
@@ -81,15 +119,16 @@ export const StudyAssignmentCard = React.memo(
         {editable && (
           <AppButton
             style={styles.toggle}
-            variant={done ? 'outline' : 'tonal'}
+            size="sm"
+            variant={done ? 'outline' : 'success'}
             title={t(
-              done ? 'study.markPendingShort' : 'study.markCompletedShort',
+              done ? 'study.markPendingShort' : 'study.completedShort',
             )}
             leftIcon={
               done ? (
-                <RotateCcw size={16} color={theme.primary} />
+                <RotateCcw size={14} color={theme.textSecondary} />
               ) : (
-                <Check size={16} color={theme.primary} />
+                <Check size={16} color="#FFFFFF" />
               )
             }
             onPress={toggle}

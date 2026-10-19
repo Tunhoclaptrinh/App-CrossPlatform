@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { FlatList, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { AppChip, AppSearchBar, EmptyState } from '@/components';
+import { AppSegmentedControl, AppSearchBar, EmptyState } from '@/components';
 import { StudyPage } from '@/components/common/StudyPage';
 import { StudyCourseCard } from '@/components/common/StudyCourseCard';
 
@@ -12,7 +12,7 @@ import { useStudyStyles } from './styles';
 export function CoursesScreen({ navigation }: StudyTabProps<'Courses'>) {
   const { courses: allCourses } = useAppStore(s => s.studyData);
   const { t } = useTranslation();
-  const { styles } = useStudyStyles();
+  const { styles, isGlassTheme } = useStudyStyles();
   const [query, setQuery] = useState('');
   const [current, setCurrent] = useState(true);
   const courses = useMemo(
@@ -38,18 +38,15 @@ export function CoursesScreen({ navigation }: StudyTabProps<'Courses'>) {
                 onChangeText={setQuery}
                 placeholder={t('study.searchCourses')}
               />
-              <View style={styles.chips}>
-                <AppChip
-                  label={t('study.activeCourses')}
-                  selected={current}
-                  onPress={() => setCurrent(true)}
-                />
-                <AppChip
-                  label={t('study.allCourses')}
-                  selected={!current}
-                  onPress={() => setCurrent(false)}
-                />
-              </View>
+              <AppSegmentedControl
+                value={current ? 'current' : 'all'}
+                onChange={value => setCurrent(value === 'current')}
+                variant={isGlassTheme ? 'glass' : 'standard'}
+                options={[
+                  { value: 'current', label: t('study.activeCourses') },
+                  { value: 'all', label: t('study.allCourses') },
+                ]}
+              />
             </View>
           }
           data={courses}

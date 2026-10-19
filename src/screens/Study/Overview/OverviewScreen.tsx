@@ -128,6 +128,7 @@ export function OverviewScreen({ navigation }: StudyTabProps<'Overview'>) {
             key={item.id}
             assignment={item}
             now={now}
+            editable
             onPress={() =>
               navigation.navigate('AssignmentDetail', { assignmentId: item.id })
             }
@@ -155,6 +156,7 @@ export function OverviewScreen({ navigation }: StudyTabProps<'Overview'>) {
               key={item.id}
               assignment={item}
               now={now}
+              editable
               onPress={() =>
                 navigation.navigate('AssignmentDetail', {
                   assignmentId: item.id,
@@ -173,6 +175,7 @@ export function OverviewScreen({ navigation }: StudyTabProps<'Overview'>) {
             <StudySessionCard
               key={item.id}
               session={item}
+              now={now}
               onPress={() =>
                 navigation.navigate('SessionDetail', {
                   sessionId: item.id,

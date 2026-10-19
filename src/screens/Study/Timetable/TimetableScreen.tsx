@@ -159,6 +159,7 @@ export function TimetableScreen({ navigation }: StudyTabProps<'Timetable'>) {
           renderItem={({ item }) => (
             <StudySessionCard
               session={item}
+              now={now}
               dayLabel={`${fullWeekdays[item.weekday]} · ${formatStudyDate(
                 addDays(week, item.weekday),
                 i18n.language,

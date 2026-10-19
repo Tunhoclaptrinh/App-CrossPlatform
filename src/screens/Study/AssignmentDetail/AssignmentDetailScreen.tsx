@@ -13,7 +13,19 @@ import { StudyPage } from '@/components/common/StudyPage';
 
 import { useAppStore } from '@/hooks/useAppStore';
 import { useStudyClock } from '@/hooks/useStudyClock';
-import { formatStudyDate, isCompleted, isOverdue } from '@/utils/study';
+import {
+  AlertTriangle,
+  Calendar,
+  Check,
+  CheckCircle2,
+  Clock,
+  RotateCcw,
+} from 'lucide-react-native';
+import {
+  formatStudyDate,
+  getAssignmentDueInfo,
+  isCompleted,
+} from '@/utils/study';
 import type { StudyDetailProps } from '@/navigation/types';
 import { EntityActions } from '../components/EntityActions';
 import { useStudyStyles } from './styles';
@@ -27,7 +39,7 @@ export function AssignmentDetailScreen({
   const findCourse = (id: string) =>
     allCourses.find(course => course.id === id);
   const { t, i18n } = useTranslation();
-  const { styles } = useStudyStyles();
+  const { styles, theme } = useStudyStyles();
   const completion = useAppStore(s => s.assignmentCompletion);
   const update = useAppStore(s => s.setAssignmentCompleted);
   const now = useStudyClock();
@@ -36,7 +48,10 @@ export function AssignmentDetailScreen({
   const item = allAssignments.find(a => a.id === route.params.assignmentId);
   const course = findCourse(item?.courseId ?? '');
   const done = item ? isCompleted(item, completion) : false;
-  const overdue = item ? isOverdue(item, completion, now) : false;
+  const dueInfo = item
+    ? getAssignmentDueInfo(item.dueAt, done, now, i18n.language)
+    : null;
+
   const toggle = async () => {
     if (!item) return;
     setSaving(true);
@@ -49,6 +64,18 @@ export function AssignmentDetailScreen({
       setSaving(false);
     }
   };
+
+  const statusIcon =
+    dueInfo?.status === 'completed' ? (
+      <CheckCircle2 size={13} color={theme.successText} />
+    ) : dueInfo?.status === 'overdue' ? (
+      <AlertTriangle size={13} color={theme.errorText} />
+    ) : dueInfo?.status === 'dueSoon' ? (
+      <Clock size={13} color={theme.warningText} />
+    ) : (
+      <Calendar size={13} color={theme.infoText} />
+    );
+
   return (
     <StudyPage
       title={t('study.assignmentDetail')}
@@ -61,7 +88,7 @@ export function AssignmentDetailScreen({
       onBack={navigation.goBack}
       scrollable
     >
-      {!item || !course ? (
+      {!item || !course || !dueInfo ? (
         <EmptyState
           title={t('study.notFound')}
           description={t('study.notFoundBody')}
@@ -76,16 +103,19 @@ export function AssignmentDetailScreen({
           </AppCard>
           <AppCard>
             <View style={styles.stack}>
-              <AppBadge
-                label={t(
-                  done
-                    ? 'study.completed'
-                    : overdue
-                    ? 'study.overdue'
-                    : 'study.pending',
-                )}
-                variant={done ? 'success' : overdue ? 'error' : 'warning'}
-              />
+              <View style={styles.dateRow}>
+                <AppBadge
+                  label={t(dueInfo.labelKey)}
+                  variant={dueInfo.badgeVariant}
+                  icon={statusIcon}
+                />
+                {dueInfo.relativeText ? (
+                  <AppBadge
+                    label={dueInfo.relativeText}
+                    variant={dueInfo.badgeVariant}
+                  />
+                ) : null}
+              </View>
               <View style={styles.metaRow}>
                 <AppText style={styles.note}>{t('study.dueAt')}</AppText>
                 <AppText style={styles.metaValue}>
@@ -100,6 +130,15 @@ export function AssignmentDetailScreen({
           </AppCard>
           <AppButton
             title={t(done ? 'study.markPending' : 'study.markCompleted')}
+            variant={done ? 'outline' : 'success'}
+            leftIcon={
+              done ? (
+                <RotateCcw size={18} color={theme.textSecondary} />
+              ) : (
+                <Check size={18} color="#FFFFFF" />
+              )
+            }
+            textStyle={done ? { color: theme.textSecondary } : undefined}
             onPress={toggle}
             loading={saving}
           />

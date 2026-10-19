@@ -35,8 +35,16 @@ export const StudyCourseCard = React.memo(
           </View>
           <View style={styles.footer}>
             <AppBadge
+              size="sm"
               variant="neutral"
               label={t('study.credits', { count: course.credits })}
+            />
+            <AppBadge
+              size="sm"
+              variant={course.active ? 'primary' : 'neutral'}
+              label={t(
+                course.active ? 'study.activeBadge' : 'study.archivedBadge',
+              )}
             />
             <AppText variant="caption" color={theme.textSecondary}>
               {course.lecturer}

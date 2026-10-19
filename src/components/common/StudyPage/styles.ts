@@ -3,24 +3,16 @@ import { Spacing } from '@/constants';
 import type { ThemeState } from '@/hooks/useThemeMode';
 export const createStyles = (
   appearance: ThemeState,
-  headerHeight: number,
   bottomInset: number,
 ) =>
   StyleSheet.create({
     body: { flex: 1 },
-    headerOverlay: {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      zIndex: 10,
-    },
     contentInsets: {
-      paddingTop: headerHeight + Spacing.base,
+      paddingTop: Spacing.base,
       paddingBottom: bottomInset + Spacing.xxl,
     },
     content: {
-      paddingHorizontal: Spacing.xl,
+      paddingHorizontal: Spacing.base,
       gap: Spacing.base,
     },
     headerTitle: {

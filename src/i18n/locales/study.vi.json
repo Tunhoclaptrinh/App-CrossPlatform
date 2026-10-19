@@ -95,7 +95,15 @@
   "darkMode": "Chế độ tối",
   "language": "Ngôn ngữ",
   "loading": "Đang khôi phục dữ liệu…",
-  "weekdays": ["T2", "T3", "T4", "T5", "T6", "T7", "CN"],
+  "weekdays": [
+    "T2",
+    "T3",
+    "T4",
+    "T5",
+    "T6",
+    "T7",
+    "CN"
+  ],
   "fullWeekdays": [
     "Thứ Hai",
     "Thứ Ba",
@@ -220,5 +228,21 @@
   "welcomeEmptyBody": "Thêm môn học đầu tiên, sau đó tạo lịch, bài tập và nhập điểm.",
   "personalGradeNote": "Điểm do bạn tự ghi nhận để theo dõi cá nhân; không thay thế bảng điểm của trường.",
   "archivedScheduleHint": "Lịch được lưu trữ cùng môn, không xuất hiện trên thời khóa biểu hiện tại.",
-  "addGrades": "Nhập điểm"
+  "addGrades": "Nhập điểm",
+  "pendingShort": "Chưa xong",
+  "completedShort": "Đã xong",
+  "dueSoon": "Sắp đến hạn",
+  "dueSoonShort": "Sắp tới",
+  "ongoing": "Đang diễn ra",
+  "ongoingNow": "Đang học",
+  "gpa4": "GPA hệ 4",
+  "gradeLetter": "Điểm chữ",
+  "academicRank": "Xếp loại",
+  "rankExcellent": "Giỏi / Xuất sắc",
+  "rankGood": "Khá",
+  "rankAverage": "Trung bình",
+  "rankWeak": "Trung bình yếu",
+  "rankFail": "Chưa đạt (F)",
+  "activeBadge": "Đang học",
+  "archivedBadge": "Lưu trữ"
 }

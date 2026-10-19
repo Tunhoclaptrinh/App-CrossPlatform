@@ -13,7 +13,7 @@ import {
   AppBadge,
   AppButton,
   AppCard,
-  AppChip,
+  AppSegmentedControl,
   AppInput,
   AppListItem,
   AppListGroup,
@@ -25,7 +25,14 @@ import { useToast } from '@/components/common/AppToast';
 import { StudyPage } from '@/components/common/StudyPage';
 
 import { useAppStore } from '@/hooks/useAppStore';
-import { gradeAverage, gradeTotal, studentEditSchema } from '@/utils/study';
+
+import {
+  getGradeClassification,
+  gradeAverage,
+  gradeGpaAverage,
+  gradeTotal,
+  studentEditSchema,
+} from '@/utils/study';
 import type { StudentEdit } from '@/types/study';
 import type { StudyTabProps } from '@/navigation/types';
 import { useStudyStyles } from './styles';
@@ -37,7 +44,7 @@ export function ProfileScreen({ navigation }: StudyTabProps<'Profile'>) {
   const findCourse = (id: string) =>
     allCourses.find(course => course.id === id);
   const { t } = useTranslation();
-  const { styles, theme } = useStudyStyles();
+  const { styles, theme, isGlassTheme } = useStudyStyles();
   const profile = useAppStore(s => s.studentProfile);
   const update = useAppStore(s => s.updateStudentProfile);
   const language = useAppStore(s => s.language);
@@ -90,6 +97,7 @@ export function ProfileScreen({ navigation }: StudyTabProps<'Profile'>) {
     }
   };
   const average = gradeAverage(courseGrades, allCourses);
+  const gpa = gradeGpaAverage(courseGrades, allCourses);
   return (
     <StudyPage
       title={t('study.profileTitle')}
@@ -187,11 +195,13 @@ export function ProfileScreen({ navigation }: StudyTabProps<'Profile'>) {
             <View style={styles.editActions}>
               <AppButton
                 title={t('study.save')}
+                fullWidth
                 onPress={save}
                 loading={saving}
               />
               <AppButton
                 title={t('study.cancel')}
+                fullWidth
                 onPress={cancel}
                 variant="outline"
                 disabled={saving}
@@ -212,10 +222,20 @@ export function ProfileScreen({ navigation }: StudyTabProps<'Profile'>) {
       <View style={styles.section}>
         <AppText style={styles.sectionHeading}>{t('study.results')}</AppText>
         <AppCard>
-          <AppText style={styles.note}>{t('study.average')}</AppText>
-          <AppText style={styles.score}>
-            {average?.toFixed(2) ?? '—'} / 10
-          </AppText>
+          <View style={styles.row}>
+            <View style={styles.flex}>
+              <AppText style={styles.note}>{t('study.average')}</AppText>
+              <AppText style={styles.score}>
+                {average?.toFixed(2) ?? '—'} / 10
+              </AppText>
+            </View>
+            <View style={styles.flex}>
+              <AppText style={styles.note}>{t('study.gpa4')}</AppText>
+              <AppText style={styles.score}>
+                {gpa?.toFixed(2) ?? '—'} / 4.0
+              </AppText>
+            </View>
+          </View>
           <AppText style={styles.note}>{t('study.averageNote')}</AppText>
         </AppCard>
         {allCourses
@@ -231,6 +251,7 @@ export function ProfileScreen({ navigation }: StudyTabProps<'Profile'>) {
             const course = findCourse(grade.courseId);
             if (!course) return null;
             const total = gradeTotal(grade);
+            const classification = getGradeClassification(total);
             return (
               <AppCard
                 key={grade.id}
@@ -250,17 +271,26 @@ export function ProfileScreen({ navigation }: StudyTabProps<'Profile'>) {
                 </View>
                 <View style={styles.dateRow}>
                   <AppBadge
+                    size="sm"
                     label={t('study.credits', { count: course.credits })}
                     variant="neutral"
                   />
                   <AppBadge
+                    size="sm"
                     label={
                       total === null
                         ? t('study.scorePending')
-                        : `${total.toFixed(2)} / 10`
+                        : `${total.toFixed(2)} / 10 (${classification.letter})`
                     }
-                    variant={total === null ? 'neutral' : 'success'}
+                    variant={classification.variant}
                   />
+                  {classification.rankKey !== 'scorePending' && (
+                    <AppBadge
+                      size="sm"
+                      label={t(`study.${classification.rankKey}`)}
+                      variant={classification.variant}
+                    />
+                  )}
                 </View>
               </AppCard>
             );
@@ -280,16 +310,16 @@ export function ProfileScreen({ navigation }: StudyTabProps<'Profile'>) {
           leading={<Database color={theme.primary} />}
           onPress={() => navigation.navigate('StudyDataTools')}
         />
-        <View style={styles.chips}>
-          <AppChip
-            label="Tiếng Việt"
-            selected={language === 'vi'}
-            onPress={() => setLanguage('vi')}
-          />
-          <AppChip
-            label="English"
-            selected={language === 'en'}
-            onPress={() => setLanguage('en')}
+        <View style={styles.settingsControl}>
+          <AppText style={styles.note}>{t('study.language')}</AppText>
+          <AppSegmentedControl
+            value={language}
+            onChange={setLanguage}
+            variant={isGlassTheme ? 'glass' : 'standard'}
+            options={[
+              { value: 'vi' as const, label: 'Tiếng Việt' },
+              { value: 'en' as const, label: 'English' },
+            ]}
           />
         </View>
       </AppListGroup>

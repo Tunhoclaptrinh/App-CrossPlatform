@@ -10,7 +10,7 @@ export const createStudyStyles = (
   radius: RadiusPresetConfig,
 ) =>
   StyleSheet.create({
-    list: { paddingHorizontal: Spacing.xl },
+    list: { paddingHorizontal: Spacing.base },
     filters: {
       paddingBottom: Spacing.base,
       gap: Spacing.md,
@@ -95,14 +95,15 @@ export const createStudyStyles = (
     gradeRow: { marginBottom: Spacing.md },
     separator: { height: Spacing.base },
     themeRow: { gap: Spacing.md },
-    editActions: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm },
+    editActions: { gap: Spacing.md },
+    settingsControl: { padding: Spacing.base, gap: Spacing.sm },
   });
 
 export function useStudyStyles() {
-  const { theme, isDark, radiusTokens } = useThemeMode();
+  const { theme, isDark, radiusTokens, isGlassTheme } = useThemeMode();
   const styles = useMemo(
     () => createStudyStyles(theme, radiusTokens),
     [theme, radiusTokens],
   );
-  return { styles, theme, isDark };
+  return { styles, theme, isDark, isGlassTheme };
 }

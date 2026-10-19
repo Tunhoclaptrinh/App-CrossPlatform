@@ -10,6 +10,7 @@ import {
   AppDateTimeInput,
   AppInput,
   AppSelect,
+  AppSegmentedControl,
   AppSwitch,
   AppText,
   ConfirmDialog,
@@ -39,7 +40,7 @@ export function StudyEditorScreen({
 }: NativeStackScreenProps<RootStackParamList, 'StudyEditor'>) {
   const { t } = useTranslation();
   const toast = useToast();
-  const { theme } = useThemeMode();
+  const { theme, isGlassTheme } = useThemeMode();
   const data = useAppStore(s => s.studyData);
   const completion = useAppStore(s => s.assignmentCompletion);
   const save = useAppStore(s => s.saveStudyEntity);
@@ -343,10 +344,13 @@ export function StudyEditorScreen({
                     disabled={saving}
                   />
                   {input('room', 'room')}
-                  <AppSelect
-                    label={t('study.sessionKind')}
+                  <AppText variant="caption" color={theme.textSecondary}>
+                    {t('study.sessionKind')}
+                  </AppText>
+                  <AppSegmentedControl
                     value={draft.kind}
-                    onSelect={value => change('kind', value)}
+                    onChange={value => change('kind', value)}
+                    variant={isGlassTheme ? 'glass' : 'standard'}
                     options={[
                       { value: 'lecture' as const, label: t('study.lecture') },
                       {
@@ -475,11 +479,13 @@ export function StudyEditorScreen({
           <View style={styles.actions}>
             <AppButton
               title={t('study.save')}
+              fullWidth
               onPress={submit}
               loading={saving}
             />
             <AppButton
               title={t('study.cancel')}
+              fullWidth
               variant="outline"
               onPress={navigation.goBack}
               disabled={saving}

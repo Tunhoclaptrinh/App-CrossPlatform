@@ -95,7 +95,15 @@
   "darkMode": "Dark mode",
   "language": "Language",
   "loading": "Restoring your data…",
-  "weekdays": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+  "weekdays": [
+    "Mon",
+    "Tue",
+    "Wed",
+    "Thu",
+    "Fri",
+    "Sat",
+    "Sun"
+  ],
   "fullWeekdays": [
     "Monday",
     "Tuesday",
@@ -220,5 +228,21 @@
   "welcomeEmptyBody": "Add your first course, then set up classes, assignments and grades.",
   "personalGradeNote": "Scores are entered by you for personal tracking and are not an official transcript.",
   "archivedScheduleHint": "This class is archived with its course and does not appear on the current timetable.",
-  "addGrades": "Add grades"
+  "addGrades": "Add grades",
+  "pendingShort": "To do",
+  "completedShort": "Done",
+  "dueSoon": "Due soon",
+  "dueSoonShort": "Soon",
+  "ongoing": "In progress",
+  "ongoingNow": "Live now",
+  "gpa4": "GPA (4.0)",
+  "gradeLetter": "Letter grade",
+  "academicRank": "Standing",
+  "rankExcellent": "Excellent",
+  "rankGood": "Good",
+  "rankAverage": "Average",
+  "rankWeak": "Weak",
+  "rankFail": "Fail (F)",
+  "activeBadge": "In progress",
+  "archivedBadge": "Archived"
 }

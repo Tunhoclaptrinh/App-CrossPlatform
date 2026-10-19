@@ -10,5 +10,11 @@ export const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   title: { ...Typography.subtitle },
+  titleDone: {
+    ...Typography.subtitle,
+    opacity: 0.7,
+    textDecorationLine: 'line-through',
+  },
   toggle: { marginTop: Spacing.md, alignSelf: 'flex-start' },
+  dueText: { flexShrink: 1 },
 });

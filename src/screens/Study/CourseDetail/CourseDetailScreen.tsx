@@ -117,6 +117,7 @@ export function CourseDetailScreen({
                 <StudySessionCard
                   key={item.id}
                   session={item}
+                  now={now}
                   dayLabel={weekdays[item.weekday]}
                   onPress={() =>
                     navigation.navigate('SessionDetail', { sessionId: item.id })
@@ -149,6 +150,7 @@ export function CourseDetailScreen({
                   key={item.id}
                   assignment={item}
                   now={now}
+                  editable
                   onPress={() =>
                     navigation.navigate('AssignmentDetail', {
                       assignmentId: item.id,

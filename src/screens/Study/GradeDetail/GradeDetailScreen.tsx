@@ -10,7 +10,7 @@ import {
 } from '@/components';
 import { StudyPage } from '@/components/common/StudyPage';
 
-import { gradeTotal } from '@/utils/study';
+import { getGradeClassification, gradeTotal } from '@/utils/study';
 import type { StudyDetailProps } from '@/navigation/types';
 import { EntityActions } from '../components/EntityActions';
 import { useAppStore } from '@/hooks/useAppStore';
@@ -34,6 +34,7 @@ export function GradeDetailScreen({
         : ''),
   );
   const total = grade ? gradeTotal(grade) : null;
+  const classification = getGradeClassification(total);
   return (
     <StudyPage
       title={t('study.gradeDetail')}
@@ -74,16 +75,38 @@ export function GradeDetailScreen({
             </AppText>
           </AppCard>
           <AppCard>
-            <AppText style={styles.note}>{t('study.totalScore')}</AppText>
-            <AppText style={styles.score}>
-              {total === null ? '—' : `${total.toFixed(2)} / 10`}
-            </AppText>
-            <AppBadge
-              label={t(
-                total === null ? 'study.scorePending' : 'study.finished',
+            <View style={styles.row}>
+              <View style={styles.flex}>
+                <AppText style={styles.note}>{t('study.totalScore')}</AppText>
+                <AppText style={styles.score}>
+                  {total === null ? '—' : `${total.toFixed(2)} / 10`}
+                </AppText>
+              </View>
+              {classification.gpa !== null && (
+                <View style={styles.flex}>
+                  <AppText style={styles.note}>{t('study.gpa4')}</AppText>
+                  <AppText style={styles.score}>
+                    {classification.gpa.toFixed(1)} / 4.0
+                  </AppText>
+                </View>
               )}
-              variant={total === null ? 'neutral' : 'success'}
-            />
+            </View>
+            <View style={styles.dateRow}>
+              <AppBadge
+                label={
+                  total === null
+                    ? t('study.scorePending')
+                    : `${t('study.gradeLetter')}: ${classification.letter}`
+                }
+                variant={classification.variant}
+              />
+              {classification.rankKey !== 'scorePending' && (
+                <AppBadge
+                  label={t(`study.${classification.rankKey}`)}
+                  variant={classification.variant}
+                />
+              )}
+            </View>
           </AppCard>
           <AppCard>
             {grade.components.map((part, index) => (

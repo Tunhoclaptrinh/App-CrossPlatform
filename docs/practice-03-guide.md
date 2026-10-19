@@ -33,10 +33,12 @@ Có thể dùng `pnpm install --frozen-lockfile` thay `npm ci`; hai lockfile đ�
 
 - Thanh dưới dùng chính `AppBottomNav`; `StudyTabBar` chỉ nối route, trạng thái chọn và sự kiện tabPress/tabLongPress của React Navigation. Safe area được tính theo kích thước control; thanh tab ẩn khi bàn phím mở.
 - Nội dung phủ toàn màn hình và cuộn phía sau hai thanh nổi. Header được đo chiều cao; thanh tab báo chiều cao theo kích thước/safe area. Khoảng tránh chỉ nằm ở đầu/cuối nội dung cuộn, nên mục đầu và cuối vẫn có thể nằm hoàn toàn ngoài vùng thanh. Tìm kiếm/bộ lọc cuộn cùng danh sách; không chia màn hình thành ba khung trên/giữa/dưới.
-- Thanh trên dùng `AppHeader`, nhận cấu hình kiểu header, back/action, căn tiêu đề, kích thước, màu và bo góc từ store base. Nút bảng màu mở `ThemeStudioModal` hiện có.
+- Thanh trên dùng `AppHeader`, căn trái trong luồng học tập; kiểu header, back/action, kích thước, màu và bo góc vẫn lấy từ store base. Nút bảng màu mở `ThemeStudioModal` hiện có.
 - `AppNavigator` đặt một `AppleMeshBackground` phía sau toàn bộ luồng. `StudyPage` ghép ScreenWrapper và AppScrollView, không phủ nền đặc lên mesh. Thẻ, biểu mẫu và hộp thoại dùng AppCard/AppInput/AppSelect/AppSwitch/AppDateTimeInput/ConfirmDialog.
 - Giữ tùy chọn sáng/tối/hệ thống, Glass/Flat, nền mesh, màu nhấn, bo góc, kích thước control/chữ, header, haptics và giảm chuyển động. Không tạo bộ theme hoặc bộ cài đặt riêng cho nghiệp vụ.
 - Component mới dùng chung duy nhất trong đợt này là `AppDateTimeInput`: chọn ngày/giờ native, ghép nút và sheet của base. Hủy không đổi giá trị; đổi ngày giữ giờ, đổi giờ giữ ngày.
+
+Bộ lọc môn/trạng thái, lựa chọn ngôn ngữ và loại buổi học dùng AppSegmentedControl của base. Danh sách chọn môn/ngày trong form vẫn dùng AppSelect vì có nhiều mục. Nội dung dùng lề ngang 16dp thống nhất; ô nhập nhiều dòng có bo góc card, nút lưu/hủy toàn chiều ngang xếp dọc.
 
 ## Bắt đầu dùng cá nhân
 

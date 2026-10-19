@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { FlatList, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { AppChip, AppSelect, EmptyState } from '@/components';
+import { AppSegmentedControl, AppSelect, EmptyState } from '@/components';
 import { StudyPage } from '@/components/common/StudyPage';
 import { StudyAssignmentCard } from '@/components/common/StudyAssignmentCard';
 
@@ -18,7 +18,7 @@ export function AssignmentsScreen({
     s => s.studyData,
   );
   const { t } = useTranslation();
-  const { styles } = useStudyStyles();
+  const { styles, isGlassTheme } = useStudyStyles();
   const completion = useAppStore(s => s.assignmentCompletion);
   const [filter, setFilter] = useState<AssignmentFilter>('pending');
   const [courseId, setCourseId] = useState('all');
@@ -46,16 +46,16 @@ export function AssignmentsScreen({
         <FlatList
           ListHeaderComponent={
             <View style={styles.filters}>
-              <View style={styles.chips}>
-                {(['all', 'pending', 'completed'] as const).map(value => (
-                  <AppChip
-                    key={value}
-                    label={t(`study.${value}`)}
-                    selected={filter === value}
-                    onPress={() => setFilter(value)}
-                  />
-                ))}
-              </View>
+              <AppSegmentedControl<AssignmentFilter>
+                value={filter}
+                onChange={setFilter}
+                variant={isGlassTheme ? 'glass' : 'standard'}
+                options={[
+                  { value: 'all', label: t('study.all') },
+                  { value: 'pending', label: t('study.pendingShort') },
+                  { value: 'completed', label: t('study.completedShort') },
+                ]}
+              />
               <AppSelect
                 label={t('study.courseFilter')}
                 value={courseId}

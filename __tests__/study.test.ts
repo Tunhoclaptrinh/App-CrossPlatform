@@ -4,10 +4,14 @@ import { useAppStore } from '@/hooks/useAppStore';
 import {
   addDays,
   dateKey,
+  getAssignmentDueInfo,
+  getGradeClassification,
   gradeAverage,
+  gradeGpaAverage,
   gradeTotal,
   isCompleted,
   isOverdue,
+  isSessionOngoing,
   isTermDate,
   mondayOf,
   searchCourses,
@@ -119,6 +123,84 @@ describe('Study dataset and calculations', () => {
         email: 'wrong',
         phone: '123',
       }).success,
+    ).toBe(false);
+  });
+  test('classifies academic scores and computes weighted 4.0 GPA', () => {
+    expect(getGradeClassification(null).letter).toBe('—');
+    expect(getGradeClassification(null).variant).toBe('neutral');
+
+    expect(getGradeClassification(9.0)).toEqual({
+      letter: 'A',
+      gpa: 4.0,
+      rankKey: 'rankExcellent',
+      variant: 'success',
+    });
+    expect(getGradeClassification(7.5)).toEqual({
+      letter: 'B',
+      gpa: 3.0,
+      rankKey: 'rankGood',
+      variant: 'info',
+    });
+    expect(getGradeClassification(6.0)).toEqual({
+      letter: 'C',
+      gpa: 2.0,
+      rankKey: 'rankAverage',
+      variant: 'warning',
+    });
+    expect(getGradeClassification(4.5)).toEqual({
+      letter: 'D',
+      gpa: 1.0,
+      rankKey: 'rankWeak',
+      variant: 'warning',
+    });
+    expect(getGradeClassification(3.0)).toEqual({
+      letter: 'F',
+      gpa: 0.0,
+      rankKey: 'rankFail',
+      variant: 'error',
+    });
+
+    const gpa = gradeGpaAverage(GRADES, COURSES);
+    expect(gpa).toBe(4.0); // algorithms and oop are both 8.5 (A / 4.0)
+  });
+  test('formats assignment due info and detects ongoing session correctly', () => {
+    const now = new Date('2026-10-19T10:00:00').getTime();
+    const completedInfo = getAssignmentDueInfo(
+      '2026-10-20T10:00:00Z',
+      true,
+      now,
+    );
+    expect(completedInfo.status).toBe('completed');
+    expect(completedInfo.badgeVariant).toBe('success');
+
+    const overdueInfo = getAssignmentDueInfo(
+      '2026-10-18T10:00:00Z',
+      false,
+      now,
+    );
+    expect(overdueInfo.status).toBe('overdue');
+    expect(overdueInfo.badgeVariant).toBe('error');
+
+    const dueSoonInfo = getAssignmentDueInfo(
+      '2026-10-19T15:00:00Z',
+      false,
+      now,
+    );
+    expect(dueSoonInfo.status).toBe('dueSoon');
+    expect(dueSoonInfo.badgeVariant).toBe('warning');
+
+    // 2026-10-19 is a Monday (weekday 0 in our 0..6 Monday-Sunday convention)
+    const session = {
+      weekday: 0,
+      startTime: '09:00',
+      endTime: '11:00',
+    };
+    expect(isSessionOngoing(session, now)).toBe(true);
+    expect(
+      isSessionOngoing(
+        session,
+        new Date('2026-10-19T12:00:00').getTime(),
+      ),
     ).toBe(false);
   });
 });
