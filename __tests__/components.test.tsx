@@ -101,7 +101,7 @@ describe('Design System Sizing Standards & Controls', () => {
     expect(Molecules.AppSearchBar).toBeDefined();
 
     expect(Organisms.AppCard).toBeDefined();
-    expect(Organisms.GlassCard).toBeDefined();
+    expect(Organisms.GlassTile).toBeDefined();
     expect(Organisms.AppleGlassCard).toBeDefined();
 
     expect(Templates.ScreenWrapper).toBeDefined();

@@ -161,3 +161,7 @@ src/
 ├── types/              # Định nghĩa types toàn cục (api.ts, models.ts, index.ts)
 └── utils/              # id, crypto (AESP256), image, file, clipboard, browser, haptics, permissions, schemas
 ```
+
+## Kiểm thử trên npm và pnpm
+
+Cấu hình Jest hỗ trợ cả đường dẫn npm thông thường và `node_modules/.pnpm/`. Bộ kiểm thử Atomic Design dùng các glass organism hiện có: `GlassTile` và `AppleGlassCard` (thay cho `GlassCard` cũ). Chạy `npm test -- --runInBand` khi cần giới hạn worker.

@@ -310,3 +310,8 @@ Toàn bộ hệ thống giao diện trong `src/components/` phân định rõ 4 
 
 
 
+
+## Kiểm thử với pnpm
+
+- Jest phải cho phép đi qua `node_modules/.pnpm/` trước khi áp dụng danh sách package cần transform, để React Native preset chạy được với cả npm và pnpm.
+- Kiểm tra Atomic Design theo public API hiện tại: `GlassTile`, `AppleGlassCard`; `GlassCard` cũ không còn được export.

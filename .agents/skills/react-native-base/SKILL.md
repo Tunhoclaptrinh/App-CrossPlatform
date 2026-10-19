@@ -350,3 +350,7 @@ import { Save, Share2, Bell } from 'lucide-react-native';
 
 
 
+
+### Jest with pnpm
+- Keep `.pnpm/` traversable in `transformIgnorePatterns` so React Native and React Navigation sources are transformed under both npm and pnpm layouts.
+- Atomic export tests must reflect the current public API: `GlassTile` and `AppleGlassCard` are the glass organisms; the removed `GlassCard` is not an export.
