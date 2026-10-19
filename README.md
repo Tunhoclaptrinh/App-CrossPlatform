@@ -1,3 +1,15 @@
+# StudyFlow — Bài thực hành 3
+
+Ứng dụng quản lý học tập offline trên codebase Universal React Native Base: 5 Bottom Tabs, 4 màn hình chi tiết Native Stack, tìm kiếm môn học, lịch tuần, quản lý trạng thái bài tập, hồ sơ và điểm số. Dùng Zustand + AsyncStorage hiện có, hỗ trợ sáng/tối và nhãn Việt/Anh.
+
+Xem [hướng dẫn và kịch bản demo](docs/practice-03-guide.md), [kế hoạch](docs/practice-03-plan.md), [kết quả kiểm chứng](docs/practice-03-verification.md).
+
+Mã mới: `src/screens/Study/`, `src/data/study/`, `src/types/study.ts`, `src/utils/study.ts`, `src/hooks/useStudyClock.ts`, `src/navigation/StudyTabs.tsx` và các component `StudyPage`, `StudyCourseCard`, `StudyAssignmentCard`, `StudySessionCard` trong `src/components/common/`. Dữ liệu dùng chung vẫn nằm tại `src/hooks/useAppStore.ts`; các màn hình demo của base vẫn được giữ.
+
+Bottom Tabs `7.19.0` dùng elements `2.9.43` theo overrides trong npm/pnpm để giữ tương thích thư viện điều hướng nền. Khởi động với `npm start` và `npm run android:fast`; chạy các cổng kiểm tra bên dưới trước bàn giao.
+
+---
+
 # React Native Universal Base App (Starter Template)
 
 > Bộ khung ứng dụng di động đa nền tảng (React Native 0.87+ New Architecture & TypeScript) chuẩn công nghiệp, sẵn sàng cho mọi thể loại đồ án và dự án thực tế: **App Local Offline**, **App Kết nối Server REST API**, hoặc **App Trợ lý AI**.

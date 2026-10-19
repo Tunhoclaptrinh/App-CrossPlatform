@@ -355,5 +355,16 @@ import { Save, Share2, Bell } from 'lucide-react-native';
 - Keep `.pnpm/` traversable in `transformIgnorePatterns` so React Native and React Navigation sources are transformed under both npm and pnpm layouts.
 - Atomic export tests must reflect the current public API: `GlassTile` and `AppleGlassCard` are the glass organisms; the removed `GlassCard` is not an export.
 
+### StudyFlow / Practice 03 (October 2026)
+- Entry flow: Splash → StudyTabs, using real Bottom Tabs (Overview, Courses, Timetable, Assignments, Profile) and root Native Stack details (CourseDetail, SessionDetail, AssignmentDetail, GradeDetail). Legacy base demo routes remain available.
+- Domain: `src/types/study.ts`, seed data in `src/data/study/`, calculations/validation in `src/utils/study.ts`. There are 5 active + 2 past courses, 8 recurring weekly sessions, 10 assignments. Semester dates and deadlines are explicit, never shifted on launch.
+- Extend the existing `useAppStore` with `studentProfile` and `assignmentCompletion`; never create a second study store. Hydration handles old stores, validates study fields and blocks editing after unreadable storage without overwriting it. Async write failures roll back memory and propagate to the UI. Drafts and filters stay local.
+- `useStudyClock` updates deadlines every minute/on foreground and cleans up its timer/subscription. `useState` manages filters/forms; `useEffect` synchronizes the profile draft outside edit mode.
+- Study screens live in `src/screens/Study/<Screen>/`, with companion styles.ts/index.ts. Shared `StudyPage`, `StudyCourseCard`, `StudySessionCard`, `StudyAssignmentCard` follow the isolated component structure and are exported from common/index.ts. StudyPage uses ScreenWrapper, solid theme token backgrounds and keyboard-aware scrolling; lists use FlatList without nested vertical scroll containers.
+- Details receive IDs, resolve current source data, and handle invalid IDs. Session dates must match the weekday and semester. Back preserves the selected tab and its state.
+- Study translation keys are `study.*` in dedicated Vietnamese/English JSON resources. Sample course/assignment content remains Vietnamese. Final grades require every component; credit-weighted averages exclude unfinished grades, with no assumed GPA conversion.
+- Dependency compatibility: Bottom Tabs 7.19.0, scoped elements override 2.9.43 in package.json and pnpm-workspace.yaml, keeping native 7.4.1 unchanged. Keep both lockfiles synchronized and run peer checks.
+- Read `docs/practice-03-guide.md` for demo/requirements and `docs/practice-03-verification.md` for evidence and release limits. Base bug fixes must remain separate commits from practice features.
+
 ### New Architecture LayoutAnimation
 - React Native 0.87 enables LayoutAnimation without `UIManager.setLayoutAnimationEnabledExperimental`. Do not call that legacy no-op at module import: its development warning can obscure bottom navigation. Keep `LayoutAnimation.configureNext` where animations are requested.

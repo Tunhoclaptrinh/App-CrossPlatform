@@ -3,6 +3,9 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { changeLanguage } from '@/i18n';
 import type { User } from '@/types';
+import type { StudentProfile, StudentEdit } from '@/types/study';
+import { ASSIGNMENTS, STUDENT } from '@/data/study';
+import { studentEditSchema } from '@/utils/study';
 import type { AccentColor } from '@/constants/colors';
 import type { RadiusPreset, ControlSizeKey } from '@/constants/theme';
 import type {
@@ -38,6 +41,13 @@ export const DEFAULT_SECURITY_CONFIG: SecurityConfig = {
 };
 
 export interface AppStoreState {
+  // Study data shares the existing persisted store; drafts stay in screens.
+  studentProfile: StudentProfile;
+  assignmentCompletion: Record<string, boolean>;
+  studyHydrated: boolean;
+  studyHydrationFailed: boolean;
+  updateStudentProfile: (edit: StudentEdit) => Promise<void>;
+  setAssignmentCompleted: (id: string, completed: boolean) => Promise<void>;
   // Theme & Appearance
   themeMode: ThemeMode;
   setThemeMode: (mode: ThemeMode) => void;
@@ -126,6 +136,47 @@ export interface AppStoreState {
 export const useAppStore = create<AppStoreState>()(
   persist(
     (set, get) => ({
+      studentProfile: STUDENT,
+      assignmentCompletion: {},
+      studyHydrated: false,
+      studyHydrationFailed: false,
+      updateStudentProfile: async edit => {
+        if (!get().studyHydrated || get().studyHydrationFailed)
+          throw new Error('Storage is not ready');
+        const valid = studentEditSchema.parse(edit);
+        const previous = get().studentProfile;
+        try {
+          await set({ studentProfile: { ...previous, ...valid } });
+        } catch (error) {
+          await Promise.resolve(set({ studentProfile: previous })).catch(
+            () => undefined,
+          );
+          throw error;
+        }
+      },
+      setAssignmentCompleted: async (id, completed) => {
+        if (!get().studyHydrated || get().studyHydrationFailed)
+          throw new Error('Storage is not ready');
+        if (!ASSIGNMENTS.some(item => item.id === id))
+          throw new Error('Unknown assignment');
+        const previous = get().assignmentCompletion[id];
+        try {
+          await set({
+            assignmentCompletion: {
+              ...get().assignmentCompletion,
+              [id]: completed,
+            },
+          });
+        } catch (error) {
+          const restored = { ...get().assignmentCompletion };
+          if (previous === undefined) delete restored[id];
+          else restored[id] = previous;
+          await Promise.resolve(set({ assignmentCompletion: restored })).catch(
+            () => undefined,
+          );
+          throw error;
+        }
+      },
       themeMode: 'light',
       setThemeMode: (mode: ThemeMode) => set({ themeMode: mode }),
       toggleTheme: () => {
@@ -250,8 +301,51 @@ export const useAppStore = create<AppStoreState>()(
     }),
     {
       name: '@app/unified_store',
-      storage: createJSONStorage(() => AsyncStorage),
+      storage: createJSONStorage(() => ({
+        getItem: async name => {
+          try {
+            const value = await AsyncStorage.getItem(name);
+            if (value !== null) JSON.parse(value);
+            return value;
+          } catch {
+            // Let persist hydrate through its normal path without overwriting
+            // unreadable data. The study UI offers a retry before any edits.
+            return JSON.stringify({
+              state: { studyHydrationFailed: true },
+              version: 0,
+            });
+          }
+        },
+        setItem: (name, value) => AsyncStorage.setItem(name, value),
+        removeItem: name => AsyncStorage.removeItem(name),
+      })),
+      merge: (persisted, current) => {
+        const saved =
+          persisted && typeof persisted === 'object'
+            ? (persisted as Partial<AppStoreState>)
+            : {};
+        const profile = studentEditSchema.safeParse(saved.studentProfile);
+        const completion = Object.fromEntries(
+          Object.entries(saved.assignmentCompletion ?? {}).filter(
+            ([id, value]) =>
+              ASSIGNMENTS.some(item => item.id === id) &&
+              typeof value === 'boolean',
+          ),
+        );
+        return {
+          ...current,
+          ...saved,
+          studentProfile: profile.success
+            ? { ...STUDENT, ...profile.data }
+            : current.studentProfile,
+          assignmentCompletion: completion,
+          studyHydrated: true,
+          studyHydrationFailed: saved.studyHydrationFailed === true,
+        };
+      },
       partialize: (state) => ({
+        studentProfile: state.studentProfile,
+        assignmentCompletion: state.assignmentCompletion,
         themeMode: state.themeMode,
         themeStyle: state.themeStyle,
         meshVariant: state.meshVariant,

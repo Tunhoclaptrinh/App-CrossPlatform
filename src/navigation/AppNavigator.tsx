@@ -8,6 +8,11 @@ import { AuthScreen } from '@/screens/Auth';
 import { SecuritySettingsScreen } from '@/screens/SecuritySettings';
 import { useThemeMode } from '@/hooks';
 import { RootStackParamList } from './types';
+import { StudyTabs } from './StudyTabs';
+import { CourseDetailScreen } from '@/screens/Study/CourseDetail';
+import { SessionDetailScreen } from '@/screens/Study/SessionDetail';
+import { AssignmentDetailScreen } from '@/screens/Study/AssignmentDetail';
+import { GradeDetailScreen } from '@/screens/Study/GradeDetail';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -32,6 +37,11 @@ export const AppNavigator: React.FC = () => {
         },
       }}
     >
+      <Stack.Screen name="StudyTabs" component={StudyTabs} options={{ headerShown: false }} />
+      <Stack.Screen name="CourseDetail" component={CourseDetailScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="SessionDetail" component={SessionDetailScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="AssignmentDetail" component={AssignmentDetailScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="GradeDetail" component={GradeDetailScreen} options={{ headerShown: false }} />
       <Stack.Screen
         name="Splash"
         component={SplashScreen}

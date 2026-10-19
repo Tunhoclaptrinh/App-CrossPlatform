@@ -1,7 +1,22 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/native';
+import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+
+export type StudyTabParamList = {
+  Overview: undefined;
+  Courses: undefined;
+  Timetable: undefined;
+  Assignments: undefined;
+  Profile: undefined;
+};
 
 export type RootStackParamList = {
   Splash: undefined;
+  StudyTabs: NavigatorScreenParams<StudyTabParamList> | undefined;
+  CourseDetail: { courseId: string };
+  SessionDetail: { sessionId: string; date?: string };
+  AssignmentDetail: { assignmentId: string };
+  GradeDetail: { gradeId: string };
   Home: undefined;
   Details: {
     itemId: string;
@@ -12,6 +27,9 @@ export type RootStackParamList = {
   Auth: undefined;
   SecuritySettings: undefined;
 };
+
+export type StudyTabProps<T extends keyof StudyTabParamList> = CompositeScreenProps<BottomTabScreenProps<StudyTabParamList, T>, NativeStackScreenProps<RootStackParamList>>;
+export type StudyDetailProps<T extends 'CourseDetail' | 'SessionDetail' | 'AssignmentDetail' | 'GradeDetail'> = NativeStackScreenProps<RootStackParamList, T>;
 
 export type SplashScreenProps = NativeStackScreenProps<RootStackParamList, 'Splash'>;
 export type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;

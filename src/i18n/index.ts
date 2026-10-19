@@ -2,11 +2,14 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import vi from './locales/vi.json';
 import en from './locales/en.json';
+import studyVi from './locales/study.vi.json';
+import studyEn from './locales/study.en.json';
 
 export const resources = {
   vi: {
     translation: {
       ...vi,
+      study: studyVi,
       ...vi.common,
       ...vi.home,
       ...vi.details,
@@ -18,6 +21,7 @@ export const resources = {
   en: {
     translation: {
       ...en,
+      study: studyEn,
       ...en.common,
       ...en.home,
       ...en.details,

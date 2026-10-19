@@ -1,0 +1,1 @@
+export { AssignmentsScreen } from './AssignmentsScreen';

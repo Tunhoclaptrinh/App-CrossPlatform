@@ -1,0 +1,1 @@
+export { useStudyStyles } from '../styles';

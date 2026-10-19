@@ -1,0 +1,2 @@
+overrides:
+  '@react-navigation/bottom-tabs>@react-navigation/elements': 2.9.43

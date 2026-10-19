@@ -316,6 +316,17 @@ Toàn bộ hệ thống giao diện trong `src/components/` phân định rõ 4 
 - Jest phải cho phép đi qua `node_modules/.pnpm/` trước khi áp dụng danh sách package cần transform, để React Native preset chạy được với cả npm và pnpm.
 - Kiểm tra Atomic Design theo public API hiện tại: `GlassTile`, `AppleGlassCard`; `GlassCard` cũ không còn được export.
 
+## Module học tập — Bài thực hành 3
+
+- Màn hình nằm trong `src/screens/Study/<Screen>/`, tái sử dụng `StudyPage` (bọc `ScreenWrapper`) và các thẻ học tập từ `@/components` hoặc index của component.
+- Data có ID ổn định trong `src/data/study/`; các quan hệ tham chiếu `courseId`. Route chi tiết chỉ truyền ID, riêng buổi học có thể nhận thêm ngày `YYYY-MM-DD` đã kiểm tra theo học kỳ/thứ.
+- `studentProfile`, `assignmentCompletion` và actions nằm trong `useAppStore`; không tạo store mới. Bản nháp form/bộ lọc/tuần được chọn là state cục bộ. Đợi hydrate trước khi sửa dữ liệu; lỗi ghi phải hoàn tác và báo lỗi, lỗi đọc không được ghi đè dữ liệu gốc.
+- Tìm kiếm dùng `removeVietnameseTones`; deadline có timezone rõ ràng. Đồng hồ UI cập nhật mỗi phút và khi foreground, có cleanup.
+- Điểm trung bình theo tín chỉ chỉ dùng môn đủ điểm thành phần. Quy tắc hệ 10 được ghi trong dữ liệu và hiển thị cho người dùng; không suy ra GPA theo quy chế trường.
+- Chuỗi giao diện dùng `study.*` trong `src/i18n/locales/study.vi.json` và `study.en.json`. Nội dung mẫu môn/bài tập giữ tiếng Việt.
+- Ghim Bottom Tabs `7.19.0` và override elements `2.9.43` cho cả npm/pnpm để dùng cùng native `7.4.1`. Khi thay dependency, kiểm tra peer và cả hai lockfile.
+- Các sửa lỗi có thể đưa độc lập về base phải ở commit riêng, kèm đồng bộ tài liệu; tính năng bài thực hành nằm ở commit khác.
+
 ## LayoutAnimation trên New Architecture
 
 React Native 0.87 không cần bật `UIManager.setLayoutAnimationEnabledExperimental`. Không gọi API no-op này khi import module vì cảnh báo development có thể che giao diện; tiếp tục dùng `LayoutAnimation.configureNext` cho các thao tác cần animation.

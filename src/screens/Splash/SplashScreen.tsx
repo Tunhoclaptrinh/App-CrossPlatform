@@ -35,7 +35,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
     const initApp = async () => {
       await database.initTables();
       setTimeout(() => {
-        navigation.replace('Home');
+        navigation.replace('StudyTabs');
       }, 500);
     };
 

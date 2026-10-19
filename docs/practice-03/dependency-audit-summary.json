@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-19",
+  "baseline": {
+    "info": 0,
+    "low": 0,
+    "moderate": 5,
+    "high": 49,
+    "critical": 1,
+    "total": 55
+  },
+  "studyflow": {
+    "info": 0,
+    "low": 0,
+    "moderate": 5,
+    "high": 49,
+    "critical": 1,
+    "total": 55
+  },
+  "newAffectedPackages": []
+}
