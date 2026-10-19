@@ -30,6 +30,7 @@ export interface BottomNavItem {
   badgeDot?: boolean;
   disabled?: boolean;
   onPress?: () => void;
+  onLongPress?: () => void;
   accessibilityLabel?: string;
   testID?: string;
 }

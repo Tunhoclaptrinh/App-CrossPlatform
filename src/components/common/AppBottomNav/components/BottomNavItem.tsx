@@ -9,6 +9,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { AppText } from '../../AppText';
+import { useThemeMode } from '@/hooks/useThemeMode';
 import { haptics } from '@/utils/haptics';
 import { BottomNavBadge } from './BottomNavBadge';
 import { styles } from '../styles';
@@ -57,6 +58,7 @@ export interface BottomNavItemProps {
   onLayout?: (e: LayoutChangeEvent) => void;
   hasSlidingIndicator?: boolean;
   totalItems?: number;
+  hapticFeedback?: boolean;
 }
 
 export const BottomNavItemComponent: React.FC<BottomNavItemProps> = React.memo(({
@@ -80,12 +82,20 @@ export const BottomNavItemComponent: React.FC<BottomNavItemProps> = React.memo((
   onLayout,
   hasSlidingIndicator = false,
   totalItems,
+  hapticFeedback = true,
 }) => {
+  const { reduceMotion } = useThemeMode();
   const pillScale = useRef(new Animated.Value(isActive ? 1 : 0.75)).current;
   const pillOpacity = useRef(new Animated.Value(isActive ? 1 : 0)).current;
   const iconScale = useRef(new Animated.Value(isActive ? 1.05 : 1)).current;
 
   useEffect(() => {
+    if (reduceMotion) {
+      pillScale.setValue(isActive ? 1 : 0.75);
+      pillOpacity.setValue(isActive ? 1 : 0);
+      iconScale.setValue(1);
+      return;
+    }
     if (isActive) {
       Animated.parallel([
         Animated.spring(pillScale, {
@@ -133,11 +143,11 @@ export const BottomNavItemComponent: React.FC<BottomNavItemProps> = React.memo((
         }),
       ]).start();
     }
-  }, [isActive, pillScale, pillOpacity, iconScale]);
+  }, [isActive, reduceMotion, pillScale, pillOpacity, iconScale]);
 
   const handlePress = () => {
     if (item.disabled) return;
-    haptics.light();
+    if (hapticFeedback) haptics.light();
     if (item.onPress) {
       item.onPress();
     }
@@ -180,6 +190,7 @@ export const BottomNavItemComponent: React.FC<BottomNavItemProps> = React.memo((
       activeOpacity={0.7}
       disabled={item.disabled}
       onPress={handlePress}
+      onLongPress={item.onLongPress}
       onLayout={onLayout}
       accessibilityRole="tab"
       accessibilityState={{ selected: isActive, disabled: item.disabled }}

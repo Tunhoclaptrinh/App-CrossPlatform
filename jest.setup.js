@@ -80,3 +80,9 @@ jest.mock('@op-engineering/op-sqlite', () => {
     })),
   };
 });
+// Native dialogs are exercised via their public callbacks in component tests.
+jest.mock('@react-native-community/datetimepicker', () => ({
+  __esModule: true,
+  default: 'DateTimePicker',
+  DateTimePickerAndroid: { open: jest.fn(), dismiss: jest.fn() },
+}));

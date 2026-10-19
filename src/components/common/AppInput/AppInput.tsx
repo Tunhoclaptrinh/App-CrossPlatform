@@ -28,6 +28,7 @@ export const AppInput: React.FC<AppInputProps> = React.memo(({
   isPassword = false,
   style,
   editable,
+  multiline = false,
   variant,
   contrast,
   shadow,
@@ -106,15 +107,17 @@ export const AppInput: React.FC<AppInputProps> = React.memo(({
         </AppText>
       )}
 
-      <View style={[styles.inputContainer, sizeContainerStyle, stateStyle]}>
+      <View style={[styles.inputContainer, sizeContainerStyle, multiline && styles.multilineContainer, stateStyle]}>
         {leftIcon && <View style={styles.leftIconContainer}>{leftIcon}</View>}
 
         <TextInput
+          multiline={multiline}
           placeholderTextColor={themeColors.textSecondary}
           editable={isInputEditable}
           style={[
             styles.input,
             sizeInputStyle,
+            multiline && styles.multilineInput,
             { color: themeColors.text },
             style,
           ]}

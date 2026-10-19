@@ -51,6 +51,7 @@ const AppBottomNavComponent: React.FC<AppBottomNavProps> = React.memo(({
   replacementScope = 'full',
   hidden = false,
   safeArea = true,
+  hapticFeedback = true,
   borderRadius,
   indicatorBorderRadius,
   indicatorInset,
@@ -395,8 +396,9 @@ const AppBottomNavComponent: React.FC<AppBottomNavProps> = React.memo(({
         item={item}
         isActive={isActive}
         totalItems={effectiveItems.length}
+        hapticFeedback={hapticFeedback}
         onPress={() => {
-          LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+          if (!reduceMotion) LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
           onChange(item.key);
         }}
         onLayout={(e) => handleItemLayout(item.key, e)}

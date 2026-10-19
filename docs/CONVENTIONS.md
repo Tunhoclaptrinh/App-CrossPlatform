@@ -319,3 +319,7 @@ Toàn bộ hệ thống giao diện trong `src/components/` phân định rõ 4 
 ## LayoutAnimation trên New Architecture
 
 React Native 0.87 không cần bật `UIManager.setLayoutAnimationEnabledExperimental`. Không gọi API no-op này khi import module vì cảnh báo development có thể che giao diện; tiếp tục dùng `LayoutAnimation.configureNext` cho các thao tác cần animation.
+
+## Chọn ngày, nhập dài và tích hợp điều hướng
+
+Dùng `AppDateTimeInput` cho ngày/giờ native, `AppInput multiline` cho ghi chú/nội dung dài. Tích hợp navigator qua API `AppBottomNav`, phát cả tabPress và tabLongPress, giữ trạng thái selected/disabled. Tôn trọng cấu hình giảm chuyển động và haptics. AppHeader size dùng ControlSize và Spacing.

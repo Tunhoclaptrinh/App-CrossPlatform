@@ -169,3 +169,7 @@ Cấu hình Jest hỗ trợ cả đường dẫn npm thông thường và `node_
 ## LayoutAnimation trên React Native 0.87
 
 LayoutLab dùng LayoutAnimation trực tiếp trên New Architecture, không gọi API bật thử nghiệm cũ khi import. Điều này tránh cảnh báo development che vùng thao tác của ứng dụng.
+
+## Bổ sung UI dùng chung
+
+Base có `AppDateTimeInput` (native Android/iOS, đồng bộ theme), AppInput hỗ trợ nhập nhiều dòng và AppBottomNav hỗ trợ long press/giảm chuyển động/haptics. Sau khi cài dependency datetimepicker, build lại Android/iOS (iOS cần cập nhật Pods).
