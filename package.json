@@ -2,7 +2,9 @@
   "name": "ReactNative",
   "version": "0.0.1",
   "private": true,
+  "packageManager": "pnpm@12.11.2",
   "scripts": {
+    "preinstall": "node -e 'if(!/pnpm/.test(process.env.npm_config_user_agent||\"\"))throw new Error(\"❌ Du an nay bat buoc su dung pnpm! Vui long chay: pnpm install\")'",
     "android": "react-native run-android",
     "android:fast": "react-native run-android --extra-params -PreactNativeArchitectures=x86_64",
     "android:device": "react-native run-android --extra-params -PreactNativeArchitectures=arm64-v8a",

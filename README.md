@@ -104,20 +104,20 @@
 
 ### 1. Cài đặt thư viện:
 ```bash
-npm install
+pnpm install
 ```
 
 ### 2. Chạy máy ảo Android:
 ```bash
 # Bật máy ảo trong Android Studio trước, sau đó chạy:
-npm run android
+pnpm android
 ```
 
 ### 3. Kiểm định chất lượng code (Pre-flight Quality Check):
 ```bash
-npm run lint       # Kiểm tra ESLint (0 errors, 0 warnings)
+pnpm lint          # Kiểm tra ESLint (0 errors, 0 warnings)
 npx tsc --noEmit   # Kiểm tra kiểu dữ liệu TypeScript (0 errors)
-npm test           # Chạy toàn bộ Unit Tests Jest (100% pass)
+pnpm test          # Chạy toàn bộ Unit Tests Jest (100% pass)
 ```
 
 ---
