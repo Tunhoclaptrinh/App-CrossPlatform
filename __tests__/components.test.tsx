@@ -89,6 +89,18 @@ describe('Design System Sizing Standards & Controls', () => {
     expect(renderer?.toJSON()).toBeTruthy();
   });
 
+  it('renders AppButton with success variant correctly', async () => {
+    let renderer: ReactTestRenderer.ReactTestRenderer | undefined;
+    await ReactTestRenderer.act(async () => {
+      renderer = ReactTestRenderer.create(
+        <View>
+          <AppButton title="Success Action" variant="success" size="md" />
+        </View>
+      );
+    });
+    expect(renderer?.toJSON()).toBeTruthy();
+  });
+
   it('exposes Atomic Design layer groups (Atoms, Molecules, Organisms, Templates)', () => {
     const { Atoms, Molecules, Organisms, Templates } = require('@/components');
     expect(Atoms.AppText).toBeDefined();
