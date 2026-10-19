@@ -173,3 +173,5 @@ LayoutLab dùng LayoutAnimation trực tiếp trên New Architecture, không g�
 ## Bổ sung UI dùng chung
 
 Base có `AppDateTimeInput` (native Android/iOS, đồng bộ theme), AppInput hỗ trợ nhập nhiều dòng và AppBottomNav hỗ trợ long press/giảm chuyển động/haptics. Sau khi cài dependency datetimepicker, build lại Android/iOS (iOS cần cập nhật Pods).
+
+NavigationContainer cũng đồng bộ với màu/theme của ứng dụng, giữ nền trong suốt ở chế độ kính và không tạo theme mới khi dữ liệu nghiệp vụ thay đổi.

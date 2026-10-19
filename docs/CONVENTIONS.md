@@ -323,3 +323,7 @@ React Native 0.87 không cần bật `UIManager.setLayoutAnimationEnabledExperim
 ## Chọn ngày, nhập dài và tích hợp điều hướng
 
 Dùng `AppDateTimeInput` cho ngày/giờ native, `AppInput multiline` cho ghi chú/nội dung dài. Tích hợp navigator qua API `AppBottomNav`, phát cả tabPress và tabLongPress, giữ trạng thái selected/disabled. Tôn trọng cấu hình giảm chuyển động và haptics. AppHeader size dùng ControlSize và Spacing.
+
+## Theme của NavigationContainer
+
+Đồng bộ NavigationContainer với `useThemeMode()` bằng theme được memoize; giữ nguyên fonts và các thuộc tính mặc định của React Navigation. Màu nền kính phải trong suốt để không che mesh của base.
