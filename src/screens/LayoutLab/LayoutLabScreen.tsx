@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { View, TouchableOpacity, Platform, UIManager, LayoutAnimation } from 'react-native';
+import { View, TouchableOpacity, LayoutAnimation } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   Sparkles,
@@ -40,9 +40,6 @@ import {
 import { useThemeMode } from '@/hooks';
 import { haptics } from '@/utils';
 
-if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
-  UIManager.setLayoutAnimationEnabledExperimental(true);
-}
 import type { LayoutLabScreenProps } from '@/navigation/types';
 import type { RadiusPreset, ControlSizeKey } from '@/constants/theme';
 import type { AccentColor } from '@/constants/colors';

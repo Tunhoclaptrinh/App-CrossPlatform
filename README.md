@@ -165,3 +165,7 @@ src/
 ## Kiểm thử trên npm và pnpm
 
 Cấu hình Jest hỗ trợ cả đường dẫn npm thông thường và `node_modules/.pnpm/`. Bộ kiểm thử Atomic Design dùng các glass organism hiện có: `GlassTile` và `AppleGlassCard` (thay cho `GlassCard` cũ). Chạy `npm test -- --runInBand` khi cần giới hạn worker.
+
+## LayoutAnimation trên React Native 0.87
+
+LayoutLab dùng LayoutAnimation trực tiếp trên New Architecture, không gọi API bật thử nghiệm cũ khi import. Điều này tránh cảnh báo development che vùng thao tác của ứng dụng.

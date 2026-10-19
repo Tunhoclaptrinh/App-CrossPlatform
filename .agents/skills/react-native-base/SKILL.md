@@ -354,3 +354,6 @@ import { Save, Share2, Bell } from 'lucide-react-native';
 ### Jest with pnpm
 - Keep `.pnpm/` traversable in `transformIgnorePatterns` so React Native and React Navigation sources are transformed under both npm and pnpm layouts.
 - Atomic export tests must reflect the current public API: `GlassTile` and `AppleGlassCard` are the glass organisms; the removed `GlassCard` is not an export.
+
+### New Architecture LayoutAnimation
+- React Native 0.87 enables LayoutAnimation without `UIManager.setLayoutAnimationEnabledExperimental`. Do not call that legacy no-op at module import: its development warning can obscure bottom navigation. Keep `LayoutAnimation.configureNext` where animations are requested.
