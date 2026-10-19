@@ -368,3 +368,8 @@ import { Save, Share2, Bell } from 'lucide-react-native';
 
 ### New Architecture LayoutAnimation
 - React Native 0.87 enables LayoutAnimation without `UIManager.setLayoutAnimationEnabledExperimental`. Do not call that legacy no-op at module import: its development warning can obscure bottom navigation. Keep `LayoutAnimation.configureNext` where animations are requested.
+
+### Reusable inputs and navigation integration
+- `AppDateTimeInput` wraps the native datetimepicker with base buttons/sheets/theme; cancellation leaves values unchanged and selecting a date preserves time. Rebuild native apps after installing dependencies.
+- `AppInput multiline` grows above the standard control height and aligns long text at the top.
+- `AppBottomNav` items expose long press; hapticFeedback and reduced motion are honored. AppHeader size uses ControlSize/Spacing tokens.

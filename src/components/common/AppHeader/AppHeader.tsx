@@ -16,6 +16,7 @@ import { AppActionSheet } from '../AppActionSheet';
 import { AppSearchBar } from '../AppSearchBar';
 import { AppScrollView } from '../AppScrollView';
 import { useThemeMode } from '@/hooks/useThemeMode';
+import { ControlSize, Spacing } from '@/constants/theme';
 import { Colors } from '@/constants/colors';
 import { haptics } from '@/utils/haptics';
 import type { AppHeaderProps, AppHeaderAction, AppHeaderExpansionHelpers, AppHeaderCustomHelpers } from './types';
@@ -35,6 +36,7 @@ const AppHeaderComponent: React.FC<AppHeaderProps> = React.memo(({
   subtitleStyle,
   centerContent,
   variant = 'standard',
+  size = 'md',
   placement = 'top',
   showBack = false,
   backTitle,
@@ -130,8 +132,8 @@ const AppHeaderComponent: React.FC<AppHeaderProps> = React.memo(({
   const effectiveInset = isBottom ? insets.bottom : insets.top;
 
   const headerContainerHeightStyle = useMemo(
-    () => getContainerHeight(effectiveInset, bottomContent ? undefined : 48, isBottom),
-    [effectiveInset, bottomContent, isBottom]
+    () => getContainerHeight(effectiveInset, bottomContent ? undefined : ControlSize[size].height + Spacing.xs, isBottom),
+    [effectiveInset, bottomContent, isBottom, size]
   );
 
   const defaultBackTitle = t('common.back', 'Quay lại');
