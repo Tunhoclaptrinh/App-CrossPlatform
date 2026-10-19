@@ -8,7 +8,7 @@ Xem [hướng dẫn và kịch bản demo](docs/practice-03-guide.md), [phạm v
 
 Mã nghiệp vụ: `src/screens/Study/`, `src/data/study/`, `src/types/study.ts`, `src/utils/study.ts`, `src/utils/studyData.ts`, `src/hooks/useStudyClock.ts`. `StudyPage` và các thẻ học tập chỉ ghép component base; `StudyTabBar` nối sự kiện React Navigation với AppBottomNav. Toàn bộ dữ liệu bền vững nằm tại `src/hooks/useAppStore.ts`; dữ liệu mẫu chỉ dùng khi khởi tạo hoặc khi người dùng yêu cầu nạp lại. Các màn hình demo base vẫn được giữ.
 
-Chạy `npm start` và `npm run android:fast` (build lại native sau khi cài thư viện chọn ngày/giờ). Bottom Tabs `7.19.0` dùng elements `2.9.43` qua overrides npm/pnpm để tương thích native `7.4.1`. Nhánh `fix/base-runtime-and-tests` chứa riêng sửa lỗi và cải tiến component dùng chung, có thể đưa về `main` độc lập với StudyFlow.
+Chạy `pnpm start` và `pnpm android:fast` (build lại native sau khi cài thư viện chọn ngày/giờ). Bottom Tabs `7.19.0` dùng elements `2.9.43` qua overrides pnpm để tương thích native `7.4.1`. Nhánh `fix/base-runtime-and-tests` chứa riêng sửa lỗi và cải tiến component dùng chung, có thể đưa về `main` độc lập với StudyFlow.
 
 ---
 
@@ -118,20 +118,20 @@ Chạy `npm start` và `npm run android:fast` (build lại native sau khi cài t
 
 ### 1. Cài đặt thư viện:
 ```bash
-npm install
+pnpm install
 ```
 
 ### 2. Chạy máy ảo Android:
 ```bash
 # Bật máy ảo trong Android Studio trước, sau đó chạy:
-npm run android
+pnpm android
 ```
 
 ### 3. Kiểm định chất lượng code (Pre-flight Quality Check):
 ```bash
-npm run lint       # Kiểm tra ESLint (0 errors, 0 warnings)
+pnpm lint          # Kiểm tra ESLint (0 errors, 0 warnings)
 npx tsc --noEmit   # Kiểm tra kiểu dữ liệu TypeScript (0 errors)
-npm test           # Chạy toàn bộ Unit Tests Jest (100% pass)
+pnpm test          # Chạy toàn bộ Unit Tests Jest (100% pass)
 ```
 
 ---
