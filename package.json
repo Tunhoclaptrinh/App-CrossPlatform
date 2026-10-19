@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android",
+    "android:fast": "react-native run-android --extra-params -PreactNativeArchitectures=x86_64",
+    "android:device": "react-native run-android --extra-params -PreactNativeArchitectures=arm64-v8a",
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
@@ -40,6 +42,8 @@
     "@react-native/jest-preset": "0.87.1",
     "@react-native/metro-config": "0.87.1",
     "@react-native/typescript-config": "0.87.1",
+    "@react-native/gradle-plugin": "0.87.1",
+    "@react-native/codegen": "0.87.1",
     "@types/jest": "^29.5.13",
     "@types/react": "^19.2.0",
     "@types/react-test-renderer": "^19.1.0",
