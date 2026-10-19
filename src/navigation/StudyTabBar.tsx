@@ -1,7 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useContext, useLayoutEffect, useMemo } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { View } from 'react-native';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import { BottomTabBarHeightCallbackContext } from '@react-navigation/bottom-tabs';
 import {
   BookOpen,
   CalendarDays,
@@ -14,7 +15,7 @@ import { AppBottomNav } from '@/components/common/AppBottomNav';
 import { useThemeMode } from '@/hooks/useThemeMode';
 import { useKeyboard } from '@/hooks/useKeyboard';
 import { useAppStore } from '@/hooks/useAppStore';
-import { createTabBarStyles } from './styles';
+import { createTabBarStyles, getStudyTabBarHeight } from './styles';
 const icons = {
   Overview: House,
   Courses: BookOpen,
@@ -43,6 +44,11 @@ export function StudyTabBar({
     [globalControlSize, isGlassTheme, bottom],
   );
   const { isKeyboardVisible } = useKeyboard();
+  const onHeightChange = useContext(BottomTabBarHeightCallbackContext);
+  const height = getStudyTabBarHeight(globalControlSize, isGlassTheme, bottom);
+  useLayoutEffect(() => {
+    onHeightChange?.(isKeyboardVisible ? 0 : height);
+  }, [onHeightChange, isKeyboardVisible, height]);
   const enabled = useAppStore(s => s.hapticsEnabled);
   const items = state.routes.map(route => {
     const name = route.name as keyof typeof icons;
@@ -60,7 +66,7 @@ export function StudyTabBar({
   });
   if (isKeyboardVisible) return null;
   return (
-    <View style={styles.space}>
+    <View style={styles.overlay} pointerEvents="box-none">
       <AppBottomNav
         items={items}
         activeKey={state.routes[state.index].key}

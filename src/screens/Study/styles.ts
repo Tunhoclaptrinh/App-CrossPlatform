@@ -10,9 +10,8 @@ export const createStudyStyles = (
   radius: RadiusPresetConfig,
 ) =>
   StyleSheet.create({
-    list: { paddingHorizontal: Spacing.xl, paddingBottom: Spacing.xxl },
+    list: { paddingHorizontal: Spacing.xl },
     filters: {
-      paddingHorizontal: Spacing.xl,
       paddingBottom: Spacing.base,
       gap: Spacing.md,
     },

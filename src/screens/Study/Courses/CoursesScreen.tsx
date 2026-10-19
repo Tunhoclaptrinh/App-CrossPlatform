@@ -29,51 +29,57 @@ export function CoursesScreen({ navigation }: StudyTabProps<'Courses'>) {
       subtitle={t('study.courseCount', { count: courses.length })}
       onAdd={() => navigation.navigate('StudyEditor', { kind: 'course' })}
     >
-      <View style={styles.filters}>
-        <AppSearchBar
-          value={query}
-          onChangeText={setQuery}
-          placeholder={t('study.searchCourses')}
+      {({ contentContainerStyle, scrollIndicatorInsets }) => (
+        <FlatList
+          ListHeaderComponent={
+            <View style={styles.filters}>
+              <AppSearchBar
+                value={query}
+                onChangeText={setQuery}
+                placeholder={t('study.searchCourses')}
+              />
+              <View style={styles.chips}>
+                <AppChip
+                  label={t('study.activeCourses')}
+                  selected={current}
+                  onPress={() => setCurrent(true)}
+                />
+                <AppChip
+                  label={t('study.allCourses')}
+                  selected={!current}
+                  onPress={() => setCurrent(false)}
+                />
+              </View>
+            </View>
+          }
+          data={courses}
+          keyExtractor={item => item.id}
+          contentContainerStyle={[styles.list, contentContainerStyle]}
+          contentInsetAdjustmentBehavior="never"
+          scrollIndicatorInsets={scrollIndicatorInsets}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+          renderItem={({ item }) => (
+            <StudyCourseCard
+              course={item}
+              onPress={() =>
+                navigation.navigate('CourseDetail', { courseId: item.id })
+              }
+            />
+          )}
+          ListEmptyComponent={
+            <EmptyState
+              title={t('study.noCourses')}
+              description={t('study.noCoursesBody')}
+              actionText={t('study.clearFilters')}
+              onActionPress={() => {
+                setQuery('');
+                setCurrent(false);
+              }}
+            />
+          }
         />
-        <View style={styles.chips}>
-          <AppChip
-            label={t('study.activeCourses')}
-            selected={current}
-            onPress={() => setCurrent(true)}
-          />
-          <AppChip
-            label={t('study.allCourses')}
-            selected={!current}
-            onPress={() => setCurrent(false)}
-          />
-        </View>
-      </View>
-      <FlatList
-        data={courses}
-        keyExtractor={item => item.id}
-        contentContainerStyle={styles.list}
-        keyboardShouldPersistTaps="handled"
-        keyboardDismissMode="on-drag"
-        renderItem={({ item }) => (
-          <StudyCourseCard
-            course={item}
-            onPress={() =>
-              navigation.navigate('CourseDetail', { courseId: item.id })
-            }
-          />
-        )}
-        ListEmptyComponent={
-          <EmptyState
-            title={t('study.noCourses')}
-            description={t('study.noCoursesBody')}
-            actionText={t('study.clearFilters')}
-            onActionPress={() => {
-              setQuery('');
-              setCurrent(false);
-            }}
-          />
-        }
-      />
+      )}
     </StudyPage>
   );
 }

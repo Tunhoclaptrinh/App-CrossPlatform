@@ -32,6 +32,7 @@ Có thể dùng `pnpm install --frozen-lockfile` thay `npm ci`; hai lockfile đ�
 ## Tận dụng giao diện base
 
 - Thanh dưới dùng chính `AppBottomNav`; `StudyTabBar` chỉ nối route, trạng thái chọn và sự kiện tabPress/tabLongPress của React Navigation. Safe area được tính theo kích thước control; thanh tab ẩn khi bàn phím mở.
+- Nội dung phủ toàn màn hình và cuộn phía sau hai thanh nổi. Header được đo chiều cao; thanh tab báo chiều cao theo kích thước/safe area. Khoảng tránh chỉ nằm ở đầu/cuối nội dung cuộn, nên mục đầu và cuối vẫn có thể nằm hoàn toàn ngoài vùng thanh. Tìm kiếm/bộ lọc cuộn cùng danh sách; không chia màn hình thành ba khung trên/giữa/dưới.
 - Thanh trên dùng `AppHeader`, nhận cấu hình kiểu header, back/action, căn tiêu đề, kích thước, màu và bo góc từ store base. Nút bảng màu mở `ThemeStudioModal` hiện có.
 - `AppNavigator` đặt một `AppleMeshBackground` phía sau toàn bộ luồng. `StudyPage` ghép ScreenWrapper và AppScrollView, không phủ nền đặc lên mesh. Thẻ, biểu mẫu và hộp thoại dùng AppCard/AppInput/AppSelect/AppSwitch/AppDateTimeInput/ConfirmDialog.
 - Giữ tùy chọn sáng/tối/hệ thống, Glass/Flat, nền mesh, màu nhấn, bo góc, kích thước control/chữ, header, haptics và giảm chuyển động. Không tạo bộ theme hoặc bộ cài đặt riêng cho nghiệp vụ.

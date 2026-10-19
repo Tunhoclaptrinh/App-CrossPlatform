@@ -2,7 +2,7 @@
 
 Ứng dụng quản lý học tập dùng cá nhân trên một thiết bị, hoạt động offline: 5 Bottom Tabs, 4 màn hình chi tiết Native Stack, tìm kiếm môn, lịch tuần, bài tập, hồ sơ và kết quả. Thêm/sửa/xóa dữ liệu, chỉnh học kỳ và trọng số điểm; lưu bằng Zustand + AsyncStorage sẵn có, sao lưu JSON qua menu chia sẻ và khôi phục bằng cách dán nội dung có xem trước/xác nhận.
 
-Giao diện sử dụng trực tiếp **AppHeader, AppBottomNav, AppCard, AppInput, AppSelect, AppDateTimeInput, AppScrollView, ConfirmDialog và ThemeStudioModal** của base. Nền **AppleMeshBackground** dùng chung xuyên suốt navigator; giữ tùy chọn sáng/tối/hệ thống, Glass/Flat, màu nhấn, nền mesh, bo góc, kích thước điều khiển/chữ, kiểu header, haptics và giảm chuyển động. Không có hệ theme hoặc store riêng cho StudyFlow.
+Giao diện sử dụng trực tiếp **AppHeader, AppBottomNav, AppCard, AppInput, AppSelect, AppDateTimeInput, AppScrollView, ConfirmDialog và ThemeStudioModal** của base. Nền **AppleMeshBackground** dùng chung xuyên suốt navigator; giữ tùy chọn sáng/tối/hệ thống, Glass/Flat, màu nhấn, nền mesh, bo góc, kích thước điều khiển/chữ, kiểu header, haptics và giảm chuyển động. Không có hệ theme hoặc store riêng cho StudyFlow. Nội dung cuộn phủ toàn màn hình phía sau header và thanh tab; khoảng đầu/cuối nằm trong nội dung cuộn, theo chiều cao header thực tế và thanh tab, nên các mục đầu/cuối vẫn xem được trọn vẹn.
 
 Xem [hướng dẫn và kịch bản demo](docs/practice-03-guide.md), [phạm vi triển khai](docs/practice-03-plan.md), [kết quả kiểm chứng và giới hạn phát hành](docs/practice-03-verification.md). [Ảnh Tổng quan](docs/practice-03/screenshots/overview.png) · [Theme Studio](docs/practice-03/screenshots/theme-studio.png).
 

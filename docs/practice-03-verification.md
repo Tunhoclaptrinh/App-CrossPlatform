@@ -30,6 +30,7 @@ Các cảnh báo npm về cấu hình pnpm trong .npmrc không phải lỗi/cả
 
 Máy ảo Android 14 x86_64, React Native New Architecture/Hermes; native datetimepicker được liên kết trong APK mới. Đã chạy trực tiếp:
 
+- Sau khi chỉnh bố cục tràn: kiểm tra native hierarchy xác nhận viewport cuộn cả 5 tab phủ [0,0]–[720,1600] trên máy ảo 720×1600, cả chi tiết môn và editor cũng phủ toàn màn hình. Header/tab là overlay; header vẫn mở được Theme Studio sau khi cuộn. Môn cuối và các tùy chọn cuối trang Cá nhân có thể cuộn lên hoàn toàn trên dock. Form mở bàn phím, đóng bàn phím và hủy draft vẫn hoạt động; không tạo bản ghi thử trong lần kiểm tra layout này.
 - Chuyển đủ 5 tab; mở đủ 4 chi tiết và Back về tab trước; xem lịch cả tuần và buổi học đúng ngày.
 - Mở Theme Studio sẵn có, kiểm tra sáng/tối cùng header/dock/mesh. Các lớp nền không che mesh; không còn cảnh báo LayoutAnimation no-op che icon tab.
 - Đổi trạng thái bài tập, force-stop/mở lại và kiểm tra vẫn lưu, sau đó hoàn lại trạng thái ban đầu.
@@ -45,6 +46,8 @@ Máy ảo Android 14 x86_64, React Native New Architecture/Hermes; native dateti
 | Điều hướng và chi tiết | [Môn](practice-03/screenshots/courses.png), [Chi tiết môn](practice-03/screenshots/course-detail.png), [Lịch tuần](practice-03/screenshots/timetable.png), [Buổi học](practice-03/screenshots/session-detail.png) |
 | Bài tập và kết quả | [Bài tập](practice-03/screenshots/assignments.png), [Chi tiết bài](practice-03/screenshots/assignment-detail.png), [Cá nhân](practice-03/screenshots/profile.png), [Kết quả](practice-03/screenshots/grade-detail.png) |
 | Base và dùng cá nhân | [Theme Studio](practice-03/screenshots/theme-studio.png), [Form thêm môn](practice-03/screenshots/course-editor.png), [Chọn ngày native](practice-03/screenshots/native-date-picker.png), [Sao lưu](practice-03/screenshots/data-tools.png) |
+
+Ảnh bố cục tràn sau khi cuộn: [Tổng quan phía sau header/tab](practice-03/screenshots/overview-scroll.png), [Mục cuối môn học](practice-03/screenshots/courses-end.png), [Tùy chọn cuối Cá nhân](practice-03/screenshots/profile-end.png).
 
 Không gửi bản sao lưu tới ứng dụng bên ngoài trong smoke test. Khôi phục và xác nhận thay thế được kiểm tra tự động với React Navigation thật; chưa kiểm chứng dán một backup lớn qua clipboard native.
 

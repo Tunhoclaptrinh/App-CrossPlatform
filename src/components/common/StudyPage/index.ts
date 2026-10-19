@@ -1,2 +1,2 @@
 export { StudyPage } from './StudyPage';
-export type { StudyPageProps } from './types';
+export type { StudyPageProps, StudyPageContentLayout } from './types';

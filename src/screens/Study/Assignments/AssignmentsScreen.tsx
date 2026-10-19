@@ -42,56 +42,64 @@ export function AssignmentsScreen({
         total: allAssignments.length,
       })}
     >
-      <View style={styles.filters}>
-        <View style={styles.chips}>
-          {(['all', 'pending', 'completed'] as const).map(value => (
-            <AppChip
-              key={value}
-              label={t(`study.${value}`)}
-              selected={filter === value}
-              onPress={() => setFilter(value)}
+      {({ contentContainerStyle, scrollIndicatorInsets }) => (
+        <FlatList
+          ListHeaderComponent={
+            <View style={styles.filters}>
+              <View style={styles.chips}>
+                {(['all', 'pending', 'completed'] as const).map(value => (
+                  <AppChip
+                    key={value}
+                    label={t(`study.${value}`)}
+                    selected={filter === value}
+                    onPress={() => setFilter(value)}
+                  />
+                ))}
+              </View>
+              <AppSelect
+                label={t('study.courseFilter')}
+                value={courseId}
+                onSelect={setCourseId}
+                options={[
+                  { label: t('study.allCourses'), value: 'all' },
+                  ...allCourses.map(c => ({
+                    label: c.name,
+                    value: c.id,
+                  })),
+                ]}
+              />
+            </View>
+          }
+          data={items}
+          keyExtractor={item => item.id}
+          contentContainerStyle={[styles.list, contentContainerStyle]}
+          contentInsetAdjustmentBehavior="never"
+          scrollIndicatorInsets={scrollIndicatorInsets}
+          renderItem={({ item }) => (
+            <StudyAssignmentCard
+              assignment={item}
+              now={now}
+              editable
+              onPress={() =>
+                navigation.navigate('AssignmentDetail', {
+                  assignmentId: item.id,
+                })
+              }
             />
-          ))}
-        </View>
-        <AppSelect
-          label={t('study.courseFilter')}
-          value={courseId}
-          onSelect={setCourseId}
-          options={[
-            { label: t('study.allCourses'), value: 'all' },
-            ...allCourses.map(c => ({
-              label: c.name,
-              value: c.id,
-            })),
-          ]}
+          )}
+          ListEmptyComponent={
+            <EmptyState
+              title={t('study.noAssignments')}
+              description={t('study.noAssignmentsBody')}
+              actionText={t('study.clearFilters')}
+              onActionPress={() => {
+                setFilter('all');
+                setCourseId('all');
+              }}
+            />
+          }
         />
-      </View>
-      <FlatList
-        data={items}
-        keyExtractor={item => item.id}
-        contentContainerStyle={styles.list}
-        renderItem={({ item }) => (
-          <StudyAssignmentCard
-            assignment={item}
-            now={now}
-            editable
-            onPress={() =>
-              navigation.navigate('AssignmentDetail', { assignmentId: item.id })
-            }
-          />
-        )}
-        ListEmptyComponent={
-          <EmptyState
-            title={t('study.noAssignments')}
-            description={t('study.noAssignmentsBody')}
-            actionText={t('study.clearFilters')}
-            onActionPress={() => {
-              setFilter('all');
-              setCourseId('all');
-            }}
-          />
-        }
-      />
+      )}
     </StudyPage>
   );
 }
