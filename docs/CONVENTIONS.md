@@ -343,3 +343,7 @@ Dùng `AppDateTimeInput` cho ngày/giờ native, `AppInput multiline` cho ghi ch
 ## Theme của NavigationContainer
 
 Đồng bộ NavigationContainer với `useThemeMode()` bằng theme được memoize; giữ nguyên fonts và các thuộc tính mặc định của React Navigation. Màu nền kính phải trong suốt để không che mesh của base.
+
+### Ô nhập dài, header căn trái và segmented control
+
+AppInput nhiều dòng mặc định dùng bo góc card, kể cả preset pill; vẫn tôn trọng borderRadius truyền rõ ràng. AppHeader căn trái bỏ khoảng trống đầu nếu không có back/action. AppSegmentedControl cung cấp trạng thái chọn/vô hiệu hóa cho trợ năng và tôn trọng tùy chọn haptics toàn cục.

@@ -379,3 +379,6 @@ import { Save, Share2, Bell } from 'lucide-react-native';
 
 ### Navigation theme synchronization
 - NavigationContainer must receive a memoized theme built from useThemeMode, including background/card/text/primary colors. Preserve React Navigation fonts/default fields; glass backgrounds stay transparent so base mesh surfaces remain visible.
+
+### Multiline inputs and compact choices
+- Multiline AppInput defaults to radiusTokens.card, preserving explicit radius overrides; pill controls must not turn textareas into ovals. Left-aligned AppHeader collapses empty leading space, preserving back/actions. AppSegmentedControl exposes tablist/tab selected/disabled accessibility and respects global hapticsEnabled.

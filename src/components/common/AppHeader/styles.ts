@@ -67,6 +67,10 @@ export const styles = StyleSheet.create({
     backgroundColor: 'rgba(15, 23, 42, 0.75)',
   },
 
+  emptyLeading: {
+    minWidth: 0,
+    width: 0,
+  },
   // Left Section
   leftContainer: {
     flexDirection: 'row',
