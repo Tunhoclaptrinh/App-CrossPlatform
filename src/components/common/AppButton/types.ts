@@ -8,6 +8,7 @@ export type AppButtonVariant =
   | 'outline'
   | 'tonal'
   | 'danger'
+  | 'success'
   | 'ghost'
   | 'glass';
 

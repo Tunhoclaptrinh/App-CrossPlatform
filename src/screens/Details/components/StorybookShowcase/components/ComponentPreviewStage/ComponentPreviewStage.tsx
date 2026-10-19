@@ -69,7 +69,7 @@ export const ComponentPreviewStage: React.FC<ComponentPreviewStageProps> = ({
   // Interactive Props States
   const [controlSize, setControlSize] = useState<ControlSizeKey>('md');
   const [buttonVariant, setButtonVariant] = useState<
-    'primary' | 'secondary' | 'outline' | 'tonal' | 'glass' | 'danger'
+    'primary' | 'secondary' | 'outline' | 'tonal' | 'glass' | 'danger' | 'success'
   >('primary');
   const [cardVariant, setCardVariant] = useState<'elevated' | 'outlined' | 'flat' | 'glass'>('elevated');
 
@@ -227,7 +227,7 @@ export const ComponentPreviewStage: React.FC<ComponentPreviewStageProps> = ({
 
   // Icon color synchronized with button state
   const buttonIconColor =
-    buttonVariant === 'primary' || buttonVariant === 'danger'
+    buttonVariant === 'primary' || buttonVariant === 'danger' || buttonVariant === 'success'
       ? '#FFFFFF'
       : themeColors.text;
 

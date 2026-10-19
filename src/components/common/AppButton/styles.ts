@@ -64,6 +64,10 @@ export const createButtonStyles = (
       backgroundColor: colors.error,
       borderWidth: 0,
     },
+    success: {
+      backgroundColor: colors.success,
+      borderWidth: 0,
+    },
     ghost: {
       backgroundColor: 'transparent',
       borderWidth: 0,
@@ -155,6 +159,7 @@ export const getButtonTextColor = (variant: AppButtonVariant, colors: ThemeColor
     case 'glass':
       return colors.text;
     case 'danger':
+    case 'success':
     case 'primary':
     case 'secondary':
     default:
@@ -175,6 +180,8 @@ export const getVariantStyle = (
       return styles.tonal;
     case 'danger':
       return styles.danger;
+    case 'success':
+      return styles.success;
     case 'ghost':
       return styles.ghost;
     case 'glass':
