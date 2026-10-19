@@ -11,11 +11,20 @@ import { validators } from './validators';
 
 export const studentEditSchema = z.object({
   fullName: z.string().trim().min(2, 'nameInvalid').max(80, 'nameInvalid'),
-  email: z.string().trim().max(254, 'emailInvalid').email('emailInvalid'),
+  email: z.union([
+    z.literal(''),
+    z.string().trim().max(254, 'emailInvalid').email('emailInvalid'),
+  ]),
   phone: z
     .string()
     .trim()
-    .refine(validators.isValidVietnamesePhone, 'phoneInvalid'),
+    .refine(
+      value => !value || validators.isValidVietnamesePhone(value),
+      'phoneInvalid',
+    ),
+  studentId: z.string().trim().max(80).optional(),
+  className: z.string().trim().max(80).optional(),
+  major: z.string().trim().max(120).optional(),
 });
 
 export function searchCourses(courses: Course[], query: string) {
@@ -55,7 +64,7 @@ export const isOverdue = (
 export function gradeTotal(grade: CourseGrade): number | null {
   if (
     !grade.components.length ||
-    grade.components.some(part => part.score === null)
+    grade.components.some(part => part.weight > 0 && part.score === null)
   )
     return null;
   return (
@@ -106,8 +115,10 @@ export function dateKey(date: Date): string {
   )}-${String(date.getDate()).padStart(2, '0')}`;
 }
 
-export const isTermDate = (date: Date) =>
-  dateKey(date) >= STUDY_TERM.startsOn && dateKey(date) <= STUDY_TERM.endsOn;
+export const isTermDate = (
+  date: Date,
+  term = STUDY_TERM as { startsOn: string; endsOn: string },
+) => dateKey(date) >= term.startsOn && dateKey(date) <= term.endsOn;
 
 export const formatStudyDate = (
   date: Date | string,

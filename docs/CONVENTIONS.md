@@ -318,14 +318,17 @@ Toàn bộ hệ thống giao diện trong `src/components/` phân định rõ 4 
 
 ## Module học tập — Bài thực hành 3
 
-- Màn hình nằm trong `src/screens/Study/<Screen>/`, tái sử dụng `StudyPage` (bọc `ScreenWrapper`) và các thẻ học tập từ `@/components` hoặc index của component.
-- Data có ID ổn định trong `src/data/study/`; các quan hệ tham chiếu `courseId`. Route chi tiết chỉ truyền ID, riêng buổi học có thể nhận thêm ngày `YYYY-MM-DD` đã kiểm tra theo học kỳ/thứ.
-- `studentProfile`, `assignmentCompletion` và actions nằm trong `useAppStore`; không tạo store mới. Bản nháp form/bộ lọc/tuần được chọn là state cục bộ. Đợi hydrate trước khi sửa dữ liệu; lỗi ghi phải hoàn tác và báo lỗi, lỗi đọc không được ghi đè dữ liệu gốc.
-- Tìm kiếm dùng `removeVietnameseTones`; deadline có timezone rõ ràng. Đồng hồ UI cập nhật mỗi phút và khi foreground, có cleanup.
-- Điểm trung bình theo tín chỉ chỉ dùng môn đủ điểm thành phần. Quy tắc hệ 10 được ghi trong dữ liệu và hiển thị cho người dùng; không suy ra GPA theo quy chế trường.
-- Chuỗi giao diện dùng `study.*` trong `src/i18n/locales/study.vi.json` và `study.en.json`. Nội dung mẫu môn/bài tập giữ tiếng Việt.
-- Ghim Bottom Tabs `7.19.0` và override elements `2.9.43` cho cả npm/pnpm để dùng cùng native `7.4.1`. Khi thay dependency, kiểm tra peer và cả hai lockfile.
-- Các sửa lỗi có thể đưa độc lập về base phải ở commit riêng, kèm đồng bộ tài liệu; tính năng bài thực hành nằm ở commit khác.
+- `StudyPage` ghép `ScreenWrapper`, `AppHeader`, `AppScrollView`, `ThemeStudioModal`; chuyển các tùy chọn header từ `useThemeMode` vào component gốc. `StudyTabBar` là adapter cho `AppBottomNav`, phát `tabPress` có preventDefault và `tabLongPress`; giữ Bottom Tab Navigator thật.
+- Render duy nhất một `AppleMeshBackground` tại `AppNavigator` khi dùng Glass. ScreenWrapper trong StudyPage tắt lớp mesh riêng để tránh trùng, vẫn dùng nền trong suốt từ theme. Không đặt nền đặc hoặc bảng màu riêng cho nghiệp vụ; AppCard và các controls tiếp tục nhận cấu hình base.
+- Màn hình tại `src/screens/Study/<Screen>/`; component riêng nghiệp vụ chỉ ghép UI có sẵn. Chỉ thêm vào common những khả năng có thể dùng lại (ví dụ `AppDateTimeInput`), với đủ file component/styles/types/index. Styles động nhận theme và radius tokens, không viết inline.
+- `src/data/study/` là seed; dữ liệu thực tế nằm ở `studyData` cùng `studentProfile`, `assignmentCompletion` trong `useAppStore`. Draft/bộ lọc/tuần là state cục bộ. Không tạo store, khóa storage hoặc storage listener song song.
+- `src/utils/studyData.ts` kiểm tra schema, mã môn duy nhất, ID/quan hệ, thứ tự ngày giờ, trùng lịch giữa môn đang học, điểm 0–10 và tổng trọng số 100%. Xóa môn xóa cả lịch/bài tập/điểm liên quan; xóa điểm chỉ xóa giá trị, giữ công thức. Điểm trống khác điểm 0; thành phần trọng số 0 không chặn tổng kết.
+- Các thao tác ghi nghiệp vụ được xếp hàng trong store, chờ AsyncStorage và chỉ thông báo thành công sau khi ghi được. Lỗi ghi hoàn tác phần dữ liệu học tập, không hoàn tác theme. Chặn chỉnh sửa trước hydrate hoặc khi dữ liệu không đọc/kiểm tra được; hỗ trợ thử đọc lại hoặc khôi phục backup đã xác nhận.
+- Backup JSON có format/version, ngày tạo, hồ sơ và toàn bộ dữ liệu học tập với trạng thái bài tập hiệu lực. Kiểm tra cả schema và quan hệ, giới hạn nội dung, xem trước và xác nhận trước thay thế toàn bộ. Dùng `shareHelper` native cho văn bản, khôi phục bằng dán JSON; không dùng clipboard giả hoặc mô tả thành file export. Giữ cấu hình giao diện/ngôn ngữ trên máy khi restore/reset.
+- Route chi tiết truyền ID, buổi học có thể thêm ngày YYYY-MM-DD đã kiểm tra theo thứ/học kỳ. Route StudyEditor truyền kind và ID/courseId. Các form editor chặn rời khi có bản nháp; khóa thao tác khi đang ghi.
+- Học kỳ hiện tại chỉnh được; chỉ lịch của môn đang học xuất hiện trong khoảng ngày học kỳ. Lịch môn lưu trữ giữ để tham khảo. Khi đổi học kỳ, cập nhật nhãn môn đang học, giữ nhãn môn đã học. Hạn bài tập có timezone; đồng hồ cập nhật mỗi phút và khi foreground, có cleanup.
+- Tìm kiếm dùng `removeVietnameseTones`. Điểm trung bình theo tín chỉ chỉ tính môn đủ điểm có trọng số dương; không suy ra GPA theo quy chế trường. Chuỗi UI dùng `study.*` trong JSON Việt/Anh; tên và nội dung do người dùng nhập không tự dịch.
+- Ghim Bottom Tabs 7.19.0 / elements 2.9.43 cho npm/pnpm; giữ hai lockfile và kiểm tra peer. Sửa lỗi/cải tiến dùng chung của base nằm ở commit và nhánh riêng, kèm đồng bộ cả ba tài liệu bắt buộc.
 
 ## LayoutAnimation trên New Architecture
 

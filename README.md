@@ -1,12 +1,14 @@
 # StudyFlow — Bài thực hành 3
 
-Ứng dụng quản lý học tập offline trên codebase Universal React Native Base: 5 Bottom Tabs, 4 màn hình chi tiết Native Stack, tìm kiếm môn học, lịch tuần, quản lý trạng thái bài tập, hồ sơ và điểm số. Dùng Zustand + AsyncStorage hiện có, hỗ trợ sáng/tối và nhãn Việt/Anh.
+Ứng dụng quản lý học tập dùng cá nhân trên một thiết bị, hoạt động offline: 5 Bottom Tabs, 4 màn hình chi tiết Native Stack, tìm kiếm môn, lịch tuần, bài tập, hồ sơ và kết quả. Thêm/sửa/xóa dữ liệu, chỉnh học kỳ và trọng số điểm; lưu bằng Zustand + AsyncStorage sẵn có, sao lưu JSON qua menu chia sẻ và khôi phục bằng cách dán nội dung có xem trước/xác nhận.
 
-Xem [hướng dẫn và kịch bản demo](docs/practice-03-guide.md), [kế hoạch](docs/practice-03-plan.md), [kết quả kiểm chứng](docs/practice-03-verification.md).
+Giao diện sử dụng trực tiếp **AppHeader, AppBottomNav, AppCard, AppInput, AppSelect, AppDateTimeInput, AppScrollView, ConfirmDialog và ThemeStudioModal** của base. Nền **AppleMeshBackground** dùng chung xuyên suốt navigator; giữ tùy chọn sáng/tối/hệ thống, Glass/Flat, màu nhấn, nền mesh, bo góc, kích thước điều khiển/chữ, kiểu header, haptics và giảm chuyển động. Không có hệ theme hoặc store riêng cho StudyFlow.
 
-Mã mới: `src/screens/Study/`, `src/data/study/`, `src/types/study.ts`, `src/utils/study.ts`, `src/hooks/useStudyClock.ts`, `src/navigation/StudyTabs.tsx` và các component `StudyPage`, `StudyCourseCard`, `StudyAssignmentCard`, `StudySessionCard` trong `src/components/common/`. Dữ liệu dùng chung vẫn nằm tại `src/hooks/useAppStore.ts`; các màn hình demo của base vẫn được giữ.
+Xem [hướng dẫn và kịch bản demo](docs/practice-03-guide.md), [phạm vi triển khai](docs/practice-03-plan.md), [kết quả kiểm chứng và giới hạn phát hành](docs/practice-03-verification.md). [Ảnh Tổng quan](docs/practice-03/screenshots/overview.png) · [Theme Studio](docs/practice-03/screenshots/theme-studio.png).
 
-Bottom Tabs `7.19.0` dùng elements `2.9.43` theo overrides trong npm/pnpm để giữ tương thích thư viện điều hướng nền. Khởi động với `npm start` và `npm run android:fast`; chạy các cổng kiểm tra bên dưới trước bàn giao.
+Mã nghiệp vụ: `src/screens/Study/`, `src/data/study/`, `src/types/study.ts`, `src/utils/study.ts`, `src/utils/studyData.ts`, `src/hooks/useStudyClock.ts`. `StudyPage` và các thẻ học tập chỉ ghép component base; `StudyTabBar` nối sự kiện React Navigation với AppBottomNav. Toàn bộ dữ liệu bền vững nằm tại `src/hooks/useAppStore.ts`; dữ liệu mẫu chỉ dùng khi khởi tạo hoặc khi người dùng yêu cầu nạp lại. Các màn hình demo base vẫn được giữ.
+
+Chạy `npm start` và `npm run android:fast` (build lại native sau khi cài thư viện chọn ngày/giờ). Bottom Tabs `7.19.0` dùng elements `2.9.43` qua overrides npm/pnpm để tương thích native `7.4.1`. Nhánh `fix/base-runtime-and-tests` chứa riêng sửa lỗi và cải tiến component dùng chung, có thể đưa về `main` độc lập với StudyFlow.
 
 ---
 

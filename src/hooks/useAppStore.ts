@@ -4,7 +4,22 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { changeLanguage } from '@/i18n';
 import type { User } from '@/types';
 import type { StudentProfile, StudentEdit } from '@/types/study';
-import { ASSIGNMENTS, STUDENT } from '@/data/study';
+import { STUDENT } from '@/data/study';
+import type {
+  StudyBackup,
+  StudyData,
+  StudyEntityKind,
+  StudyEntityMap,
+  StudyTerm,
+} from '@/types/study';
+import {
+  seedStudyData,
+  saveEntity,
+  deleteEntity,
+  parseStudyData,
+  parseStudyBackup,
+  termSchema,
+} from '@/utils/studyData';
 import { studentEditSchema } from '@/utils/study';
 import type { AccentColor } from '@/constants/colors';
 import type { RadiusPreset, ControlSizeKey } from '@/constants/theme';
@@ -43,6 +58,15 @@ export const DEFAULT_SECURITY_CONFIG: SecurityConfig = {
 export interface AppStoreState {
   // Study data shares the existing persisted store; drafts stay in screens.
   studentProfile: StudentProfile;
+  studyData: StudyData;
+  saveStudyEntity: <K extends StudyEntityKind>(
+    kind: K,
+    value: StudyEntityMap[K],
+  ) => Promise<void>;
+  deleteStudyEntity: (kind: StudyEntityKind, id: string) => Promise<void>;
+  updateStudyTerm: (term: StudyTerm) => Promise<void>;
+  restoreStudyBackup: (backup: StudyBackup) => Promise<void>;
+  resetStudyData: (mode: 'empty' | 'sample') => Promise<void>;
   assignmentCompletion: Record<string, boolean>;
   studyHydrated: boolean;
   studyHydrationFailed: boolean;
@@ -137,46 +161,89 @@ export const useAppStore = create<AppStoreState>()(
   persist(
     (set, get) => ({
       studentProfile: STUDENT,
+      studyData: seedStudyData(),
       assignmentCompletion: {},
       studyHydrated: false,
       studyHydrationFailed: false,
-      updateStudentProfile: async edit => {
-        if (!get().studyHydrated || get().studyHydrationFailed)
-          throw new Error('Storage is not ready');
-        const valid = studentEditSchema.parse(edit);
-        const previous = get().studentProfile;
-        try {
-          await set({ studentProfile: { ...previous, ...valid } });
-        } catch (error) {
-          await Promise.resolve(set({ studentProfile: previous })).catch(
-            () => undefined,
-          );
-          throw error;
-        }
-      },
-      setAssignmentCompleted: async (id, completed) => {
-        if (!get().studyHydrated || get().studyHydrationFailed)
-          throw new Error('Storage is not ready');
-        if (!ASSIGNMENTS.some(item => item.id === id))
-          throw new Error('Unknown assignment');
-        const previous = get().assignmentCompletion[id];
-        try {
-          await set({
+      updateStudentProfile: edit =>
+        commitStudyMutation(state => ({
+          studentProfile: {
+            ...state.studentProfile,
+            ...studentEditSchema.parse(edit),
+          },
+        })),
+      setAssignmentCompleted: (id, completed) =>
+        commitStudyMutation(state => {
+          if (!state.studyData.assignments.some(item => item.id === id))
+            throw new Error('Unknown assignment');
+          return {
             assignmentCompletion: {
-              ...get().assignmentCompletion,
+              ...state.assignmentCompletion,
               [id]: completed,
             },
-          });
-        } catch (error) {
-          const restored = { ...get().assignmentCompletion };
-          if (previous === undefined) delete restored[id];
-          else restored[id] = previous;
-          await Promise.resolve(set({ assignmentCompletion: restored })).catch(
-            () => undefined,
-          );
-          throw error;
-        }
-      },
+          };
+        }),
+      saveStudyEntity: (kind, value) =>
+        commitStudyMutation(state => {
+          const completion = { ...state.assignmentCompletion };
+          if (kind === 'assignment') delete completion[value.id];
+          return {
+            studyData: saveEntity(state.studyData, kind, value),
+            assignmentCompletion: completion,
+          };
+        }),
+      deleteStudyEntity: (kind, id) =>
+        commitStudyMutation(state => {
+          const data = deleteEntity(state.studyData, kind, id);
+          return {
+            studyData: data,
+            assignmentCompletion: Object.fromEntries(
+              Object.entries(state.assignmentCompletion).filter(([key]) =>
+                data.assignments.some(item => item.id === key),
+              ),
+            ),
+          };
+        }),
+      updateStudyTerm: term =>
+        commitStudyMutation(state => {
+          const valid = termSchema.parse(term);
+          return {
+            studyData: parseStudyData({
+              ...state.studyData,
+              term: valid,
+              courses: state.studyData.courses.map(course =>
+                course.active ? { ...course, semester: valid.label } : course,
+              ),
+              isSample: false,
+            }),
+          };
+        }),
+      restoreStudyBackup: backup =>
+        commitStudyMutation(() => {
+          const valid = parseStudyBackup(JSON.stringify(backup));
+          return {
+            studentProfile: valid.studentProfile,
+            studyData: valid.data,
+            assignmentCompletion: {},
+            studyHydrated: true,
+            studyHydrationFailed: false,
+          };
+        }, true),
+      resetStudyData: mode =>
+        commitStudyMutation(state => ({
+          studyData:
+            mode === 'sample'
+              ? seedStudyData()
+              : {
+                  ...state.studyData,
+                  courses: [],
+                  sessions: [],
+                  assignments: [],
+                  grades: [],
+                  isSample: false,
+                },
+          assignmentCompletion: {},
+        })),
       themeMode: 'light',
       setThemeMode: (mode: ThemeMode) => set({ themeMode: mode }),
       toggleTheme: () => {
@@ -189,49 +256,66 @@ export const useAppStore = create<AppStoreState>()(
       setThemeStyle: (style: ThemeStyle) => set({ themeStyle: style }),
       toggleThemeStyle: () => {
         const current = get().themeStyle;
-        set({ themeStyle: current === 'apple-glass' ? 'default' : 'apple-glass' });
+        set({
+          themeStyle: current === 'apple-glass' ? 'default' : 'apple-glass',
+        });
       },
 
       meshVariant: 'aurora',
       setMeshVariant: (variant: MeshVariant) => set({ meshVariant: variant }),
 
       headerVariant: 'standard',
-      setHeaderVariant: (variant: HeaderVariant) => set({ headerVariant: variant }),
+      setHeaderVariant: (variant: HeaderVariant) =>
+        set({ headerVariant: variant }),
       toggleHeaderVariant: () => {
         const current = get().headerVariant;
-        set({ headerVariant: current === 'standard' ? 'frosted-capsule' : 'standard' });
+        set({
+          headerVariant:
+            current === 'standard' ? 'frosted-capsule' : 'standard',
+        });
       },
 
       customCardRadius: undefined,
-      setCustomCardRadius: (radius: number | undefined) => set({ customCardRadius: radius }),
+      setCustomCardRadius: (radius: number | undefined) =>
+        set({ customCardRadius: radius }),
 
       headerBackStyle: 'glass-capsule',
-      setHeaderBackStyle: (style: AppHeaderBackStyle) => set({ headerBackStyle: style }),
+      setHeaderBackStyle: (style: AppHeaderBackStyle) =>
+        set({ headerBackStyle: style }),
       headerActionStyle: 'capsule',
-      setHeaderActionStyle: (style: AppHeaderActionStyle) => set({ headerActionStyle: style }),
+      setHeaderActionStyle: (style: AppHeaderActionStyle) =>
+        set({ headerActionStyle: style }),
       headerTitleAlign: 'center',
-      setHeaderTitleAlign: (align: HeaderTitleAlign) => set({ headerTitleAlign: align }),
+      setHeaderTitleAlign: (align: HeaderTitleAlign) =>
+        set({ headerTitleAlign: align }),
       headerSize: 'md',
       setHeaderSize: (size: AppHeaderSize) => set({ headerSize: size }),
       headerTitleColor: undefined,
-      setHeaderTitleColor: (color: string | undefined) => set({ headerTitleColor: color }),
+      setHeaderTitleColor: (color: string | undefined) =>
+        set({ headerTitleColor: color }),
       headerSubtitleColor: undefined,
-      setHeaderSubtitleColor: (color: string | undefined) => set({ headerSubtitleColor: color }),
+      setHeaderSubtitleColor: (color: string | undefined) =>
+        set({ headerSubtitleColor: color }),
       headerTintColor: undefined,
-      setHeaderTintColor: (color: string | undefined) => set({ headerTintColor: color }),
+      setHeaderTintColor: (color: string | undefined) =>
+        set({ headerTintColor: color }),
       headerBgColor: undefined,
-      setHeaderBgColor: (color: string | undefined) => set({ headerBgColor: color }),
+      setHeaderBgColor: (color: string | undefined) =>
+        set({ headerBgColor: color }),
       headerBorderRadius: undefined,
-      setHeaderBorderRadius: (radius: number | undefined) => set({ headerBorderRadius: radius }),
+      setHeaderBorderRadius: (radius: number | undefined) =>
+        set({ headerBorderRadius: radius }),
 
       globalContrast: 'normal',
-      setGlobalContrast: (contrast: ControlContrast) => set({ globalContrast: contrast }),
+      setGlobalContrast: (contrast: ControlContrast) =>
+        set({ globalContrast: contrast }),
 
       globalShadow: 'none',
       setGlobalShadow: (shadow: ControlShadow) => set({ globalShadow: shadow }),
 
       globalControlVariant: 'standard',
-      setGlobalControlVariant: (variant: ControlVariant) => set({ globalControlVariant: variant }),
+      setGlobalControlVariant: (variant: ControlVariant) =>
+        set({ globalControlVariant: variant }),
 
       accentColor: 'blue',
       setAccentColor: (accent: AccentColor) => set({ accentColor: accent }),
@@ -240,7 +324,8 @@ export const useAppStore = create<AppStoreState>()(
       setRadiusPreset: (preset: RadiusPreset) => set({ radiusPreset: preset }),
 
       globalControlSize: 'md',
-      setGlobalControlSize: (size: ControlSizeKey) => set({ globalControlSize: size }),
+      setGlobalControlSize: (size: ControlSizeKey) =>
+        set({ globalControlSize: size }),
 
       fontScale: 'standard',
       setFontScale: (scale: FontScale) => set({ fontScale: scale }),
@@ -289,15 +374,19 @@ export const useAppStore = create<AppStoreState>()(
       logout: () => set({ user: null }),
 
       counter: 0,
-      increment: () => set((state) => ({ counter: state.counter + 1 })),
-      decrement: () => set((state) => ({ counter: Math.max(0, state.counter - 1) })),
+      increment: () => set(state => ({ counter: state.counter + 1 })),
+      decrement: () =>
+        set(state => ({ counter: Math.max(0, state.counter - 1) })),
       reset: () => set({ counter: 0 }),
 
       securityConfig: DEFAULT_SECURITY_CONFIG,
-      setSecurityConfig: (config: SecurityConfig) => set({ securityConfig: config }),
-      resetSecurityConfig: () => set({ securityConfig: DEFAULT_SECURITY_CONFIG }),
+      setSecurityConfig: (config: SecurityConfig) =>
+        set({ securityConfig: config }),
+      resetSecurityConfig: () =>
+        set({ securityConfig: DEFAULT_SECURITY_CONFIG }),
       latestCryptoPacket: null,
-      setLatestCryptoPacket: (pkt: CryptoPacket | null) => set({ latestCryptoPacket: pkt }),
+      setLatestCryptoPacket: (pkt: CryptoPacket | null) =>
+        set({ latestCryptoPacket: pkt }),
     }),
     {
       name: '@app/unified_store',
@@ -325,26 +414,39 @@ export const useAppStore = create<AppStoreState>()(
             ? (persisted as Partial<AppStoreState>)
             : {};
         const profile = studentEditSchema.safeParse(saved.studentProfile);
+        let data = current.studyData;
+        let failed =
+          saved.studyHydrationFailed === true ||
+          (saved.studentProfile !== undefined && !profile.success);
+        if (saved.studyData !== undefined) {
+          try {
+            data = parseStudyData(saved.studyData);
+          } catch {
+            failed = true;
+          }
+        }
         const completion = Object.fromEntries(
           Object.entries(saved.assignmentCompletion ?? {}).filter(
             ([id, value]) =>
-              ASSIGNMENTS.some(item => item.id === id) &&
+              data.assignments.some(item => item.id === id) &&
               typeof value === 'boolean',
           ),
         );
         return {
           ...current,
           ...saved,
+          studyData: data,
           studentProfile: profile.success
             ? { ...STUDENT, ...profile.data }
             : current.studentProfile,
           assignmentCompletion: completion,
           studyHydrated: true,
-          studyHydrationFailed: saved.studyHydrationFailed === true,
+          studyHydrationFailed: failed,
         };
       },
-      partialize: (state) => ({
+      partialize: state => ({
         studentProfile: state.studentProfile,
+        studyData: state.studyData,
         assignmentCompletion: state.assignmentCompletion,
         themeMode: state.themeMode,
         themeStyle: state.themeStyle,
@@ -371,11 +473,41 @@ export const useAppStore = create<AppStoreState>()(
         counter: state.counter,
         securityConfig: state.securityConfig,
       }),
-      onRehydrateStorage: () => (state) => {
+      onRehydrateStorage: () => state => {
         if (state?.language) {
           changeLanguage(state.language);
         }
       },
-    }
-  )
+    },
+  ),
 );
+// Serialize domain writes so a failed async save cannot roll back a later edit.
+let studyWrites: Promise<void> = Promise.resolve();
+function commitStudyMutation(
+  change: (state: AppStoreState) => Partial<AppStoreState>,
+  recovery = false,
+): Promise<void> {
+  const next = studyWrites.then(async () => {
+    const state = useAppStore.getState();
+    if (!recovery && (!state.studyHydrated || state.studyHydrationFailed))
+      throw new Error('Storage is not ready');
+    const before = {
+      studentProfile: state.studentProfile,
+      studyData: state.studyData,
+      assignmentCompletion: state.assignmentCompletion,
+      studyHydrated: state.studyHydrated,
+      studyHydrationFailed: state.studyHydrationFailed,
+    };
+    const patch = change(state);
+    try {
+      await useAppStore.setState(patch);
+    } catch (error) {
+      await Promise.resolve(useAppStore.setState(before)).catch(
+        () => undefined,
+      );
+      throw error;
+    }
+  });
+  studyWrites = next.catch(() => undefined);
+  return next;
+}

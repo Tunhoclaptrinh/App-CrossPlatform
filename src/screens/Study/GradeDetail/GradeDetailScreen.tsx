@@ -9,33 +9,62 @@ import {
   EmptyState,
 } from '@/components';
 import { StudyPage } from '@/components/common/StudyPage';
-import { GRADES, findCourse } from '@/data/study';
+
 import { gradeTotal } from '@/utils/study';
 import type { StudyDetailProps } from '@/navigation/types';
+import { EntityActions } from '../components/EntityActions';
+import { useAppStore } from '@/hooks/useAppStore';
 import { useStudyStyles } from './styles';
 export function GradeDetailScreen({
   navigation,
   route,
 }: StudyDetailProps<'GradeDetail'>) {
+  const { grades: courseGrades, courses: allCourses } = useAppStore(
+    s => s.studyData,
+  );
+  const findCourse = (id: string) =>
+    allCourses.find(course => course.id === id);
   const { t } = useTranslation();
   const { styles } = useStudyStyles();
-  const grade = GRADES.find(g => g.id === route.params.gradeId);
-  const course = findCourse(grade?.courseId ?? '');
+  const grade = courseGrades.find(g => g.id === route.params.gradeId);
+  const course = findCourse(
+    grade?.courseId ??
+      (route.params.gradeId.startsWith('grade-')
+        ? route.params.gradeId.slice(6)
+        : ''),
+  );
   const total = grade ? gradeTotal(grade) : null;
   return (
     <StudyPage
       title={t('study.gradeDetail')}
+      onEdit={() =>
+        navigation.navigate('StudyEditor', {
+          kind: 'grade',
+          ...(grade ? { id: grade.id } : { courseId: course?.id }),
+        })
+      }
       onBack={navigation.goBack}
       scrollable
     >
-      {!grade || !course ? (
+      {!course ? (
         <EmptyState
           title={t('study.notFound')}
           description={t('study.notFoundBody')}
         />
+      ) : !grade ? (
+        <EmptyState
+          title={t('study.noGrades')}
+          actionText={t('study.addGrades')}
+          onActionPress={() =>
+            navigation.navigate('StudyEditor', {
+              kind: 'grade',
+              courseId: course.id,
+            })
+          }
+        />
       ) : (
         <>
-          <View style={styles.hero}>
+          <AppCard style={styles.hero}>
             <AppText style={styles.heroCaption}>
               {course.code} · {course.semester}
             </AppText>
@@ -43,7 +72,7 @@ export function GradeDetailScreen({
             <AppText style={styles.heroText}>
               {t('study.credits', { count: course.credits })}
             </AppText>
-          </View>
+          </AppCard>
           <AppCard>
             <AppText style={styles.note}>{t('study.totalScore')}</AppText>
             <AppText style={styles.score}>
@@ -57,11 +86,11 @@ export function GradeDetailScreen({
             />
           </AppCard>
           <AppCard>
-            {grade.components.map(part => (
-              <View key={part.name} style={styles.metaRow}>
+            {grade.components.map((part, index) => (
+              <View key={`${index}-${part.name}`} style={styles.metaRow}>
                 <View style={styles.row}>
                   <AppText variant="subtitle">
-                    {t(`study.${part.name}`)}
+                    {t(`study.${part.name}`, { defaultValue: part.name })}
                   </AppText>
                   <AppText variant="subtitle">
                     {part.score === null ? '—' : part.score.toFixed(1)}
@@ -74,7 +103,7 @@ export function GradeDetailScreen({
             ))}
           </AppCard>
           <AppText style={styles.note}>{t('study.gradeFormula')}</AppText>
-          <AppText style={styles.note}>{t('study.sampleNote')}</AppText>
+          <AppText style={styles.note}>{t('study.personalGradeNote')}</AppText>
           <AppButton
             title={t('study.courseDetail')}
             variant="tonal"
@@ -82,6 +111,7 @@ export function GradeDetailScreen({
               navigation.navigate('CourseDetail', { courseId: course.id })
             }
           />
+          <EntityActions kind="grade" id={route.params.gradeId} />
         </>
       )}
     </StudyPage>

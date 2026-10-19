@@ -1,19 +1,21 @@
 import { StyleSheet } from 'react-native';
-import { Colors, Spacing, Typography } from '@/constants';
-export const createTabStyles = (isDark: boolean) =>
+import { Spacing } from '@/constants';
+import { getNavHeight } from '@/components/common/AppBottomNav/styles';
+import type { BottomNavSize } from '@/components/common/AppBottomNav/types';
+export const navigationStyles = StyleSheet.create({
+  frame: { flex: 1 },
+  scene: { backgroundColor: 'transparent' },
+});
+export const createTabBarStyles = (
+  size: BottomNavSize,
+  floating: boolean,
+  bottom: number,
+) =>
   StyleSheet.create({
-    bar: {
-      backgroundColor: isDark ? Colors.dark.card : Colors.light.card,
-      borderTopColor: isDark
-        ? Colors.dark.borderStrong
-        : Colors.light.borderStrong,
+    space: {
+      height:
+        getNavHeight(size, floating) +
+        (floating ? Math.max(bottom, Spacing.md) : bottom),
+      backgroundColor: 'transparent',
     },
-    label: {
-      ...Typography.overline,
-      textTransform: 'none',
-      letterSpacing: 0,
-      fontWeight: '600',
-      paddingBottom: Spacing.xs,
-    },
-    item: { paddingTop: Spacing.xs },
   });

@@ -1,8 +1,9 @@
 import React from 'react';
 import { View } from 'react-native';
-import { BookOpen, CheckCheck } from 'lucide-react-native';
+import { CheckCheck } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import {
+  AppCard,
   AppText,
   AppBadge,
   AppButton,
@@ -13,7 +14,7 @@ import { StudyPage } from '@/components/common/StudyPage';
 import { StudyCourseCard } from '@/components/common/StudyCourseCard';
 import { StudyAssignmentCard } from '@/components/common/StudyAssignmentCard';
 import { StudySessionCard } from '@/components/common/StudySessionCard';
-import { ASSIGNMENTS, COURSES, SESSIONS, STUDY_TERM } from '@/data/study';
+
 import { useAppStore } from '@/hooks/useAppStore';
 import { useStudyClock } from '@/hooks/useStudyClock';
 import {
@@ -28,34 +29,46 @@ import type { StudyTabProps } from '@/navigation/types';
 import { useStudyStyles } from './styles';
 
 export function OverviewScreen({ navigation }: StudyTabProps<'Overview'>) {
+  const {
+    assignments: allAssignments,
+    courses: allCourses,
+    sessions: allSessions,
+    term,
+  } = useAppStore(s => s.studyData);
   const { t, i18n } = useTranslation();
   const { styles, theme } = useStudyStyles();
   const student = useAppStore(s => s.studentProfile);
   const completion = useAppStore(s => s.assignmentCompletion);
   const now = useStudyClock();
   const date = new Date(now);
-  const active = COURSES.filter(c => c.active);
-  const done = ASSIGNMENTS.filter(item => isCompleted(item, completion)).length;
-  const pending = selectAssignments(ASSIGNMENTS, completion, 'pending');
+  const active = allCourses.filter(c => c.active);
+  const done = allAssignments.filter(item =>
+    isCompleted(item, completion),
+  ).length;
+  const pending = selectAssignments(allAssignments, completion, 'pending');
   const upcoming = pending.filter(
     item =>
       Date.parse(item.dueAt) >= now &&
       Date.parse(item.dueAt) <= now + 7 * 86400000,
   );
   const overdue = pending.filter(item => isOverdue(item, completion, now));
-  const todaySessions = isTermDate(date)
-    ? SESSIONS.filter(s => s.weekday === (date.getDay() + 6) % 7).sort((a, b) =>
-        a.startTime.localeCompare(b.startTime),
-      )
+  const todaySessions = isTermDate(date, term)
+    ? allSessions
+        .filter(
+          s =>
+            allCourses.some(
+              course => course.id === s.courseId && course.active,
+            ) && s.weekday === (date.getDay() + 6) % 7,
+        )
+        .sort((a, b) => a.startTime.localeCompare(b.startTime))
     : [];
   return (
     <StudyPage
       title={t('study.appName')}
       subtitle={t('study.tagline')}
       scrollable
-      action={<BookOpen size={26} color={theme.primary} />}
     >
-      <View style={styles.hero}>
+      <AppCard style={styles.hero}>
         <View>
           <AppText style={styles.heroText}>{t('study.hello')}</AppText>
           <AppText style={styles.heroName}>{student.fullName}</AppText>
@@ -63,16 +76,26 @@ export function OverviewScreen({ navigation }: StudyTabProps<'Overview'>) {
             {t('study.studentId')}: {student.studentId} · {student.className}
           </AppText>
         </View>
-        <AppText style={styles.heroCaption}>{STUDY_TERM.label}</AppText>
+        <AppText style={styles.heroCaption}>{term.label}</AppText>
         <AppProgressBar
-          progress={done / ASSIGNMENTS.length}
+          progress={allAssignments.length ? done / allAssignments.length : 0}
           color={theme.success}
           animated={false}
         />
         <AppText style={styles.heroCaption}>
-          {t('study.progressLabel', { done, total: ASSIGNMENTS.length })}
+          {t('study.progressLabel', { done, total: allAssignments.length })}
         </AppText>
-      </View>
+      </AppCard>
+      {!allCourses.length && (
+        <EmptyState
+          title={t('study.welcomeEmpty')}
+          description={t('study.welcomeEmptyBody')}
+          actionText={t('study.addCourse')}
+          onActionPress={() =>
+            navigation.navigate('StudyEditor', { kind: 'course' })
+          }
+        />
+      )}
       <View style={styles.stats}>
         <View style={styles.stat}>
           <AppText style={styles.statValue}>{active.length}</AppText>

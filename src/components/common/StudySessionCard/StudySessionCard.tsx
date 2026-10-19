@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Pressable, View } from 'react-native';
 import { MapPin, ChevronRight } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { findCourse } from '@/data/study';
+import { useAppStore } from '@/hooks/useAppStore';
 import { useThemeMode } from '@/hooks/useThemeMode';
 import { AppCard } from '../AppCard';
 import { AppText } from '../AppText';
@@ -14,7 +14,11 @@ export const StudySessionCard = React.memo(
     const { t } = useTranslation();
     const { theme } = useThemeMode();
     const styles = useMemo(() => createStyles(theme), [theme]);
-    const name = findCourse(session.courseId)?.name ?? '';
+    const name = useAppStore(
+      s =>
+        s.studyData.courses.find(item => item.id === session.courseId)?.name ??
+        '',
+    );
     return (
       <Pressable
         onPress={onPress}

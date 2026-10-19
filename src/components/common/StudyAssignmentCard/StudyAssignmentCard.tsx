@@ -4,7 +4,6 @@ import { CalendarClock, Check, RotateCcw } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { useThemeMode } from '@/hooks/useThemeMode';
 import { useAppStore } from '@/hooks/useAppStore';
-import { findCourse } from '@/data/study';
 import { isCompleted, isOverdue, formatStudyDate } from '@/utils/study';
 import { AppCard } from '../AppCard';
 import { AppText } from '../AppText';
@@ -15,6 +14,9 @@ import type { StudyAssignmentCardProps } from './types';
 import { styles } from './styles';
 export const StudyAssignmentCard = React.memo(
   ({ assignment, now, onPress, editable }: StudyAssignmentCardProps) => {
+    const course = useAppStore(s =>
+      s.studyData.courses.find(item => item.id === assignment.courseId),
+    );
     const { t, i18n } = useTranslation();
     const { theme } = useThemeMode();
     const completion = useAppStore(s => s.assignmentCompletion);
@@ -45,11 +47,7 @@ export const StudyAssignmentCard = React.memo(
           style={styles.body}
         >
           <View style={styles.row}>
-            <AppBadge
-              size="sm"
-              label={findCourse(assignment.courseId)?.code ?? ''}
-              variant="neutral"
-            />
+            <AppBadge size="sm" label={course?.code ?? ''} variant="neutral" />
             <AppBadge
               size="sm"
               label={t(
@@ -64,7 +62,7 @@ export const StudyAssignmentCard = React.memo(
           </View>
           <AppText style={styles.title}>{assignment.title}</AppText>
           <AppText variant="caption" color={theme.textSecondary}>
-            {findCourse(assignment.courseId)?.name}
+            {course?.name}
           </AppText>
           <View style={styles.row}>
             <CalendarClock

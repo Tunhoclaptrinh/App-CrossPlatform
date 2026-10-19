@@ -1,6 +1,6 @@
 # StudyFlow — Bài thực hành 3
 
-Ứng dụng quản lý học tập offline, xây dựng trên Universal React Native Base. Dữ liệu mẫu gồm 1 sinh viên, 5 môn đang học + 2 môn đã học, 8 buổi học lặp theo tuần và 10 bài tập. Lịch và hạn nộp thuộc học kỳ 1 năm 2026–2027; không tự dời hạn mỗi lần mở ứng dụng.
+Ứng dụng quản lý học tập cá nhân trên một thiết bị, dùng offline. Dữ liệu khởi tạo gồm 1 sinh viên, 5 môn đang học + 2 môn đã học, 8 buổi học hằng tuần và 10 bài tập. Có thể thay toàn bộ dữ liệu mẫu bằng dữ liệu cá nhân; không cần tài khoản hoặc máy chủ.
 
 ## Chạy ứng dụng
 
@@ -9,45 +9,69 @@ npm ci
 npm start
 # Terminal khác, đã bật máy ảo Android:
 npm run android:fast
+# Với điện thoại Android arm64:
+npm run android:device
 ```
 
-Có thể dùng `pnpm install --frozen-lockfile` thay cho `npm ci`. Cả hai lockfile đã được đồng bộ. Bottom Tabs ghim ở `7.19.0`, dùng `@react-navigation/elements` `2.9.43` để tương thích `@react-navigation/native` `7.4.1` hiện có. Ràng buộc này được ghi trong `package.json` và `pnpm-workspace.yaml`; không nâng cấp các thư viện nền khác.
+Có thể dùng `pnpm install --frozen-lockfile` thay `npm ci`; hai lockfile được đồng bộ. Build lại native sau khi cài dependency để liên kết bộ chọn ngày/giờ. Bottom Tabs 7.19.0 dùng elements 2.9.43 qua overrides npm/pnpm, giữ native 7.4.1 của base.
 
 ## Đối chiếu đề bài
 
 | Yêu cầu | Thực hiện |
 | --- | --- |
-| Trang chủ | Tên, mã sinh viên; môn đang học; bài chưa hoàn thành sắp đến hạn trong 7 ngày; bài quá hạn và lịch hôm nay. |
-| Môn học | `FlatList`, mã môn/tên/tín chỉ, tìm tên có dấu/không dấu hoặc mã, lọc môn đang học/tất cả, chi tiết môn. |
-| Thời khóa biểu | Chuyển tuần; xem cả tuần hoặc chọn ngày; giờ học/phòng/môn; chi tiết buổi học theo ngày đã chọn. |
-| Bài tập | `FlatList`, lọc trạng thái và môn; hạn nộp, quá hạn, nội dung; đổi trạng thái từ danh sách hoặc chi tiết. Mặc định xem bài chưa hoàn thành. |
-| Cá nhân và kết quả | Hồ sơ sinh viên; sửa họ tên/email/điện thoại, validation và hủy bản nháp; bảng điểm, điểm trung bình và chi tiết điểm thành phần. |
-| Điều hướng | 5 Bottom Tabs thật; 4 màn hình chi tiết trên Native Stack. Back giữ nguyên tab/bộ lọc. Route chỉ truyền ID và ngày học khi cần. |
-| State và lưu trữ | `useState` cho form/bộ lọc, `useEffect` đồng bộ hồ sơ và làm mới thời gian; state dùng chung trong `useAppStore`, persist bằng AsyncStorage. |
-| Giao diện | Dùng UI sẵn có, `ScreenWrapper`, design tokens, styles riêng, sáng/tối, tiếng Việt/Anh, trạng thái rỗng và ID không hợp lệ. |
+| Tổng quan | Tên/mã sinh viên; môn đang học, tín chỉ, tiến độ; bài chưa hoàn thành đến hạn trong 7 ngày; bài quá hạn và lịch hôm nay. |
+| Môn học | FlatList, mã/tên/tín chỉ; tìm tên có dấu/không dấu hoặc mã; lọc đang học/tất cả; mở chi tiết. |
+| Thời khóa biểu | Chuyển tuần, xem cả tuần hoặc chọn ngày; môn/giờ/phòng; mở chi tiết theo ngày đã chọn; chỉnh giới hạn học kỳ. |
+| Bài tập | FlatList, môn/hạn/trạng thái; lọc theo môn và trạng thái, sắp xếp theo hạn; cập nhật từ danh sách hoặc chi tiết. |
+| Cá nhân và kết quả | Hồ sơ đầy đủ, chỉnh họ tên/email/điện thoại và cả mã sinh viên/lớp/ngành; bảng điểm và chi tiết điểm thành phần. |
+| Điều hướng | 5 Bottom Tabs thật kết hợp Native Stack; 4 chi tiết nhận ID; Back giữ tab và bộ lọc. Editor và công cụ dữ liệu cũng dùng Stack. |
+| Kỹ thuật | useState cho draft/bộ lọc, useEffect cho đồng bộ hồ sơ/đồng hồ; Zustand + AsyncStorage chung của base; thư mục screens/components/data/types/utils riêng. |
+| Dùng cá nhân | Thêm/sửa/xóa môn, lịch, bài tập; sửa/xóa giá trị điểm, tùy chỉnh công thức; chỉnh học kỳ/hồ sơ; workspace trống và sao lưu/khôi phục offline. |
+| Giao diện | Component base, ScreenWrapper, styles riêng và design tokens; nền mesh, Theme Studio, sáng/tối, nhãn Việt/Anh, trạng thái rỗng/lỗi dữ liệu. |
 
-## Dữ liệu và cách tính
+## Tận dụng giao diện base
 
-- Dữ liệu gốc: `src/data/study/index.ts`; model: `src/types/study.ts`.
-- Hồ sơ và các trạng thái bài tập ghi đè được lưu trong khóa store sẵn có `@app/unified_store`. Không dùng store học tập riêng.
-- Store cũ chưa có dữ liệu học tập được bổ sung mặc định khi hydrate. Chỉ họ tên/email/điện thoại được phép chỉnh sửa; mã sinh viên/lớp/ngành giữ theo dữ liệu mẫu.
-- Nếu đọc storage lỗi, giao diện cho phép thử lại trước khi chỉnh sửa, giữ nguyên dữ liệu chưa đọc được. Nếu ghi thất bại, hoàn tác thay đổi trong bộ nhớ và báo lỗi; không báo lưu thành công.
-- Lịch lặp theo tuần từ 07/09 đến 27/12/2026. Ngoài kỳ này hiển thị trạng thái không có lịch. Ngày học trên route được kiểm tra theo thứ và giới hạn học kỳ.
-- Hạn bài tập có offset `+07:00`; hiển thị theo múi giờ thiết bị. Thời gian hiện tại được cập nhật mỗi phút và khi app trở lại foreground.
-- Điểm hệ 10: chuyên cần 10%, giữa kỳ 30%, cuối kỳ 60%. Chỉ có điểm tổng kết khi đủ các thành phần. Trung bình có trọng số tín chỉ, chỉ tính môn đã có tổng kết; không quy đổi GPA hệ 4.
-- Tên môn, giảng viên và nội dung bài tập là dữ liệu mẫu tiếng Việt; nhãn giao diện có bản dịch Việt/Anh. Đây không phải bảng điểm chính thức hay tích hợp cổng sinh viên.
+- Thanh dưới dùng chính `AppBottomNav`; `StudyTabBar` chỉ nối route, trạng thái chọn và sự kiện tabPress/tabLongPress của React Navigation. Safe area được tính theo kích thước control; thanh tab ẩn khi bàn phím mở.
+- Thanh trên dùng `AppHeader`, nhận cấu hình kiểu header, back/action, căn tiêu đề, kích thước, màu và bo góc từ store base. Nút bảng màu mở `ThemeStudioModal` hiện có.
+- `AppNavigator` đặt một `AppleMeshBackground` phía sau toàn bộ luồng. `StudyPage` ghép ScreenWrapper và AppScrollView, không phủ nền đặc lên mesh. Thẻ, biểu mẫu và hộp thoại dùng AppCard/AppInput/AppSelect/AppSwitch/AppDateTimeInput/ConfirmDialog.
+- Giữ tùy chọn sáng/tối/hệ thống, Glass/Flat, nền mesh, màu nhấn, bo góc, kích thước control/chữ, header, haptics và giảm chuyển động. Không tạo bộ theme hoặc bộ cài đặt riêng cho nghiệp vụ.
+- Component mới dùng chung duy nhất trong đợt này là `AppDateTimeInput`: chọn ngày/giờ native, ghép nút và sheet của base. Hủy không đổi giá trị; đổi ngày giữ giờ, đổi giờ giữ ngày.
 
-## Kịch bản demo
+## Bắt đầu dùng cá nhân
 
-1. Mở Tổng quan, kiểm tra sinh viên, 5 môn/14 tín chỉ và bài sắp đến hạn/quá hạn.
-2. Vào Môn học, tìm `co so du lieu`, mở môn kết quả rồi Back; thử từ khóa không tồn tại và xóa bộ lọc.
-3. Vào Thời khóa biểu, xem cả tuần, chọn một ngày và mở chi tiết buổi học; chuyển tuần hoặc chọn Chủ nhật để xem trạng thái trống.
-4. Vào Bài tập, lọc theo môn/trạng thái, mở chi tiết, đánh dấu hoàn thành rồi quay lại. Kiểm tra tiến độ ở Tổng quan thay đổi; chuyển ngược trạng thái khi cần.
-5. Vào Cá nhân, chỉnh email sai để thấy validation, sửa dữ liệu hợp lệ rồi lưu. Thử hủy bản nháp có thay đổi.
-6. Mở chi tiết kết quả của môn đã học và môn đang học để xem đủ điểm/chưa đủ điểm. Thử chế độ tối và đổi ngôn ngữ.
-7. Đóng hẳn app rồi mở lại, kiểm tra hồ sơ và trạng thái bài tập vẫn được giữ.
+1. Mở **Cá nhân → Chỉnh sửa**, điền hồ sơ của mình. Email/điện thoại có thể để trống; nếu nhập phải đúng định dạng.
+2. Mở **Cá nhân → Dữ liệu & sao lưu**. Nếu muốn giữ dữ liệu cũ, tạo bản sao lưu trước. Chọn **Bắt đầu với dữ liệu trống** và xác nhận; thao tác giữ hồ sơ, học kỳ và giao diện.
+3. Chỉnh học kỳ: nhãn, ngày bắt đầu/kết thúc. Chỉ lịch của môn đang học xuất hiện trong khoảng này. Khi đổi học kỳ, nhãn các môn đang học được cập nhật; môn đã học giữ nhãn cũ.
+4. Vào **Môn học**, nhấn **+** để thêm môn. Mã không trùng, tín chỉ nguyên từ 1–30. Môn đang học dùng nhãn học kỳ hiện tại; môn lưu trữ cho phép nhập nhãn riêng. Tắt “Đang học” để lưu môn cũ mà vẫn giữ điểm/bài tập/lịch tham khảo.
+5. Mở chi tiết môn để thêm lịch hoặc bài tập đã chọn sẵn môn; có thể dùng **+** tại các tab tương ứng. Lịch lặp theo tuần, giờ kết thúc phải sau giờ bắt đầu, không trùng với lịch môn đang học khác. Hai buổi tiếp giáp được phép.
+6. Trong **Cá nhân → Kết quả**, mở môn và nhấn sửa để nhập điểm. Thêm/bớt thành phần, đặt tên và trọng số; tổng phải bằng 100%. Có thể dùng phần trăm lẻ, dấu chấm hoặc dấu phẩy. Xóa điểm chỉ xóa giá trị, giữ công thức.
+7. Dùng nút sửa trong chi tiết để cập nhật; xóa luôn có xác nhận. Xóa môn sẽ xóa cả lịch/bài tập/điểm của môn đó. Editor hỏi trước khi bỏ bản nháp chưa lưu.
 
-## Kiểm thử
+## Sao lưu và khôi phục
+
+**Tạo:** Cá nhân → Dữ liệu & sao lưu → Tạo bản sao lưu → Chia sẻ bản sao lưu. App mở menu chia sẻ native với nội dung JSON; chọn ứng dụng nhận để lưu văn bản. Bản sao lưu chứa hồ sơ, học kỳ, môn, lịch, bài tập với trạng thái hoàn thành hiện tại và toàn bộ công thức/điểm.
+
+**Khôi phục:** mở nội dung JSON đã lưu, sao chép rồi vào Khôi phục bản sao lưu và dán vào ô nội dung. Nhấn Xem trước để kiểm tra tên/ngày tạo/số bản ghi, sau đó xác nhận thay thế toàn bộ dữ liệu học tập. Cấu hình giao diện/ngôn ngữ trên máy được giữ. Nội dung sai định dạng, phiên bản không hỗ trợ, ID/quan hệ sai hoặc lịch xung đột sẽ bị từ chối.
+
+Đây là sao lưu **văn bản JSON qua chia sẻ và dán**, chưa có bộ chọn tệp hoặc đồng bộ đám mây. Bản sao lưu chứa thông tin cá nhân, cần chọn nơi nhận phù hợp. “Nạp dữ liệu mẫu” và “Bắt đầu với dữ liệu trống” cũng cần xác nhận vì thay toàn bộ dữ liệu học tập.
+
+## Quy tắc dữ liệu và lưu trữ
+
+- `src/data/study/` chỉ chứa seed. `studyData`, `studentProfile`, `assignmentCompletion` nằm chung tại khóa `@app/unified_store`. Workspace trống vẫn trống sau khi khởi động lại; store cũ chưa có studyData được bổ sung seed một lần khi đọc.
+- Mọi sửa dữ liệu chờ ghi AsyncStorage; các thao tác được xếp hàng. Nếu ghi lỗi, hoàn tác phần học tập và báo lỗi. Nếu đọc hoặc kiểm tra dữ liệu lỗi, chặn sửa và cho thử lại/khôi phục backup, không ghi đè dữ liệu chưa đọc được.
+- Điểm hệ 10, mặc định chuyên cần 10%, giữa kỳ 30%, cuối kỳ 60%; có thể đổi theo môn. Chưa nhập khác điểm 0. Chỉ có tổng kết khi đủ các thành phần trọng số dương. Trung bình có trọng số tín chỉ, chỉ tính môn đã có tổng kết; không tự quy đổi GPA hệ 4.
+- Hạn nộp lưu bằng timestamp có timezone, hiển thị theo múi giờ máy. Đồng hồ UI cập nhật mỗi phút và khi foreground. Lịch dùng thứ/giờ địa phương. Ngày trên route được kiểm tra theo thứ và học kỳ.
+- Seed có ngày cố định 07/09–27/12/2026; hạn bài tập không tự dời khi mở app. Ngoài học kỳ không hiện lịch; quá hạn vẫn được nhận diện đúng. Người dùng có thể chỉnh dữ liệu để tiếp tục dùng sau học kỳ mẫu.
+- UI Việt/Anh; nội dung do người dùng nhập giữ nguyên ngôn ngữ. Điểm do cá nhân nhập, không tích hợp bảng điểm/cổng sinh viên của trường.
+
+## Demo và kiểm thử
+
+1. Chuyển đủ 5 tab; tìm `co so du lieu`, mở môn và Back, thử từ khóa không có kết quả.
+2. Xem lịch tuần/ngày, mở chi tiết; xem tuần ngoài học kỳ và ngày không có lịch.
+3. Lọc bài tập theo môn/trạng thái, cập nhật hoàn thành, kiểm tra Tổng quan đồng bộ. Force-stop/mở lại để xác nhận persistence.
+4. Thêm một môn, lịch/bài tập liên quan và điểm 0; thử mã trùng, lịch trùng, trọng số chưa đủ 100%. Sửa rồi lưu, hoặc quay lại và chọn bỏ bản nháp.
+5. Mở Theme Studio từ header, đổi sáng/tối, Glass/Flat, mesh, màu/bo góc/header và kiểm tra các tab cùng thay đổi.
+6. Tạo backup, thử nội dung sai, khôi phục nội dung hợp lệ sau khi xem trước/xác nhận. Kiểm tra dữ liệu trở lại và giao diện được giữ.
 
 ```bash
 npm run lint
@@ -55,8 +79,17 @@ npx tsc --noEmit
 npm test -- --runInBand
 ```
 
-Bộ test bổ sung kiểm tra quan hệ dữ liệu, tìm kiếm tiếng Việt, bộ lọc/thứ tự hạn, điểm và tín chỉ, ngày trong học kỳ, validation, persistence/khôi phục store cũ, hoàn tác khi ghi lỗi, bảo vệ storage không đọc được, các thao tác màn hình và điều hướng thật Bottom Tabs + Native Stack. Kiểm chứng native và giới hạn phát hành được ghi tại `docs/practice-03-verification.md`.
+Bộ test bao gồm nghiệp vụ, persistence/lỗi đọc ghi, React Navigation thật, editor liên kết, bảo vệ bản nháp, backup và việc tái sử dụng UI/mesh của base. Kết quả native/build và giới hạn phát hành: [kiểm chứng](practice-03-verification.md).
 
-## Tách commit
+## Tách thay đổi base
 
-Các sửa lỗi base nằm riêng trên nhánh `fix/base-runtime-and-tests`: commit `427e87c` sửa Jest/pnpm và export test cũ; commit `93bc8ae` bỏ API bật LayoutAnimation đã thành no-op trên New Architecture. Có thể merge nhánh này hoặc cherry-pick hai commit về `main` độc lập. Commit tính năng StudyFlow được tạo sau đó; không đưa các tài liệu EveSense/idea sẵn có vào commit bài thực hành.
+Nhánh `fix/base-runtime-and-tests` dùng độc lập với bài thực hành:
+
+| Commit trên nhánh base | Thay đổi |
+| --- | --- |
+| `427e87c` | Sửa Jest transform cho pnpm và test export cũ. |
+| `93bc8ae` | Bỏ API LayoutAnimation no-op gây cảnh báo che tab trên New Architecture. |
+| `8ae3e5a` | AppDateTimeInput, multiline AppInput, long press/haptics/reduced motion AppBottomNav và kích thước AppHeader. |
+| `7342866` | Đồng bộ NavigationContainer với theme hiện có, giữ nền kính trong suốt. |
+
+Có thể checkout/merge nhánh base vào `main` riêng. Các cải tiến tương đương đã có trong nhánh bài tập ở commit `ff21d5f`, `fbb2d62`; phần nghiệp vụ StudyFlow ở commit khác. Không đưa tài liệu EveSense/idea sẵn có vào commit.

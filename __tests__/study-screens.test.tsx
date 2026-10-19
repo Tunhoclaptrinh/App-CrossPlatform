@@ -1,10 +1,27 @@
+import { AppHeader } from '@/components/common/AppHeader';
+import { AppBottomNav } from '@/components/common/AppBottomNav';
+import { AppleMeshBackground } from '@/components/common/AppleMeshBackground';
+import { seedStudyData, parseStudyBackup } from '@/utils/studyData';
+import { gradeTotal } from '@/utils/study';
 import React from 'react';
-import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
+import {
+  NavigationContainer,
+  createNavigationContainerRef,
+} from '@react-navigation/native';
 import { AppNavigator } from '@/navigation/AppNavigator';
 import type { RootStackParamList } from '@/navigation/types';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import TestRenderer, { act } from 'react-test-renderer';
-import { AppButton, AppInput, AppSearchBar, EmptyState } from '@/components';
+import {
+  AppButton,
+  AppInput,
+  AppSearchBar,
+  EmptyState,
+  AppDateTimeInput,
+  AppSelect,
+  AppListItem,
+  ConfirmDialog,
+} from '@/components';
 import { ToastProvider } from '@/components/common/AppToast';
 import { StudyCourseCard } from '@/components/common/StudyCourseCard';
 import { CoursesScreen } from '@/screens/Study/Courses';
@@ -46,6 +63,7 @@ beforeEach(async () => {
   await i18n.changeLanguage('vi');
   await useAppStore.setState({
     studentProfile: STUDENT,
+    studyData: seedStudyData(),
     assignmentCompletion: {},
     studyHydrated: true,
     studyHydrationFailed: false,
@@ -154,17 +172,258 @@ test('invalid detail IDs and impossible session dates render an empty state safe
   expect(nodes(EmptyState)[0].props.title).toBe('Không tìm thấy dữ liệu');
 });
 
-
 test('real Bottom Tabs and Native Stack preserve the selected tab when returning from details', async () => {
   const ref = createNavigationContainerRef<RootStackParamList>();
-  await render(<NavigationContainer ref={ref} initialState={{index:0,routes:[{name:'StudyTabs'}]}}><AppNavigator /></NavigationContainer>);
+  await render(
+    <NavigationContainer
+      ref={ref}
+      initialState={{ index: 0, routes: [{ name: 'StudyTabs' }] }}
+    >
+      <AppNavigator />
+    </NavigationContainer>,
+  );
   expect(ref.getCurrentRoute()?.name).toBe('Overview');
-  for (const name of ['Courses','Timetable','Assignments','Profile'] as const) {
-    await act(async () => {ref.navigate('StudyTabs',{screen:name});});
+  for (const name of [
+    'Courses',
+    'Timetable',
+    'Assignments',
+    'Profile',
+  ] as const) {
+    await act(async () => {
+      ref.navigate('StudyTabs', { screen: name });
+    });
     expect(ref.getCurrentRoute()?.name).toBe(name);
   }
-  await act(async () => {ref.navigate('GradeDetail',{gradeId:'grade-algorithms'});});
+  await act(async () => {
+    ref.navigate('GradeDetail', { gradeId: 'grade-algorithms' });
+  });
   expect(ref.getCurrentRoute()?.name).toBe('GradeDetail');
-  await act(async () => {ref.goBack();});
+  await act(async () => {
+    ref.goBack();
+  });
   expect(ref.getCurrentRoute()?.name).toBe('Profile');
+});
+
+test('personal editors create linked data, reject overlapping classes, and save zero scores correctly', async () => {
+  const ref = createNavigationContainerRef<RootStackParamList>();
+  await render(
+    <NavigationContainer
+      ref={ref}
+      initialState={{ index: 0, routes: [{ name: 'StudyTabs' }] }}
+    >
+      <AppNavigator />
+    </NavigationContainer>,
+  );
+  const field = (label: string) =>
+    nodes(AppInput).find(
+      node =>
+        node.props.label === label || node.props.accessibilityLabel === label,
+    )!;
+  await act(async () => {
+    ref.navigate('StudyTabs', { screen: 'Courses' });
+    ref.navigate('StudyEditor', { kind: 'course' });
+  });
+  await act(async () => {
+    field('Mã môn học').props.onChangeText('SELF101');
+    field('Tên môn học').props.onChangeText('Môn học cá nhân');
+  });
+  await act(async () => {
+    await button('Lưu thay đổi').props.onPress();
+  });
+  const course = useAppStore
+    .getState()
+    .studyData.courses.find(item => item.code === 'SELF101')!;
+  expect(course).toBeDefined();
+  expect(ref.getCurrentRoute()?.name).toBe('Courses');
+  await act(async () => {
+    ref.navigate('StudyEditor', { kind: 'session', courseId: course.id });
+  });
+  await act(async () => {
+    field('Phòng học').props.onChangeText('P.101');
+    nodes(AppSelect)
+      .find(node => node.props.label === 'Ngày trong tuần')!
+      .props.onSelect(0);
+  });
+  await act(async () => {
+    await button('Lưu thay đổi').props.onPress();
+  });
+  expect(ref.getCurrentRoute()?.name).toBe('StudyEditor');
+  expect(
+    useAppStore
+      .getState()
+      .studyData.sessions.some(item => item.courseId === course.id),
+  ).toBe(false);
+  await act(async () => {
+    nodes(AppDateTimeInput)
+      .find(node => node.props.label === 'Giờ bắt đầu')!
+      .props.onChange(new Date(2026, 0, 1, 16));
+    nodes(AppDateTimeInput)
+      .find(node => node.props.label === 'Giờ kết thúc')!
+      .props.onChange(new Date(2026, 0, 1, 18));
+  });
+  await act(async () => {
+    await button('Lưu thay đổi').props.onPress();
+  });
+  expect(
+    useAppStore
+      .getState()
+      .studyData.sessions.some(item => item.courseId === course.id),
+  ).toBe(true);
+  await act(async () => {
+    ref.navigate('StudyEditor', { kind: 'assignment', courseId: course.id });
+  });
+  await act(async () =>
+    field('Tên bài tập').props.onChangeText('Bài tập của tôi'),
+  );
+  await act(async () => {
+    await button('Lưu thay đổi').props.onPress();
+  });
+  expect(
+    useAppStore
+      .getState()
+      .studyData.assignments.find(item => item.title === 'Bài tập của tôi')
+      ?.courseId,
+  ).toBe(course.id);
+  await act(async () => {
+    ref.navigate('StudyEditor', { kind: 'grade', courseId: course.id });
+  });
+  await act(async () => {
+    field('Điểm / 10 1').props.onChangeText('0');
+    field('Điểm / 10 2').props.onChangeText('8');
+    field('Điểm / 10 3').props.onChangeText('9');
+    field('Trọng số (%) 1').props.onChangeText('12,5');
+    field('Trọng số (%) 2').props.onChangeText('27.5');
+  });
+  await act(async () => {
+    await button('Lưu thay đổi').props.onPress();
+  });
+  expect(
+    gradeTotal(
+      useAppStore
+        .getState()
+        .studyData.grades.find(item => item.courseId === course.id)!,
+    ),
+  ).toBe(7.6);
+  await act(async () => {
+    ref.navigate('StudyEditor', { kind: 'grade', courseId: course.id });
+  });
+  expect(field('Trọng số (%) 1').props.value).toBe('12.5');
+  expect(field('Trọng số (%) 2').props.value).toBe('27.5');
+});
+
+test('backup UI validates, previews and confirms restoration while retaining appearance', async () => {
+  const ref = createNavigationContainerRef<RootStackParamList>();
+  await render(
+    <NavigationContainer
+      ref={ref}
+      initialState={{ index: 0, routes: [{ name: 'StudyTabs' }] }}
+    >
+      <AppNavigator />
+    </NavigationContainer>,
+  );
+  await act(async () => {
+    ref.navigate('StudyDataTools');
+  });
+  const row = (title: string) =>
+    nodes(AppListItem).find(node => node.props.title === title)!;
+  await act(async () => row('Tạo bản sao lưu').props.onPress());
+  const raw = nodes(AppInput).find(
+    node => node.props.label === 'Nội dung bản sao lưu',
+  )!.props.value;
+  expect(parseStudyBackup(raw).data.courses).toHaveLength(7);
+  await act(async () => {
+    await useAppStore.getState().resetStudyData('empty');
+  });
+  await act(async () => row('Khôi phục bản sao lưu').props.onPress());
+  await act(async () =>
+    nodes(AppInput)
+      .find(node => node.props.label === 'Nội dung bản sao lưu')!
+      .props.onChangeText(raw),
+  );
+  await act(async () => button('Kiểm tra & xem trước').props.onPress());
+  expect(useAppStore.getState().studyData.courses).toHaveLength(0);
+  await act(async () => {
+    await nodes(ConfirmDialog)
+      .find(
+        node =>
+          node.props.visible &&
+          node.props.title === 'Thay thế dữ liệu hiện tại?',
+      )!
+      .props.onConfirm();
+  });
+  expect(useAppStore.getState().studyData.courses).toHaveLength(7);
+});
+
+test('study UI reuses the base header, dock and one mesh background and follows shared theme changes', async () => {
+  await useAppStore.setState({
+    themeStyle: 'apple-glass',
+    headerVariant: 'frosted-capsule',
+    meshVariant: 'sunset',
+    reduceMotion: true,
+  });
+  const ref = createNavigationContainerRef<RootStackParamList>();
+  await render(
+    <NavigationContainer
+      ref={ref}
+      initialState={{ index: 0, routes: [{ name: 'StudyTabs' }] }}
+    >
+      <AppNavigator />
+    </NavigationContainer>,
+  );
+  expect(nodes(AppleMeshBackground)).toHaveLength(1);
+  expect(
+    nodes(AppHeader).find(node => node.props.title === 'StudyFlow')!.props
+      .variant,
+  ).toBe('frosted-capsule');
+  expect(nodes(AppBottomNav)[0].props.variant).toBe('frosted-glass');
+  await act(async () => {
+    useAppStore.getState().setThemeStyle('default');
+    useAppStore.getState().setHeaderVariant('standard');
+  });
+  expect(nodes(AppleMeshBackground)).toHaveLength(0);
+  expect(
+    nodes(AppHeader).find(node => node.props.title === 'StudyFlow')!.props
+      .variant,
+  ).toBe('standard');
+  expect(nodes(AppBottomNav)[0].props.variant).toBe('standard');
+});
+
+test('leaving an unsaved editor requires a decision; discard returns to the previous tab', async () => {
+  const ref = createNavigationContainerRef<RootStackParamList>();
+  await render(
+    <NavigationContainer
+      ref={ref}
+      initialState={{ index: 0, routes: [{ name: 'StudyTabs' }] }}
+    >
+      <AppNavigator />
+    </NavigationContainer>,
+  );
+  await act(async () => {
+    ref.navigate('StudyEditor', { kind: 'course' });
+  });
+  await act(async () => {
+    nodes(AppInput)
+      .find(node => node.props.label === 'Tên môn học')!
+      .props.onChangeText('Chưa lưu');
+  });
+  await act(async () => {
+    ref.goBack();
+  });
+  expect(ref.getCurrentRoute()?.name).toBe('StudyEditor');
+  await act(async () => {
+    nodes(ConfirmDialog)
+      .find(node => node.props.visible)!
+      .props.onCancel();
+  });
+  expect(ref.getCurrentRoute()?.name).toBe('StudyEditor');
+  await act(async () => {
+    ref.goBack();
+  });
+  await act(async () => {
+    nodes(ConfirmDialog)
+      .find(node => node.props.visible)!
+      .props.onConfirm();
+  });
+  expect(ref.getCurrentRoute()?.name).toBe('Overview');
+  expect(useAppStore.getState().studyData.courses).toHaveLength(7);
 });

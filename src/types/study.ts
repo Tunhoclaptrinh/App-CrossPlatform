@@ -7,7 +7,8 @@ export interface StudentProfile {
   phone: string;
 }
 
-export type StudentEdit = Pick<StudentProfile, 'fullName' | 'email' | 'phone'>;
+export type StudentEdit = Pick<StudentProfile, 'fullName' | 'email' | 'phone'> &
+  Partial<Pick<StudentProfile, 'studentId' | 'className' | 'major'>>;
 
 export interface Course {
   id: string;
@@ -46,3 +47,31 @@ export interface CourseGrade {
 }
 
 export type AssignmentFilter = 'all' | 'pending' | 'completed';
+
+export interface StudyTerm {
+  label: string;
+  startsOn: string;
+  endsOn: string;
+}
+export interface StudyData {
+  courses: Course[];
+  sessions: ClassSession[];
+  assignments: Assignment[];
+  grades: CourseGrade[];
+  term: StudyTerm;
+  isSample: boolean;
+}
+export type StudyEntityKind = 'course' | 'session' | 'assignment' | 'grade';
+export interface StudyEntityMap {
+  course: Course;
+  session: ClassSession;
+  assignment: Assignment;
+  grade: CourseGrade;
+}
+export interface StudyBackup {
+  format: 'studyflow-backup';
+  version: 1;
+  createdAt: string;
+  studentProfile: StudentProfile;
+  data: StudyData;
+}

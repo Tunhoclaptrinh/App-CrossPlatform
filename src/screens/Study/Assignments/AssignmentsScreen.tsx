@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { AppChip, AppSelect, EmptyState } from '@/components';
 import { StudyPage } from '@/components/common/StudyPage';
 import { StudyAssignmentCard } from '@/components/common/StudyAssignmentCard';
-import { ASSIGNMENTS, COURSES } from '@/data/study';
+
 import { useAppStore } from '@/hooks/useAppStore';
 import { useStudyClock } from '@/hooks/useStudyClock';
 import { selectAssignments } from '@/utils/study';
@@ -14,6 +14,9 @@ import { useStudyStyles } from './styles';
 export function AssignmentsScreen({
   navigation,
 }: StudyTabProps<'Assignments'>) {
+  const { assignments: allAssignments, courses: allCourses } = useAppStore(
+    s => s.studyData,
+  );
   const { t } = useTranslation();
   const { styles } = useStudyStyles();
   const completion = useAppStore(s => s.assignmentCompletion);
@@ -23,19 +26,20 @@ export function AssignmentsScreen({
   const items = useMemo(
     () =>
       selectAssignments(
-        ASSIGNMENTS,
+        allAssignments,
         completion,
         filter,
         courseId === 'all' ? undefined : courseId,
       ),
-    [completion, filter, courseId],
+    [completion, filter, courseId, allAssignments],
   );
   return (
     <StudyPage
       title={t('study.assignments')}
+      onAdd={() => navigation.navigate('StudyEditor', { kind: 'assignment' })}
       subtitle={t('study.progressLabel', {
-        done: selectAssignments(ASSIGNMENTS, completion, 'completed').length,
-        total: ASSIGNMENTS.length,
+        done: selectAssignments(allAssignments, completion, 'completed').length,
+        total: allAssignments.length,
       })}
     >
       <View style={styles.filters}>
@@ -55,7 +59,7 @@ export function AssignmentsScreen({
           onSelect={setCourseId}
           options={[
             { label: t('study.allCourses'), value: 'all' },
-            ...COURSES.filter(c => c.active).map(c => ({
+            ...allCourses.map(c => ({
               label: c.name,
               value: c.id,
             })),

@@ -11,28 +11,45 @@ import {
 import { StudyPage } from '@/components/common/StudyPage';
 import { StudyAssignmentCard } from '@/components/common/StudyAssignmentCard';
 import { StudySessionCard } from '@/components/common/StudySessionCard';
-import { ASSIGNMENTS, SESSIONS, findCourse } from '@/data/study';
+
 import { useStudyClock } from '@/hooks/useStudyClock';
 import type { StudyDetailProps } from '@/navigation/types';
+import { EntityActions } from '../components/EntityActions';
+import { useAppStore } from '@/hooks/useAppStore';
 import { useStudyStyles } from './styles';
 export function CourseDetailScreen({
   navigation,
   route,
 }: StudyDetailProps<'CourseDetail'>) {
+  const {
+    assignments: allAssignments,
+    sessions: allSessions,
+    courses: allCourses,
+  } = useAppStore(s => s.studyData);
+  const findCourse = (id: string) =>
+    allCourses.find(course => course.id === id);
   const { t } = useTranslation();
   const { styles } = useStudyStyles();
   const now = useStudyClock();
   const course = findCourse(route.params.courseId);
-  const assignments = ASSIGNMENTS.filter(
-    item => item.courseId === course?.id,
-  ).sort((a, b) => Date.parse(a.dueAt) - Date.parse(b.dueAt));
-  const sessions = SESSIONS.filter(item => item.courseId === course?.id).sort(
-    (a, b) => a.weekday - b.weekday || a.startTime.localeCompare(b.startTime),
-  );
+  const assignments = allAssignments
+    .filter(item => item.courseId === course?.id)
+    .sort((a, b) => Date.parse(a.dueAt) - Date.parse(b.dueAt));
+  const sessions = allSessions
+    .filter(item => item.courseId === course?.id)
+    .sort(
+      (a, b) => a.weekday - b.weekday || a.startTime.localeCompare(b.startTime),
+    );
   const weekdays = t('study.fullWeekdays', { returnObjects: true }) as string[];
   return (
     <StudyPage
       title={t('study.courseDetail')}
+      onEdit={() =>
+        navigation.navigate('StudyEditor', {
+          kind: 'course',
+          id: route.params.courseId,
+        })
+      }
       subtitle={course?.code}
       onBack={navigation.goBack}
       scrollable
@@ -44,7 +61,7 @@ export function CourseDetailScreen({
         />
       ) : (
         <>
-          <View style={styles.hero}>
+          <AppCard style={styles.hero}>
             <AppText style={styles.heroCaption}>
               {course.code} · {course.semester}
             </AppText>
@@ -52,7 +69,7 @@ export function CourseDetailScreen({
             <AppText style={styles.heroText}>
               {t('study.credits', { count: course.credits })}
             </AppText>
-          </View>
+          </AppCard>
           <AppCard>
             <AppText style={styles.sectionHeading}>
               {t('study.courseInfo')}
@@ -85,6 +102,16 @@ export function CourseDetailScreen({
             <AppText style={styles.sectionHeading}>
               {t('study.relatedSessions')}
             </AppText>
+            <AppButton
+              title={t('study.addSession')}
+              variant="tonal"
+              onPress={() =>
+                navigation.navigate('StudyEditor', {
+                  kind: 'session',
+                  courseId: course.id,
+                })
+              }
+            />
             {sessions.length ? (
               sessions.map(item => (
                 <StudySessionCard
@@ -106,6 +133,16 @@ export function CourseDetailScreen({
             <AppText style={styles.sectionHeading}>
               {t('study.relatedAssignments')}
             </AppText>
+            <AppButton
+              title={t('study.addAssignment')}
+              variant="tonal"
+              onPress={() =>
+                navigation.navigate('StudyEditor', {
+                  kind: 'assignment',
+                  courseId: course.id,
+                })
+              }
+            />
             {assignments.length ? (
               assignments.map(item => (
                 <StudyAssignmentCard
@@ -125,6 +162,11 @@ export function CourseDetailScreen({
               </AppText>
             )}
           </View>
+          <EntityActions
+            kind="course"
+            id={route.params.courseId}
+            onDeleted={navigation.goBack}
+          />
         </>
       )}
     </StudyPage>

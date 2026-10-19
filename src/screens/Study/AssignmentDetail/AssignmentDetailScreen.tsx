@@ -10,16 +10,22 @@ import {
 } from '@/components';
 import { useToast } from '@/components/common/AppToast';
 import { StudyPage } from '@/components/common/StudyPage';
-import { ASSIGNMENTS, findCourse } from '@/data/study';
+
 import { useAppStore } from '@/hooks/useAppStore';
 import { useStudyClock } from '@/hooks/useStudyClock';
 import { formatStudyDate, isCompleted, isOverdue } from '@/utils/study';
 import type { StudyDetailProps } from '@/navigation/types';
+import { EntityActions } from '../components/EntityActions';
 import { useStudyStyles } from './styles';
 export function AssignmentDetailScreen({
   navigation,
   route,
 }: StudyDetailProps<'AssignmentDetail'>) {
+  const { assignments: allAssignments, courses: allCourses } = useAppStore(
+    s => s.studyData,
+  );
+  const findCourse = (id: string) =>
+    allCourses.find(course => course.id === id);
   const { t, i18n } = useTranslation();
   const { styles } = useStudyStyles();
   const completion = useAppStore(s => s.assignmentCompletion);
@@ -27,7 +33,7 @@ export function AssignmentDetailScreen({
   const now = useStudyClock();
   const [saving, setSaving] = useState(false);
   const toast = useToast();
-  const item = ASSIGNMENTS.find(a => a.id === route.params.assignmentId);
+  const item = allAssignments.find(a => a.id === route.params.assignmentId);
   const course = findCourse(item?.courseId ?? '');
   const done = item ? isCompleted(item, completion) : false;
   const overdue = item ? isOverdue(item, completion, now) : false;
@@ -46,6 +52,12 @@ export function AssignmentDetailScreen({
   return (
     <StudyPage
       title={t('study.assignmentDetail')}
+      onEdit={() =>
+        navigation.navigate('StudyEditor', {
+          kind: 'assignment',
+          id: route.params.assignmentId,
+        })
+      }
       onBack={navigation.goBack}
       scrollable
     >
@@ -56,12 +68,12 @@ export function AssignmentDetailScreen({
         />
       ) : (
         <>
-          <View style={styles.hero}>
+          <AppCard style={styles.hero}>
             <AppText style={styles.heroCaption}>
               {course.code} · {course.name}
             </AppText>
             <AppText style={styles.heroName}>{item.title}</AppText>
-          </View>
+          </AppCard>
           <AppCard>
             <View style={styles.stack}>
               <AppBadge
@@ -97,6 +109,11 @@ export function AssignmentDetailScreen({
             onPress={() =>
               navigation.navigate('CourseDetail', { courseId: course.id })
             }
+          />
+          <EntityActions
+            kind="assignment"
+            id={route.params.assignmentId}
+            onDeleted={navigation.goBack}
           />
         </>
       )}

@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { ChevronRight, GraduationCap, Pencil } from 'lucide-react-native';
+import {
+  ChevronRight,
+  GraduationCap,
+  Pencil,
+  Palette,
+  Database,
+} from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import {
   AppAvatar,
@@ -9,13 +15,15 @@ import {
   AppCard,
   AppChip,
   AppInput,
-  AppSwitch,
+  AppListItem,
+  AppListGroup,
+  ThemeStudioModal,
   AppText,
   ConfirmDialog,
 } from '@/components';
 import { useToast } from '@/components/common/AppToast';
 import { StudyPage } from '@/components/common/StudyPage';
-import { COURSES, GRADES, findCourse } from '@/data/study';
+
 import { useAppStore } from '@/hooks/useAppStore';
 import { gradeAverage, gradeTotal, studentEditSchema } from '@/utils/study';
 import type { StudentEdit } from '@/types/study';
@@ -23,13 +31,18 @@ import type { StudyTabProps } from '@/navigation/types';
 import { useStudyStyles } from './styles';
 
 export function ProfileScreen({ navigation }: StudyTabProps<'Profile'>) {
+  const { courses: allCourses, grades: courseGrades } = useAppStore(
+    s => s.studyData,
+  );
+  const findCourse = (id: string) =>
+    allCourses.find(course => course.id === id);
   const { t } = useTranslation();
-  const { styles, theme, isDark } = useStudyStyles();
+  const { styles, theme } = useStudyStyles();
   const profile = useAppStore(s => s.studentProfile);
   const update = useAppStore(s => s.updateStudentProfile);
-  const setTheme = useAppStore(s => s.setThemeMode);
   const language = useAppStore(s => s.language);
   const setLanguage = useAppStore(s => s.setLanguage);
+  const [studioOpen, setStudioOpen] = useState(false);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState<StudentEdit>(profile);
   const [errors, setErrors] = useState<
@@ -39,12 +52,7 @@ export function ProfileScreen({ navigation }: StudyTabProps<'Profile'>) {
   const [confirmCancel, setConfirmCancel] = useState(false);
   const toast = useToast();
   useEffect(() => {
-    if (!editing)
-      setDraft({
-        fullName: profile.fullName,
-        email: profile.email,
-        phone: profile.phone,
-      });
+    if (!editing) setDraft({ ...profile });
   }, [profile, editing]);
   const change = (key: keyof StudentEdit, value: string) => {
     setDraft(prev => ({ ...prev, [key]: value }));
@@ -81,14 +89,14 @@ export function ProfileScreen({ navigation }: StudyTabProps<'Profile'>) {
       setErrors({});
     }
   };
-  const average = gradeAverage(GRADES, COURSES);
+  const average = gradeAverage(courseGrades, allCourses);
   return (
     <StudyPage
       title={t('study.profileTitle')}
       subtitle={t('study.studentHeading')}
       scrollable
     >
-      <View style={styles.hero}>
+      <AppCard style={styles.hero}>
         <View style={styles.row}>
           <AppAvatar name={profile.fullName} size="lg" />
           <GraduationCap size={32} color={styles.heroText.color} />
@@ -97,7 +105,7 @@ export function ProfileScreen({ navigation }: StudyTabProps<'Profile'>) {
         <AppText style={styles.heroCaption}>
           {profile.studentId} · {profile.className}
         </AppText>
-      </View>
+      </AppCard>
       <AppCard>
         <View style={styles.sectionHeader}>
           <AppText style={styles.sectionHeading}>
@@ -131,6 +139,17 @@ export function ProfileScreen({ navigation }: StudyTabProps<'Profile'>) {
         </View>
         {editing ? (
           <View style={styles.section}>
+            {(['studentId', 'className', 'major'] as const).map(key => (
+              <AppInput
+                key={key}
+                label={t(`study.${key}`)}
+                accessibilityLabel={t(`study.${key}`)}
+                value={draft[key] ?? ''}
+                onChangeText={value => change(key, value)}
+                editable={!saving}
+                maxLength={key === 'major' ? 120 : 80}
+              />
+            ))}
             <AppInput
               label={t('study.fullName')}
               accessibilityLabel={t('study.fullName')}
@@ -199,68 +218,84 @@ export function ProfileScreen({ navigation }: StudyTabProps<'Profile'>) {
           </AppText>
           <AppText style={styles.note}>{t('study.averageNote')}</AppText>
         </AppCard>
-        {GRADES.map(grade => {
-          const course = findCourse(grade.courseId);
-          if (!course) return null;
-          const total = gradeTotal(grade);
-          return (
-            <AppCard
-              key={grade.id}
-              onPress={() =>
-                navigation.navigate('GradeDetail', { gradeId: grade.id })
-              }
-              style={styles.gradeRow}
-            >
-              <View style={styles.row}>
-                <View style={styles.flex}>
-                  <AppText variant="caption" color={theme.primary}>
-                    {course.code} · {course.semester}
-                  </AppText>
-                  <AppText variant="subtitle">{course.name}</AppText>
+        {allCourses
+          .map(
+            row =>
+              courseGrades.find(grade => grade.courseId === row.id) ?? {
+                id: `grade-${row.id}`,
+                courseId: row.id,
+                components: [],
+              },
+          )
+          .map(grade => {
+            const course = findCourse(grade.courseId);
+            if (!course) return null;
+            const total = gradeTotal(grade);
+            return (
+              <AppCard
+                key={grade.id}
+                onPress={() =>
+                  navigation.navigate('GradeDetail', { gradeId: grade.id })
+                }
+                style={styles.gradeRow}
+              >
+                <View style={styles.row}>
+                  <View style={styles.flex}>
+                    <AppText variant="caption" color={theme.primary}>
+                      {course.code} · {course.semester}
+                    </AppText>
+                    <AppText variant="subtitle">{course.name}</AppText>
+                  </View>
+                  <ChevronRight size={18} color={theme.textSecondary} />
                 </View>
-                <ChevronRight size={18} color={theme.textSecondary} />
-              </View>
-              <View style={styles.dateRow}>
-                <AppBadge
-                  label={t('study.credits', { count: course.credits })}
-                  variant="neutral"
-                />
-                <AppBadge
-                  label={
-                    total === null
-                      ? t('study.scorePending')
-                      : `${total.toFixed(2)} / 10`
-                  }
-                  variant={total === null ? 'neutral' : 'success'}
-                />
-              </View>
-            </AppCard>
-          );
-        })}
-        <AppText style={styles.note}>{t('study.sampleNote')}</AppText>
+                <View style={styles.dateRow}>
+                  <AppBadge
+                    label={t('study.credits', { count: course.credits })}
+                    variant="neutral"
+                  />
+                  <AppBadge
+                    label={
+                      total === null
+                        ? t('study.scorePending')
+                        : `${total.toFixed(2)} / 10`
+                    }
+                    variant={total === null ? 'neutral' : 'success'}
+                  />
+                </View>
+              </AppCard>
+            );
+          })}
+        <AppText style={styles.note}>{t('study.personalGradeNote')}</AppText>
       </View>
-      <AppCard>
-        <View style={styles.themeRow}>
-          <AppText style={styles.sectionHeading}>{t('study.settings')}</AppText>
-          <AppSwitch
-            label={t('study.darkMode')}
-            value={isDark}
-            onValueChange={value => setTheme(value ? 'dark' : 'light')}
+      <AppListGroup title={t('study.settings')}>
+        <AppListItem
+          title={t('study.customizeAppearance')}
+          subtitle={t('study.appearanceHint')}
+          leading={<Palette color={theme.primary} />}
+          onPress={() => setStudioOpen(true)}
+        />
+        <AppListItem
+          title={t('study.dataTools')}
+          subtitle={t('study.dataToolsHint')}
+          leading={<Database color={theme.primary} />}
+          onPress={() => navigation.navigate('StudyDataTools')}
+        />
+        <View style={styles.chips}>
+          <AppChip
+            label="Tiếng Việt"
+            selected={language === 'vi'}
+            onPress={() => setLanguage('vi')}
           />
-          <View style={styles.chips}>
-            <AppChip
-              label="Tiếng Việt"
-              selected={language === 'vi'}
-              onPress={() => setLanguage('vi')}
-            />
-            <AppChip
-              label="English"
-              selected={language === 'en'}
-              onPress={() => setLanguage('en')}
-            />
-          </View>
+          <AppChip
+            label="English"
+            selected={language === 'en'}
+            onPress={() => setLanguage('en')}
+          />
         </View>
-      </AppCard>
+      </AppListGroup>
+      {studioOpen && (
+        <ThemeStudioModal visible onClose={() => setStudioOpen(false)} />
+      )}
       <ConfirmDialog
         visible={confirmCancel}
         title={t('study.unsavedTitle')}

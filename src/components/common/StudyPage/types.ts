@@ -6,4 +6,6 @@ export interface StudyPageProps {
   scrollable?: boolean;
   onBack?: () => void;
   action?: ReactNode;
+  onAdd?: () => void;
+  onEdit?: () => void;
 }

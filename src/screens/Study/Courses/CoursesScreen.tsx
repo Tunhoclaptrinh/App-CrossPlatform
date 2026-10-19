@@ -4,24 +4,30 @@ import { useTranslation } from 'react-i18next';
 import { AppChip, AppSearchBar, EmptyState } from '@/components';
 import { StudyPage } from '@/components/common/StudyPage';
 import { StudyCourseCard } from '@/components/common/StudyCourseCard';
-import { COURSES } from '@/data/study';
+
 import { searchCourses } from '@/utils/study';
 import type { StudyTabProps } from '@/navigation/types';
+import { useAppStore } from '@/hooks/useAppStore';
 import { useStudyStyles } from './styles';
 export function CoursesScreen({ navigation }: StudyTabProps<'Courses'>) {
+  const { courses: allCourses } = useAppStore(s => s.studyData);
   const { t } = useTranslation();
   const { styles } = useStudyStyles();
   const [query, setQuery] = useState('');
   const [current, setCurrent] = useState(true);
   const courses = useMemo(
     () =>
-      searchCourses(current ? COURSES.filter(c => c.active) : COURSES, query),
-    [query, current],
+      searchCourses(
+        current ? allCourses.filter(c => c.active) : allCourses,
+        query,
+      ),
+    [query, current, allCourses],
   );
   return (
     <StudyPage
       title={t('study.courses')}
       subtitle={t('study.courseCount', { count: courses.length })}
+      onAdd={() => navigation.navigate('StudyEditor', { kind: 'course' })}
     >
       <View style={styles.filters}>
         <AppSearchBar

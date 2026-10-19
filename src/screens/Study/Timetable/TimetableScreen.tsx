@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { AppButton, AppChip, AppText, EmptyState } from '@/components';
 import { StudyPage } from '@/components/common/StudyPage';
 import { StudySessionCard } from '@/components/common/StudySessionCard';
-import { SESSIONS, STUDY_TERM } from '@/data/study';
+
 import { useStudyClock } from '@/hooks/useStudyClock';
 import {
   addDays,
@@ -15,8 +15,14 @@ import {
   mondayOf,
 } from '@/utils/study';
 import type { StudyTabProps } from '@/navigation/types';
+import { useAppStore } from '@/hooks/useAppStore';
 import { useStudyStyles } from './styles';
 export function TimetableScreen({ navigation }: StudyTabProps<'Timetable'>) {
+  const {
+    sessions: allSessions,
+    term,
+    courses: studyCourses,
+  } = useAppStore(s => s.studyData);
   const { t, i18n } = useTranslation();
   const { styles, theme } = useStudyStyles();
   const now = useStudyClock();
@@ -24,15 +30,20 @@ export function TimetableScreen({ navigation }: StudyTabProps<'Timetable'>) {
   const [day, setDay] = useState<number | null>(null);
   const sessions = useMemo(
     () =>
-      SESSIONS.filter(
-        s =>
-          (day === null || s.weekday === day) &&
-          isTermDate(addDays(week, s.weekday)),
-      ).sort(
-        (a, b) =>
-          a.weekday - b.weekday || a.startTime.localeCompare(b.startTime),
-      ),
-    [week, day],
+      allSessions
+        .filter(
+          s =>
+            studyCourses.some(
+              course => course.id === s.courseId && course.active,
+            ) &&
+            (day === null || s.weekday === day) &&
+            isTermDate(addDays(week, s.weekday), term),
+        )
+        .sort(
+          (a, b) =>
+            a.weekday - b.weekday || a.startTime.localeCompare(b.startTime),
+        ),
+    [week, day, allSessions, term, studyCourses],
   );
   const weekdays = t('study.weekdays', { returnObjects: true }) as string[];
   const fullWeekdays = t('study.fullWeekdays', {
@@ -41,7 +52,9 @@ export function TimetableScreen({ navigation }: StudyTabProps<'Timetable'>) {
   return (
     <StudyPage
       title={t('study.timetable')}
-      subtitle={t('study.scheduleHint', { term: STUDY_TERM.label })}
+      onAdd={() => navigation.navigate('StudyEditor', { kind: 'session' })}
+      onEdit={() => navigation.navigate('StudyEditor', { kind: 'term' })}
+      subtitle={t('study.scheduleHint', { term: term.label })}
     >
       <View style={styles.filters}>
         <View style={styles.row}>
@@ -66,7 +79,14 @@ export function TimetableScreen({ navigation }: StudyTabProps<'Timetable'>) {
           {weekdays.map((label, index) => {
             const date = addDays(week, index);
             const hasSession =
-              isTermDate(date) && SESSIONS.some(s => s.weekday === index);
+              isTermDate(date, term) &&
+              allSessions.some(
+                s =>
+                  s.weekday === index &&
+                  studyCourses.some(
+                    course => course.id === s.courseId && course.active,
+                  ),
+              );
             return (
               <Pressable
                 key={label}

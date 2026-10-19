@@ -1,10 +1,14 @@
 import { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import { BorderRadius, Spacing, Typography } from '@/constants';
+import type { RadiusPresetConfig } from '@/constants/theme';
 import type { ThemeColors } from '@/constants/colors';
 import { useThemeMode } from '@/hooks/useThemeMode';
 
-export const createStudyStyles = (theme: ThemeColors) =>
+export const createStudyStyles = (
+  theme: ThemeColors,
+  radius: RadiusPresetConfig,
+) =>
   StyleSheet.create({
     list: { paddingHorizontal: Spacing.xl, paddingBottom: Spacing.xxl },
     filters: {
@@ -36,22 +40,17 @@ export const createStudyStyles = (theme: ThemeColors) =>
     stack: { gap: Spacing.md },
     section: { gap: Spacing.md, marginTop: Spacing.sm },
     sectionHeading: { ...Typography.h4 },
-    hero: {
-      backgroundColor: theme.primary,
-      borderRadius: BorderRadius.lg,
-      padding: Spacing.xl,
-      gap: Spacing.base,
-    },
-    heroText: { color: theme.textInverse },
-    heroName: { ...Typography.h2, color: theme.textInverse },
-    heroCaption: { ...Typography.caption, color: theme.textInverse },
+    hero: { gap: Spacing.base },
+    heroText: { color: theme.text },
+    heroName: { ...Typography.h2, color: theme.text },
+    heroCaption: { ...Typography.caption, color: theme.textSecondary },
     stats: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm },
     stat: {
       flex: 1,
       minWidth: 100,
       backgroundColor: theme.surface,
       padding: Spacing.base,
-      borderRadius: BorderRadius.lg,
+      borderRadius: radius.card,
       gap: Spacing.xs,
       borderWidth: StyleSheet.hairlineWidth,
       borderColor: theme.borderStrong,
@@ -71,7 +70,7 @@ export const createStudyStyles = (theme: ThemeColors) =>
       alignItems: 'center',
       paddingVertical: Spacing.md,
       gap: Spacing.sm,
-      borderRadius: BorderRadius.md,
+      borderRadius: radius.control,
       borderWidth: StyleSheet.hairlineWidth,
       borderColor: theme.borderStrong,
       backgroundColor: theme.surface,
@@ -101,7 +100,10 @@ export const createStudyStyles = (theme: ThemeColors) =>
   });
 
 export function useStudyStyles() {
-  const { theme, isDark } = useThemeMode();
-  const styles = useMemo(() => createStudyStyles(theme), [theme]);
+  const { theme, isDark, radiusTokens } = useThemeMode();
+  const styles = useMemo(
+    () => createStudyStyles(theme, radiusTokens),
+    [theme, radiusTokens],
+  );
   return { styles, theme, isDark };
 }
