@@ -5,10 +5,12 @@ import { AppText } from '../AppText';
 import { useThemeMode } from '@/hooks/useThemeMode';
 import { haptics } from '@/utils/haptics';
 import type { AppListItemProps } from './types';
-import { createListItemStyles } from './styles';
+import { createListItemStyles, createDividerInsetStyle } from './styles';
+import { useAppStore } from '@/hooks/useAppStore';
 
 export const AppListItem: React.FC<AppListItemProps> = React.memo(({
   title,
+  testID,
   subtitle,
   leading,
   trailing,
@@ -53,12 +55,13 @@ export const AppListItem: React.FC<AppListItemProps> = React.memo(({
     [theme, isDark, disabled, resolvedContrast, size, variant, radiusTokens.card, borderRadius]
   );
 
-  const isInteractive = !disabled && Boolean(onPress);
+  const hapticsEnabled = useAppStore(state => state.hapticsEnabled);
+  const isInteractive = Boolean(onPress);
   const shouldShowChevron = showChevron !== undefined ? showChevron : Boolean(onPress);
 
   const handlePress = () => {
-    if (isInteractive && onPress) {
-      haptics.light();
+    if (!disabled && onPress) {
+      if (hapticsEnabled) haptics.light();
       onPress();
     }
   };
@@ -170,6 +173,8 @@ export const AppListItem: React.FC<AppListItemProps> = React.memo(({
           activeOpacity={0.65}
           disabled={disabled}
           onPress={handlePress}
+          testID={testID}
+          accessibilityState={{ disabled }}
           accessibilityRole="button"
           accessibilityLabel={
             accessibilityLabel ||
@@ -186,7 +191,7 @@ export const AppListItem: React.FC<AppListItemProps> = React.memo(({
         <View
           style={[
             styles.divider,
-            { marginLeft: dividerInset },
+            createDividerInsetStyle(dividerInset).inset,
           ]}
         />
       )}

@@ -366,5 +366,13 @@ import { Save, Share2, Bell } from 'lucide-react-native';
 ### Navigation theme synchronization
 - NavigationContainer must receive a memoized theme built from useThemeMode, including background/card/text/primary colors. Preserve React Navigation fonts/default fields; glass backgrounds stay transparent so base mesh surfaces remain visible.
 
+### Shared screen composition and base-first changes
+- Reuse AppScreenLayout (ScreenWrapper + AppHeader + fixed footer), AppNavigationTabBar (React Navigation bottom-tabs adapter for AppBottomNav), AppCard, AppListItem/AppListGroup, AppDivider, EmptyState and existing form controls. Product screens supply domain data, translated labels and destinations instead of copying chrome or control styles.
+- ScreenWrapper header/footer slots stay outside the scroll body; keyboard avoidance uses iOS padding / Android height. AppScreenLayout owns the top inset through AppHeader; bottomInset=false delegates bottom safe area to a tab navigator. Both templates remain available through Templates exports.
+- AppNavigationTabBar item keys are route names. Navigator state owns selection; tabPress cancellation and tabLongPress are preserved, keyboard hiding is enabled by default. Render the adapter as a React element through a stable tabBar callback. Route lists and branding belong to each product.
+- AppScreenLayout, AppCard and AppListGroup support surface="solid" for opaque semantic surfaces while preserving the active accent and saved theme. Defaults keep theme inheritance. AppCard supports token gap, test IDs, disabled/accessibility props; disabled AppListItem actions retain button semantics and honor the global haptics setting.
+- Shared changes belong in main or a dedicated base branch first, with README/CONVENTIONS/SKILL/design standards/Storybook/tests and all quality gates. Commit the base change, merge main into each product branch, then adopt its API. Keep product domain, state and routes out of the base commit; do not maintain app-specific copies of base components.
+- StorybookShowcase includes a real independent tab navigator for these templates; components.test.tsx and base-app-shell.test.tsx cover exports, slots, accessible actions and navigation events.
+
 ### Multiline inputs and compact choices
 - Multiline AppInput defaults to radiusTokens.card, preserving explicit radius overrides; pill controls must not turn textareas into ovals. Left-aligned AppHeader collapses empty leading space, preserving back/actions. AppSegmentedControl exposes tablist/tab selected/disabled accessibility and respects global hapticsEnabled.

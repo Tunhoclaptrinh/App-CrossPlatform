@@ -191,5 +191,13 @@
     "reduceMotionDesc": "Tối ưu hóa tốc độ, tắt các hiệu ứng chuyển động phức tạp",
     "defaultBtn": "Mặc Định",
     "doneBtn": "Hoàn Tất"
+  },
+  "screenLayout": {
+    "title": "Khung màn hình dùng chung",
+    "body": "Nội dung cuộn độc lập dưới header và trên hành động cố định.",
+    "footer": "Hành động cố định",
+    "overview": "Tổng quan",
+    "preferences": "Tùy chọn",
+    "disabledItem": "Hàng bị vô hiệu hóa"
   }
 }

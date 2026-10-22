@@ -13,10 +13,12 @@ import { useAppStore } from '@/hooks/useAppStore';
 import { AppleMeshBackground } from '../AppleMeshBackground';
 import { AppScrollView } from '../AppScrollView';
 import type { ScreenWrapperProps } from './types';
-import { styles } from './styles';
+import { styles, createBackgroundStyle } from './styles';
 
 export const ScreenWrapper = React.memo(React.forwardRef<ScrollViewInstance, ScreenWrapperProps>(({
   children,
+  header,
+  footer,
   scrollable = false,
   contentContainerStyle,
   disableKeyboardDismiss = false,
@@ -59,6 +61,7 @@ export const ScreenWrapper = React.memo(React.forwardRef<ScrollViewInstance, Scr
   const content = scrollable ? (
     <AppScrollView
       ref={resolvedScrollRef}
+      style={styles.scroll}
       contentContainerStyle={[styles.scrollContent, contentContainerStyle]}
       keyboardShouldPersistTaps="handled"
       indicatorVisible={showsScrollIndicator}
@@ -99,14 +102,16 @@ export const ScreenWrapper = React.memo(React.forwardRef<ScrollViewInstance, Scr
       {shouldRenderMesh && <AppleMeshBackground variant={meshVariant || 'aurora'} />}
       <SafeAreaView
         edges={edges}
-        style={[styles.container, { backgroundColor: resolvedBgColor }, style]}
+        style={[styles.container, createBackgroundStyle(resolvedBgColor).background, style]}
         {...props}
       >
         <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={styles.keyboardAvoid}
         >
+          {header}
           {wrappedWithKeyboard}
+          {footer}
         </KeyboardAvoidingView>
       </SafeAreaView>
     </View>

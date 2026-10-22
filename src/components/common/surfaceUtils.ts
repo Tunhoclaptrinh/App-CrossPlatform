@@ -1,4 +1,5 @@
 import { ViewStyle } from 'react-native';
+import { Colors } from '@/constants/colors';
 import type { ThemeColors } from '@/constants/colors';
 import type { RadiusPresetConfig } from '@/constants/theme';
 
@@ -328,3 +329,15 @@ export const getControlSurfaceStyle = ({
     ...shadowStyle,
   };
 };
+
+
+export type SurfaceMode = 'theme' | 'solid';
+
+/** Use opaque semantic surfaces while retaining the active accent. */
+export const resolveSurfaceColors = (theme: ThemeColors, isDark: boolean, surface: SurfaceMode): ThemeColors =>
+  surface === 'theme' ? theme : {
+    ...Colors[isDark ? 'dark' : 'light'],
+    primary: theme.primary,
+    primaryLight: theme.primaryLight,
+    primaryDark: theme.primaryDark,
+  };

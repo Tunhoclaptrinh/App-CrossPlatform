@@ -178,3 +178,14 @@ Biến thể `variant="glass"` trên `AppButton` và các bề mặt `GlassCard`
    - **Form Lab**: Thử nghiệm mật khẩu che giấu, chọn giá trị qua Cupertino Sheet, trạng thái lỗi (`error`), và khóa thao tác (`disabled`).
    - **Kiểm Thử Huy Hiệu & Công Tắc**: Badges, Switches, Checkboxes và Thẻ Kính Apple Glass.
 
+
+
+## Shared screen composition and product branches
+
+Prefer the base UI before building product UI: AppScreenLayout/ScreenWrapper, AppHeader, AppNavigationTabBar/AppBottomNav, AppCard, AppListItem/AppListGroup, AppDivider, EmptyState and the existing form controls. Product screens own business data, translated labels and navigation destinations.
+
+- AppScreenLayout composes ScreenWrapper + AppHeader, standard content spacing and a fixed footer. It owns the top safe area through AppHeader; set bottomInset=false when a tab bar handles the bottom inset. ScreenWrapper header/footer stay outside the scrolling body; keyboard avoidance uses padding on iOS and height on Android.
+- AppNavigationTabBar connects AppBottomNav to React Navigation bottom-tabs v7. Item keys are route names; selection comes from navigator state, tabPress can be prevented, long press is emitted and the bar hides for the keyboard. Render it as a React element in a stable tabBar callback. Applications supply labels/icons and their own typed route lists.
+- Use surface="solid" on AppScreenLayout, AppCard and AppListGroup for opaque semantic surfaces without resetting the saved glass theme or accent. The default surface="theme" preserves existing behavior. AppCard accepts token-based gap and forwards accessibility/test/disabled props. AppListItem preserves disabled button semantics and respects the global haptics preference.
+- Storybook's shared layout preview uses a real independent tab navigator. Base component tests cover safe area composition, accessible disabled actions and navigation events.
+- Develop generic improvements on main (or a dedicated base branch), update README/CONVENTIONS/SKILL/Storybook/tests, run lint + tsc + tests, then commit the base change. Merge main into product branches before using the new API. Keep branding, domain types/store data and product routes out of base commits. Synchronize shared changes through Git; do not maintain copied components in each app.

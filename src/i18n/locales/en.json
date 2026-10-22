@@ -191,5 +191,13 @@
     "reduceMotionDesc": "Minimize animations for faster rendering and accessibility",
     "defaultBtn": "Reset Defaults",
     "doneBtn": "Done"
+  },
+  "screenLayout": {
+    "title": "Shared screen layout",
+    "body": "Content scrolls between the header and fixed actions.",
+    "footer": "Fixed action area",
+    "overview": "Overview",
+    "preferences": "Preferences",
+    "disabledItem": "Disabled row"
   }
 }

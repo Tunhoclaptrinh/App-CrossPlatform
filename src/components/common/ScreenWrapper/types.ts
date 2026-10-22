@@ -9,6 +9,9 @@ export type ScreenScrollViewRef = ScrollViewInstance;
 
 export interface ScreenWrapperProps extends SafeAreaViewProps {
   children: React.ReactNode;
+  /** Fixed slots outside the scrollable body. Header owns its top safe area. */
+  header?: React.ReactNode;
+  footer?: React.ReactNode;
   scrollable?: boolean;
   contentContainerStyle?: StyleProp<ViewStyle>;
   disableKeyboardDismiss?: boolean;

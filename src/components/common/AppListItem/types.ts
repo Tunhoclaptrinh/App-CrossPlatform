@@ -1,11 +1,12 @@
 import React from 'react';
 import { ViewStyle, TextStyle } from 'react-native';
-import type { ControlContrast } from '../surfaceUtils';
+import type { ControlContrast, SurfaceMode } from '../surfaceUtils';
 
 export type AppListItemSize = 'sm' | 'md' | 'lg';
 export type AppListItemVariant = 'standard' | 'card' | 'glass';
 
 export interface AppListItemProps {
+  testID?: string;
   title: string | React.ReactNode;
   subtitle?: string | React.ReactNode;
   leading?: React.ReactNode;
@@ -40,6 +41,7 @@ export interface AppListGroupProps {
   footer?: string;
   children: React.ReactNode;
   variant?: 'card' | 'glass' | 'clean';
+  surface?: SurfaceMode;
   size?: AppListItemSize;
   contrast?: ControlContrast;
   borderRadius?: number;

@@ -179,3 +179,7 @@ export const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.38)',
   },
 });
+
+
+export const createCardLayoutStyle = (borderRadius: number, padding: number, gap: number, variant: ViewStyle) =>
+  StyleSheet.create({ card: { borderRadius, padding, gap, ...variant } }).card;

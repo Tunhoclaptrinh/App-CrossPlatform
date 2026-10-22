@@ -14,7 +14,11 @@ export const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
   },
+  scroll: { flex: 1 },
   staticContent: {
     flex: 1,
   },
 });
+
+export const createBackgroundStyle = (backgroundColor: string) =>
+  StyleSheet.create({ background: { backgroundColor } });

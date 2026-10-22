@@ -119,6 +119,7 @@ export * from './AppActionSheet';
 export * from './ErrorBoundary';
 export * from './AppWebView';
 export * from './AppBottomNav';
+export * from './AppNavigationTabBar';
 
 import { AppCard } from './AppCard';
 import { AppleGlassCard } from './AppleGlassCard';
@@ -127,6 +128,7 @@ import { WidgetCard } from './WidgetCard';
 import { GestureCard } from './GestureCard';
 import { AppHeader } from './AppHeader';
 import { AppBottomNav } from './AppBottomNav';
+import { AppNavigationTabBar } from './AppNavigationTabBar';
 import { ConfirmDialog } from './ConfirmDialog';
 import { AppToast, ToastProvider } from './AppToast';
 import { AppAccordion } from './AppAccordion';
@@ -147,6 +149,7 @@ export const Organisms = {
   GestureCard,
   AppHeader,
   AppBottomNav,
+  AppNavigationTabBar,
   ConfirmDialog,
   AppToast,
   ToastProvider,
@@ -165,12 +168,15 @@ export const Organisms = {
 // 4. TEMPLATES (Bố Cục / Khung Mẫu)
 // ============================================================================
 export * from './ScreenWrapper';
+export * from './AppScreenLayout';
 export * from './AppScrollView';
 
 import { ScreenWrapper } from './ScreenWrapper';
+import { AppScreenLayout } from './AppScreenLayout';
 import { AppScrollView } from './AppScrollView';
 
 export const Templates = {
   ScreenWrapper,
+  AppScreenLayout,
   AppScrollView,
 } as const;

@@ -20,6 +20,7 @@ import {
   LayoutLabView,
 } from './components';
 import { haptics } from '@/utils';
+import { BaseLayoutPreview } from './components/BaseLayoutPreview';
 
 export const StorybookShowcase: React.FC<StorybookShowcaseProps> = React.memo(({
   themeColors,
@@ -213,6 +214,8 @@ export const StorybookShowcase: React.FC<StorybookShowcaseProps> = React.memo(({
         radiusTokens={radiusTokens}
         isDark={isDark}
       />
+
+      <BaseLayoutPreview styles={styles} />
 
       {/* Category Filter Chips */}
       <CategoryFilterChips

@@ -220,3 +220,6 @@ export const createListGroupStyles = (
     },
   });
 };
+
+
+export const createDividerInsetStyle = (marginLeft: number) => StyleSheet.create({ inset: { marginLeft } });

@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { BorderRadius, Spacing } from '@/constants';
 import type { ThemeColors } from '@/constants/colors';
 import type { RadiusPresetConfig } from '@/constants/theme';
 
@@ -8,6 +9,7 @@ export const createStorybookStyles = (
   isDark: boolean
 ) =>
   StyleSheet.create({
+    screenLayoutPreview: { height: Spacing.massive * 6, overflow: 'hidden', borderRadius: BorderRadius.lg, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.border },
     container: {
       gap: 14,
       marginBottom: 32,

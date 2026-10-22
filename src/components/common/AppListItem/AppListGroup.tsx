@@ -4,12 +4,14 @@ import { AppText } from '../AppText';
 import { useThemeMode } from '@/hooks/useThemeMode';
 import type { AppListGroupProps } from './types';
 import { createListGroupStyles } from './styles';
+import { resolveSurfaceColors } from '../surfaceUtils';
 
 export const AppListGroup: React.FC<AppListGroupProps> = ({
   title,
   footer,
   children,
   variant,
+  surface = 'theme',
   size,
   contrast,
   borderRadius,
@@ -17,19 +19,20 @@ export const AppListGroup: React.FC<AppListGroupProps> = ({
 }) => {
   const { theme, radiusTokens, isDark, globalContrast, isGlassTheme } = useThemeMode();
   const resolvedContrast = contrast ?? globalContrast;
-  const effectiveVariant = variant ?? (isGlassTheme ? 'glass' : 'card');
+  const effectiveVariant = surface === 'solid' ? (variant === 'clean' ? 'clean' : 'card') : variant ?? (isGlassTheme ? 'glass' : 'card');
+  const colors = useMemo(() => resolveSurfaceColors(theme, isDark, surface), [theme, isDark, surface]);
 
   const styles = useMemo(
     () =>
       createListGroupStyles(
-        theme,
+        colors,
         isDark,
         radiusTokens.card,
         effectiveVariant,
         resolvedContrast,
         borderRadius
       ),
-    [theme, isDark, radiusTokens.card, effectiveVariant, resolvedContrast, borderRadius]
+    [colors, isDark, radiusTokens.card, effectiveVariant, resolvedContrast, borderRadius]
   );
 
   // Automatically pass showDivider and group size to all children except the last one

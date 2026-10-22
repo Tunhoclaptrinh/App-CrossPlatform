@@ -1,8 +1,9 @@
 import React from 'react';
 import { View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import ReactTestRenderer from 'react-test-renderer';
 import { ControlSize, getControlMetric } from '@/constants/theme';
-import { AppButton, AppInput, AppSelect, AppSearchBar } from '@/components';
+import { AppButton, AppInput, AppSelect, AppSearchBar, AppScrollView, ScreenWrapper } from '@/components';
 
 describe('Design System Sizing Standards & Controls', () => {
   it('enforces exact height parity across ControlSize tokens', () => {
@@ -117,5 +118,28 @@ describe('Design System Sizing Standards & Controls', () => {
     expect(Organisms.AppleGlassCard).toBeDefined();
 
     expect(Templates.ScreenWrapper).toBeDefined();
+    expect(Templates.AppScreenLayout).toBeDefined();
+    expect(Organisms.AppNavigationTabBar).toBeDefined();
   });
+});
+
+
+test('ScreenWrapper keeps fixed header/footer outside its scrollable body', async () => {
+  let renderer!: ReactTestRenderer.ReactTestRenderer;
+  await ReactTestRenderer.act(async () => {
+    renderer = ReactTestRenderer.create(
+      <SafeAreaProvider initialMetrics={{ frame: { x: 0, y: 0, width: 390, height: 844 }, insets: { top: 24, bottom: 20, left: 0, right: 0 } }}>
+        <ScreenWrapper scrollable edges={['left', 'right']} header={<View testID="fixed-header" />} footer={<View testID="fixed-footer" />}>
+          <View testID="scroll-body" />
+        </ScreenWrapper>
+      </SafeAreaProvider>,
+    );
+  });
+  const scroll = renderer.root.findAll(node => node.type === (AppScrollView as unknown as { type: unknown }).type)[0];
+  expect(scroll.findAllByProps({ testID: 'scroll-body' }).length).toBeGreaterThan(0);
+  expect(scroll.findAllByProps({ testID: 'fixed-header' })).toHaveLength(0);
+  expect(scroll.findAllByProps({ testID: 'fixed-footer' })).toHaveLength(0);
+  expect(renderer.root.findByProps({ testID: 'fixed-header' })).toBeDefined();
+  expect(renderer.root.findByProps({ testID: 'fixed-footer' })).toBeDefined();
+  await ReactTestRenderer.act(async () => renderer.unmount());
 });

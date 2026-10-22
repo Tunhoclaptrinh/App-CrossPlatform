@@ -1,18 +1,25 @@
 import React from 'react';
-import {
-  TouchableOpacity,
-  View,
-  ViewStyle,
-} from 'react-native';
+import { TouchableOpacity, View, ViewStyle } from 'react-native';
 import { BorderRadius, Spacing } from '@/constants/theme';
 import { useThemeMode } from '@/hooks/useThemeMode';
 import { useAppStore } from '@/hooks/useAppStore';
 import type { AppCardProps } from './types';
-import { styles, createCardVariantStyle } from './styles';
+import {
+  styles,
+  createCardVariantStyle,
+  createCardLayoutStyle,
+} from './styles';
+import { resolveSurfaceColors } from '../surfaceUtils';
 
 const AppCardComponent: React.FC<AppCardProps> = ({
   children,
   variant = 'elevated',
+  surface = 'theme',
+  gap = 'none',
+  testID,
+  accessibilityLabel,
+  accessibilityHint,
+  disabled = false,
   size,
   radius,
   padding = 'base',
@@ -33,13 +40,23 @@ const AppCardComponent: React.FC<AppCardProps> = ({
     globalShadow,
   } = useThemeMode();
   const { themeStyle } = useAppStore();
-  const isGlassTheme = themeStyle === 'apple-glass';
+  const isGlassTheme = surface === 'theme' && themeStyle === 'apple-glass';
+  const surfaceColors = React.useMemo(
+    () => resolveSurfaceColors(themeColors, isDark, surface),
+    [themeColors, isDark, surface],
+  );
 
   // In Apple Glass mode, all cards automatically adopt the Liquid Glass specular highlight
-  const isGlassCard = isGlassTheme || variant === 'glass';
-  const effectiveVariant = isGlassTheme ? 'glass' : variant;
+  const effectiveVariant =
+    surface === 'solid' && variant === 'glass'
+      ? 'outlined'
+      : isGlassTheme
+      ? 'glass'
+      : variant;
+  const isGlassCard = effectiveVariant === 'glass';
   const effectiveContrast = contrast ?? globalContrast ?? 'normal';
-  const effectiveShadow = shadow ?? (globalShadow !== 'none' ? globalShadow : undefined);
+  const effectiveShadow =
+    shadow ?? (globalShadow !== 'none' ? globalShadow : undefined);
 
   const cardRadius =
     borderRadius !== undefined
@@ -52,7 +69,7 @@ const AppCardComponent: React.FC<AppCardProps> = ({
     () =>
       createCardVariantStyle({
         variant: effectiveVariant,
-        themeColors,
+        themeColors: surfaceColors,
         isDark,
         contrast: effectiveContrast,
         shadow: effectiveShadow,
@@ -62,14 +79,14 @@ const AppCardComponent: React.FC<AppCardProps> = ({
       }),
     [
       effectiveVariant,
-      themeColors,
+      surfaceColors,
       isDark,
       effectiveContrast,
       effectiveShadow,
       borderWidth,
       borderColor,
       backgroundColor,
-    ]
+    ],
   );
 
   const resolvedPadding = React.useMemo(() => {
@@ -82,12 +99,14 @@ const AppCardComponent: React.FC<AppCardProps> = ({
   }, [padding, size]);
 
   const cardStyle: ViewStyle = React.useMemo(
-    () => ({
-      borderRadius: cardRadius,
-      padding: resolvedPadding,
-      ...cardVariantStyle,
-    }),
-    [cardRadius, resolvedPadding, cardVariantStyle]
+    () =>
+      createCardLayoutStyle(
+        cardRadius,
+        resolvedPadding,
+        Spacing[gap],
+        cardVariantStyle,
+      ),
+    [cardRadius, resolvedPadding, gap, cardVariantStyle],
   );
 
   const highlightElement = isGlassCard ? (
@@ -104,6 +123,12 @@ const AppCardComponent: React.FC<AppCardProps> = ({
       <TouchableOpacity
         activeOpacity={0.75}
         onPress={onPress}
+        disabled={disabled}
+        accessibilityRole="button"
+        accessibilityState={{ disabled }}
+        accessibilityLabel={accessibilityLabel}
+        accessibilityHint={accessibilityHint}
+        testID={testID}
         style={[styles.base, cardStyle, style]}
       >
         {highlightElement}
@@ -113,7 +138,11 @@ const AppCardComponent: React.FC<AppCardProps> = ({
   }
 
   return (
-    <View style={[styles.base, cardStyle, style]}>
+    <View
+      testID={testID}
+      accessibilityLabel={accessibilityLabel}
+      style={[styles.base, cardStyle, style]}
+    >
       {highlightElement}
       {children}
     </View>
@@ -121,4 +150,3 @@ const AppCardComponent: React.FC<AppCardProps> = ({
 };
 
 export const AppCard = React.memo(AppCardComponent);
-
