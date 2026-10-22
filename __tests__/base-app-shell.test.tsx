@@ -180,3 +180,15 @@ it('uses navigator selection, respects prevented tab presses, emits long press a
   );
   expect(bar().props.hidden).toBe(false);
 });
+
+it('omits the footer area when a conditional action is unavailable', async () => {
+  await mount(
+    <AppScreenLayout header={{ title: 'Unavailable action' }} footer={false}>
+      <View />
+    </AppScreenLayout>,
+  );
+  const wrapper = view.root.findAll(
+    node => node.type === (ScreenWrapper as unknown as { type: unknown }).type,
+  )[0];
+  expect(wrapper.props.footer).toBeUndefined();
+});

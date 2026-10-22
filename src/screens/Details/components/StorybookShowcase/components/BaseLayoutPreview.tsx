@@ -2,6 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import {
   NavigationContainer,
+  useRoute,
   NavigationIndependentTree,
   DefaultTheme,
   DarkTheme,
@@ -53,12 +54,17 @@ const renderTabBar = (props: BottomTabBarProps) => <PreviewTabBar {...props} />;
 
 function PreviewScreen() {
   const { t } = useTranslation();
+  const route = useRoute();
   return (
     <AppScreenLayout
       surface="solid"
       bottomInset={false}
       header={{ title: t('screenLayout.title') }}
-      footer={<AppText>{t('screenLayout.footer')}</AppText>}
+      footer={
+        route.name === 'Overview' && (
+          <AppText>{t('screenLayout.footer')}</AppText>
+        )
+      }
     >
       {[0, 1, 2].map(index => (
         <AppCard key={index} surface="solid" variant="outlined" gap="md">

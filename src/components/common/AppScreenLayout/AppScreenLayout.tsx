@@ -37,7 +37,9 @@ export const AppScreenLayout = React.memo(function AppScreenLayoutComponent({
         />
       }
       footer={
-        footer != null ? <View style={styles.footer}>{footer}</View> : undefined
+        footer != null && typeof footer !== 'boolean' ? (
+          <View style={styles.footer}>{footer}</View>
+        ) : undefined
       }
     >
       {children}
